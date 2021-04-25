@@ -2,6 +2,7 @@ package de.erethon.questsxl;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import de.erethon.aether.Aether;
 import de.erethon.commons.chat.MessageUtil;
 import de.erethon.commons.compatibility.Internals;
 import de.erethon.commons.javaplugin.DREPlugin;
@@ -38,6 +39,7 @@ public final class QuestsXL extends DREPlugin implements Listener {
     QCommandCache commandCache;
     PlayerListener playerListener;
     QuestManager questManager;
+    Aether aether;
 
     public QuestsXL() {
         settings = DREPluginSettings.builder()
@@ -73,6 +75,7 @@ public final class QuestsXL extends DREPlugin implements Listener {
 
         qPlayerCache = new QPlayerCache();
         playerListener = new PlayerListener();
+        aether = (Aether) Bukkit.getPluginManager().getPlugin("Aether");
 
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(qPlayerCache, this);
@@ -101,6 +104,10 @@ public final class QuestsXL extends DREPlugin implements Listener {
 
     public static QuestsXL getInstance() {
         return instance;
+    }
+
+    public Aether getAether() {
+        return aether;
     }
 
     public void sync() {
