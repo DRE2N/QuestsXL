@@ -3,6 +3,7 @@ package de.erethon.questsxl.commands;
 import de.erethon.commons.chat.MessageUtil;
 import de.erethon.commons.command.DRECommand;
 import de.erethon.questsxl.action.QCutscene;
+import de.erethon.questsxl.gui.QuestBook;
 import de.erethon.questsxl.instancing.InstancedBlockCollection;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -51,19 +52,28 @@ public class TestCommand extends DRECommand {
             MessageUtil.sendMessage(player, "Pos2 set");
             return;
         }
-        if (args[1].equals("save")) {
-            collection.save();
-            MessageUtil.sendMessage(player, "Saved");
+        if (args[1].equals("saveHidden")) {
+            collection.saveHidden();
+            MessageUtil.sendMessage(player, "Saved hidden state");
+            return;
+        }
+        if (args[1].equals("saveShown")) {
+            collection.saveShown();
+            MessageUtil.sendMessage(player, "Saved shown state");
             return;
         }
         if (args[1].equals("show")) {
-            collection.showSlowly(player, 1);
+            collection.show(player);
             MessageUtil.sendMessage(player, "Shown");
             return;
         }
         if (args[1].equals("hide")) {
             collection.hide(player);
             MessageUtil.sendMessage(player, "Hidden");
+            return;
+        }
+        if (args[1].equals("book") || args[1].equals("b")) {
+            QuestBook.write(player);
             return;
         }
         MessageUtil.sendMessage(player, "Invalid test command.");
