@@ -64,6 +64,20 @@ public class QQuest {
         name = nn;
     }
 
+    public String getDisplayName() {
+        if (displayName == null) {
+            return name;
+        }
+        return displayName;
+    }
+
+    public String getDescription() {
+        if (description == null) {
+            return "No description set.";
+        }
+        return description;
+    }
+
     public void load() {
         // General
         displayName = cfg.getString("displayName");

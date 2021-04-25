@@ -23,6 +23,7 @@ public class QStage {
     private final Set<QAction> completeActions = new HashSet<>();
     private final int id;
     private String startMessage = "";
+    private String description = "";
     private String completeMessage = "";
 
     public QStage(QQuest quest,  int id) {
@@ -102,6 +103,10 @@ public class QStage {
 
     public QQuest getQuest() {
         return owner;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public void load(ConfigurationSection section) {
