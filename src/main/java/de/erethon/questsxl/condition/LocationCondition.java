@@ -14,7 +14,10 @@ public class LocationCondition extends QBaseCondition {
 
     @Override
     public boolean check(QPlayer player) {
-        return player.getPlayer().getLocation().distance(location) <= radius;
+        if (player.getPlayer().getLocation().distance(location) <= radius) {
+            return success(player);
+        }
+        return fail(player);
     }
 
     @Override
@@ -25,7 +28,7 @@ public class LocationCondition extends QBaseCondition {
         double y = section.getDouble("y");
         double z = section.getDouble("z");
         if (world == null) {
-            MessageUtil.log("The condition " + section.getName() + " contains a teleport for a world that is not loaded.");
+            MessageUtil.log("The condition " + section.getName() + " contains a location for a world that is not loaded.");
             return;
         }
         location = new Location(Bukkit.getWorld(world), x, y, z);

@@ -1,6 +1,5 @@
 package de.erethon.questsxl.condition;
 
-import de.erethon.questsxl.action.Action;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashSet;
@@ -50,8 +49,11 @@ public class ConditionManager {
                 case PLAYER_VARIABLE -> {
                     condition = new PlayerVariableCondition();
                 }
-                case QUEST -> {
-                    condition = new QuestCondition();
+                case ACTIVE_QUEST -> {
+                    condition = new ActiveQuestCondition();
+                }
+                case COMPLETED_QUEST -> {
+                    condition = new CompletedQuestCondition();
                 }
                 case TIME -> {
                     condition = new TimeCondition();

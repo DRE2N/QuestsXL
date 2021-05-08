@@ -5,16 +5,33 @@ import de.erethon.questsxl.players.QPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 public class LookingAtCondition extends QBaseCondition {
 
-    Location target;
+    Location locTarget;
+    double accuracy;
     Material block;
 
     @Override
-    public boolean check(QPlayer player) {
-        return false;
+    public boolean check(QPlayer qp) {
+        Player player = qp.getPlayer();
+        Block target = player.getTargetBlock(32);
+        if (target == null) {
+            return fail(qp);
+        }
+        if (block != null) {
+            if (target.getType().equals(block)) {
+                return success(qp);
+            }
+            return fail(qp);
+        }
+        if (target.getLocation().distance(locTarget) < accuracy) {
+            return success(qp);
+        }
+        return fail(qp);
     }
 
     @Override
@@ -29,10 +46,11 @@ public class LookingAtCondition extends QBaseCondition {
         double y = section.getDouble("y");
         double z = section.getDouble("z");
         if (world == null) {
-            MessageUtil.log("The condition " + section.getName() + " contains a teleport for a world that is not loaded.");
+            MessageUtil.log("The condition " + section.getName() + " contains a location for a world that is not loaded.");
             return;
         }
-        target = new Location(Bukkit.getWorld(world), x, y, z);
+        accuracy = section.getDouble("accuracy");
+        locTarget = new Location(Bukkit.getWorld(world), x, y, z);
     }
 
     @Override

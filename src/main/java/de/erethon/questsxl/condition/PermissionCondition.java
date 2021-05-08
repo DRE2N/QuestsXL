@@ -10,7 +10,10 @@ public class PermissionCondition extends QBaseCondition {
 
     @Override
     public boolean check(QPlayer player) {
-        return player.getPlayer().hasPermission(permission);
+        if (player.getPlayer().hasPermission(permission)) {
+            return success(player);
+        }
+        return fail(player);
     }
 
     @Override

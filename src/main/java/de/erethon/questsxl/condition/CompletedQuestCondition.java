@@ -5,7 +5,7 @@ import de.erethon.questsxl.quest.QQuest;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 
-public class QuestCondition extends QBaseCondition {
+public class CompletedQuestCondition extends QBaseCondition {
 
     String questName;
 

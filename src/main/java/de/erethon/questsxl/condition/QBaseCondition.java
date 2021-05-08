@@ -1,10 +1,34 @@
 package de.erethon.questsxl.condition;
 
+import de.erethon.questsxl.action.ActionManager;
+import de.erethon.questsxl.action.QAction;
+import de.erethon.questsxl.players.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class QBaseCondition implements QCondition {
 
     String display = "";
+    private final Set<QAction> failActions = new HashSet<>();
+    private final Set<QAction> successActions = new HashSet<>();
+
+    @Override
+    public boolean fail(QPlayer player) {
+        for (QAction action : failActions) {
+            action.play(player.getPlayer());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean success(QPlayer player) {
+        for (QAction action : successActions) {
+            action.play(player.getPlayer());
+        }
+        return true;
+    }
 
     @Override
     public String getDisplayText() {
@@ -18,6 +42,12 @@ public abstract class QBaseCondition implements QCondition {
             return;
         }
         display = section.getString("displayText");
+        if (section.contains("onFail")) {
+            failActions.addAll(ActionManager.loadActions(section.getConfigurationSection("onFail")));
+        }
+        if (section.contains("onSuccess")) {
+            successActions.addAll(ActionManager.loadActions(section.getConfigurationSection("onSuccess")));
+        }
     }
     @Override
     public void load(String[] c) {

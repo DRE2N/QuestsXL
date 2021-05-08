@@ -14,10 +14,15 @@ public class InventoryCondition extends QBaseCondition {
     @Override
     public boolean check(QPlayer player) {
         if (material != null) {
-            return player.getPlayer().getInventory().contains(material, amount);
+            if (player.getPlayer().getInventory().contains(material, amount)) {
+                return success(player);
+            }
         } else {
-            return player.getPlayer().getInventory().containsAtLeast(itemStack, amount);
+            if (player.getPlayer().getInventory().containsAtLeast(itemStack, amount)) {
+                return success(player);
+            }
         }
+        return fail(player);
     }
 
     @Override

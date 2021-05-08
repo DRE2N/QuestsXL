@@ -1,6 +1,8 @@
 package de.erethon.questsxl.condition;
 
 public enum Condition {
+    ACTIVE_QUEST,
+    COMPLETED_QUEST,
     GLOBAL_VARIABLE,
     GROUP_SIZE,
     INVENTORY,
@@ -10,6 +12,6 @@ public enum Condition {
     LOOKING_AT,
     PERMISSION,
     PLAYER_VARIABLE,
-    QUEST,
-    TIME,
+    TIME
+
 }
