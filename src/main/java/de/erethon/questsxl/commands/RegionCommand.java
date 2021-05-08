@@ -24,13 +24,17 @@ public class RegionCommand extends DRECommand {
         setMaxArgs(4);
         setPlayerCommand(true);
         setHelp("Help.");
-        setPermission("qxl.region");
+        setPermission("qxl.admin.region");
     }
 
     @Override
     public void onExecute(String[] args, CommandSender commandSender) {
         Player player = (Player) commandSender;
         Location location = player.getLocation();
+        if (args.length < 2) {
+            MessageUtil.sendMessage(player, QuestsXL.ERROR + "Unbekannter Befehl. Probiere z.B. /q rg i");
+            return;
+        }
         if (args[1].equalsIgnoreCase("info") || args[1].equalsIgnoreCase("i")) {
             QRegion region = manager.getByLocation(location);
             if (region == null) {

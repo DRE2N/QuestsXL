@@ -29,12 +29,16 @@ public class TestCommand extends DRECommand {
         setMaxArgs(4);
         setPlayerCommand(true);
         setHelp("Help.");
-        setPermission("qxl.test");
+        setPermission("qxl.admin.test");
     }
 
     @Override
     public void onExecute(String[] args, CommandSender commandSender) {
         Player player = (Player) commandSender;
+        if (args.length < 2) {
+            MessageUtil.sendMessage(player, QuestsXL.ERROR + "Unbekannter Befehl. Probiere z.B. /q rg i");
+            return;
+        }
         if (args[1].equals("play") || args[1].equals("p")) {
             QCutscene scene = new QCutscene();
             scene.setLocs(locationList);

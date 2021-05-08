@@ -17,7 +17,7 @@ public class NPCCommand extends DRECommand {
         setMaxArgs(4);
         setPlayerCommand(true);
         setHelp("Help.");
-        setPermission("qxl.npc");
+        setPermission("qxl.admin.npc");
     }
 
     @Override

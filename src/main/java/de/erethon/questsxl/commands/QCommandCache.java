@@ -12,7 +12,9 @@ public class QCommandCache extends DRECommandCache {
             super(LABEL, plugin);
             this.plugin = plugin;
             addCommand(new TestCommand());
-            addCommand(new QuestCommand());
+            addCommand(new AdminCommand());
             addCommand(new RegionCommand());
+            addCommand(new QuestCommand());
+            addCommand(new MainCommand());
     }
 }
