@@ -31,6 +31,14 @@ public class InstancedBlockCollection {
     Map<Location, Material> shown = new HashMap<>();
     Map<Location, Material> hidden = new HashMap<>();
 
+    public InstancedBlockCollection() {
+
+    }
+
+    public InstancedBlockCollection(String id) {
+        this.id = id;
+    }
+
     public void show(Player player) {
         WrapperPlayServerMultiBlockChange packet = new WrapperPlayServerMultiBlockChange();
         ArrayList<WrappedBlockData> data = new ArrayList<>();
@@ -42,21 +50,6 @@ public class InstancedBlockCollection {
         packet.setChunk(pos1);
         packet.setRecords(data, locations);
         packet.sendPacket(player);
-    }
-
-    public void showSlowly(Player player, int delay) {
-        Map<Location, Material> tempMap = new HashMap<>(shown);
-        BukkitRunnable asyncShowTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                List<Location> keysAsArray = new ArrayList<>(tempMap.keySet());
-                Random r = new Random();
-                Location location = keysAsArray.get(r.nextInt(keysAsArray.size()));
-                player.sendBlockChange(location, tempMap.get(location).createBlockData());
-                tempMap.remove(location);
-            }
-        };
-        asyncShowTask.runTaskTimerAsynchronously(QuestsXL.getInstance(), 0, delay);
     }
 
     public void hide(Player player) {
@@ -72,22 +65,6 @@ public class InstancedBlockCollection {
         packet.setRecords(data, locations);
         packet.sendPacket(player);
     }
-
-    public void hideSlowly(Player player, int delay) {
-        Map<Location, Material> tempMap = new HashMap<>(hidden);
-        BukkitRunnable asyncShowTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                List<Location> keysAsArray = new ArrayList<>(tempMap.keySet());
-                Random r = new Random();
-                Location location = keysAsArray.get(r.nextInt(keysAsArray.size()));
-                player.sendBlockChange(location, tempMap.get(location).createBlockData());
-                tempMap.remove(location);
-            }
-        };
-        asyncShowTask.runTaskTimerAsynchronously(QuestsXL.getInstance(), 0, delay);
-    }
-
 
     public void saveShown() {
         for (Block block : getBlocks(pos1.getWorld())) {
@@ -140,11 +117,18 @@ public class InstancedBlockCollection {
         return blockList;
     }
 
-    public void load(ConfigurationSection section) {
-        id = section.getName();
-        world = Bukkit.getWorld(section.getString("world"));
-        hidden = loadFromStringList(world, section.getStringList("hidden"));
-        shown = loadFromStringList(world, section.getStringList("shown"));
+    public String getId() {
+        return id;
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    public void load(YamlConfiguration config) {
+        world = Bukkit.getWorld(config.getString("world"));
+        hidden = loadFromStringList(world, config.getStringList("hidden"));
+        shown = loadFromStringList(world, config.getStringList("shown"));
     }
 
     public Map<Location, Material> loadFromStringList(World world, List<String> list) {
@@ -160,8 +144,8 @@ public class InstancedBlockCollection {
         return map;
     }
 
-    public ConfigurationSection save() {
-        MemoryConfiguration section = new MemoryConfiguration();
+    public YamlConfiguration save() {
+        YamlConfiguration section = new YamlConfiguration();
         section.set("hidden", saveToStringList(hidden));
         section.set("shown", saveToStringList(shown));
         section.set("world", world.getName());

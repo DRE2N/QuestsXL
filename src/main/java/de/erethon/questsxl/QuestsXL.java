@@ -7,7 +7,9 @@ import de.erethon.commons.chat.MessageUtil;
 import de.erethon.commons.compatibility.Internals;
 import de.erethon.commons.javaplugin.DREPlugin;
 import de.erethon.commons.javaplugin.DREPluginSettings;
+import de.erethon.questsxl.global.GlobalObjectives;
 import de.erethon.questsxl.commands.QCommandCache;
+import de.erethon.questsxl.instancing.BlockCollectionManager;
 import de.erethon.questsxl.json.ItemstackTypeAdapter;
 import de.erethon.questsxl.json.LocationTypeAdapter;
 import de.erethon.questsxl.listener.PacketListener;
@@ -29,11 +31,14 @@ import java.io.IOException;
 public final class QuestsXL extends DREPlugin implements Listener {
 
     static QuestsXL instance;
+    public static String ERROR = "<dark_gray>[<red><bold>!<reset><dark_gray>]<gray> ";
 
     public static File QUESTS;
-    public static String ERROR = "<dark_gray>[<red><bold>!<reset><dark_gray>]<gray> ";
     public static File PLAYERS;
     public static File REGIONS;
+    public static File GLOBAL_OBJ;
+    public static File IBCS;
+    public long lastSync = 0;
 
     Gson gson =  new GsonBuilder()
             .registerTypeAdapter(Location.class, new LocationTypeAdapter())
@@ -42,6 +47,8 @@ public final class QuestsXL extends DREPlugin implements Listener {
     QPlayerCache qPlayerCache;
     QRegionManager regionManager;
     QCommandCache commandCache;
+    GlobalObjectives globalObjectives;
+    BlockCollectionManager blockCollectionManager;
     PlayerListener playerListener;
     PacketListener packetListener;
     QuestManager questManager;
@@ -74,6 +81,10 @@ public final class QuestsXL extends DREPlugin implements Listener {
         if (!PLAYERS.exists()) {
             PLAYERS.mkdir();
         }
+        IBCS = new File(getDataFolder(), "blocks");
+        if (!IBCS.exists()) {
+            IBCS.mkdir();
+        }
         REGIONS = new File(getDataFolder(), "regions.yml");
         if (!REGIONS.exists()) {
             try {
@@ -82,10 +93,21 @@ public final class QuestsXL extends DREPlugin implements Listener {
                 e.printStackTrace();
             }
         }
+        GLOBAL_OBJ = new File(getDataFolder(), "globalObjectives.yml");
+        if (!GLOBAL_OBJ.exists()) {
+            try {
+                GLOBAL_OBJ.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         VignetteAPI.init(this);
         aether = (Aether) Bukkit.getPluginManager().getPlugin("Aether");
         questManager = new QuestManager();
         regionManager = new QRegionManager(REGIONS);
+        blockCollectionManager = new BlockCollectionManager(IBCS);
+        globalObjectives = new GlobalObjectives(GLOBAL_OBJ);
+
         commandCache = new QCommandCache(this);
         commandCache.register(this);
         setCommandCache(commandCache);
@@ -131,6 +153,14 @@ public final class QuestsXL extends DREPlugin implements Listener {
         return regionManager;
     }
 
+    public BlockCollectionManager getBlockCollectionManager() {
+        return blockCollectionManager;
+    }
+
+    public GlobalObjectives getGlobalObjectives() {
+        return globalObjectives;
+    }
+
     public void sync() {
         BukkitRunnable updateGit = new BukkitRunnable() {
             @Override
@@ -151,6 +181,7 @@ public final class QuestsXL extends DREPlugin implements Listener {
                     }
                 };
                 waitForCopy.runTaskLaterAsynchronously(QuestsXL.getInstance(), 120);
+                lastSync = System.currentTimeMillis();
             }
         };
         updateGit.runTaskAsynchronously(this);

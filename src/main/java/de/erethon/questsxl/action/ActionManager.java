@@ -37,6 +37,9 @@ public class ActionManager {
                 case GIVE_ITEM -> {
                     action = new GiveItemAction();
                 }
+                case HIDE_IBC -> {
+                    action = new HideIBC();
+                }
                 case MESSAGE -> {
                     action = new SendMessage();
                 }
@@ -48,6 +51,9 @@ public class ActionManager {
                 }
                 case SHOW_BEAM -> {
                     action = new QDisplayBeam();
+                }
+                case SHOW_IBC -> {
+                    action = new ShowIBC();
                 }
                 case SPAWN_MOB -> {
                     action = new SpawnMobAction();
