@@ -63,6 +63,9 @@ public class QStage {
 
     public boolean isCompleted(QPlayer player) {
         for (ActiveObjective activeObjective : player.getCurrentObjectives()) {
+            if (activeObjective.getStage() == null) {
+                continue;
+            }
             if (goals.contains(activeObjective.getObjective())) {
                 if (!activeObjective.isCompleted() && !activeObjective.getObjective().isOptional()) {
                     return false;

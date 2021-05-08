@@ -3,7 +3,9 @@ package de.erethon.questsxl.players;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import de.erethon.commons.chat.MessageUtil;
+import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.objectives.ActiveObjective;
+import de.erethon.questsxl.objectives.QObjective;
 import de.erethon.questsxl.quest.ActiveQuest;
 import de.erethon.questsxl.quest.QQuest;
 import de.erethon.questsxl.quest.QStage;
@@ -11,6 +13,7 @@ import de.erethon.questsxl.tools.packetwrapper.WrapperPlayServerChat;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -30,15 +33,15 @@ public class QPlayer {
     private final Set<ActiveObjective> currentObjectives = new HashSet<>();
     private final List<WrappedChatComponent> chatQueue = new CopyOnWriteArrayList<>();
 
-    private QQuest editingQuest;
-    private QStage editingStage;
-
+    private ActiveQuest displayed = null;
+    private Location compassTarget = null;
     private boolean isInConversation = false;
 
     public QPlayer(Player player) {
         this.player = player;
-        bar = Bukkit.getServer().createBossBar("qxl_" + player.getName(), BarColor.GREEN, BarStyle.SOLID);
-        bar.addPlayer(player);
+        for (QObjective objective : QuestsXL.getInstance().getGlobalObjectives().getObjectives()) {
+            currentObjectives.add(new ActiveObjective(this, null, objective));
+        }
     }
 
     public BossBar getBar() {
@@ -103,22 +106,6 @@ public class QPlayer {
         return currentObjectives;
     }
 
-    public QQuest getEditingQuest() {
-        return editingQuest;
-    }
-
-    public void setEditingQuest(QQuest editingQuest) {
-        this.editingQuest = editingQuest;
-    }
-
-    public QStage getEditingStage() {
-        return editingStage;
-    }
-
-    public void setEditingStage(QStage editingStage) {
-        this.editingStage = editingStage;
-    }
-
     public boolean isInConversation() {
         return isInConversation;
     }
@@ -129,6 +116,22 @@ public class QPlayer {
 
     public void addChat(WrappedChatComponent chatComponent) {
         chatQueue.add(chatComponent);
+    }
+
+    public ActiveQuest getDisplayed() {
+        return displayed;
+    }
+
+    public void setDisplayed(ActiveQuest displayed) {
+        this.displayed = displayed;
+    }
+
+    public Location getCompassTarget() {
+        return compassTarget;
+    }
+
+    public void setCompassTarget(Location compassTarget) {
+        this.compassTarget = compassTarget;
     }
 
     public void sendMessagesInQueue() {
@@ -159,6 +162,15 @@ public class QPlayer {
             }
         }
         return false;
+    }
+
+    public ActiveQuest getActive(String name) {
+        for (ActiveQuest q : activeQuests.keySet()) {
+            if (q.getQuest().getName().equals(name)) {
+                return q;
+            }
+        }
+        return null;
     }
 
     public List<WrappedChatComponent> getChatQueue() {

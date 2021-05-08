@@ -4,6 +4,8 @@ import de.erethon.commons.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.ActionManager;
 import de.erethon.questsxl.action.QAction;
+import de.erethon.questsxl.condition.ConditionManager;
+import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.players.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -17,10 +19,22 @@ public abstract class QBaseObjective implements QObjective {
     QuestsXL plugin = QuestsXL.getInstance();
     String displayText = "";
     Set<QAction> successActions = new HashSet<>();
+    Set<QCondition> conditions = new HashSet<>();
+    Set<QAction> conditionFailActions = new HashSet<>();
     Set<QAction> failActions = new HashSet<>();
     boolean failed = false;
     boolean optional = false;
     boolean persistent = false;
+
+    public boolean conditions(Player player, QObjective obj) {
+        QPlayer qPlayer = plugin.getPlayerCache().get(player);
+        for (QCondition condition : obj.getConditions()) {
+            if (!condition.check(qPlayer)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     public void complete(Player player, QObjective obj) {
         QPlayer qPlayer = plugin.getPlayerCache().get(player);
@@ -89,6 +103,15 @@ public abstract class QBaseObjective implements QObjective {
         return displayText;
     }
 
+    public Set<QCondition> getConditions() {
+        return conditions;
+    }
+
+    @Override
+    public Set<QAction> getConditionFailActions() {
+        return conditionFailActions;
+    }
+
     @Override
     public void load(String[] c) {
 
@@ -97,6 +120,12 @@ public abstract class QBaseObjective implements QObjective {
     public void load(ConfigurationSection section) {
         if (section.contains("display")) {
             displayText = section.getString("display");
+        }
+        if (section.contains("conditions")) {
+            conditions.addAll(ConditionManager.loadConditions(section.getConfigurationSection("conditions")));
+        }
+        if (section.contains("onConditionFail")) {
+            conditionFailActions.addAll(ActionManager.loadActions(section.getConfigurationSection("onConditionFail")));
         }
         if (section.contains("onComplete")) {
             successActions.addAll(ActionManager.loadActions(section.getConfigurationSection("onComplete")));

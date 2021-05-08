@@ -1,6 +1,7 @@
 package de.erethon.questsxl.objectives;
 
 import de.erethon.questsxl.action.QAction;
+import de.erethon.questsxl.condition.QCondition;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
@@ -16,6 +17,8 @@ public interface QObjective extends Listener {
     boolean isPersistent();
     Set<QAction> getSuccessActions();
     Set<QAction> getFailActions();
+    Set<QAction> getConditionFailActions();
+    Set<QCondition> getConditions();
 
     String getDisplayText();
 
