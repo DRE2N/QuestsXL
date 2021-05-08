@@ -1,20 +1,23 @@
 package de.erethon.questsxl.players;
 
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import de.erethon.commons.chat.MessageUtil;
 import de.erethon.questsxl.objectives.ActiveObjective;
 import de.erethon.questsxl.quest.ActiveQuest;
 import de.erethon.questsxl.quest.QQuest;
 import de.erethon.questsxl.quest.QStage;
+import de.erethon.questsxl.tools.packetwrapper.WrapperPlayServerChat;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class QPlayer {
 
@@ -25,9 +28,12 @@ public class QPlayer {
     private final Map<QQuest, Long> startedQuests = new HashMap<>();
     private final Map<QQuest, Long> completedQuests = new HashMap<>();
     private final Set<ActiveObjective> currentObjectives = new HashSet<>();
+    private final List<WrappedChatComponent> chatQueue = new CopyOnWriteArrayList<>();
 
     private QQuest editingQuest;
     private QStage editingStage;
+
+    private boolean isInConversation = false;
 
     public QPlayer(Player player) {
         this.player = player;
@@ -111,6 +117,52 @@ public class QPlayer {
 
     public void setEditingStage(QStage editingStage) {
         this.editingStage = editingStage;
+    }
+
+    public boolean isInConversation() {
+        return isInConversation;
+    }
+
+    public void setInConversation(boolean inConversation) {
+        isInConversation = inConversation;
+    }
+
+    public void addChat(WrappedChatComponent chatComponent) {
+        chatQueue.add(chatComponent);
+    }
+
+    public void sendMessagesInQueue() {
+        if (chatQueue.isEmpty()) {
+            return;
+        }
+        player.sendMessage(MiniMessage.get().parse("<hover:show_text:'<yellow><italic>Diese Nachrichten hast du verpasst,\nwährend du die Quest-Konversation gelesen hast.'><dark_gray>[...]"));
+        for (WrappedChatComponent chatComponent : chatQueue) {
+            WrapperPlayServerChat chat = new WrapperPlayServerChat();
+            chat.setMessage(chatComponent);
+            chat.setChatType(EnumWrappers.ChatType.CHAT);
+            chat.sendPacket(player);
+        }
+        chatQueue.clear();
+    }
+
+    public void sendConversationMsg(String raw) {
+        isInConversation = false;
+        Component message = MiniMessage.get().parse(raw);
+        player.sendMessage(message);
+        isInConversation = true;
+    }
+
+    public boolean hasQuest(QQuest quest) {
+        for (ActiveQuest q : activeQuests.keySet()) {
+            if (q.getQuest() == quest) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public List<WrappedChatComponent> getChatQueue() {
+        return chatQueue;
     }
 
     public Player getPlayer() {

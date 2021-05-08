@@ -10,9 +10,11 @@ import de.erethon.commons.javaplugin.DREPluginSettings;
 import de.erethon.questsxl.commands.QCommandCache;
 import de.erethon.questsxl.json.ItemstackTypeAdapter;
 import de.erethon.questsxl.json.LocationTypeAdapter;
+import de.erethon.questsxl.listener.PacketListener;
 import de.erethon.questsxl.listener.PlayerListener;
 import de.erethon.questsxl.players.QPlayerCache;
 import de.erethon.questsxl.quest.QuestManager;
+import de.erethon.questsxl.regions.QRegionManager;
 import de.erethon.questsxl.tools.GitSync;
 import de.erethon.vignette.api.VignetteAPI;
 import org.bukkit.Bukkit;
@@ -29,15 +31,19 @@ public final class QuestsXL extends DREPlugin implements Listener {
     static QuestsXL instance;
 
     public static File QUESTS;
+    public static String ERROR = "<dark_gray>[<red><bold>!<reset><dark_gray>]<gray> ";
     public static File PLAYERS;
+    public static File REGIONS;
 
     Gson gson =  new GsonBuilder()
             .registerTypeAdapter(Location.class, new LocationTypeAdapter())
             .registerTypeAdapter(ItemStack.class, new ItemstackTypeAdapter())
             .create();
     QPlayerCache qPlayerCache;
+    QRegionManager regionManager;
     QCommandCache commandCache;
     PlayerListener playerListener;
+    PacketListener packetListener;
     QuestManager questManager;
     Aether aether;
 
@@ -68,25 +74,36 @@ public final class QuestsXL extends DREPlugin implements Listener {
         if (!PLAYERS.exists()) {
             PLAYERS.mkdir();
         }
+        REGIONS = new File(getDataFolder(), "regions.yml");
+        if (!REGIONS.exists()) {
+            try {
+                REGIONS.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         VignetteAPI.init(this);
+        aether = (Aether) Bukkit.getPluginManager().getPlugin("Aether");
+        questManager = new QuestManager();
+        regionManager = new QRegionManager(REGIONS);
         commandCache = new QCommandCache(this);
         commandCache.register(this);
         setCommandCache(commandCache);
 
         qPlayerCache = new QPlayerCache();
         playerListener = new PlayerListener();
-        aether = (Aether) Bukkit.getPluginManager().getPlugin("Aether");
+        packetListener = new PacketListener();
 
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(qPlayerCache, this);
         getServer().getPluginManager().registerEvents(playerListener, this);
-        questManager = new QuestManager();
         sync();
     }
 
 
     @Override
     public void onDisable() {
+        regionManager.save();
     }
 
 
@@ -108,6 +125,10 @@ public final class QuestsXL extends DREPlugin implements Listener {
 
     public Aether getAether() {
         return aether;
+    }
+
+    public QRegionManager getRegionManager() {
+        return regionManager;
     }
 
     public void sync() {
