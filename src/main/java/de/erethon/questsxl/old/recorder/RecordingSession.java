@@ -1,4 +1,4 @@
-package de.erethon.questsxl.action.recorder;
+package de.erethon.questsxl.old.recorder;
 
 import com.destroystokyo.paper.event.block.BlockDestroyEvent;
 import de.erethon.commons.chat.MessageUtil;

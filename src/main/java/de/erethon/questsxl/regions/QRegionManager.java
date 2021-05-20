@@ -3,6 +3,7 @@ package de.erethon.questsxl.regions;
 import de.erethon.commons.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -25,12 +26,16 @@ public class QRegionManager {
 
     public QRegion getByLocation(Location location) {
         for (QRegion region : cache) {
+            region.getPos1().getWorld().spawnParticle(Particle.VILLAGER_HAPPY, region.getPos1(), 10);
+            region.getPos1().getWorld().spawnParticle(Particle.VILLAGER_HAPPY, region.getPos2(), 10);
             if (region.isInRegion(location)) {
                 region.lastAccessed = System.currentTimeMillis();
                 return region;
             }
         }
         for (QRegion region : regions) {
+            region.getPos1().getWorld().spawnParticle(Particle.VILLAGER_HAPPY, region.getPos1(), 10);
+            region.getPos1().getWorld().spawnParticle(Particle.VILLAGER_HAPPY, region.getPos2(), 10);
             if (region.isInRegion(location)) {
                 cache.add(region);
                 region.lastAccessed = System.currentTimeMillis();

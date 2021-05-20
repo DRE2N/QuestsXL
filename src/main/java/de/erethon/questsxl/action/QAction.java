@@ -9,6 +9,7 @@ import java.io.File;
 public interface QAction {
 
     void play(Player player);
+    void onFinish(Player player);
 
     boolean conditions(Player player);
 

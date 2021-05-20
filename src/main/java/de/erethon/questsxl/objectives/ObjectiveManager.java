@@ -1,5 +1,7 @@
 package de.erethon.questsxl.objectives;
 
+import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.error.FriendlyError;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashSet;
@@ -7,7 +9,7 @@ import java.util.Set;
 
 public class ObjectiveManager {
 
-    public static Set<QObjective> loadObjectives(ConfigurationSection section) {
+    public static Set<QObjective> loadObjectives(String id, ConfigurationSection section) {
         Set<QObjective> objectives = new HashSet<>();
         for (String key : section.getKeys(false)) {
             String type;
@@ -25,6 +27,9 @@ public class ObjectiveManager {
                 case CRAFT -> {
                     objective = new CraftObjective();
                 }
+                case ENTER_REGION -> {
+                    objective = new EnterRegionObjective();
+                }
                 case ENTITY_INTERACT -> {
                     objective = new EntityInteractObjective();
                 }
@@ -33,6 +38,9 @@ public class ObjectiveManager {
                 }
                 case EXPERIENCE -> {
                      objective = new ExperienceObjective();
+                }
+                case IMPOSSIBLE -> {
+                    objective = new ImpossibleObjective();
                 }
                 case INSTANT -> {
                     objective = new InstantObjective();
@@ -45,6 +53,9 @@ public class ObjectiveManager {
                 }
                 case KILL_PLAYER -> {
                     objective = new KillPlayerObjective();
+                }
+                case LEAVE_REGION -> {
+                    objective = new LeaveRegionObjective();
                 }
                 case LOCATION -> {
                     objective = new LocationObjective();
@@ -65,10 +76,14 @@ public class ObjectiveManager {
                     objective = new WaitObjective();
                 }
             }
-            if (shorthand) {
-                objective.load(split(section.getString(key)));
-            } else {
-                objective.load(subsection);
+            try {
+                if (shorthand) {
+                    objective.load(split(section.getString(key)));
+                } else {
+                    objective.load(subsection);
+                }
+            } catch (Exception e) {
+                QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Failed to load objective " + section.getName(), e.getMessage(), "Schaue im Stacktrace nach dem Fehler.").addStacktrace(e.getStackTrace()));
             }
             objectives.add(objective);
         }

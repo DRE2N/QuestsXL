@@ -35,6 +35,9 @@ public class QStage {
         for (QObjective objective : goals) {
             qPlayer.addObjective(new ActiveObjective(qPlayer, this, objective));
         }
+        for (QAction action : startActions) {
+            action.play(qPlayer.getPlayer());
+        }
     }
 
     // gets called whenever an objective is completed
@@ -115,15 +118,16 @@ public class QStage {
     public void load(ConfigurationSection section) {
         startMessage = section.getString("startMessage");
         completeMessage = section.getString("completeMessage");
+        description = section.getString("description");
         if (section.getConfigurationSection("conditions") != null) {
-            conditions.addAll(ConditionManager.loadConditions(section.getConfigurationSection("conditions")));
+            conditions.addAll(ConditionManager.loadConditions(this.owner.getName() + " - " + id + ": conditions", section.getConfigurationSection("conditions")));
         }
-        goals.addAll(ObjectiveManager.loadObjectives(section.getConfigurationSection("objectives")));
+        goals.addAll(ObjectiveManager.loadObjectives(this.owner.getName() + " - " + id + ": objectives", section.getConfigurationSection("objectives")));
         if (section.contains("onStart")) {
-            startActions.addAll(ActionManager.loadActions(section.getConfigurationSection("onStart")));
+            startActions.addAll(ActionManager.loadActions(this.owner.getName() + " - " + id + ": onStart", section.getConfigurationSection("onStart")));
         }
         if (section.contains("onFinish")) {
-            completeActions.addAll(ActionManager.loadActions(section.getConfigurationSection("onFinish")));
+            completeActions.addAll(ActionManager.loadActions(this.owner.getName() + " - " + id + ": onFinish", section.getConfigurationSection("onFinish")));
         }
     }
 }

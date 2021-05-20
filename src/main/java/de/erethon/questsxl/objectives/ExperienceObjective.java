@@ -14,9 +14,5 @@ public class ExperienceObjective extends QBaseObjective {
         super.complete(player, obj);
     }
 
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
 
-    }
 }

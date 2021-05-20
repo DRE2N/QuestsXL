@@ -1,9 +1,12 @@
 package de.erethon.questsxl.action;
 
+import de.erethon.commons.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.players.QPlayer;
 import de.erethon.questsxl.players.QPlayerCache;
 import de.erethon.questsxl.quest.ActiveQuest;
+import de.erethon.questsxl.quest.QQuest;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 public class QStageAction extends QBaseAction {
@@ -12,16 +15,38 @@ public class QStageAction extends QBaseAction {
     QPlayerCache playerCache = plugin.getPlayerCache();
 
     int stageID;
-    ActiveQuest quest;
+    String questID;
 
     @Override
     public void play(Player player) {
         if (!conditions(player)) return;
         QPlayer qPlayer = playerCache.get(player);
-        if (!qPlayer.getActiveQuests().containsKey(quest)) {
+        QQuest quest = plugin.getQuestManager().getByName(questID);
+        MessageUtil.log("Looking for Stage progress " + quest.getName() );
+        if (!qPlayer.hasQuest(quest)) {
+            MessageUtil.log("No quest");
             return;
         }
-        quest.setCurrentStage(quest.getQuest().getStages().get(stageID));
+        ActiveQuest active = qPlayer.getActive(quest.getName());
+        if (active == null) {
+            MessageUtil.log("No active");
+            return;
+        }
+        active.setCurrentStage(quest.getStages().get(stageID));
+        MessageUtil.log("Forced stage " + stageID + " for " + player.getName() + " in " + quest.getName());
         onFinish(player);
+    }
+
+    @Override
+    public void load(String[] msg) {
+        questID = msg[0];
+        stageID = Integer.parseInt(msg[1]);
+    }
+
+    @Override
+    public void load(ConfigurationSection section) {
+        super.load(section);
+        questID = section.getString("quest");
+        stageID = section.getInt("id");
     }
 }

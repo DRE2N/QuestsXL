@@ -31,12 +31,11 @@ public class MainCommand extends DRECommand {
             MessageUtil.sendMessage(player, "&7Last sync from GitHub: &6" + new Date(plugin.lastSync));
             File[] playerFiles = QuestsXL.PLAYERS.listFiles();
             if (playerFiles != null) {
-                MessageUtil.sendMessage(player, "&7Players: &6" + playerFiles.length);
+                MessageUtil.sendMessage(player, "&7Players: &6" + playerFiles.length + " &8- &7Loaded: &6" + plugin.getPlayerCache().getPlayers().keySet().size());
             }
-            MessageUtil.sendMessage(player, "&7Quests: &6" + plugin.getQuestManager().getQuests().size());
-            MessageUtil.sendMessage(player, "&7Regions: &6" + plugin.getRegionManager().getRegions().size());
-            MessageUtil.sendMessage(player, "&7IBCs: &6" + plugin.getBlockCollectionManager().getCollections().size());
-            MessageUtil.sendMessage(player, "&7Global Objectives: &6" + 0);
+            MessageUtil.sendMessage(player, "&7Quests: &6" + plugin.getQuestManager().getQuests().size() + "&8 - &7Global Objectives: &6" + plugin.getGlobalObjectives().getObjectives().size());
+            MessageUtil.sendMessage(player, "&7Regions: &6" + plugin.getRegionManager().getRegions().size() + "&8 - &7IBCs: &6" + plugin.getBlockCollectionManager().getCollections().size());
+            MessageUtil.sendMessage(player, "&7Cutscenes: &6" + plugin.getAnimationManager().getCutscenes().size() + " &8- &7Animations: &6" + plugin.getAnimationManager().getAnimations().size());
             return;
         }
         if (args.length >= 2) {

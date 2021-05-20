@@ -12,6 +12,8 @@ public enum Condition {
     LOOKING_AT,
     PERMISSION,
     PLAYER_VARIABLE,
+    REGION,
     TIME
+
 
 }

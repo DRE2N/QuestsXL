@@ -3,23 +3,15 @@ package de.erethon.questsxl.commands;
 import de.erethon.commons.chat.MessageUtil;
 import de.erethon.commons.command.DRECommand;
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.action.QCutscene;
 import de.erethon.questsxl.action.QTalkAction;
 import de.erethon.questsxl.gui.QuestBook;
 import de.erethon.questsxl.instancing.InstancedBlockCollection;
 import de.erethon.questsxl.players.QPlayer;
-import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TestCommand extends DRECommand {
-
-    List<Location> locationList = new ArrayList<>();
     InstancedBlockCollection collection = new InstancedBlockCollection();
 
     public TestCommand() {
@@ -37,17 +29,6 @@ public class TestCommand extends DRECommand {
         Player player = (Player) commandSender;
         if (args.length < 2) {
             MessageUtil.sendMessage(player, QuestsXL.ERROR + "Unbekannter Befehl. Probiere z.B. /q rg i");
-            return;
-        }
-        if (args[1].equals("play") || args[1].equals("p")) {
-            QCutscene scene = new QCutscene();
-            scene.setLocs(locationList);
-            scene.play(player);
-            return;
-        }
-        if (args[1].equals("a")) {
-            locationList.add(player.getLocation());
-            MessageUtil.sendMessage(player, "Added");
             return;
         }
         if (args[1].equals("pos1")) {

@@ -26,9 +26,6 @@ public class EntityInteractObjective extends QBaseObjective {
         return "Interact with " + entityUUID;
     }
 
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-    }
+
 
 }

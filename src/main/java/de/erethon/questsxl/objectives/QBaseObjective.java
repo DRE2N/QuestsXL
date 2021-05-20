@@ -17,7 +17,7 @@ import java.util.Set;
 public abstract class QBaseObjective implements QObjective {
 
     QuestsXL plugin = QuestsXL.getInstance();
-    String displayText = "";
+    String displayText;
     Set<QAction> successActions = new HashSet<>();
     Set<QCondition> conditions = new HashSet<>();
     Set<QAction> conditionFailActions = new HashSet<>();
@@ -25,11 +25,16 @@ public abstract class QBaseObjective implements QObjective {
     boolean failed = false;
     boolean optional = false;
     boolean persistent = false;
+    boolean isGlobal = false;
 
-    public boolean conditions(Player player, QObjective obj) {
+    public boolean conditions(Player player) {
+        if (conditions == null || conditions.isEmpty()) {
+            return true;
+        }
         QPlayer qPlayer = plugin.getPlayerCache().get(player);
-        for (QCondition condition : obj.getConditions()) {
+        for (QCondition condition : conditions) {
             if (!condition.check(qPlayer)) {
+                condFail(player);
                 return false;
             }
         }
@@ -43,9 +48,14 @@ public abstract class QBaseObjective implements QObjective {
             if (objective.getObjective().equals(obj) && objective.getPlayer().equals(qPlayer)) {
                 MessageUtil.log("Found objective");
                 objective.setCompleted(true);
-                objective.getStage().checkCompleted(qPlayer);
-                for (QAction action : successActions) {
-                    action.play(player);
+                if (objective.getStage() != null) {
+                    objective.getStage().checkCompleted(qPlayer);
+                }
+                if (successActions != null && !successActions.isEmpty()) {
+                    MessageUtil.log("Playing actions...");
+                    for (QAction action : successActions) {
+                        action.play(player);
+                    }
                 }
                 if (!persistent) {
                     qPlayer.getCurrentObjectives().remove(objective);
@@ -53,6 +63,13 @@ public abstract class QBaseObjective implements QObjective {
                 return;
             }
         }
+    }
+
+    public boolean condFail(Player pl) {
+        for (QAction action : conditionFailActions) {
+            action.play(pl);
+        }
+        return false;
     }
 
     public void fail(Player player, QObjective obj) {
@@ -113,6 +130,16 @@ public abstract class QBaseObjective implements QObjective {
     }
 
     @Override
+    public boolean isGlobal() {
+        return isGlobal;
+    }
+
+    @Override
+    public void setGlobal(boolean global) {
+        isGlobal = global;
+    }
+
+    @Override
     public void load(String[] c) {
 
     }
@@ -122,16 +149,16 @@ public abstract class QBaseObjective implements QObjective {
             displayText = section.getString("display");
         }
         if (section.contains("conditions")) {
-            conditions.addAll(ConditionManager.loadConditions(section.getConfigurationSection("conditions")));
+            conditions.addAll(ConditionManager.loadConditions(section.getName() + ": conditions", section.getConfigurationSection("conditions")));
         }
         if (section.contains("onConditionFail")) {
-            conditionFailActions.addAll(ActionManager.loadActions(section.getConfigurationSection("onConditionFail")));
+            conditionFailActions.addAll(ActionManager.loadActions(section.getName() + ": onConditionFail", section.getConfigurationSection("onConditionFail")));
         }
         if (section.contains("onComplete")) {
-            successActions.addAll(ActionManager.loadActions(section.getConfigurationSection("onComplete")));
+            successActions.addAll(ActionManager.loadActions(section.getName() + ": onComplete", section.getConfigurationSection("onComplete")));
         }
         if (section.contains("onFail")) {
-            failActions.addAll(ActionManager.loadActions(section.getConfigurationSection("onFail")));
+            failActions.addAll(ActionManager.loadActions(section.getName() + ": onFail", section.getConfigurationSection("onFail")));
         }
         if (section.contains("optional")) {
             optional = section.getBoolean("optional");

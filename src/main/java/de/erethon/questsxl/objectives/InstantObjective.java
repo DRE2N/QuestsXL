@@ -15,9 +15,4 @@ public class InstantObjective extends QBaseObjective {
         complete(event.getPlayer().getPlayer(), this);
     }
 
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-
-    }
 }

@@ -1,5 +1,7 @@
 package de.erethon.questsxl.condition;
 
+import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.error.FriendlyError;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashSet;
@@ -7,7 +9,7 @@ import java.util.Set;
 
 public class ConditionManager {
 
-    public static Set<QCondition> loadConditions(ConfigurationSection section) {
+    public static Set<QCondition> loadConditions(String id, ConfigurationSection section) {
         Set<QCondition> conditions = new HashSet<>();
         for (String key : section.getKeys(false)) {
             String type;
@@ -55,14 +57,21 @@ public class ConditionManager {
                 case COMPLETED_QUEST -> {
                     condition = new CompletedQuestCondition();
                 }
+                case REGION -> {
+                    condition = new RegionCondition();
+                }
                 case TIME -> {
                     condition = new TimeCondition();
                 }
             }
-            if (shorthand) {
-                condition.load(split(section.getString(key)));
-            } else {
-                condition.load(subsection);
+            try {
+                if (shorthand) {
+                    condition.load(split(section.getString(key)));
+                } else {
+                    condition.load(subsection);
+                }
+            } catch (Exception e) {
+                QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Failed to load condition " + section.getName(), e.getMessage(), "Schaue im Stacktrace nach dem Fehler.").addStacktrace(e.getStackTrace()));
             }
             conditions.add(condition);
         }

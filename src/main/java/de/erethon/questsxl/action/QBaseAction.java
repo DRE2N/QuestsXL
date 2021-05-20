@@ -66,17 +66,16 @@ public abstract class QBaseAction implements QAction {
 
     @Override
     public void load(String[] msg) {
-
     }
 
     @Override
     public void load(ConfigurationSection section) {
         id = section.getName();
         if (section.contains("runAfter")) {
-            runAfter.addAll(ActionManager.loadActions(section.getConfigurationSection("runAfter")));
+            runAfter.addAll(ActionManager.loadActions(id + ": runAfter", section.getConfigurationSection("runAfter")));
         }
         if (section.contains("conditions")) {
-            conditions.addAll(ConditionManager.loadConditions(section.getConfigurationSection("conditions")));
+            conditions.addAll(ConditionManager.loadConditions(id + ": Conditions", section.getConfigurationSection("conditions")));
         }
     }
 

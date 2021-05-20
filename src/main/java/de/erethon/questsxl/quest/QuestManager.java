@@ -19,8 +19,8 @@ public class QuestManager {
     public QQuest getByName(String name) {
         MessageUtil.log("Searching for quest " + name + " Quests: " + quests.size());
         for (QQuest quest : quests) {
-            MessageUtil.log(quest.toString());
-            if (quest.getName().equals(name)) {
+            if (quest.getName().equalsIgnoreCase(name)) {
+                MessageUtil.log("Found " + quest.getName());
                 return quest;
             }
         }
@@ -29,7 +29,7 @@ public class QuestManager {
 
     public void load() {
         quests.clear();
-        MessageUtil.log("Loading quests (" + QuestsXL.QUESTS.listFiles().length + " files in quests folder)");
+        MessageUtil.log("Loading quests (" + QuestsXL.QUESTS.listFiles().length + ") files in quests folder)");
         for (File file : QuestsXL.QUESTS.listFiles()){
             if (file.getName().contains("disabled")) {
                 continue;
@@ -43,17 +43,17 @@ public class QuestManager {
         MessageUtil.log("Loaded " + quests.size() + " quests.");
     }
 
-    public void loadSub(File file) {
-        for (File f : file.listFiles()){
-            if (f.getName().contains("disabled")) {
-                continue;
+        public void loadSub(File file) {
+            for (File f : file.listFiles()){
+                if (f.getName().contains("disabled")) {
+                    continue;
+                }
+                if (f.isDirectory()) {
+                    loadSub(f);
+                }
+                quests.add(new QQuest(f));
             }
-            if (f.isDirectory()) {
-                loadSub(f);
-            }
-            quests.add(new QQuest(f));
         }
-    }
 
     public Set<QQuest> getQuests() {
         return quests;

@@ -59,7 +59,6 @@ public class QPlayerCache implements Listener {
             return;
         }
         players.put(player, new QPlayer(player));
-        players.get(player).startQuest(plugin.getQuestManager().getByName("test"));
         MessageUtil.log("Loaded data for " + player.getName());
     }
 

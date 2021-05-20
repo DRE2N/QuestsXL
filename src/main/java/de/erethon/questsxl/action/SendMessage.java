@@ -1,5 +1,6 @@
 package de.erethon.questsxl.action;
 
+import de.erethon.commons.chat.MessageUtil;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -10,7 +11,7 @@ public class SendMessage extends QBaseAction {
     @Override
     public void play(Player player) {
         if (!conditions(player)) return;
-        player.sendMessage(message);
+        MessageUtil.sendMessage(player, message);
         onFinish(player);
     }
 

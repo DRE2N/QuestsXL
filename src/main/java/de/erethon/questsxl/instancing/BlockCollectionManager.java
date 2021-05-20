@@ -1,9 +1,11 @@
 package de.erethon.questsxl.instancing;
 
 import de.erethon.commons.chat.MessageUtil;
+import de.erethon.questsxl.QuestsXL;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +41,16 @@ public class BlockCollectionManager {
         MessageUtil.log("Loaded " + collections.size() + " block collections.");
     }
 
+    public void save() {
+        for (InstancedBlockCollection ibc : collections) {
+            YamlConfiguration configuration = ibc.save();
+            try {
+                configuration.save(new File(QuestsXL.IBCS + "/" + ibc.getId() + ".yml"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 
 }

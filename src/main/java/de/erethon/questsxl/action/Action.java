@@ -10,10 +10,13 @@ public enum Action {
     MESSAGE,
     MOB_FOLLOW_PLAYER,
     PERMISSION,
+    REPEAT,
+    RESET_IBC,
     SHOW_BEAM,
     SHOW_IBC,
     SPAWN_MOB,
     STAGE,
+    START_QUEST,
     TELEPORT,
     TITLE
 

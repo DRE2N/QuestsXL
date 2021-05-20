@@ -1,63 +1,68 @@
 package de.erethon.questsxl;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import de.erethon.aether.Aether;
 import de.erethon.commons.chat.MessageUtil;
 import de.erethon.commons.compatibility.Internals;
 import de.erethon.commons.javaplugin.DREPlugin;
 import de.erethon.commons.javaplugin.DREPluginSettings;
-import de.erethon.questsxl.global.GlobalObjectives;
+import de.erethon.questsxl.animation.AnimationManager;
 import de.erethon.questsxl.commands.QCommandCache;
+import de.erethon.questsxl.error.FriendlyError;
+import de.erethon.questsxl.global.GlobalObjectives;
 import de.erethon.questsxl.instancing.BlockCollectionManager;
-import de.erethon.questsxl.json.ItemstackTypeAdapter;
-import de.erethon.questsxl.json.LocationTypeAdapter;
 import de.erethon.questsxl.listener.PacketListener;
 import de.erethon.questsxl.listener.PlayerListener;
 import de.erethon.questsxl.players.QPlayerCache;
 import de.erethon.questsxl.quest.QuestManager;
 import de.erethon.questsxl.regions.QRegionManager;
+import de.erethon.questsxl.respawn.RespawnPointManager;
 import de.erethon.questsxl.tools.GitSync;
 import de.erethon.vignette.api.VignetteAPI;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class QuestsXL extends DREPlugin implements Listener {
 
     static QuestsXL instance;
     public static String ERROR = "<dark_gray>[<red><bold>!<reset><dark_gray>]<gray> ";
 
+    public static File ANIMATIONS;
     public static File QUESTS;
     public static File PLAYERS;
     public static File REGIONS;
+    public static File RESPAWNS;
     public static File GLOBAL_OBJ;
     public static File IBCS;
     public long lastSync = 0;
 
-    Gson gson =  new GsonBuilder()
-            .registerTypeAdapter(Location.class, new LocationTypeAdapter())
-            .registerTypeAdapter(ItemStack.class, new ItemstackTypeAdapter())
-            .create();
     QPlayerCache qPlayerCache;
+    RespawnPointManager respawnPointManager;
+    QuestManager questManager;
     QRegionManager regionManager;
+    AnimationManager animationManager;
+    BlockCollectionManager blockCollectionManager;
     QCommandCache commandCache;
     GlobalObjectives globalObjectives;
-    BlockCollectionManager blockCollectionManager;
     PlayerListener playerListener;
     PacketListener packetListener;
-    QuestManager questManager;
+
+    private List<FriendlyError> errors = new ArrayList<>();
+    private boolean showStacktraces = false;
+
     Aether aether;
 
     public QuestsXL() {
         settings = DREPluginSettings.builder()
                 .paper(true)
-                .economy(true)
                 .internals(Internals.v1_16_R3)
                 .build();
     }
@@ -81,6 +86,10 @@ public final class QuestsXL extends DREPlugin implements Listener {
         if (!PLAYERS.exists()) {
             PLAYERS.mkdir();
         }
+        ANIMATIONS = new File(getDataFolder(), "animations");
+        if (!ANIMATIONS.exists()) {
+            ANIMATIONS.mkdir();
+        }
         IBCS = new File(getDataFolder(), "blocks");
         if (!IBCS.exists()) {
             IBCS.mkdir();
@@ -89,6 +98,14 @@ public final class QuestsXL extends DREPlugin implements Listener {
         if (!REGIONS.exists()) {
             try {
                 REGIONS.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        RESPAWNS = new File(getDataFolder(), "respawnPoints.yml");
+        if (!RESPAWNS.exists()) {
+            try {
+                RESPAWNS.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -103,34 +120,43 @@ public final class QuestsXL extends DREPlugin implements Listener {
         }
         VignetteAPI.init(this);
         aether = (Aether) Bukkit.getPluginManager().getPlugin("Aether");
-        questManager = new QuestManager();
+        qPlayerCache = new QPlayerCache();
+        getServer().getPluginManager().registerEvents(qPlayerCache, this);
+
+        load();
+    }
+
+    public void load() {
+        respawnPointManager = new RespawnPointManager(RESPAWNS);
         regionManager = new QRegionManager(REGIONS);
         blockCollectionManager = new BlockCollectionManager(IBCS);
-        globalObjectives = new GlobalObjectives(GLOBAL_OBJ);
-
+        animationManager = new AnimationManager(ANIMATIONS);
+        questManager = new QuestManager(); // Load after sync
+        questManager.load();
+        try {
+            MessageUtil.log("Loading global objectives...");
+            globalObjectives = new GlobalObjectives(GLOBAL_OBJ);
+        } catch (Exception e) {
+            errors.add(new FriendlyError("Global", "Failed to load global objectives", e.getMessage(), "Schaue im Stacktrace nach dem Fehler.").addStacktrace(e.getStackTrace()));
+            MessageUtil.broadcastMessage("Errors: " + QuestsXL.getInstance().getErrors().size());
+        }
         commandCache = new QCommandCache(this);
         commandCache.register(this);
         setCommandCache(commandCache);
 
-        qPlayerCache = new QPlayerCache();
         playerListener = new PlayerListener();
         packetListener = new PacketListener();
 
         getServer().getPluginManager().registerEvents(this, this);
-        getServer().getPluginManager().registerEvents(qPlayerCache, this);
         getServer().getPluginManager().registerEvents(playerListener, this);
-        sync();
     }
 
 
     @Override
     public void onDisable() {
         regionManager.save();
-    }
-
-
-    public Gson getGson() {
-        return gson;
+        blockCollectionManager.save();
+        animationManager.save();
     }
 
     public QPlayerCache getPlayerCache() {
@@ -157,8 +183,30 @@ public final class QuestsXL extends DREPlugin implements Listener {
         return blockCollectionManager;
     }
 
+    public AnimationManager getAnimationManager() {
+        return animationManager;
+    }
+
     public GlobalObjectives getGlobalObjectives() {
         return globalObjectives;
+    }
+
+    public void reload() {
+        errors.clear();
+        onDisable();
+        load();
+    }
+
+    public List<FriendlyError> getErrors() {
+        return errors;
+    }
+
+    public void setShowStacktraces(boolean showStacktraces) {
+        this.showStacktraces = showStacktraces;
+    }
+
+    public boolean isShowStacktraces() {
+        return showStacktraces;
     }
 
     public void sync() {
@@ -172,15 +220,25 @@ public final class QuestsXL extends DREPlugin implements Listener {
                     MessageUtil.log("[Git] Pulling...");
                     sync.update();
                 } catch (IOException | InterruptedException e) {
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        if (player.hasPermission("qxl.admin.sync")) {
+                            MessageUtil.sendMessage(player, "&cGithub-Sync-Error: " + e.getMessage());
+                        }
+                    }
                     e.printStackTrace();
                 }
                 BukkitRunnable waitForCopy = new BukkitRunnable() {
                     @Override
                     public void run() {
-                        questManager.load();
+                        load();
+                        for (Player player : Bukkit.getOnlinePlayers()) {
+                            if (player.hasPermission("qxl.admin.sync")) {
+                                MessageUtil.sendMessage(player, "&aGitHub-Sync abgeschlossen!");
+                            }
+                        }
                     }
                 };
-                waitForCopy.runTaskLaterAsynchronously(QuestsXL.getInstance(), 120);
+                waitForCopy.runTaskLaterAsynchronously(QuestsXL.getInstance(), 60);
                 lastSync = System.currentTimeMillis();
             }
         };

@@ -19,10 +19,16 @@ public class ShowIBC extends QBaseAction {
     @Override
     public void load(String[] msg) {
         collection = manager.getByID(msg[0]);
+        if (collection == null) {
+            throw new RuntimeException("Collection " + msg[0] + " does not exist.");
+        }
     }
 
     @Override
     public void load(ConfigurationSection section) {
         collection = manager.getByID(section.getString("id"));
+        if (collection == null) {
+            throw new RuntimeException("Collection " + section.getString("id") + " does not exist.");
+        }
     }
 }

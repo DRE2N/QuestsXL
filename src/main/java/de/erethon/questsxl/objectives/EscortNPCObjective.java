@@ -31,8 +31,4 @@ public class EscortNPCObjective extends QBaseObjective {
         }
     }
 
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-    }
 }

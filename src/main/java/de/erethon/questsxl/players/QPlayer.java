@@ -8,14 +8,11 @@ import de.erethon.questsxl.objectives.ActiveObjective;
 import de.erethon.questsxl.objectives.QObjective;
 import de.erethon.questsxl.quest.ActiveQuest;
 import de.erethon.questsxl.quest.QQuest;
-import de.erethon.questsxl.quest.QStage;
+import de.erethon.questsxl.regions.QRegion;
 import de.erethon.questsxl.tools.packetwrapper.WrapperPlayServerChat;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 
@@ -30,18 +27,22 @@ public class QPlayer {
     private final Map<ActiveQuest, Long> activeQuests = new HashMap<>();
     private final Map<QQuest, Long> startedQuests = new HashMap<>();
     private final Map<QQuest, Long> completedQuests = new HashMap<>();
-    private final Set<ActiveObjective> currentObjectives = new HashSet<>();
+    private final List<ActiveObjective> currentObjectives = new CopyOnWriteArrayList<>();
     private final List<WrappedChatComponent> chatQueue = new CopyOnWriteArrayList<>();
+
+    private final Set<QRegion> currentRegions = new HashSet<>();
 
     private ActiveQuest displayed = null;
     private Location compassTarget = null;
     private boolean isInConversation = false;
+    private boolean frozen = false;
 
     public QPlayer(Player player) {
         this.player = player;
         for (QObjective objective : QuestsXL.getInstance().getGlobalObjectives().getObjectives()) {
             currentObjectives.add(new ActiveObjective(this, null, objective));
         }
+        MessageUtil.sendMessage(player, "&2[QXL] &7Loaded " + currentObjectives.size() + " objectives.");
     }
 
     public BossBar getBar() {
@@ -49,6 +50,9 @@ public class QPlayer {
     }
 
     public void startQuest(QQuest quest) {
+        if (hasQuest(quest)) {
+            return;
+        }
         addActive(quest);
         startedQuests.put(quest, System.currentTimeMillis());
         MessageUtil.log("Active: " + activeQuests.keySet().size());
@@ -102,7 +106,7 @@ public class QPlayer {
         return completedQuests;
     }
 
-    public Set<ActiveObjective> getCurrentObjectives() {
+    public List<ActiveObjective> getCurrentObjectives() {
         return currentObjectives;
     }
 
@@ -132,6 +136,22 @@ public class QPlayer {
 
     public void setCompassTarget(Location compassTarget) {
         this.compassTarget = compassTarget;
+    }
+
+    public boolean isInRegion(QRegion region) {
+        return currentRegions.contains(region);
+    }
+
+    public Set<QRegion> getRegions() {
+        return currentRegions;
+    }
+
+    public boolean isFrozen() {
+        return frozen;
+    }
+
+    public void setFrozen(boolean frozen) {
+        this.frozen = frozen;
     }
 
     public void sendMessagesInQueue() {

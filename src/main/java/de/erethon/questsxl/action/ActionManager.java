@@ -1,5 +1,7 @@
 package de.erethon.questsxl.action;
 
+import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.error.FriendlyError;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashSet;
@@ -7,7 +9,7 @@ import java.util.Set;
 
 public class ActionManager {
 
-    public static Set<QAction> loadActions(ConfigurationSection section) {
+    public static Set<QAction> loadActions(String id, ConfigurationSection section) {
         Set<QAction> actions = new HashSet<>();
         for (String key : section.getKeys(false)) {
             String type;
@@ -23,13 +25,13 @@ public class ActionManager {
             QAction action = null;
             switch (Action.valueOf(type.toUpperCase())) {
                 case ANIMATION -> {
-                    action = new QAnimation();
+                    action = new PlayAnimationAction();
                 }
                 case COMMAND -> {
                     action = new QCommandAction();
                 }
                 case CUTSCENE -> {
-                    action = new QCutscene();
+                    action = new PlayCutsceneAction();
                 }
                 case DELAY -> {
                     action = new DelayAction();
@@ -49,6 +51,12 @@ public class ActionManager {
                 case PERMISSION -> {
                     action = new QPermissionAction();
                 }
+                case REPEAT -> {
+                    action = new RepeatAction();
+                }
+                case RESET_IBC -> {
+                    action = new ResetIBC();
+                }
                 case SHOW_BEAM -> {
                     action = new QDisplayBeam();
                 }
@@ -61,6 +69,9 @@ public class ActionManager {
                 case STAGE -> {
                     action = new QStageAction();
                 }
+                case START_QUEST -> {
+                    action = new QuestAction();
+                }
                 case TELEPORT -> {
                     action = new QTeleportAction();
                 }
@@ -68,10 +79,20 @@ public class ActionManager {
                     action = new SendTitleAction();
                 }
             }
-            if (shorthand) {
-                action.load(split(section.getString(key)));
-            } else {
-                action.load(subsection);
+            try {
+                if (shorthand) {
+                    action.load(split(section.getString(key)));
+                } else {
+                    action.load(subsection);
+                }
+            } catch (Exception e) {
+                String loc = "";
+                if (shorthand) {
+                    loc = key;
+                } else {
+                    loc = subsection.getName();
+                }
+                QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Failed to load action " + section.getName(), e.getMessage(), "Pfad:\n" + section.getCurrentPath() + "." + loc).addStacktrace(e.getStackTrace()));
             }
             actions.add(action);
         }

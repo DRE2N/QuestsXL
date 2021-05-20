@@ -1,4 +1,4 @@
-package de.erethon.questsxl.action.recorder;
+package de.erethon.questsxl.old.recorder;
 
 import de.erethon.questsxl.QuestsXL;
 import org.bukkit.entity.Player;

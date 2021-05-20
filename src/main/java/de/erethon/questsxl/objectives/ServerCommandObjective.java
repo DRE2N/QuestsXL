@@ -12,6 +12,7 @@ public class ServerCommandObjective extends QBaseObjective {
     public void check(Event e) {
         if (!(e instanceof CommandTriggerEvent)) return;
         CommandTriggerEvent event = (CommandTriggerEvent) e;
+        if (!conditions(event.getPlayer())) return;
         if (identifier.equals(event.getID())) {
             complete(event.getPlayer(), this);
         }

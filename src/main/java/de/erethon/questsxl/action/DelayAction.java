@@ -5,6 +5,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class DelayAction extends QBaseAction {
@@ -17,21 +19,25 @@ public class DelayAction extends QBaseAction {
     @Override
     public void play(Player player) {
         if (!conditions(player)) return;
+        List<QAction> tmp = new ArrayList<>(actions);
         BukkitRunnable runnable = new BukkitRunnable() {
             @Override
             public void run() {
-                for (QAction action : actions) {
+                for (QAction action : tmp) {
                     action.play(player);
                 }
                 onFinish(player);
             }
         };
-        runnable.runTaskLater(plugin, delay);
+        runnable.runTaskLater(plugin, delay * 20);
     }
 
     @Override
     public void load(ConfigurationSection cfg) {
-        actions = ActionManager.loadActions(cfg.getConfigurationSection("actions"));
+        actions = ActionManager.loadActions(cfg.getName(), cfg.getConfigurationSection("actions"));
         delay = cfg.getLong("delay");
+        if (actions.isEmpty()) {
+            throw new RuntimeException("Action list is empty.");
+        }
     }
 }

@@ -3,6 +3,7 @@ package de.erethon.questsxl.commands;
 import de.erethon.commons.chat.MessageUtil;
 import de.erethon.commons.command.DRECommand;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.objectives.QObjective;
 import de.erethon.questsxl.players.QPlayer;
 import de.erethon.questsxl.quest.ActiveQuest;
 import de.erethon.questsxl.quest.QQuest;
@@ -27,6 +28,20 @@ public class QuestCommand extends DRECommand {
     public void onExecute(String[] args, CommandSender commandSender) {
         Player player = (Player) commandSender;
         QPlayer qPlayer = plugin.getPlayerCache().get(player);
+        if (args.length > 1 && args[1].equalsIgnoreCase("track")) {
+            if (args.length < 3) {
+                MessageUtil.sendMessage(player, QuestsXL.ERROR + "Bitte gebe eine Quest an.");
+                return;
+            }
+            ActiveQuest quest = qPlayer.getActive(args[2]);
+            if (quest == null) {
+                MessageUtil.sendMessage(player, QuestsXL.ERROR + "Diese Quest ist nicht aktiv oder existiert nicht.");
+                return;
+            }
+            qPlayer.setDisplayed(quest);
+            MessageUtil.sendMessage(player, "&7Die Quest &a" + quest.getQuest().getDisplayName() + " &7wird nun getrackt.");
+            return;
+        }
         ActiveQuest active = qPlayer.getDisplayed();
         if (active == null) {
             if (args.length < 2) {
@@ -38,9 +53,23 @@ public class QuestCommand extends DRECommand {
                 MessageUtil.sendMessage(player, QuestsXL.ERROR + "Diese Quest existiert nicht oder sie ist nicht aktiv.");
                 return;
             }
-            MessageUtil.sendMessage(player, quest.getCurrentStage().getDescription());
+            MessageUtil.sendMessage(player, "&8&m               &r &2" + quest.getQuest().getDisplayName() + " &8&m               &r");
+            MessageUtil.sendMessage(player, "&7&a" + quest.getCurrentStage().getDescription());
+            for (QObjective objective : quest.getCurrentStage().getGoals()) {
+                if (objective.isPersistent() && objective.isOptional()) {
+                    continue;
+                }
+                MessageUtil.sendMessage(player, "&8- &a" + objective.getDisplayText());
+            }
             return;
         }
-        MessageUtil.sendMessage(player, active.getCurrentStage().getDescription());
+        MessageUtil.sendMessage(player, "&8&m               &r &2" + active.getQuest().getDisplayName() + " &8&m               &r");
+        MessageUtil.sendMessage(player, "&7&a" + active.getCurrentStage().getDescription());
+        for (QObjective objective : active.getCurrentStage().getGoals()) {
+            if (objective.isPersistent() && objective.isOptional()) {
+                continue;
+            }
+            MessageUtil.sendMessage(player, "&8- &a" + objective.getDisplayText());
+        }
     }
 }

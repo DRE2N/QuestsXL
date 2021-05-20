@@ -18,14 +18,13 @@ public class LocationObjective extends AbstractLocationBasedObjective {
     }
 
     @Override
-    public String getDisplayText() {
-        return "Go to " + location.toString();
-    }
-
-    @Override
     public void check(Event e) {
         if (!(e instanceof PlayerMoveEvent)) return;
         PlayerMoveEvent event = (PlayerMoveEvent) e;
+        if (!conditions(event.getPlayer())) return;
+        if (location == null) {
+            return;
+        }
         if (event.getTo().distance(location) < distance) {
             complete(event.getPlayer(), this);
         }
@@ -39,8 +38,7 @@ public class LocationObjective extends AbstractLocationBasedObjective {
         double y = section.getDouble("y");
         double z = section.getDouble("z");
         if (world == null) {
-            MessageUtil.log("The Objective " + section.getName() + " contains a teleport for a world that is not loaded.");
-            return;
+            throw new RuntimeException("The location objective in " + section.getName() + " contains a location in an invalid world.");
         }
         location = new Location(Bukkit.getWorld(world), x, y, z);
         distance = section.getInt("range");

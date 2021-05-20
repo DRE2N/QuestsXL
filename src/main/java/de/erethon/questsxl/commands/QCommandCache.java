@@ -16,5 +16,9 @@ public class QCommandCache extends DRECommandCache {
             addCommand(new RegionCommand());
             addCommand(new QuestCommand());
             addCommand(new MainCommand());
+            addCommand(new IBCCommand());
+            addCommand(new CutsceneCommand());
+            addCommand(new SyncCommand());
+            addCommand(new ReloadCommand());
     }
 }

@@ -45,7 +45,6 @@ public class QRegion {
         double z2 = pos2.getZ();
         return new IntRange(x1, x2).containsDouble(xp) && new IntRange(y1, y2).containsDouble(yp) && new IntRange(z1, z2).containsDouble(zp);
     }
-
     public Location getPos1() {
         return pos1;
     }

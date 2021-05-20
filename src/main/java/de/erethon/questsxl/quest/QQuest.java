@@ -1,12 +1,15 @@
 package de.erethon.questsxl.quest;
 
 import de.erethon.commons.chat.MessageUtil;
+import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.ActionManager;
 import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.condition.ConditionManager;
 import de.erethon.questsxl.condition.QCondition;
+import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.players.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -32,7 +35,11 @@ public class QQuest {
     public QQuest(File file) {
         String fileName = file.getName();
         name = fileName.replace(".yml", "");
-        cfg =  YamlConfiguration.loadConfiguration(file);
+        cfg = YamlConfiguration.loadConfiguration(file);
+        if (cfg.getKeys(false).size() == 0) {
+            QuestsXL.getInstance().getErrors().add(new FriendlyError("Quest: " + this.getName(), "Datei ungültig.", "Datei " + file.getName() + " ist ungültig.", "Wahrscheinlich falsche Einrückung."));
+            return;
+        }
         load();
     }
 
@@ -85,17 +92,29 @@ public class QQuest {
         // Conditions
         ConfigurationSection conditionSection = cfg.getConfigurationSection("conditions");
         if (conditionSection != null) {
-            conditions.addAll(ConditionManager.loadConditions(conditionSection));
+            try {
+                conditions.addAll(ConditionManager.loadConditions(this.getName() + ": conditions", conditionSection));
+            } catch (Exception e) {
+                QuestsXL.getInstance().getErrors().add(new FriendlyError("Quest: " + this.getName(), "Conditions konnten nicht geladen werden.", e.getMessage(), "Wahrscheinlich falsche Einrückung."));
+            }
         }
         // Start actions
         ConfigurationSection startActionSection = cfg.getConfigurationSection("onStart");
         if (startActionSection != null) {
-            startActions.addAll(ActionManager.loadActions(startActionSection));
+            try {
+                startActions.addAll(ActionManager.loadActions(this.getName() + ": onStart", startActionSection));
+            } catch (Exception e) {
+                QuestsXL.getInstance().getErrors().add(new FriendlyError("Quest: " + this.getName(), "Start-Actions konnten nicht geladen werden.", e.getMessage(), "Wahrscheinlich falsche Einrückung."));
+            }
         }
         // Reward actions
         ConfigurationSection rewardActionSection = cfg.getConfigurationSection("onFinish");
         if (rewardActionSection != null) {
-            rewards.addAll(ActionManager.loadActions(rewardActionSection));
+            try {
+                rewards.addAll(ActionManager.loadActions(this.getName() + ": onFinish", rewardActionSection));
+            } catch (Exception e) {
+                QuestsXL.getInstance().getErrors().add(new FriendlyError("Quest: " + this.getName(), "End-Actions konnten nicht geladen werden.", e.getMessage(), "Wahrscheinlich falsche Einrückung."));
+            }
         }
         // Stages
         ConfigurationSection stageSection = cfg.getConfigurationSection("stages");
@@ -107,7 +126,11 @@ public class QQuest {
             ConfigurationSection stageS = stageSection.getConfigurationSection(key);
             int id = Integer.parseInt(key);
             QStage stage = new QStage(this, id);
-            stage.load(stageS);
+            try {
+                stage.load(stageS);
+            } catch (Exception e) {
+                QuestsXL.getInstance().getErrors().add(new FriendlyError("Quest: " + this.getName(), "Stage " + id + " konnte nicht geladen werden.", e.getMessage(), "..."));
+            }
             stages.add(stage);
         }
         MessageUtil.log("Loaded quest " + name + " with " + stages.size() + " stages.");

@@ -8,6 +8,8 @@ import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
+
 public class QTeleportAction extends QBaseAction{
 
     Location target;
@@ -29,11 +31,9 @@ public class QTeleportAction extends QBaseAction{
         double y = Double.parseDouble(msg[2]);
         double z = Double.parseDouble(msg[3]);
         if (world == null) {
-            MessageUtil.log("The Action " + id + " contains a teleport for a world that is not loaded.");
-            return;
+            throw new RuntimeException("The action " + Arrays.toString(msg) + " contains a location in an invalid world.");
         }
         target = new Location(world, x, y, z);
-        MessageUtil.log("Loaded teleport action " + target.toString());
     }
 
     @Override
@@ -46,11 +46,8 @@ public class QTeleportAction extends QBaseAction{
         float yaw = (float) section.getDouble("yaw", 0.00);
         float pitch = (float) section.getDouble("pitch", 0.00);
         if (world == null) {
-            MessageUtil.log("The Action " + id + " contains a teleport for a world that is not loaded.");
-            return;
+            throw new RuntimeException("The action " + id + " contains a location in an invalid world.");
         }
         target = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
-        MessageUtil.log("Loaded teleport action " + target.toString());
-
     }
 }

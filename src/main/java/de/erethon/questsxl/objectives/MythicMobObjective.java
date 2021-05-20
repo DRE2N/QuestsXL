@@ -15,9 +15,5 @@ public class MythicMobObjective extends QBaseObjective {
         return null;
     }
 
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
 
-    }
 }

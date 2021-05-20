@@ -2,6 +2,7 @@ package de.erethon.questsxl.instancing;
 
 import com.comphenix.protocol.wrappers.MultiBlockChangeInfo;
 import com.comphenix.protocol.wrappers.WrappedBlockData;
+import de.erethon.commons.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.tools.packetwrapper.WrapperPlayServerMultiBlockChange;
 import org.bukkit.Bukkit;
@@ -40,31 +41,23 @@ public class InstancedBlockCollection {
     }
 
     public void show(Player player) {
-        WrapperPlayServerMultiBlockChange packet = new WrapperPlayServerMultiBlockChange();
-        ArrayList<WrappedBlockData> data = new ArrayList<>();
-        ArrayList<Short> locations = new ArrayList<>();
         for (Map.Entry<Location, Material> entry : shown.entrySet()) {
-            data.add(WrappedBlockData.createData(entry.getValue()));
-            locations.add(packet.getShortLoc(entry.getKey()));
+            player.sendBlockChange(entry.getKey(), entry.getValue().createBlockData());
         }
-        packet.setChunk(pos1);
-        packet.setRecords(data, locations);
-        packet.sendPacket(player);
     }
 
     public void hide(Player player) {
-        WrapperPlayServerMultiBlockChange packet = new WrapperPlayServerMultiBlockChange();
-        ArrayList<WrappedBlockData> data = new ArrayList<>();
-        ArrayList<Short> locations = new ArrayList<>();
         for (Map.Entry<Location, Material> entry : hidden.entrySet()) {
-            data.add(WrappedBlockData.createData(entry.getValue()));
-            locations.add(packet.getShortLoc(entry.getKey()));
+            player.sendBlockChange(entry.getKey(), entry.getValue().createBlockData());
         }
-        packet.setChunk(pos1);
-
-        packet.setRecords(data, locations);
-        packet.sendPacket(player);
     }
+
+    public void reset(Player player) {
+        for (Block entry : getBlocks(player.getWorld())) {
+            player.sendBlockChange(entry.getLocation(), entry.getBlockData());
+        }
+    }
+
 
     public void saveShown() {
         for (Block block : getBlocks(pos1.getWorld())) {
@@ -88,6 +81,7 @@ public class InstancedBlockCollection {
 
     public void setPos1(Location pos1) {
         this.pos1 = pos1;
+        world = pos1.getWorld();
     }
 
     public void setPos2(Location pos2) {
@@ -127,6 +121,8 @@ public class InstancedBlockCollection {
 
     public void load(YamlConfiguration config) {
         world = Bukkit.getWorld(config.getString("world"));
+        pos1 = config.getLocation("pos1");
+        pos2 = config.getLocation("pos2");
         hidden = loadFromStringList(world, config.getStringList("hidden"));
         shown = loadFromStringList(world, config.getStringList("shown"));
     }
@@ -146,6 +142,8 @@ public class InstancedBlockCollection {
 
     public YamlConfiguration save() {
         YamlConfiguration section = new YamlConfiguration();
+        section.set("pos1", pos1);
+        section.set("pos2", pos2);
         section.set("hidden", saveToStringList(hidden));
         section.set("shown", saveToStringList(shown));
         section.set("world", world.getName());

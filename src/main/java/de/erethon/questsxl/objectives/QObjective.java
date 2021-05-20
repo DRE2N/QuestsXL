@@ -20,6 +20,9 @@ public interface QObjective extends Listener {
     Set<QAction> getConditionFailActions();
     Set<QCondition> getConditions();
 
+    void setGlobal(boolean global);
+    boolean isGlobal();
+
     String getDisplayText();
 
     void load(ConfigurationSection section);

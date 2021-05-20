@@ -43,10 +43,10 @@ public abstract class QBaseCondition implements QCondition {
         }
         display = section.getString("displayText");
         if (section.contains("onFail")) {
-            failActions.addAll(ActionManager.loadActions(section.getConfigurationSection("onFail")));
+            failActions.addAll(ActionManager.loadActions(section.getName() + ": onFail", section.getConfigurationSection("onFail")));
         }
         if (section.contains("onSuccess")) {
-            successActions.addAll(ActionManager.loadActions(section.getConfigurationSection("onSuccess")));
+            successActions.addAll(ActionManager.loadActions(section.getName() + ": onSuccess", section.getConfigurationSection("onSuccess")));
         }
     }
     @Override

@@ -20,7 +20,7 @@ public class ActiveQuest {
         QStage start = quest.getStages().get(0);
         this.currentStage = start;
         start.start(player);
-        MessageUtil.log("Created new activeQuest for " + player.getPlayer().getName() + " with " + start.getGoals().size() + " objectives.");
+        MessageUtil.log("Created new activeQuest for " + player.getPlayer().getName() + " with " + quest.getStages().size() + " stages.");
     }
 
     public void progress(QPlayer player) {
@@ -64,7 +64,9 @@ public class ActiveQuest {
     }
 
     public void setCurrentStage(QStage currentStage) {
+        player.clearObjectives();
         this.currentStage = currentStage;
+        currentStage.start(player);
     }
 
     public QPlayer getPlayer() {
