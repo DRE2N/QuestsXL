@@ -4,9 +4,11 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import de.erethon.commons.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.objectives.ActiveObjective;
 import de.erethon.questsxl.objectives.QObjective;
 import de.erethon.questsxl.quest.ActiveQuest;
+import de.erethon.questsxl.quest.Completable;
 import de.erethon.questsxl.quest.QQuest;
 import de.erethon.questsxl.regions.QRegion;
 import de.erethon.questsxl.tools.packetwrapper.WrapperPlayServerChat;
@@ -30,7 +32,10 @@ public class QPlayer {
     private final List<ActiveObjective> currentObjectives = new CopyOnWriteArrayList<>();
     private final List<WrappedChatComponent> chatQueue = new CopyOnWriteArrayList<>();
 
+    private final Map<QEvent, Integer> eventParticipation = new HashMap<>();
+
     private final Set<QRegion> currentRegions = new HashSet<>();
+    private final Map<String, Integer> scores = new HashMap<>();
 
     private ActiveQuest displayed = null;
     private Location compassTarget = null;
@@ -58,6 +63,15 @@ public class QPlayer {
         MessageUtil.log("Active: " + activeQuests.keySet().size());
     }
 
+    public void progress(Completable completable) {
+        if (completable instanceof QQuest) {
+            progressQuest((QQuest) completable);
+        }
+        if (completable instanceof QEvent) {
+            progressEvent((QEvent) completable);
+        }
+    }
+
     public void progressQuest(QQuest quest) {
         MessageUtil.log("Looking to progress " + quest.getName());
         MessageUtil.log("Quests: " + activeQuests.keySet().size());
@@ -66,6 +80,34 @@ public class QPlayer {
                 active.progress(this);
             }
         }
+    }
+
+    public void progressEvent(QEvent event) {
+        //
+    }
+
+    public void participate(QEvent event, int amount) {
+        eventParticipation.put(event, amount);
+    }
+
+    public int getEventParticipation(QEvent event) {
+       return eventParticipation.get(event);
+    }
+
+    public void addScore(String score, int amount) {
+        setScore(score, scores.getOrDefault(score, 0) + amount);
+    }
+
+    public void removeScore(String score, int amount) {
+        setScore(score, scores.getOrDefault(score, 0) - amount);
+    }
+
+    public void setScore(String score, int amount) {
+        scores.put(score, amount);
+    }
+
+    public int getScore(String id) {
+        return scores.getOrDefault(id, 0);
     }
 
     public void addObjective(ActiveObjective objective) {

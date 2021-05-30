@@ -1,6 +1,8 @@
 package de.erethon.questsxl;
 
+import com.boydti.fawe.Fawe;
 import com.google.gson.Gson;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import de.erethon.aether.Aether;
 import de.erethon.commons.chat.MessageUtil;
 import de.erethon.commons.compatibility.Internals;
@@ -13,6 +15,7 @@ import de.erethon.questsxl.global.GlobalObjectives;
 import de.erethon.questsxl.instancing.BlockCollectionManager;
 import de.erethon.questsxl.listener.PacketListener;
 import de.erethon.questsxl.listener.PlayerListener;
+import de.erethon.questsxl.livingworld.QEventManager;
 import de.erethon.questsxl.players.QPlayerCache;
 import de.erethon.questsxl.quest.QuestManager;
 import de.erethon.questsxl.regions.QRegionManager;
@@ -28,25 +31,32 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class QuestsXL extends DREPlugin implements Listener {
 
     static QuestsXL instance;
     public static String ERROR = "<dark_gray>[<red><bold>!<reset><dark_gray>]<gray> ";
 
+    private WorldEditPlugin worldEditPlugin;
+
     public static File ANIMATIONS;
     public static File QUESTS;
+    public static File EVENTS;
     public static File PLAYERS;
     public static File REGIONS;
     public static File RESPAWNS;
     public static File GLOBAL_OBJ;
     public static File IBCS;
+    public static File SCHEMATICS;
     public long lastSync = 0;
 
     QPlayerCache qPlayerCache;
     RespawnPointManager respawnPointManager;
     QuestManager questManager;
+    QEventManager eventManager;
     QRegionManager regionManager;
     AnimationManager animationManager;
     BlockCollectionManager blockCollectionManager;
@@ -55,7 +65,9 @@ public final class QuestsXL extends DREPlugin implements Listener {
     PlayerListener playerListener;
     PacketListener packetListener;
 
-    private List<FriendlyError> errors = new ArrayList<>();
+    private Map<String, Integer> scores = new HashMap<>();
+
+    private final List<FriendlyError> errors = new ArrayList<>();
     private boolean showStacktraces = false;
 
     Aether aether;
@@ -82,6 +94,10 @@ public final class QuestsXL extends DREPlugin implements Listener {
         if (!QUESTS.exists()) {
             QUESTS.mkdir();
         }
+        EVENTS = new File(getDataFolder(), "events");
+        if (!EVENTS.exists()) {
+            EVENTS.mkdir();
+        }
         PLAYERS = new File(getDataFolder(), "players");
         if (!PLAYERS.exists()) {
             PLAYERS.mkdir();
@@ -93,6 +109,10 @@ public final class QuestsXL extends DREPlugin implements Listener {
         IBCS = new File(getDataFolder(), "blocks");
         if (!IBCS.exists()) {
             IBCS.mkdir();
+        }
+        SCHEMATICS = new File(getDataFolder(), "schematics");
+        if (!SCHEMATICS.exists()) {
+            SCHEMATICS.mkdir();
         }
         REGIONS = new File(getDataFolder(), "regions.yml");
         if (!REGIONS.exists()) {
@@ -123,16 +143,18 @@ public final class QuestsXL extends DREPlugin implements Listener {
         qPlayerCache = new QPlayerCache();
         getServer().getPluginManager().registerEvents(qPlayerCache, this);
 
-        load();
+        loadCore();
     }
 
-    public void load() {
+    public void loadCore() {
         respawnPointManager = new RespawnPointManager(RESPAWNS);
         regionManager = new QRegionManager(REGIONS);
         blockCollectionManager = new BlockCollectionManager(IBCS);
         animationManager = new AnimationManager(ANIMATIONS);
         questManager = new QuestManager(); // Load after sync
         questManager.load();
+        eventManager = new QEventManager();
+        eventManager.load(EVENTS);
         try {
             MessageUtil.log("Loading global objectives...");
             globalObjectives = new GlobalObjectives(GLOBAL_OBJ);
@@ -159,12 +181,32 @@ public final class QuestsXL extends DREPlugin implements Listener {
         animationManager.save();
     }
 
+    public void addScore(String score, int amount) {
+        setScore(score, scores.getOrDefault(score, 0));
+    }
+
+    public void removeScore(String score, int amount) {
+        setScore(score, scores.getOrDefault(score, 0) - amount);
+    }
+
+    public void setScore(String score, int amount) {
+        scores.put(score, amount);
+    }
+
+    public int getScore(String id) {
+        return scores.getOrDefault(id, 0);
+    }
+
     public QPlayerCache getPlayerCache() {
         return qPlayerCache;
     }
 
     public QuestManager getQuestManager() {
         return questManager;
+    }
+
+    public QEventManager getEventManager() {
+        return eventManager;
     }
 
     public static QuestsXL getInstance() {
@@ -194,7 +236,7 @@ public final class QuestsXL extends DREPlugin implements Listener {
     public void reload() {
         errors.clear();
         onDisable();
-        load();
+        loadCore();
     }
 
     public List<FriendlyError> getErrors() {
@@ -230,7 +272,7 @@ public final class QuestsXL extends DREPlugin implements Listener {
                 BukkitRunnable waitForCopy = new BukkitRunnable() {
                     @Override
                     public void run() {
-                        load();
+                        loadCore();
                         for (Player player : Bukkit.getOnlinePlayers()) {
                             if (player.hasPermission("qxl.admin.sync")) {
                                 MessageUtil.sendMessage(player, "&aGitHub-Sync abgeschlossen!");

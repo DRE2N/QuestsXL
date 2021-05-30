@@ -3,7 +3,8 @@ package de.erethon.questsxl.condition;
 public enum Condition {
     ACTIVE_QUEST,
     COMPLETED_QUEST,
-    GLOBAL_VARIABLE,
+    EVENT_STATE,
+    GLOBAL_SCORE,
     GROUP_SIZE,
     INVENTORY,
     INVERTED,
@@ -11,7 +12,7 @@ public enum Condition {
     LOCATION,
     LOOKING_AT,
     PERMISSION,
-    PLAYER_VARIABLE,
+    PLAYER_SCORE,
     REGION,
     TIME
 

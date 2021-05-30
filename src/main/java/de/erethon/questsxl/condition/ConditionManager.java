@@ -24,45 +24,20 @@ public class ConditionManager {
             }
             QCondition condition = null;
             switch (Condition.valueOf(type.toUpperCase())) {
-                case GLOBAL_VARIABLE -> {
-                    condition = new GlobalVariableCondition();
-                }
-                case GROUP_SIZE -> {
-                    condition = new GroupSizeCondition();
-                }
-                case INVENTORY -> {
-                    condition = new InventoryCondition();
-                }
-                case INVERTED -> {
-                    condition = new InvertedCondition();
-                }
-                case LEVEL -> {
-                    condition = new LevelCondition();
-                }
-                case LOCATION -> {
-                    condition = new LocationCondition();
-                }
-                case LOOKING_AT -> {
-                    condition = new LookingAtCondition();
-                }
-                case PERMISSION -> {
-                    condition = new PermissionCondition();
-                }
-                case PLAYER_VARIABLE -> {
-                    condition = new PlayerVariableCondition();
-                }
-                case ACTIVE_QUEST -> {
-                    condition = new ActiveQuestCondition();
-                }
-                case COMPLETED_QUEST -> {
-                    condition = new CompletedQuestCondition();
-                }
-                case REGION -> {
-                    condition = new RegionCondition();
-                }
-                case TIME -> {
-                    condition = new TimeCondition();
-                }
+                case EVENT_STATE -> condition = new EventStateCondition();
+                case GLOBAL_SCORE -> condition = new GlobalScoreCondition();
+                case GROUP_SIZE -> condition = new GroupSizeCondition();
+                case INVENTORY -> condition = new InventoryCondition();
+                case INVERTED -> condition = new InvertedCondition();
+                case LEVEL -> condition = new LevelCondition();
+                case LOCATION -> condition = new LocationCondition();
+                case LOOKING_AT -> condition = new LookingAtCondition();
+                case PERMISSION -> condition = new PermissionCondition();
+                case PLAYER_SCORE -> condition = new PlayerScoreCondition();
+                case ACTIVE_QUEST -> condition = new ActiveQuestCondition();
+                case COMPLETED_QUEST -> condition = new CompletedQuestCondition();
+                case REGION -> condition = new RegionCondition();
+                case TIME -> condition = new TimeCondition();
             }
             try {
                 if (shorthand) {
