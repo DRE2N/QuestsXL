@@ -24,57 +24,23 @@ public class ObjectiveManager {
             }
             QObjective objective = null;
             switch (Objective.valueOf(type.toUpperCase())) {
-                case CRAFT -> {
-                    objective = new CraftObjective();
-                }
-                case ENTER_REGION -> {
-                    objective = new EnterRegionObjective();
-                }
-                case ENTITY_INTERACT -> {
-                    objective = new EntityInteractObjective();
-                }
-                case ESCORT_NPC -> {
-                    objective = new EscortNPCObjective();
-                }
-                case EXPERIENCE -> {
-                     objective = new ExperienceObjective();
-                }
-                case IMPOSSIBLE -> {
-                    objective = new ImpossibleObjective();
-                }
-                case INSTANT -> {
-                    objective = new InstantObjective();
-                }
-                case ITEM_PICKUP -> {
-                    objective = new ItemPickupObjective();
-                }
-                case JOB_EXP -> {
-                    objective = new JobExpObjective();
-                }
-                case KILL_PLAYER -> {
-                    objective = new KillPlayerObjective();
-                }
-                case LEAVE_REGION -> {
-                    objective = new LeaveRegionObjective();
-                }
-                case LOCATION -> {
-                    objective = new LocationObjective();
-                }
-                case MOB -> {
-                    objective = new MobObjective();
-                }
-                case MYTHIC_MOB -> {
-                    objective = new MythicMobObjective();
-                }
-                case SERVER_COMMAND -> {
-                    objective = new ServerCommandObjective();
-                }
-                case USE_ITEM -> {
-                    objective = new UseItemObjective();
-                }
-                case WAIT -> {
-                    objective = new WaitObjective();
-                }
+                case CRAFT -> objective = new CraftObjective();
+                case ENTER_REGION -> objective = new EnterRegionObjective();
+                case ENTITY_INTERACT -> objective = new EntityInteractObjective();
+                case ESCORT_NPC -> objective = new EscortNPCObjective();
+                case EXPERIENCE -> objective = new ExperienceObjective();
+                case IMPOSSIBLE -> objective = new ImpossibleObjective();
+                case INSTANT -> objective = new InstantObjective();
+                case ITEM_PICKUP -> objective = new ItemPickupObjective();
+                case JOB_EXP -> objective = new JobExpObjective();
+                case KILL_PLAYER -> objective = new KillPlayerObjective();
+                case LEAVE_REGION -> objective = new LeaveRegionObjective();
+                case LOCATION -> objective = new LocationObjective();
+                case MOB -> objective = new MobObjective();
+                case MYTHIC_MOB -> objective = new MythicMobObjective();
+                case SERVER_COMMAND -> objective = new ServerCommandObjective();
+                case USE_ITEM -> objective = new UseItemObjective();
+                case WAIT -> objective = new WaitObjective();
             }
             try {
                 if (shorthand) {

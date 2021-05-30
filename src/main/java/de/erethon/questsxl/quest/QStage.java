@@ -16,7 +16,7 @@ import java.util.Set;
 
 public class QStage {
 
-    private final QQuest owner;
+    private final Completable owner;
     private final Set<QObjective> goals = new HashSet<>();
     private final Set<QCondition> conditions = new HashSet<>();
     private final Set<QAction> startActions = new HashSet<>();
@@ -26,7 +26,7 @@ public class QStage {
     private String description = "";
     private String completeMessage = "";
 
-    public QStage(QQuest quest,  int id) {
+    public QStage(Completable quest,  int id) {
         this.owner = quest;
         this.id = id;
     }
@@ -44,7 +44,7 @@ public class QStage {
     public void checkCompleted(QPlayer player) {
        if (isCompleted(player)) {
            MessageUtil.log("Stage is completed!");
-           player.progressQuest(owner);
+           player.progress(owner);
            return;
        }
        MessageUtil.log("Stage not completed");
@@ -87,7 +87,7 @@ public class QStage {
         return id;
     }
 
-    public QQuest getOwner() {
+    public Completable getOwner() {
         return owner;
     }
 
@@ -108,7 +108,7 @@ public class QStage {
     }
 
     public QQuest getQuest() {
-        return owner;
+        return owner instanceof QQuest ? (QQuest) owner : null;
     }
 
     public String getDescription() {

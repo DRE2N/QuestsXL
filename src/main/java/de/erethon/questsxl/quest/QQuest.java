@@ -18,7 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class QQuest {
+public class QQuest implements Completable {
 
     File file;
     YamlConfiguration cfg;
@@ -46,6 +46,12 @@ public class QQuest {
     public void reward(QPlayer player) {
         for (QAction action : rewards) {
             action.play(player.getPlayer());
+        }
+    }
+
+    public void reward(Set<QPlayer> players) {
+        for (QPlayer player : players) {
+            reward(player);
         }
     }
 

@@ -9,6 +9,7 @@ public enum Action {
     HIDE_IBC,
     MESSAGE,
     MOB_FOLLOW_PLAYER,
+    PASTE_SCHEMATIC,
     PERMISSION,
     REPEAT,
     RESET_IBC,
@@ -19,6 +20,4 @@ public enum Action {
     START_QUEST,
     TELEPORT,
     TITLE
-
-
 }

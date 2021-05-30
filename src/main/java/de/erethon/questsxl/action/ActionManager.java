@@ -24,60 +24,25 @@ public class ActionManager {
             }
             QAction action = null;
             switch (Action.valueOf(type.toUpperCase())) {
-                case ANIMATION -> {
-                    action = new PlayAnimationAction();
-                }
-                case COMMAND -> {
-                    action = new QCommandAction();
-                }
-                case CUTSCENE -> {
-                    action = new PlayCutsceneAction();
-                }
-                case DELAY -> {
-                    action = new DelayAction();
-                }
-                case GIVE_ITEM -> {
-                    action = new GiveItemAction();
-                }
-                case HIDE_IBC -> {
-                    action = new HideIBC();
-                }
-                case MESSAGE -> {
-                    action = new SendMessage();
-                }
-                case MOB_FOLLOW_PLAYER -> {
-                    action = new MobFollowPlayerAction();
-                }
-                case PERMISSION -> {
-                    action = new QPermissionAction();
-                }
-                case REPEAT -> {
-                    action = new RepeatAction();
-                }
-                case RESET_IBC -> {
-                    action = new ResetIBC();
-                }
-                case SHOW_BEAM -> {
-                    action = new QDisplayBeam();
-                }
-                case SHOW_IBC -> {
-                    action = new ShowIBC();
-                }
-                case SPAWN_MOB -> {
-                    action = new SpawnMobAction();
-                }
-                case STAGE -> {
-                    action = new QStageAction();
-                }
-                case START_QUEST -> {
-                    action = new QuestAction();
-                }
-                case TELEPORT -> {
-                    action = new QTeleportAction();
-                }
-                case TITLE -> {
-                    action = new SendTitleAction();
-                }
+                case ANIMATION -> action = new PlayAnimationAction();
+                case COMMAND -> action = new QCommandAction();
+                case CUTSCENE -> action = new PlayCutsceneAction();
+                case DELAY -> action = new DelayAction();
+                case GIVE_ITEM -> action = new GiveItemAction();
+                case HIDE_IBC -> action = new HideIBC();
+                case MESSAGE -> action = new SendMessage();
+                case MOB_FOLLOW_PLAYER -> action = new MobFollowPlayerAction();
+                case PASTE_SCHEMATIC -> action = new PasteSchematicAction();
+                case PERMISSION -> action = new QPermissionAction();
+                case REPEAT -> action = new RepeatAction();
+                case RESET_IBC -> action = new ResetIBC();
+                case SHOW_BEAM -> action = new QDisplayBeam();
+                case SHOW_IBC -> action = new ShowIBC();
+                case SPAWN_MOB -> action = new SpawnMobAction();
+                case STAGE -> action = new QStageAction();
+                case START_QUEST -> action = new QuestAction();
+                case TELEPORT -> action = new QTeleportAction();
+                case TITLE -> action = new SendTitleAction();
             }
             try {
                 if (shorthand) {
