@@ -1,7 +1,5 @@
 package de.erethon.questsxl;
 
-import com.boydti.fawe.Fawe;
-import com.google.gson.Gson;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import de.erethon.aether.Aether;
 import de.erethon.commons.chat.MessageUtil;
@@ -21,7 +19,6 @@ import de.erethon.questsxl.quest.QuestManager;
 import de.erethon.questsxl.regions.QRegionManager;
 import de.erethon.questsxl.respawn.RespawnPointManager;
 import de.erethon.questsxl.tools.GitSync;
-import de.erethon.vignette.api.VignetteAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
@@ -138,7 +135,6 @@ public final class QuestsXL extends DREPlugin implements Listener {
                 e.printStackTrace();
             }
         }
-        VignetteAPI.init(this);
         aether = (Aether) Bukkit.getPluginManager().getPlugin("Aether");
         qPlayerCache = new QPlayerCache();
         getServer().getPluginManager().registerEvents(qPlayerCache, this);

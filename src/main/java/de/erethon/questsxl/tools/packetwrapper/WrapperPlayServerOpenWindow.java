@@ -21,7 +21,7 @@ package de.erethon.questsxl.tools.packetwrapper;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 
-import com.comphenix.packetwrapper.util.Removed;
+import de.erethon.questsxl.tools.packetwrapper.util.Removed;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;

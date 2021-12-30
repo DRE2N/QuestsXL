@@ -1,7 +1,6 @@
 package de.erethon.questsxl.action;
 
-import com.boydti.fawe.Fawe;
-import com.boydti.fawe.FaweAPI;
+import com.fastasyncworldedit.core.FaweAPI;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
@@ -56,7 +55,7 @@ public class PasteSchematicAction extends QBaseAction {
             BukkitRunnable undoRunnable = new BukkitRunnable() {
                 @Override
                 public void run() {
-                    EditSession undo = FaweAPI.getEditSessionBuilder(world).build();
+                    EditSession undo = null; //FaweAPI.getEditSessionBuilder(world).build();
                     session.undo(undo);
                     session.flushQueue();
                     undo.flushQueue();

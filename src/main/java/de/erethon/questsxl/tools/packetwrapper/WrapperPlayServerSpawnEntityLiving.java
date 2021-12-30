@@ -20,18 +20,17 @@ package de.erethon.questsxl.tools.packetwrapper;
 
 import java.util.UUID;
 
-import net.minecraft.server.v1_16_R3.EntityTypes;
-import net.minecraft.server.v1_16_R3.IRegistry;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 
-import com.comphenix.packetwrapper.util.Removed;
+import de.erethon.questsxl.tools.packetwrapper.util.Removed;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.injector.PacketConstructor;
+import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 
 public class WrapperPlayServerSpawnEntityLiving extends AbstractPacket {
@@ -56,7 +55,9 @@ public class WrapperPlayServerSpawnEntityLiving extends AbstractPacket {
 	// Useful constructor
 	private static PacketContainer fromEntity(Entity entity) {
 		if (entityConstructor == null)
-			entityConstructor = ProtocolLibrary.getProtocolManager().createPacketConstructor(TYPE, entity);
+			entityConstructor =
+					ProtocolLibrary.getProtocolManager()
+							.createPacketConstructor(TYPE, entity);
 		return entityConstructor.createPacket(entity);
 	}
 
@@ -123,8 +124,7 @@ public class WrapperPlayServerSpawnEntityLiving extends AbstractPacket {
 	 */
 	@SuppressWarnings("deprecation")
 	public void setType(EntityType value) {
-		int typeId = IRegistry.ENTITY_TYPE.a(EntityTypes.getByName(value.getKey().getKey()).get());
-		handle.getIntegers().write(1, typeId);
+		handle.getIntegers().write(1, (int) value.getTypeId());
 	}
 
 	/**

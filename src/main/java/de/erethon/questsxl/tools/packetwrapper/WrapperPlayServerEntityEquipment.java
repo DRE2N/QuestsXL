@@ -18,14 +18,13 @@
  */
 package de.erethon.questsxl.tools.packetwrapper;
 
-import org.bukkit.World;
-import org.bukkit.entity.Entity;
-import org.bukkit.inventory.ItemStack;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
+import org.bukkit.inventory.ItemStack;
 
 public class WrapperPlayServerEntityEquipment extends AbstractPacket {
 	public static final PacketType TYPE =

@@ -37,7 +37,7 @@ public class QuestBook {
         bookPages.add(page);
 
         Book myBook = Book.book(bookTitle, bookAuthor, bookPages);
-        player.openBook(myBook);
+        //player.openBook(myBook);
     }
 
     public static String stageDesc(Player player, QQuest quest) {

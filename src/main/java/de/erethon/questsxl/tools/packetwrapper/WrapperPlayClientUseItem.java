@@ -18,12 +18,13 @@
  */
 package de.erethon.questsxl.tools.packetwrapper;
 
-import com.comphenix.packetwrapper.util.Removed;
+import de.erethon.questsxl.tools.packetwrapper.util.Removed;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.AutoWrapper;
 import com.comphenix.protocol.wrappers.BlockPosition;
+import com.comphenix.protocol.wrappers.BukkitConverters;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.EnumWrappers.Direction;
 import com.comphenix.protocol.wrappers.EnumWrappers.Hand;

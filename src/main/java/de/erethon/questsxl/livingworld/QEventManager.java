@@ -21,7 +21,7 @@ public class QEventManager {
 
     public void load(File file)  {
         for (File file1 : file.listFiles()) {
-            events.add(new QEvent(file1);
+            events.add(new QEvent(file1));
         }
         for (QEvent event : events) {
             event.load();

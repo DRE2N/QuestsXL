@@ -1,4 +1,4 @@
-package com.comphenix.packetwrapper.util;
+package de.erethon.questsxl.tools.packetwrapper.util;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

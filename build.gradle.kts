@@ -3,6 +3,9 @@ import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 repositories {
     maven("https://jitpack.io")
     maven("https://erethon.de/repo")
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+    maven("https://repo.dmulloy2.net/repository/public/")
+    maven("https://jitpack.io")
 }
 plugins {
     `java-library`
@@ -25,6 +28,11 @@ dependencies {
     paperDevBundle("1.18.1-R0.1-SNAPSHOT")
     implementation("com.github.retrooper:packetevents:v1.8-pre-19")
     implementation("de.erethon.commons:commons-dist:6.3.3")
+    compileOnly("de.erethon:aether:1.0-SNAPSHOT")
+    compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.0.0-SNAPSHOT")
+    compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.0.0-SNAPSHOT") { isTransitive = false }
+    compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0-SNAPSHOT")
+    compileOnly("com.github.MilkBowl:VaultAPI:1.7")
     // paperweightDevBundle("com.example.paperfork", "1.18.1-R0.1-SNAPSHOT")
 
     // You will need to manually specify the full dependency if using the groovy gradle dsl
