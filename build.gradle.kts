@@ -90,5 +90,7 @@ tasks {
                 usage = "/qxl help"
             }
         }
+        depend = listOf("ProtocolLib")
+        softDepend = listOf("Aether")
     }
 }

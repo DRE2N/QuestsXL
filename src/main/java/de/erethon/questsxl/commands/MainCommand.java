@@ -1,8 +1,11 @@
 package de.erethon.questsxl.commands;
 
+import com.comphenix.protocol.ProtocolLib;
+import com.comphenix.protocol.ProtocolLibrary;
 import de.erethon.commons.chat.MessageUtil;
 import de.erethon.commons.command.DRECommand;
 import de.erethon.questsxl.QuestsXL;
+import net.minecraft.server.MinecraftServer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -28,14 +31,21 @@ public class MainCommand extends DRECommand {
         if (player.hasPermission("qxl.admin.version")) {
             MessageUtil.sendMessage(player, "&8&m   &r &aQuests&2XL &6" + plugin.getDescription().getVersion() + " &7by Malfrador &8&m   &r");
             MessageUtil.sendMessage(player, "");
+            MessageUtil.sendMessage(player, "&7Internals: &6" + MinecraftServer.getServer().getServerModName()
+                    + " " + MinecraftServer.getServer().getServerVersion()
+                    + " &8- &7ProtocolLib: &6" + ProtocolLibrary.getPlugin().getDescription().getVersion());
             MessageUtil.sendMessage(player, "&7Last sync from GitHub: &6" + new Date(plugin.lastSync));
             File[] playerFiles = QuestsXL.PLAYERS.listFiles();
             if (playerFiles != null) {
-                MessageUtil.sendMessage(player, "&7Players: &6" + playerFiles.length + " &8- &7Loaded: &6" + plugin.getPlayerCache().getPlayers().keySet().size());
+                MessageUtil.sendMessage(player, "&7Players: &6" + playerFiles.length + " &8- &7Loaded: &6"
+                        + plugin.getPlayerCache().getPlayers().keySet().size());
             }
-            MessageUtil.sendMessage(player, "&7Quests: &6" + plugin.getQuestManager().getQuests().size() + "&8 - &7Global Objectives: &6" + plugin.getGlobalObjectives().getObjectives().size());
-            MessageUtil.sendMessage(player, "&7Regions: &6" + plugin.getRegionManager().getRegions().size() + "&8 - &7IBCs: &6" + plugin.getBlockCollectionManager().getCollections().size());
-            MessageUtil.sendMessage(player, "&7Cutscenes: &6" + plugin.getAnimationManager().getCutscenes().size() + " &8- &7Animations: &6" + plugin.getAnimationManager().getAnimations().size());
+            MessageUtil.sendMessage(player, "&7Quests: &6" + plugin.getQuestManager().getQuests().size()
+                    + "&8 - &7Global Objectives: &6" + plugin.getGlobalObjectives().getObjectives().size());
+            MessageUtil.sendMessage(player, "&7Regions: &6" + plugin.getRegionManager().getRegions().size()
+                    + "&8 - &7IBCs: &6" + plugin.getBlockCollectionManager().getCollections().size());
+            MessageUtil.sendMessage(player, "&7Cutscenes: &6" + plugin.getAnimationManager().getCutscenes().size()
+                    + " &8- &7Animations: &6" + plugin.getAnimationManager().getAnimations().size());
             return;
         }
         if (args.length >= 2) {

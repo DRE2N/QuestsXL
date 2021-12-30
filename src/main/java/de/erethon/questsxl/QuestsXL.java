@@ -65,7 +65,7 @@ public final class QuestsXL extends DREPlugin implements Listener {
     private Map<String, Integer> scores = new HashMap<>();
 
     private final List<FriendlyError> errors = new ArrayList<>();
-    private boolean showStacktraces = false;
+    private boolean showStacktraces = true;
 
     Aether aether;
 
