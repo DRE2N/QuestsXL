@@ -138,6 +138,10 @@ public final class QuestsXL extends EPlugin implements Listener {
         qPlayerCache = new QPlayerCache();
         getServer().getPluginManager().registerEvents(qPlayerCache, this);
 
+        // UUUUGLY
+        System.setProperty("net.kyori.adventure.text.warnWhenLegacyFormattingDetected", "false");
+        MessageUtil.log("Warn for legacy formatting: " + System.getProperty("net.kyori.adventure.text.warnWhenLegacyFormattingDetected"));
+
         loadCore();
     }
 
