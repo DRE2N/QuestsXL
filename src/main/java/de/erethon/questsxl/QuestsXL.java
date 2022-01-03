@@ -178,6 +178,7 @@ public final class QuestsXL extends EPlugin implements Listener {
         regionManager.save();
         blockCollectionManager.save();
         animationManager.save();
+        eventManager.save();
     }
 
     public void addScore(String score, int amount) {

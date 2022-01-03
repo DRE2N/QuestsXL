@@ -10,6 +10,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,8 +34,18 @@ public class QEventManager {
             event.load();
         }
         MessageUtil.log("Loaded " + events.size() + " events.");
-
     }
+
+    public void save() {
+        for (QEvent event : events){
+            try {
+                event.save();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     class EventUpdater extends BukkitRunnable {
         @Override
         public void run() {

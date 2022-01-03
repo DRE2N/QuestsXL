@@ -10,20 +10,26 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 public class QEvent implements Completable {
 
+    File file;
     YamlConfiguration cfg;
 
     String id;
     List<QStage> stages = new ArrayList<>();
     EventState state;
+    // Timers
+    int timeCurrent;
+    int timeTrigger;
 
     public QEvent(File file) {
         String fileName = file.getName();
+        this.file = file;
         id = fileName.replace(".yml", "");
         cfg = YamlConfiguration.loadConfiguration(file);
         if (cfg.getKeys(false).size() == 0) {
@@ -79,5 +85,11 @@ public class QEvent implements Completable {
             stages.add(stage);
         }
         MessageUtil.log("Loaded event " + id + " with " + stages.size() + " stages.");
+    }
+
+    public void save() throws IOException {
+        cfg.set("state.timeCurrent", timeCurrent);
+        cfg.set("state.timeTrigger", timeTrigger);
+        cfg.save(file);
     }
 }
