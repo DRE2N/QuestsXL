@@ -7,4 +7,6 @@ public class ImpossibleObjective extends QBaseObjective {
     @Override
     public void check(Event event) {
     }
+
+
 }

@@ -123,7 +123,7 @@ public abstract class AbstractLocationBasedObjective extends QBaseObjective {
             lineProgress = fromLoc.distance(toLoc);
         }Vector partVector = toVector.clone().multiply(lineProgress);
         Location partLoc = fromLoc.clone().add(partVector);
-        partLoc = partLoc.toHighestLocation();
+        partLoc = partLoc.getWorld().getHighestBlockAt(partLoc).getLocation();
         partLoc = partLoc.add(0, 1.05,0);
         player.spawnParticle(Particle.VILLAGER_HAPPY, partLoc, 1);
         lineProgress = lineProgress + 2;

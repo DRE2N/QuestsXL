@@ -19,8 +19,7 @@ public class LocationObjective extends AbstractLocationBasedObjective {
 
     @Override
     public void check(Event e) {
-        if (!(e instanceof PlayerMoveEvent)) return;
-        PlayerMoveEvent event = (PlayerMoveEvent) e;
+        if (!(e instanceof PlayerMoveEvent event)) return;
         if (!conditions(event.getPlayer())) return;
         if (location == null) {
             return;

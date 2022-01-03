@@ -17,14 +17,12 @@ public class EscortNPCObjective extends QBaseObjective {
 
     @Override
     public void check(Event e) {
-        if (e instanceof InstancedCreatureDeathEvent) {
-            InstancedCreatureDeathEvent event = (InstancedCreatureDeathEvent) e;
+        if (e instanceof InstancedCreatureDeathEvent event) {
             for (Player player : event.getNpc().getViewers()) {
                 fail(player, this);
             }
         }
-        if (e instanceof InstancedCreatureArriveAtPointEvent) {
-            InstancedCreatureArriveAtPointEvent event = (InstancedCreatureArriveAtPointEvent) e;
+        if (e instanceof InstancedCreatureArriveAtPointEvent event) {
             for (Player player : event.getNpc().getViewers()) {
                 complete(player, this);
             }

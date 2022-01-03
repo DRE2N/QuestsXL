@@ -14,8 +14,7 @@ public class EnterRegionObjective extends QBaseObjective {
 
     @Override
     public void check(Event e) {
-        if (!(e instanceof QRegionEnterEvent)) return;
-        QRegionEnterEvent event = (QRegionEnterEvent) e;
+        if (!(e instanceof QRegionEnterEvent event)) return;
         MessageUtil.log(event.getPlayer() + " has entered RegionObjective with " + event.getRegion().getId() + ". Checking for " + region.getId());
         if (!conditions(event.getPlayer())) {
             return;

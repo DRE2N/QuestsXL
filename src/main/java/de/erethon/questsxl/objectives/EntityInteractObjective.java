@@ -13,8 +13,7 @@ public class EntityInteractObjective extends QBaseObjective {
 
     @Override
     public void check(Event e) {
-        if (!(e instanceof PlayerInteractEntityEvent)) return;
-        PlayerInteractEntityEvent event = (PlayerInteractEntityEvent) e;
+        if (!(e instanceof PlayerInteractEntityEvent event)) return;
 
         if (event.getRightClicked().getUniqueId().equals(entityUUID)) {
             complete(event.getPlayer(), this);

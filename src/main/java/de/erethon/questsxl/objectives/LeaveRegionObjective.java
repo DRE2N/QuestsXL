@@ -12,8 +12,7 @@ public class LeaveRegionObjective extends QBaseObjective {
 
     @Override
     public void check(Event e) {
-        if (!(e instanceof QRegionLeaveEvent)) return;
-        QRegionLeaveEvent event = (QRegionLeaveEvent) e;
+        if (!(e instanceof QRegionLeaveEvent event)) return;
         if (!conditions(event.getPlayer())) return;
         if (event.getRegion() == region) {
             complete(event.getPlayer(), this);

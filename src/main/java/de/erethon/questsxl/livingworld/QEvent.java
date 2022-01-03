@@ -53,6 +53,10 @@ public class QEvent implements Completable {
         return id;
     }
 
+    public void update() {
+
+    }
+
     public EventState getState() {
         return state;
     }
