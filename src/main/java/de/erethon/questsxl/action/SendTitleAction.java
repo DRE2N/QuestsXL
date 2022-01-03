@@ -1,6 +1,7 @@
 package de.erethon.questsxl.action;
 
-import de.erethon.commons.chat.MessageUtil;
+import de.erethon.bedrock.chat.MessageUtil;
+import net.kyori.adventure.title.Title;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -15,7 +16,7 @@ public class SendTitleAction extends QBaseAction {
     @Override
     public void play(Player player) {
         if (!conditions(player)) return;
-        player.showTitle(MessageUtil.parse(msg), MessageUtil.parse(subtitle), fadeIn, stay, fadeOut);
+        player.showTitle(Title.title(MessageUtil.parse(msg), MessageUtil.parse(subtitle)));
         onFinish(player);
     }
 

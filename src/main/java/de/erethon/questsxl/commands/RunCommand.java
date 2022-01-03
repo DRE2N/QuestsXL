@@ -1,7 +1,7 @@
 package de.erethon.questsxl.commands;
 
-import de.erethon.commons.chat.MessageUtil;
-import de.erethon.commons.command.DRECommand;
+import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.bedrock.command.ECommand;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.ActionManager;
 import de.erethon.questsxl.action.QAction;
@@ -16,7 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class RunCommand extends DRECommand {
+public class RunCommand extends ECommand {
 
     List<FriendlyError> errors = new ArrayList<>();
 

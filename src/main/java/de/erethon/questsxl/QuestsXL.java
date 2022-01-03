@@ -2,10 +2,10 @@ package de.erethon.questsxl;
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import de.erethon.aether.Aether;
-import de.erethon.commons.chat.MessageUtil;
-import de.erethon.commons.compatibility.Internals;
-import de.erethon.commons.javaplugin.DREPlugin;
-import de.erethon.commons.javaplugin.DREPluginSettings;
+import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.bedrock.compatibility.Internals;
+import de.erethon.bedrock.plugin.EPlugin;
+import de.erethon.bedrock.plugin.EPluginSettings;
 import de.erethon.questsxl.animation.AnimationManager;
 import de.erethon.questsxl.commands.QCommandCache;
 import de.erethon.questsxl.error.FriendlyError;
@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class QuestsXL extends DREPlugin implements Listener {
+public final class QuestsXL extends EPlugin implements Listener {
 
     static QuestsXL instance;
     public static String ERROR = "<dark_gray>[<red><bold>!<reset><dark_gray>]<gray> ";
@@ -70,9 +70,8 @@ public final class QuestsXL extends DREPlugin implements Listener {
     Aether aether;
 
     public QuestsXL() {
-        settings = DREPluginSettings.builder()
-                .paper(true)
-                .internals(Internals.v1_16_R3)
+        settings = EPluginSettings.builder()
+                .internals(Internals.v1_18_R1)
                 .build();
     }
 

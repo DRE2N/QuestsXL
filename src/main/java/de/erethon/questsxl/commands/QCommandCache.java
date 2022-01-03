@@ -1,14 +1,14 @@
 package de.erethon.questsxl.commands;
 
-import de.erethon.commons.command.DRECommandCache;
-import de.erethon.commons.javaplugin.DREPlugin;
+import de.erethon.bedrock.command.ECommandCache;
+import de.erethon.bedrock.plugin.EPlugin;
 
-public class QCommandCache extends DRECommandCache {
+public class QCommandCache extends ECommandCache {
 
     public static final String LABEL = "qxl";
-    DREPlugin plugin;
+    EPlugin plugin;
 
-    public QCommandCache(DREPlugin plugin) {
+    public QCommandCache(EPlugin plugin) {
             super(LABEL, plugin);
             this.plugin = plugin;
             addCommand(new TestCommand());

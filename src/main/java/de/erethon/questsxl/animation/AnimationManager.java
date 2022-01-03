@@ -1,6 +1,6 @@
 package de.erethon.questsxl.animation;
 
-import de.erethon.commons.chat.MessageUtil;
+import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import org.bukkit.configuration.file.YamlConfiguration;
 

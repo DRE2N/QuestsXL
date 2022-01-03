@@ -1,6 +1,6 @@
 package de.erethon.questsxl.events;
 
-import de.erethon.commons.chat.MessageUtil;
+import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.regions.QRegion;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;

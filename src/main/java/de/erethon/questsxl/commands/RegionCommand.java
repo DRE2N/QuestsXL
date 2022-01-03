@@ -1,7 +1,7 @@
 package de.erethon.questsxl.commands;
 
-import de.erethon.commons.chat.MessageUtil;
-import de.erethon.commons.command.DRECommand;
+import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.bedrock.command.ECommand;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.regions.QRegion;
 import de.erethon.questsxl.regions.QRegionManager;
@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 
 import java.util.stream.Collectors;
 
-public class RegionCommand extends DRECommand {
+public class RegionCommand extends ECommand {
 
     QuestsXL plugin = QuestsXL.getInstance();
     QRegionManager manager = plugin.getRegionManager();

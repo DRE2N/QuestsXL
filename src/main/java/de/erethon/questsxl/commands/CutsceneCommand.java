@@ -1,7 +1,7 @@
 package de.erethon.questsxl.commands;
 
-import de.erethon.commons.chat.MessageUtil;
-import de.erethon.commons.command.DRECommand;
+import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.bedrock.command.ECommand;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.QBaseAction;
 import de.erethon.questsxl.action.QDummyAction;
@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CutsceneCommand extends DRECommand  {
+public class CutsceneCommand extends ECommand {
 
 
         QuestsXL plugin = QuestsXL.getInstance();

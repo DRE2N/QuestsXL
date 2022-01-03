@@ -1,9 +1,8 @@
 package de.erethon.questsxl.commands;
 
-import com.comphenix.protocol.ProtocolLib;
 import com.comphenix.protocol.ProtocolLibrary;
-import de.erethon.commons.chat.MessageUtil;
-import de.erethon.commons.command.DRECommand;
+import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.bedrock.command.ECommand;
 import de.erethon.questsxl.QuestsXL;
 import net.minecraft.server.MinecraftServer;
 import org.bukkit.command.CommandSender;
@@ -12,7 +11,7 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.util.Date;
 
-public class MainCommand extends DRECommand {
+public class MainCommand extends ECommand {
 
 
     public MainCommand() {

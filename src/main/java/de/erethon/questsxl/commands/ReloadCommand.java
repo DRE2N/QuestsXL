@@ -1,14 +1,14 @@
 package de.erethon.questsxl.commands;
 
-import de.erethon.commons.chat.MessageUtil;
-import de.erethon.commons.command.DRECommand;
+import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.bedrock.command.ECommand;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.error.FriendlyError;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-public class ReloadCommand extends DRECommand {
+public class ReloadCommand extends ECommand {
 
 
     public ReloadCommand() {

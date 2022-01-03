@@ -1,6 +1,6 @@
 package de.erethon.questsxl.tools;
 
-import de.erethon.commons.chat.MessageUtil;
+import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import org.apache.logging.log4j.core.util.FileUtils;
 import org.bukkit.scheduler.BukkitRunnable;

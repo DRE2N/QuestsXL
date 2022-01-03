@@ -1,6 +1,6 @@
 package de.erethon.questsxl.action;
 
-import de.erethon.commons.chat.MessageUtil;
+import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.players.QPlayer;
 import de.erethon.questsxl.players.QPlayerCache;

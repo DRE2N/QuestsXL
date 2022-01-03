@@ -1,7 +1,7 @@
 package de.erethon.questsxl.commands;
 
-import de.erethon.commons.chat.MessageUtil;
-import de.erethon.commons.command.DRECommand;
+import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.bedrock.command.ECommand;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.players.QPlayer;
 import de.erethon.questsxl.quest.ActiveQuest;
@@ -11,7 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class AdminCommand extends DRECommand {
+public class AdminCommand extends ECommand {
 
     QuestsXL plugin = QuestsXL.getInstance();
 

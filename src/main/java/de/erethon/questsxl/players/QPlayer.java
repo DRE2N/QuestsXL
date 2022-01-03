@@ -2,7 +2,7 @@ package de.erethon.questsxl.players;
 
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
-import de.erethon.commons.chat.MessageUtil;
+import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.objectives.ActiveObjective;
