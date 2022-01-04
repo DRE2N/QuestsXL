@@ -22,14 +22,11 @@ public class QStageAction extends QBaseAction {
         if (!conditions(player)) return;
         QPlayer qPlayer = playerCache.get(player);
         QQuest quest = plugin.getQuestManager().getByName(questID);
-        MessageUtil.log("Looking for Stage progress " + quest.getName() );
         if (!qPlayer.hasQuest(quest)) {
-            MessageUtil.log("No quest");
             return;
         }
         ActiveQuest active = qPlayer.getActive(quest.getName());
         if (active == null) {
-            MessageUtil.log("No active");
             return;
         }
         active.setCurrentStage(quest.getStages().get(stageID));
