@@ -1,5 +1,7 @@
 package de.erethon.questsxl.listener;
 
+import de.erethon.aether.events.CreatureDeathEvent;
+import de.erethon.aether.events.InstancedCreatureDeathEvent;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.events.QRegionEnterEvent;
 import de.erethon.questsxl.events.QRegionLeaveEvent;
@@ -9,13 +11,19 @@ import de.erethon.questsxl.players.QPlayerCache;
 import de.erethon.questsxl.regions.QRegion;
 import de.erethon.questsxl.regions.QRegionManager;
 import de.erethon.questsxl.regions.RegionFlag;
+import de.fyreum.jobsxl.user.event.UserCraftItemEvent;
+import de.fyreum.jobsxl.user.event.UserGainJobExperienceEvent;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_18_R1.entity.CraftHumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -54,9 +62,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onInteractEntity(PlayerInteractEntityEvent event) {
-        for (ActiveObjective objective : cache.get(event.getPlayer()).getCurrentObjectives()) {
-            objective.check(event);
-        }
+        checkObjectives(event.getPlayer(), event);
     }
 
     @EventHandler
@@ -70,14 +76,50 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onRegionEnter(QRegionEnterEvent event) {
-        for (ActiveObjective objective : cache.get(event.getPlayer()).getCurrentObjectives()) {
-            objective.check(event);
-        }
+        checkObjectives(event.getPlayer(), event);
     }
     @EventHandler
     public void onRegionLeave(QRegionLeaveEvent event) {
-        for (ActiveObjective objective : cache.get(event.getPlayer()).getCurrentObjectives()) {
-            objective.check(event);
+        checkObjectives(event.getPlayer(), event);
+    }
+
+    @EventHandler
+    public void onCraft(CraftItemEvent event) {
+        checkObjectives((Player) event.getWhoClicked(), event);
+    }
+
+    @EventHandler
+    public void onJobCraft(UserCraftItemEvent event) {
+        checkObjectives(event.getUser().getPlayer(), event);
+    }
+
+    @EventHandler
+    public void onJobCraft(UserGainJobExperienceEvent event) {
+        checkObjectives(event.getUser().getPlayer(), event);
+    }
+
+    @EventHandler
+    public void onJobCraft(PlayerDeathEvent event) {
+        checkObjectives(event.getPlayer(), event);
+        Player killer = event.getPlayer().getKiller();
+        if (killer != null) {
+            checkObjectives(killer, event);
+        }
+    }
+
+    @EventHandler
+    public void onCreatureDeath(CreatureDeathEvent event) {
+        Player killer = event.getKiller();
+        if (killer != null) {
+            checkObjectives(killer, event);
+        }
+    }
+
+    @EventHandler
+    public void onInstancedCreatureDeath(InstancedCreatureDeathEvent event) {
+        Player killer = event.getKiller();
+        if (killer != null) {
+            checkObjectives(killer, event);
         }
     }
 
@@ -109,6 +151,12 @@ public class PlayerListener implements Listener {
             return region.hasQuestFlag(flag);
         }
         return region.hasPublicFlag(flag);
+    }
+
+    private void checkObjectives(Player player, Event event) {
+        for (ActiveObjective objective : cache.get(player).getCurrentObjectives()) {
+            objective.check(event);
+        }
     }
 
 }
