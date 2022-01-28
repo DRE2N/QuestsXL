@@ -27,7 +27,8 @@ java {
 
 dependencies {
     paperDevBundle("1.18.1-R0.1-SNAPSHOT")
-    compileOnly("de.erethon:aether:1.0-SNAPSHOT")
+    compileOnly("de.erethon.aether:Aether:1.0.0-SNAPSHOT")
+    implementation("de.fyreum:JobsXL:1.0-SNAPSHOT")
     implementation("de.erethon:bedrock:1.0.0") { isTransitive = false }
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.0.0-SNAPSHOT") { isTransitive = false }
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.0.0-SNAPSHOT") { isTransitive = false }
@@ -79,7 +80,7 @@ tasks {
         load = BukkitPluginDescription.PluginLoadOrder.STARTUP
         main = "de.erethon.questsxl.QuestsXL"
         apiVersion = "1.18"
-        authors = listOf("Malfrador")
+        authors = listOf("Malfrador", "Fyreum")
         commands {
             register("quests") {
                 description = "Main command for Aether"

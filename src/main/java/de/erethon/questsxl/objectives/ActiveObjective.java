@@ -15,6 +15,7 @@ public class ActiveObjective {
         this.player = player;
         this.objective = objective;
         this.stage = stage;
+        objective.onStart(player);
     }
 
     public void check(Event event) {

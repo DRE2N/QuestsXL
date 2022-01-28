@@ -200,7 +200,7 @@ public class QPlayer {
         if (chatQueue.isEmpty()) {
             return;
         }
-        player.sendMessage(MiniMessage.get().parse("<hover:show_text:'<yellow><italic>Diese Nachrichten hast du verpasst,\nwährend du die Quest-Konversation gelesen hast.'><dark_gray>[...]"));
+        player.sendMessage(MiniMessage.miniMessage().parse("<hover:show_text:'<yellow><italic>Diese Nachrichten hast du verpasst,\nwährend du die Quest-Konversation gelesen hast.'><dark_gray>[...]"));
         for (WrappedChatComponent chatComponent : chatQueue) {
             WrapperPlayServerChat chat = new WrapperPlayServerChat();
             chat.setMessage(chatComponent);
@@ -212,7 +212,7 @@ public class QPlayer {
 
     public void sendConversationMsg(String raw) {
         isInConversation = false;
-        Component message = MiniMessage.get().parse(raw);
+        Component message = MiniMessage.miniMessage().parse(raw);
         player.sendMessage(message);
         isInConversation = true;
     }

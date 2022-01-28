@@ -143,6 +143,7 @@ public abstract class QBaseObjective implements QObjective {
     public void load(String[] c) {
 
     }
+
     @Override
     public void load(ConfigurationSection section) {
         if (section.contains("display")) {
@@ -166,5 +167,10 @@ public abstract class QBaseObjective implements QObjective {
         if (section.contains("persistent")) {
             persistent = section.getBoolean("persistent");
         }
+    }
+
+    @Override
+    public void onStart(QPlayer player) {
+
     }
 }

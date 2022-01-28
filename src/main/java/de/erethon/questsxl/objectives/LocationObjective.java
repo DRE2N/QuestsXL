@@ -1,6 +1,5 @@
 package de.erethon.questsxl.objectives;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -24,7 +23,7 @@ public class LocationObjective extends AbstractLocationBasedObjective {
         if (location == null) {
             return;
         }
-        if (event.getTo().distance(location) < distance) {
+        if (event.getTo().distance(location) <= distance) {
             complete(event.getPlayer(), this);
         }
     }
@@ -41,5 +40,8 @@ public class LocationObjective extends AbstractLocationBasedObjective {
         }
         location = new Location(Bukkit.getWorld(world), x, y, z);
         distance = section.getInt("range");
+        if (distance <= 0) {
+            throw new RuntimeException("The location objective in " + section.getName() + " contains a negative range.");
+        }
     }
 }
