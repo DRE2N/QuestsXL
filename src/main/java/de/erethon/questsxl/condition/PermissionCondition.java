@@ -18,6 +18,11 @@ public class PermissionCondition extends QBaseCondition {
     @Override
     public void load(ConfigurationSection section) {
         super.load(section);
+        permission = section.getString("permission");
     }
 
+    @Override
+    public void load(String[] c) {
+        permission = c[0];
+    }
 }

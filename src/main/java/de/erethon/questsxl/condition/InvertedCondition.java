@@ -16,10 +16,10 @@ public class InvertedCondition extends QBaseCondition {
         for (QCondition condition : conditions) {
             MessageUtil.log("Checking " + condition.getClass().getSimpleName() + ": " + condition.check(player));
             if (!condition.check(player)) {
-                return true;
+                return success(player);
             }
         }
-        return false;
+        return fail(player);
     }
 
     @Override

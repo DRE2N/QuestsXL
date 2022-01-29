@@ -8,6 +8,7 @@ public enum Condition {
     GROUP_SIZE,
     INVENTORY,
     INVERTED,
+    JOB_LEVEL,
     LEVEL,
     LOCATION,
     LOOKING_AT,

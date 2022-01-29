@@ -29,6 +29,7 @@ public class ConditionManager {
                 case GROUP_SIZE -> condition = new GroupSizeCondition();
                 case INVENTORY -> condition = new InventoryCondition();
                 case INVERTED -> condition = new InvertedCondition();
+                case JOB_LEVEL -> condition = new JobLevelCondition();
                 case LEVEL -> condition = new LevelCondition();
                 case LOCATION -> condition = new LocationCondition();
                 case LOOKING_AT -> condition = new LookingAtCondition();

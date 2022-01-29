@@ -12,10 +12,10 @@ public class CompletedQuestCondition extends QBaseCondition {
     public boolean check(QPlayer player) {
         for (QQuest quest : player.getCompletedQuests().keySet()) {
             if (quest.getName().equalsIgnoreCase(questName)) {
-                return true;
+                return success(player);
             }
         }
-        return false;
+        return fail(player);
     }
 
     @Override
@@ -24,4 +24,8 @@ public class CompletedQuestCondition extends QBaseCondition {
         questName = section.getString("quest");
     }
 
+    @Override
+    public void load(String[] c) {
+        questName = c[0];
+    }
 }

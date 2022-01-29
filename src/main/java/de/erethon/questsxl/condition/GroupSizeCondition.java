@@ -1,5 +1,6 @@
 package de.erethon.questsxl.condition;
 
+import de.erethon.bedrock.misc.NumberUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.player.QPlayerCache;
@@ -14,14 +15,24 @@ public class GroupSizeCondition extends QBaseCondition {
     public boolean check(QPlayer player) {
         QPlayerCache cache = QuestsXL.getInstance().getPlayerCache();
         if (!cache.isInGroup(player)) {
-            return false;
+            return fail(player);
         }
-        return cache.getGroup(player).getMembers().size() >= min && cache.getGroup(player).getMembers().size() <= max;
+        if (cache.getGroup(player).getMembers().size() >= min && cache.getGroup(player).getMembers().size() <= max) {
+            return success(player);
+        }
+        return fail(player);
     }
-
 
     @Override
     public void load(ConfigurationSection section) {
         super.load(section);
+        min = section.getInt("min");
+        max = section.getInt("max");
+    }
+
+    @Override
+    public void load(String[] c) {
+        min = NumberUtil.parseInt(c[0]);
+        max = NumberUtil.parseInt(c[1]);
     }
 }

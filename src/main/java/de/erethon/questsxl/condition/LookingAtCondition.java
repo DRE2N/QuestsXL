@@ -53,8 +53,4 @@ public class LookingAtCondition extends QBaseCondition {
         locTarget = new Location(Bukkit.getWorld(world), x, y, z);
     }
 
-    @Override
-    public void load(String[] msg) {
-
-    }
 }

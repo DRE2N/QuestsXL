@@ -19,6 +19,7 @@ import de.erethon.questsxl.quest.QuestManager;
 import de.erethon.questsxl.region.QRegionManager;
 import de.erethon.questsxl.respawn.RespawnPointManager;
 import de.erethon.questsxl.tool.GitSync;
+import de.fyreum.jobsxl.JobsXL;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -67,6 +68,7 @@ public final class QuestsXL extends EPlugin implements Listener {
     private boolean showStacktraces = true;
 
     Aether aether;
+    JobsXL jobsXL;
 
     public QuestsXL() {
         settings = EPluginSettings.builder()
@@ -134,6 +136,7 @@ public final class QuestsXL extends EPlugin implements Listener {
             }
         }
         aether = (Aether) Bukkit.getPluginManager().getPlugin("Aether");
+        jobsXL = (JobsXL) Bukkit.getPluginManager().getPlugin("JobsXL");
         qPlayerCache = new QPlayerCache();
         getServer().getPluginManager().registerEvents(qPlayerCache, this);
 
@@ -214,6 +217,10 @@ public final class QuestsXL extends EPlugin implements Listener {
 
     public Aether getAether() {
         return aether;
+    }
+
+    public JobsXL getJobsXL() {
+        return jobsXL;
     }
 
     public QRegionManager getRegionManager() {

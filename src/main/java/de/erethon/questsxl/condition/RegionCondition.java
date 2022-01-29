@@ -18,14 +18,13 @@ public class RegionCondition extends QBaseCondition {
     }
 
     @Override
-    public void load(String[] c) {
-        super.load(c);
-        region = QuestsXL.getInstance().getRegionManager().getByID(c[0]);
-    }
-
-    @Override
     public void load(ConfigurationSection section) {
         super.load(section);
         region = QuestsXL.getInstance().getRegionManager().getByID(section.getString("region"));
+    }
+
+    @Override
+    public void load(String[] c) {
+        region = QuestsXL.getInstance().getRegionManager().getByID(c[0]);
     }
 }

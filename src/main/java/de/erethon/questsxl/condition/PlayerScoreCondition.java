@@ -1,5 +1,6 @@
 package de.erethon.questsxl.condition;
 
+import de.erethon.bedrock.misc.NumberUtil;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -10,13 +11,16 @@ public class PlayerScoreCondition extends QBaseCondition {
 
     @Override
     public boolean check(QPlayer player) {
-        return player.getScore(score) >= value;
+        if (player.getScore(score) >= value) {
+            return success(player);
+        }
+        return fail(player);
     }
 
     @Override
     public void load(String[] c) {
         score = c[0];
-        value = Integer.parseInt(c[1]);
+        value = NumberUtil.parseInt(c[1]);
     }
 
     @Override

@@ -15,7 +15,10 @@ public class EventStateCondition extends QBaseCondition {
 
     @Override
     public boolean check(QPlayer player) {
-        return event.getState() == state;
+        if (event.getState() == state) {
+            return success(player);
+        }
+        return fail(player);
     }
 
     @Override
