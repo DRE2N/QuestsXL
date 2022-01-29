@@ -1,6 +1,6 @@
 package de.erethon.questsxl.condition;
 
-import de.erethon.questsxl.players.QPlayer;
+import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class PlayerScoreCondition extends QBaseCondition {

@@ -2,9 +2,6 @@ package de.erethon.questsxl.quest;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.objectives.LocationObjective;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
 
 import java.io.File;
 import java.util.HashSet;

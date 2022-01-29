@@ -2,7 +2,7 @@ package de.erethon.questsxl.condition;
 
 import de.erethon.questsxl.action.ActionManager;
 import de.erethon.questsxl.action.QAction;
-import de.erethon.questsxl.players.QPlayer;
+import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashSet;

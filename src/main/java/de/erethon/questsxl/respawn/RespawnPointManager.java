@@ -1,7 +1,6 @@
 package de.erethon.questsxl.respawn;
 
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.players.QPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;

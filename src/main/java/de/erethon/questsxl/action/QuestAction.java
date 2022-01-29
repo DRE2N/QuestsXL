@@ -1,8 +1,8 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.players.QPlayer;
-import de.erethon.questsxl.players.QPlayerCache;
+import de.erethon.questsxl.player.QPlayer;
+import de.erethon.questsxl.player.QPlayerCache;
 import de.erethon.questsxl.quest.QQuest;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;

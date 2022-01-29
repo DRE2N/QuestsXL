@@ -1,7 +1,7 @@
 package de.erethon.questsxl.condition;
 
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.players.QPlayer;
+import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.QQuest;
 import de.erethon.questsxl.quest.QuestManager;
 import org.bukkit.configuration.ConfigurationSection;

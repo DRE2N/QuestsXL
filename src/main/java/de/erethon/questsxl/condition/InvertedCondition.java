@@ -1,13 +1,10 @@
 package de.erethon.questsxl.condition;
 
 import de.erethon.bedrock.chat.MessageUtil;
-import de.erethon.questsxl.players.QPlayer;
-import org.bukkit.Material;
+import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class InvertedCondition extends QBaseCondition {

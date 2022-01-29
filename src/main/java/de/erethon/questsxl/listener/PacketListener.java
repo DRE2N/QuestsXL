@@ -8,9 +8,9 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.players.QPlayer;
-import de.erethon.questsxl.players.QPlayerCache;
-import de.erethon.questsxl.tools.packetwrapper.WrapperPlayServerChat;
+import de.erethon.questsxl.player.QPlayer;
+import de.erethon.questsxl.player.QPlayerCache;
+import de.erethon.questsxl.tool.packetwrapper.WrapperPlayServerChat;
 
 public class PacketListener {
 

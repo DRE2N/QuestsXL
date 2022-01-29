@@ -1,13 +1,11 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.tools.BeamTool;
+import de.erethon.questsxl.tool.BeamTool;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.HashMap;
 
 enum BeamChange {
     SHOW,

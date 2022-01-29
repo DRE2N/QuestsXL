@@ -1,8 +1,8 @@
 package de.erethon.questsxl.condition;
 
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.players.QPlayer;
-import de.erethon.questsxl.regions.QRegion;
+import de.erethon.questsxl.player.QPlayer;
+import de.erethon.questsxl.region.QRegion;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class RegionCondition extends QBaseCondition {

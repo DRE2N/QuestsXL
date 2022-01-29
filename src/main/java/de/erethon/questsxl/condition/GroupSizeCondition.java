@@ -1,9 +1,8 @@
 package de.erethon.questsxl.condition;
 
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.players.QPlayer;
-import de.erethon.questsxl.players.QPlayerCache;
-import org.bukkit.Material;
+import de.erethon.questsxl.player.QPlayer;
+import de.erethon.questsxl.player.QPlayerCache;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class GroupSizeCondition extends QBaseCondition {

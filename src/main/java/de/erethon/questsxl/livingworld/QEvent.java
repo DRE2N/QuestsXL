@@ -3,7 +3,7 @@ package de.erethon.questsxl.livingworld;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.error.FriendlyError;
-import de.erethon.questsxl.players.QPlayer;
+import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.Completable;
 import de.erethon.questsxl.quest.QStage;
 import org.bukkit.configuration.ConfigurationSection;

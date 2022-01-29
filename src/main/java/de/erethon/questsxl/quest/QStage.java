@@ -5,10 +5,10 @@ import de.erethon.questsxl.action.ActionManager;
 import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.condition.ConditionManager;
 import de.erethon.questsxl.condition.QCondition;
-import de.erethon.questsxl.objectives.ActiveObjective;
-import de.erethon.questsxl.objectives.ObjectiveManager;
-import de.erethon.questsxl.objectives.QObjective;
-import de.erethon.questsxl.players.QPlayer;
+import de.erethon.questsxl.objective.ActiveObjective;
+import de.erethon.questsxl.objective.ObjectiveManager;
+import de.erethon.questsxl.objective.QObjective;
+import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashSet;

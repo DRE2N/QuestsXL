@@ -1,9 +1,7 @@
 package de.erethon.questsxl.quest;
 
-import de.erethon.questsxl.players.QPlayer;
-import org.bukkit.configuration.ConfigurationSection;
+import de.erethon.questsxl.player.QPlayer;
 
-import java.io.File;
 import java.util.List;
 import java.util.Set;
 
