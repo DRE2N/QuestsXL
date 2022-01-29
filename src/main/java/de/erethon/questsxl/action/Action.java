@@ -7,6 +7,7 @@ public enum Action {
     DELAY,
     GIVE_ITEM,
     HIDE_IBC,
+    JOB_EXP,
     MESSAGE,
     MOB_FOLLOW_PLAYER,
     PASTE_SCHEMATIC,

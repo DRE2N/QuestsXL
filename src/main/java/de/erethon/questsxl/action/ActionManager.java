@@ -30,6 +30,7 @@ public class ActionManager {
                 case DELAY -> action = new DelayAction();
                 case GIVE_ITEM -> action = new GiveItemAction();
                 case HIDE_IBC -> action = new HideIBC();
+                case JOB_EXP -> action = new JobExpAction();
                 case MESSAGE -> action = new SendMessage();
                 case MOB_FOLLOW_PLAYER -> action = new MobFollowPlayerAction();
                 case PASTE_SCHEMATIC -> action = new PasteSchematicAction();

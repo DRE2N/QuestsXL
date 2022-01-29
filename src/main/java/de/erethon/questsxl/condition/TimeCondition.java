@@ -50,7 +50,7 @@ public class TimeCondition extends QBaseCondition {
         minMinute = NumberUtil.parseInt(c[1]);
         maxHour = NumberUtil.parseInt(c[2]);
         maxMinute = NumberUtil.parseInt(c[3]);
-        String timeZone = c[4] != null ? c[4] : "ECT";
+        String timeZone = c.length > 4 ? c[4] : "ECT";
         dateFormat.setTimeZone(TimeZone.getTimeZone(timeZone));
     }
 }
