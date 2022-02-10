@@ -93,12 +93,12 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onJobCraft(UserGainJobExperienceEvent event) {
+    public void onJobExpGain(UserGainJobExperienceEvent event) {
         checkObjectives(event.getUser().getPlayer(), event);
     }
 
     @EventHandler
-    public void onJobCraft(PlayerDeathEvent event) {
+    public void onPlayerDeath(PlayerDeathEvent event) {
         checkObjectives(event.getPlayer(), event);
         Player killer = event.getPlayer().getKiller();
         if (killer != null) {
