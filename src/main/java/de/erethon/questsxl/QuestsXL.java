@@ -12,6 +12,7 @@ import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.global.GlobalObjectives;
 import de.erethon.questsxl.instancing.BlockCollectionManager;
 import de.erethon.questsxl.listener.PacketListener;
+import de.erethon.questsxl.listener.PlayerJobListener;
 import de.erethon.questsxl.listener.PlayerListener;
 import de.erethon.questsxl.livingworld.QEventManager;
 import de.erethon.questsxl.player.QPlayerCache;
@@ -60,6 +61,7 @@ public final class QuestsXL extends EPlugin implements Listener {
     QCommandCache commandCache;
     GlobalObjectives globalObjectives;
     PlayerListener playerListener;
+    PlayerJobListener playerJobListener;
     PacketListener packetListener;
 
     private Map<String, Integer> scores = new HashMap<>();
@@ -172,6 +174,12 @@ public final class QuestsXL extends EPlugin implements Listener {
 
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(playerListener, this);
+
+        // dependency listeners
+        if (jobsXL != null) {
+            playerJobListener = new PlayerJobListener();
+            getServer().getPluginManager().registerEvents(playerJobListener, this);
+        }
     }
 
 

@@ -7,18 +7,13 @@ import de.erethon.questsxl.event.QRegionEnterEvent;
 import de.erethon.questsxl.event.QRegionLeaveEvent;
 import de.erethon.questsxl.objective.ActiveObjective;
 import de.erethon.questsxl.player.QPlayer;
-import de.erethon.questsxl.player.QPlayerCache;
 import de.erethon.questsxl.region.QRegion;
 import de.erethon.questsxl.region.QRegionManager;
 import de.erethon.questsxl.region.RegionFlag;
-import de.fyreum.jobsxl.user.event.UserCraftItemEvent;
-import de.fyreum.jobsxl.user.event.UserGainJobExperienceEvent;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -26,9 +21,8 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-public class PlayerListener implements Listener {
+public class PlayerListener extends AbstractListener {
 
-    QPlayerCache cache = QuestsXL.getInstance().getPlayerCache();
     QRegionManager manager = QuestsXL.getInstance().getRegionManager();
 
     @EventHandler
@@ -88,16 +82,6 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onJobCraft(UserCraftItemEvent event) {
-        checkObjectives(event.getUser().getPlayer(), event);
-    }
-
-    @EventHandler
-    public void onJobExpGain(UserGainJobExperienceEvent event) {
-        checkObjectives(event.getUser().getPlayer(), event);
-    }
-
-    @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         checkObjectives(event.getPlayer(), event);
         Player killer = event.getPlayer().getKiller();
@@ -150,12 +134,6 @@ public class PlayerListener implements Listener {
             return region.hasQuestFlag(flag);
         }
         return region.hasPublicFlag(flag);
-    }
-
-    private void checkObjectives(Player player, Event event) {
-        for (ActiveObjective objective : cache.get(player).getCurrentObjectives()) {
-            objective.check(event);
-        }
     }
 
 }
