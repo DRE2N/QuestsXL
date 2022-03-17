@@ -34,7 +34,7 @@ public class PacketListener {
             return;
         }
         QPlayer qPlayer = cache.get(event.getPlayer());
-        if (qPlayer.isInConversation()) {
+        if (qPlayer != null && qPlayer.isInConversation()) {
             event.setCancelled(true);
             qPlayer.addChat(packet.getMessage());
         }
