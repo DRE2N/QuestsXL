@@ -7,10 +7,11 @@ repositories {
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
     maven("https://repo.dmulloy2.net/repository/public/")
     maven("https://jitpack.io")
+    mavenCentral()
 }
 plugins {
     `java-library`
-    id("io.papermc.paperweight.userdev") version "1.3.3"
+    id("io.papermc.paperweight.userdev") version "1.3.6-SNAPSHOT"
     id("xyz.jpenilla.run-paper") version "1.0.6" // Adds runServer and runMojangMappedServer tasks for testing
     id ("com.github.johnrengelman.shadow") version "7.1.2"
     id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
@@ -26,13 +27,13 @@ java {
 }
 
 dependencies {
-    paperDevBundle("1.18.1-R0.1-SNAPSHOT")
+    paperDevBundle("1.18.2-R0.1-SNAPSHOT")
     compileOnly("de.erethon.aether:Aether:1.0.0-SNAPSHOT")
-    implementation("de.fyreum:JobsXL:1.0-SNAPSHOT")
-    implementation("de.erethon:bedrock:1.0.0") { isTransitive = false }
-    compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.0.0-SNAPSHOT") { isTransitive = false }
-    compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.0.0-SNAPSHOT") { isTransitive = false }
-    compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0-SNAPSHOT")
+    implementation("de.fyreum:JobsXL:1.0-SNAPSHOT") { isTransitive = false }
+    implementation("de.erethon:bedrock:1.2.0") { isTransitive = false }
+    compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.0.1") { isTransitive = false }
+    compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.0.1") { isTransitive = false }
+    compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7") { isTransitive = false }
     // paperweightDevBundle("com.example.paperfork", "1.18.1-R0.1-SNAPSHOT")
 
@@ -72,9 +73,9 @@ tasks {
 
     shadowJar {
         dependencies {
-            include(dependency("de.erethon:bedrock:1.0.0"))
+            include(dependency("de.erethon:bedrock:1.2.0"))
         }
-        relocate("de.erethon.bedrock", "de.erethon.aether.bedrock")
+        relocate("de.erethon.bedrock", "de.erethon.questsxl.bedrock")
     }
     bukkit {
         load = BukkitPluginDescription.PluginLoadOrder.STARTUP
