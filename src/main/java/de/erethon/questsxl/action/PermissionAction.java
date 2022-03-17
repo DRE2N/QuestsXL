@@ -1,29 +1,27 @@
 package de.erethon.questsxl.action;
 
-import com.google.gson.Gson;
 import de.erethon.questsxl.QuestsXL;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
-enum PermissionAction {
+enum EPermissionAction {
     ADD,
     REMOVE,
     ADD_GROUP,
     REMOVE_GROUP
 }
-public class QPermissionAction extends QBaseAction {
+public class PermissionAction extends QBaseAction {
 
     private String permission;
     private transient RegisteredServiceProvider<Permission> rsp;
-    private PermissionAction action;
+    private EPermissionAction action;
 
-    public QPermissionAction() { }
-    public QPermissionAction(String id) {
+    public PermissionAction() { }
+    public PermissionAction(String id) {
         this.id = id;
     }
-    public QPermissionAction(String permission, PermissionAction action) {
+    public PermissionAction(String permission, EPermissionAction action) {
         this.permission = permission;
         this.action = action;
         rsp = QuestsXL.getInstance().getServer().getServicesManager().getRegistration(Permission.class);

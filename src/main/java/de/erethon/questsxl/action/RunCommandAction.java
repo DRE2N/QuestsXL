@@ -6,7 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-public class QCommandAction extends QBaseAction {
+public class RunCommandAction extends QBaseAction {
 
     private transient final QuestsXL plugin = QuestsXL.getInstance();
     private String command;

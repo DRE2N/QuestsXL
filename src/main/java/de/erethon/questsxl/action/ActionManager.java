@@ -25,7 +25,7 @@ public class ActionManager {
             QAction action = null;
             switch (Action.valueOf(type.toUpperCase())) {
                 case ANIMATION -> action = new PlayAnimationAction();
-                case COMMAND -> action = new QCommandAction();
+                case COMMAND -> action = new RunCommandAction();
                 case CUTSCENE -> action = new PlayCutsceneAction();
                 case DELAY -> action = new DelayAction();
                 case GIVE_ITEM -> action = new GiveItemAction();
@@ -34,15 +34,15 @@ public class ActionManager {
                 case MESSAGE -> action = new SendMessage();
                 case MOB_FOLLOW_PLAYER -> action = new MobFollowPlayerAction();
                 case PASTE_SCHEMATIC -> action = new PasteSchematicAction();
-                case PERMISSION -> action = new QPermissionAction();
+                case PERMISSION -> action = new PermissionAction();
                 case REPEAT -> action = new RepeatAction();
                 case RESET_IBC -> action = new ResetIBC();
-                case SHOW_BEAM -> action = new QDisplayBeam();
+                case SHOW_BEAM -> action = new DisplayLocationMarkerAction();
                 case SHOW_IBC -> action = new ShowIBC();
                 case SPAWN_MOB -> action = new SpawnMobAction();
-                case STAGE -> action = new QStageAction();
+                case STAGE -> action = new StageAction();
                 case START_QUEST -> action = new QuestAction();
-                case TELEPORT -> action = new QTeleportAction();
+                case TELEPORT -> action = new TeleportPlayerAction();
                 case TITLE -> action = new SendTitleAction();
             }
             try {

@@ -9,7 +9,7 @@ import de.erethon.questsxl.quest.QQuest;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-public class QStageAction extends QBaseAction {
+public class StageAction extends QBaseAction {
 
     QuestsXL plugin = QuestsXL.getInstance();
     QPlayerCache playerCache = plugin.getPlayerCache();

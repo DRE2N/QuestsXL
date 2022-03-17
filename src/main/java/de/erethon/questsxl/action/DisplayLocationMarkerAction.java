@@ -18,18 +18,18 @@ enum BeamChange {
  * the start location needs to be in frame for the player,
  * otherwise it won't get rendered
  */
-public class QDisplayBeam extends QBaseAction {
+public class DisplayLocationMarkerAction extends QBaseAction {
 
     private Location start;
     private Location end;
     private BeamChange action;
     private transient BeamTool beam;
 
-    public QDisplayBeam() {}
-    public QDisplayBeam(String id) {
+    public DisplayLocationMarkerAction() {}
+    public DisplayLocationMarkerAction(String id) {
         this.id = id;
     }
-    public QDisplayBeam(Player player, Location start, Location end, BeamChange action) {
+    public DisplayLocationMarkerAction(Player player, Location start, Location end, BeamChange action) {
         this.start = start;
         this.end = end;
         this.action = action;

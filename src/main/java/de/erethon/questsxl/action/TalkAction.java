@@ -9,7 +9,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class QTalkAction extends QBaseAction {
+public class TalkAction extends QBaseAction {
 
     Map<String, Integer> messages = new LinkedHashMap<>();
 

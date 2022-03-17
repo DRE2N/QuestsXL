@@ -1,10 +1,9 @@
 package de.erethon.questsxl.action;
 
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-public class QDummyAction extends QBaseAction {
+public class DummyAction extends QBaseAction {
     @Override
     public void play(Player player) {
     }

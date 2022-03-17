@@ -1,6 +1,5 @@
 package de.erethon.questsxl.action;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -10,7 +9,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 
-public class QTeleportAction extends QBaseAction{
+public class TeleportPlayerAction extends QBaseAction{
 
     Location target;
 
