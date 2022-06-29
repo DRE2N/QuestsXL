@@ -1,3 +1,8 @@
+**Actions* können, wie alle anderen QXL-Funktionen, in einer Lang- und Kurzschreibweise geschrieben werden. Die Kurzschreibweise nutzt dabei nur eine Zeile.
+Für einige komplexe Actions steht die Kurzschreibweise nicht zur Verfügung.
+
+In dieser Dokumentation wird die Kurzschreibweise zu erst genannt und dann die Langschreibweise.
+
 ## Animation
 Spielt eine Animation ab.
 
