@@ -2,6 +2,7 @@ package de.erethon.questsxl.player;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.dialogue.ActiveDialogue;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,7 +11,11 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class QPlayerCache implements Listener {
 
@@ -64,7 +69,14 @@ public class QPlayerCache implements Listener {
 
     @EventHandler
     public void logoffEvent(PlayerQuitEvent event) {
-        players.remove(event.getPlayer());
+        QPlayer removed = players.remove(event.getPlayer());
+        if (removed == null) {
+            return;
+        }
+        ActiveDialogue activeDialogue = removed.getActiveDialogue();
+        if (activeDialogue != null) {
+            activeDialogue.cancel();
+        }
     }
 
     public static File getFile(UUID uuid) {

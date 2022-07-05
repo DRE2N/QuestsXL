@@ -1,24 +1,48 @@
 package de.erethon.questsxl.action;
 
+import java.util.function.Supplier;
+
 public enum Action {
-    ANIMATION,
-    COMMAND,
-    CUTSCENE,
-    DELAY,
-    GIVE_ITEM,
-    HIDE_IBC,
-    JOB_EXP,
-    MESSAGE,
-    MOB_FOLLOW_PLAYER,
-    PASTE_SCHEMATIC,
-    PERMISSION,
-    REPEAT,
-    RESET_IBC,
-    SHOW_BEAM,
-    SHOW_IBC,
-    SPAWN_MOB,
-    STAGE,
-    START_QUEST,
-    TELEPORT,
-    TITLE
+
+    ANIMATION(PlayAnimationAction::new),
+    COMMAND(RunCommandAction::new),
+    CUTSCENE(PlayCutsceneAction::new),
+    DELAY(DelayAction::new),
+    GIVE_ITEM(GiveItemAction::new),
+    HIDE_IBC(HideIBC::new),
+    JOB_EXP(JobExpAction::new),
+    MESSAGE(SendMessage::new),
+    MOB_FOLLOW_PLAYER(MobFollowPlayerAction::new),
+    PASTE_SCHEMATIC(PasteSchematicAction.class), // debug
+    PERMISSION(PermissionAction::new),
+    REPEAT(RepeatAction::new),
+    RESET_IBC(ResetIBC::new),
+    SHOW_BEAM(DisplayLocationMarkerAction::new),
+    SHOW_IBC(ShowIBC::new),
+    SPAWN_MOB(SpawnMobAction::new),
+    STAGE(StageAction::new),
+    START_QUEST(QuestAction::new),
+    TELEPORT(TeleportPlayerAction::new),
+    TITLE(SendTitleAction::new);
+
+    private final Supplier<QAction> supplier;
+
+    Action(Supplier<QAction> supplier) {
+        this.supplier = supplier;
+    }
+
+    Action(Class<? extends QAction> clazz) { // for debugging reason (ugly)
+        supplier = () -> {
+            try {
+                return clazz.newInstance();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        };
+    }
+
+    public QAction newInstance() {
+        return supplier.get();
+    }
 }

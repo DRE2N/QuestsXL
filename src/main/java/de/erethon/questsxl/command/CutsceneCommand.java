@@ -3,7 +3,7 @@ package de.erethon.questsxl.command;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.action.QDummyAction;
+import de.erethon.questsxl.action.DummyAction;
 import de.erethon.questsxl.animation.AnimationManager;
 import de.erethon.questsxl.animation.QCutscene;
 import org.bukkit.Location;
@@ -113,7 +113,7 @@ public class CutsceneCommand extends ECommand {
                     MessageUtil.sendMessage(player, QuestsXL.ERROR + "Diese Cutscene existiert nicht.");
                     return;
                 }
-                cutscene.play(player, new QDummyAction());
+                cutscene.play(player, new DummyAction());
                 MessageUtil.sendMessage(player, "&7Spiele Cutscene &a" + args[2] + " &7ab...");
                 return;
             }

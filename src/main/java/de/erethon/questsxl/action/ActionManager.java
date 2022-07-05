@@ -22,29 +22,7 @@ public class ActionManager {
                 subsection = section.getConfigurationSection(key);
                 type = subsection.getString("type");
             }
-            QAction action = null;
-            switch (Action.valueOf(type.toUpperCase())) {
-                case ANIMATION -> action = new PlayAnimationAction();
-                case COMMAND -> action = new RunCommandAction();
-                case CUTSCENE -> action = new PlayCutsceneAction();
-                case DELAY -> action = new DelayAction();
-                case GIVE_ITEM -> action = new GiveItemAction();
-                case HIDE_IBC -> action = new HideIBC();
-                case JOB_EXP -> action = new JobExpAction();
-                case MESSAGE -> action = new SendMessage();
-                case MOB_FOLLOW_PLAYER -> action = new MobFollowPlayerAction();
-                case PASTE_SCHEMATIC -> action = new PasteSchematicAction();
-                case PERMISSION -> action = new PermissionAction();
-                case REPEAT -> action = new RepeatAction();
-                case RESET_IBC -> action = new ResetIBC();
-                case SHOW_BEAM -> action = new DisplayLocationMarkerAction();
-                case SHOW_IBC -> action = new ShowIBC();
-                case SPAWN_MOB -> action = new SpawnMobAction();
-                case STAGE -> action = new StageAction();
-                case START_QUEST -> action = new QuestAction();
-                case TELEPORT -> action = new TeleportPlayerAction();
-                case TITLE -> action = new SendTitleAction();
-            }
+            QAction action = Action.valueOf(type.toUpperCase()).newInstance();
             try {
                 if (shorthand) {
                     action.load(split(section.getString(key)));

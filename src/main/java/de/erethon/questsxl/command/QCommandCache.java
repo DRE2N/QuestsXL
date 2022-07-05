@@ -21,5 +21,6 @@ public class QCommandCache extends ECommandCache {
             addCommand(new SyncCommand());
             addCommand(new ReloadCommand());
             addCommand(new RunCommand());
+            addCommand(new DialogueCommand());
     }
 }

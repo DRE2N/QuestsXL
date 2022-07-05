@@ -1,8 +1,12 @@
 package de.erethon.questsxl.listener;
 
 import de.erethon.aether.events.CreatureDeathEvent;
+import de.erethon.aether.events.CreatureInteractEvent;
 import de.erethon.aether.events.InstancedCreatureDeathEvent;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.dialogue.ActiveDialogue;
+import de.erethon.questsxl.dialogue.QDialogue;
+import de.erethon.questsxl.dialogue.QDialogueManager;
 import de.erethon.questsxl.event.QRegionEnterEvent;
 import de.erethon.questsxl.event.QRegionLeaveEvent;
 import de.erethon.questsxl.objective.ActiveObjective;
@@ -23,7 +27,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 public class PlayerListener extends AbstractListener {
 
-    QRegionManager manager = QuestsXL.getInstance().getRegionManager();
+    QRegionManager regionManager = QuestsXL.getInstance().getRegionManager();
+    QDialogueManager dialogueManager = QuestsXL.getInstance().getDialogueManager();
 
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
@@ -41,8 +46,8 @@ public class PlayerListener extends AbstractListener {
             objective.check(event);
         }
         // Regions
-        QRegion regionFrom = manager.getByLocation(event.getFrom());
-        QRegion regionTo = manager.getByLocation(event.getTo());
+        QRegion regionFrom = regionManager.getByLocation(event.getFrom());
+        QRegion regionTo = regionManager.getByLocation(event.getTo());
         if (regionFrom != null && regionTo == null) {
             Bukkit.getPluginManager().callEvent(new QRegionLeaveEvent(player, regionFrom));
             qp.getRegions().remove(regionFrom);
@@ -56,6 +61,27 @@ public class PlayerListener extends AbstractListener {
     @EventHandler
     public void onInteractEntity(PlayerInteractEntityEvent event) {
         checkObjectives(event.getPlayer(), event);
+    }
+
+    @EventHandler
+    public void onInteractCreature(CreatureInteractEvent event) {
+        String dialogueId = dialogueManager.getNPCRegistry().get(event.getID());
+        if (dialogueId == null) {
+            return;
+        }
+        QPlayer player = cache.get(event.getPlayer());
+        ActiveDialogue activeDialogue = player.getActiveDialogue();
+        if (activeDialogue != null) {
+            if (!activeDialogue.getDialogue().getName().equals(dialogueId)) {
+                return;
+            }
+            activeDialogue.continueDialogue();
+            return;
+        }
+        QDialogue dialogue = dialogueManager.get(dialogueId);
+        if (dialogue.canStart(player)) {
+            dialogue.start(player);
+        }
     }
 
     @EventHandler
@@ -109,7 +135,7 @@ public class PlayerListener extends AbstractListener {
 
     @EventHandler
     public void onBreak(BlockBreakEvent event) {
-        QRegion region = manager.getByLocation(event.getBlock().getLocation());
+        QRegion region = regionManager.getByLocation(event.getBlock().getLocation());
         if (region == null) {
             return;
         }
@@ -118,7 +144,7 @@ public class PlayerListener extends AbstractListener {
 
     @EventHandler
     public void onPlace(BlockPlaceEvent event) {
-        QRegion region = manager.getByLocation(event.getBlock().getLocation());
+        QRegion region = regionManager.getByLocation(event.getBlock().getLocation());
         if (region == null) {
             return;
         }

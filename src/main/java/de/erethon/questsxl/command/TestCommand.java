@@ -3,7 +3,7 @@ package de.erethon.questsxl.command;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.action.QTalkAction;
+import de.erethon.questsxl.action.TalkAction;
 import de.erethon.questsxl.gui.QuestBook;
 import de.erethon.questsxl.instancing.InstancedBlockCollection;
 import de.erethon.questsxl.player.QPlayer;
@@ -90,7 +90,7 @@ public class TestCommand extends ECommand {
             return;
         }
         if (args[1].equals("conv")) {
-            new QTalkAction().play(player);
+            new TalkAction().play(player);
             return;
         }
         MessageUtil.sendMessage(player, "Invalid test command.");

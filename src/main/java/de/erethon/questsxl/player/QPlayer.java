@@ -4,6 +4,7 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.dialogue.ActiveDialogue;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.objective.ActiveObjective;
 import de.erethon.questsxl.objective.QObjective;
@@ -13,12 +14,15 @@ import de.erethon.questsxl.quest.QQuest;
 import de.erethon.questsxl.region.QRegion;
 import de.erethon.questsxl.tool.packetwrapper.WrapperPlayServerChat;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Location;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class QPlayer {
@@ -37,6 +41,7 @@ public class QPlayer {
     private final Set<QRegion> currentRegions = new HashSet<>();
     private final Map<String, Integer> scores = new HashMap<>();
 
+    private ActiveDialogue activeDialogue = null;
     private ActiveQuest displayed = null;
     private Location compassTarget = null;
     private boolean isInConversation = false;
@@ -164,6 +169,14 @@ public class QPlayer {
         chatQueue.add(chatComponent);
     }
 
+    public ActiveDialogue getActiveDialogue() {
+        return activeDialogue;
+    }
+
+    public void setActiveDialogue(ActiveDialogue activeDialogue) {
+        this.activeDialogue = activeDialogue;
+    }
+
     public ActiveQuest getDisplayed() {
         return displayed;
     }
@@ -200,7 +213,7 @@ public class QPlayer {
         if (chatQueue.isEmpty()) {
             return;
         }
-        player.sendMessage(MiniMessage.miniMessage().parse("<hover:show_text:'<yellow><italic>Diese Nachrichten hast du verpasst,\nwährend du die Quest-Konversation gelesen hast.'><dark_gray>[...]"));
+        player.sendMessage(MessageUtil.parse("<hover:show_text:'<yellow><italic>Diese Nachrichten hast du verpasst,\nwährend du die Quest-Konversation gelesen hast.'><dark_gray>[...]"));
         for (WrappedChatComponent chatComponent : chatQueue) {
             WrapperPlayServerChat chat = new WrapperPlayServerChat();
             chat.setMessage(chatComponent);
@@ -211,8 +224,11 @@ public class QPlayer {
     }
 
     public void sendConversationMsg(String raw) {
+        sendConversationMsg(MessageUtil.parse(raw));
+    }
+
+    public void sendConversationMsg(Component message) {
         isInConversation = false;
-        Component message = MiniMessage.miniMessage().parse(raw);
         player.sendMessage(message);
         isInConversation = true;
     }

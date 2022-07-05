@@ -8,6 +8,7 @@ import de.erethon.bedrock.plugin.EPlugin;
 import de.erethon.bedrock.plugin.EPluginSettings;
 import de.erethon.questsxl.animation.AnimationManager;
 import de.erethon.questsxl.command.QCommandCache;
+import de.erethon.questsxl.dialogue.QDialogueManager;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.global.GlobalObjectives;
 import de.erethon.questsxl.instancing.BlockCollectionManager;
@@ -49,6 +50,7 @@ public final class QuestsXL extends EPlugin implements Listener {
     public static File GLOBAL_OBJ;
     public static File IBCS;
     public static File SCHEMATICS;
+    public static File DIALOGUES;
     public long lastSync = 0;
 
     QPlayerCache qPlayerCache;
@@ -58,6 +60,7 @@ public final class QuestsXL extends EPlugin implements Listener {
     QRegionManager regionManager;
     AnimationManager animationManager;
     BlockCollectionManager blockCollectionManager;
+    QDialogueManager dialogueManager;
     QCommandCache commandCache;
     GlobalObjectives globalObjectives;
     PlayerListener playerListener;
@@ -113,6 +116,10 @@ public final class QuestsXL extends EPlugin implements Listener {
         if (!SCHEMATICS.exists()) {
             SCHEMATICS.mkdir();
         }
+        DIALOGUES = new File(getDataFolder(), "dialogues");
+        if (!DIALOGUES.exists()) {
+            DIALOGUES.mkdir();
+        }
         REGIONS = new File(getDataFolder(), "regions.yml");
         if (!REGIONS.exists()) {
             try {
@@ -158,6 +165,8 @@ public final class QuestsXL extends EPlugin implements Listener {
         questManager.load();
         eventManager = new QEventManager();
         eventManager.load(EVENTS);
+        dialogueManager = new QDialogueManager(DIALOGUES);
+        dialogueManager.load();
         try {
             MessageUtil.log("Loading global objectives...");
             globalObjectives = new GlobalObjectives(GLOBAL_OBJ);
@@ -241,6 +250,10 @@ public final class QuestsXL extends EPlugin implements Listener {
 
     public AnimationManager getAnimationManager() {
         return animationManager;
+    }
+
+    public QDialogueManager getDialogueManager() {
+        return dialogueManager;
     }
 
     public GlobalObjectives getGlobalObjectives() {
