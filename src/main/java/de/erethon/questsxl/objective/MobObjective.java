@@ -16,9 +16,9 @@ public class MobObjective extends QBaseObjective {
     @Override
     public void check(Event e) {
         if (e instanceof CreatureDeathEvent event) {
-            check(event.getNpc().getNpc(), event.getKiller());
+            //check(event.getNpc().getNpc(), event.getKiller());
         } else if (e instanceof InstancedCreatureDeathEvent event) {
-            check(event.getNpc().getNpc(), event.getKiller());
+            //check(event.getNpc().getNpc(), event.getKiller());
         }
     }
 

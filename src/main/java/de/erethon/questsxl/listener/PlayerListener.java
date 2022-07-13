@@ -69,7 +69,7 @@ public class PlayerListener extends AbstractListener {
         if (dialogueId == null) {
             return;
         }
-        QPlayer player = cache.get(event.getPlayer());
+        QPlayer player = null; // cache.get(event.getPlayer()); - NYI
         ActiveDialogue activeDialogue = player.getActiveDialogue();
         if (activeDialogue != null) {
             if (!activeDialogue.getDialogue().getName().equals(dialogueId)) {
@@ -118,18 +118,12 @@ public class PlayerListener extends AbstractListener {
 
     @EventHandler
     public void onCreatureDeath(CreatureDeathEvent event) {
-        Player killer = event.getKiller();
-        if (killer != null) {
-            checkObjectives(killer, event);
-        }
+
     }
 
     @EventHandler
     public void onInstancedCreatureDeath(InstancedCreatureDeathEvent event) {
-        Player killer = event.getKiller();
-        if (killer != null) {
-            checkObjectives(killer, event);
-        }
+
     }
 
 

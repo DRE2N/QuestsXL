@@ -27,13 +27,13 @@ java {
 }
 
 dependencies {
-    paperDevBundle("1.18.2-R0.1-SNAPSHOT")
+    paperDevBundle("1.19-R0.1-SNAPSHOT")
     compileOnly("de.erethon.aether:Aether:1.0.0-SNAPSHOT")
     implementation("de.fyreum:JobsXL:1.0-SNAPSHOT") { isTransitive = false }
     implementation("de.erethon:bedrock:1.2.2") { isTransitive = false }
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.3.0") { isTransitive = false }
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.3.0") { isTransitive = false }
-    compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0")
+    compileOnly("com.comphenix.protocol:ProtocolLib:5.0.0-SNAPSHOT")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7") { isTransitive = false }
     // paperweightDevBundle("com.example.paperfork", "1.18.1-R0.1-SNAPSHOT")
 

@@ -5,7 +5,7 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.QAction;
 import org.bukkit.*;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_18_R2.entity.CraftArmorStand;
+import org.bukkit.craftbukkit.v1_19_R1.entity.CraftArmorStand;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;

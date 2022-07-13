@@ -25,7 +25,7 @@ import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.world.entity.EquipmentSlot;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 
