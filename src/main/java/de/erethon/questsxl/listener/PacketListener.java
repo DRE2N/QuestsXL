@@ -18,6 +18,8 @@ public class PacketListener {
     QuestsXL plugin = QuestsXL.getInstance();
     QPlayerCache cache = QuestsXL.getInstance().getPlayerCache();
 
+    // TODO: Update for 1.19.1 (signed messages/new system chat packet)
+
 
     public PacketListener() {
         protocol.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.CHAT) {
