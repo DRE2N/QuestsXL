@@ -28,7 +28,7 @@ public class ActiveQuest {
     }
 
     public void progress(QPlayer player) {
-        MessageUtil.log("Progressing...");
+        MessageUtil.log("Progressing quest " + quest.getName() + " for " + player.getPlayer().getName());
         QStage next = null;
         int currentID = currentStage.getId();
         for (QStage stage : quest.getStages()) {
@@ -42,9 +42,7 @@ public class ActiveQuest {
         }
         currentStage = next;
         player.clearObjectives();
-        for (QObjective objective : currentStage.getGoals()) {
-            player.addObjective(new ActiveObjective(player, currentStage, objective));
-        }
+        currentStage.start(player);
         plugin.debug(player.getPlayer().getName() + " progressed to stage " + currentStage.toString() + " of " + quest.getName() + ".");
     }
 
@@ -57,7 +55,7 @@ public class ActiveQuest {
     }
 
     public void finishWithoutRewards(QPlayer player) {
-        MessageUtil.log(player.getPlayer().getName() + " finished quest " + quest.getName());
+        MessageUtil.log(player.getPlayer().getName() + " finished quest " + quest.getName() + " without rewards.");
         player.clearObjectives();
         player.removeActive(this);
         player.getCompletedQuests().put(this.getQuest(), System.currentTimeMillis());
