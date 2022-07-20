@@ -5,13 +5,13 @@ import de.erethon.bedrock.config.storage.Nullability;
 import de.erethon.bedrock.config.storage.StorageData;
 import de.erethon.bedrock.config.storage.StorageDataContainer;
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.action.Action;
 import de.erethon.questsxl.action.ActionManager;
 import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.condition.ConditionManager;
 import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.player.QPlayer;
+import de.erethon.questsxl.player.QPlayerCache;
 import de.erethon.questsxl.quest.Completable;
 import de.erethon.questsxl.quest.QStage;
 import org.bukkit.Location;
@@ -21,10 +21,11 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 public class QEvent extends StorageDataContainer implements Completable {
+
+    QPlayerCache playerCache = QuestsXL.getInstance().getPlayerCache();
 
     File file;
     YamlConfiguration cfg;
@@ -33,8 +34,14 @@ public class QEvent extends StorageDataContainer implements Completable {
     List<QStage> stages = new ArrayList<>();
     List<QAction> updateActions = new ArrayList<>();
     Set<QCondition> startConditions = new HashSet<>();
+
+    Map<Integer, Set<QAction>> rewards = new HashMap<>();
+
     @StorageData(type = Integer.class, path = "cooldown")
     int cooldown;
+
+    @StorageData(type = Integer.class, path = "range")
+    int range;
 
     // State - Persistence
     // @StorageData(type = Enum.class, path = "state.state") - NYI
@@ -51,7 +58,8 @@ public class QEvent extends StorageDataContainer implements Completable {
     QStage currentStage;
 
     // State - runtime stuff
-    private int playersInRange = 0;
+    private Set<QPlayer> playersInRange = new HashSet<>();
+    private final Map<QPlayer, Integer> eventParticipation = new HashMap<>();
 
     public QEvent(File file) {
         super(file, 1);
@@ -73,12 +81,24 @@ public class QEvent extends StorageDataContainer implements Completable {
 
     @Override
     public void reward(QPlayer player) {
-
+        reward();
     }
 
     @Override
     public void reward(Set<QPlayer> players) {
+        reward();
+    }
 
+    public void reward() {
+        for (Map.Entry<QPlayer, Integer> playerEntry : eventParticipation.entrySet()) {
+            for (Map.Entry<Integer, Set<QAction>> reward : rewards.entrySet()) {
+                if (reward.getKey() >= playerEntry.getValue()) {
+                    for (QAction action : reward.getValue()) {
+                        action.play(playerEntry.getKey());
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -98,7 +118,10 @@ public class QEvent extends StorageDataContainer implements Completable {
     public void update() {
         switch (state) {
             case ACTIVE -> {
-                playersInRange = centerLocation.getNearbyEntitiesByType(Player.class, 20).size();
+                playersInRange.clear();
+                for (Player player : centerLocation.getNearbyEntitiesByType(Player.class, range)) {
+                    playersInRange.add(playerCache.getByPlayer(player));
+                }
                 for (QAction action : updateActions) {
                     action.play(this);
                 }
@@ -144,6 +167,10 @@ public class QEvent extends StorageDataContainer implements Completable {
 
     }
 
+    public void setCurrentStage(int id) {
+        currentStage = stages.get(id);
+    }
+
     public void addScore(@NotNull String score, int amount) {
         setScore(score, scores.getOrDefault(score, 0) + amount);
     }
@@ -164,7 +191,7 @@ public class QEvent extends StorageDataContainer implements Completable {
         return state;
     }
 
-    public int getPlayersInRange() {
+    public Set<QPlayer> getPlayersInRange() {
         return playersInRange;
     }
 
@@ -174,6 +201,15 @@ public class QEvent extends StorageDataContainer implements Completable {
 
     public void setCenterLocation(Location centerLocation) {
         this.centerLocation = centerLocation;
+    }
+
+
+    public void participate(@NotNull QPlayer player, int amount) {
+        eventParticipation.put(player, amount);
+    }
+
+    public int getEventParticipation(@NotNull QPlayer player) {
+        return eventParticipation.get(player);
     }
 
     @Override
@@ -186,6 +222,19 @@ public class QEvent extends StorageDataContainer implements Completable {
         ConfigurationSection updateSection = cfg.getConfigurationSection("onUpdate");
         if (updateSection != null) {
             ActionManager.loadActions(id, updateSection);
+        }
+
+        ConfigurationSection rewardSection = cfg.getConfigurationSection("rewards");
+        if (rewardSection == null) {
+            MessageUtil.log("Event " + id + " does not contain any rewards!");
+            return;
+        }
+        for (String key : rewardSection.getKeys(false)) {
+            ConfigurationSection rewardEntry = rewardSection.getConfigurationSection(key);
+            int id = Integer.parseInt(key);
+            if (rewardEntry != null) {
+                rewards.put(id, ActionManager.loadActions(rewardEntry.getName(), rewardEntry));
+            }
         }
 
         ConfigurationSection stageSection = cfg.getConfigurationSection("stages");

@@ -46,8 +46,6 @@ public class QPlayer extends StorageDataContainer implements LoadableUser {
     private final List<ActiveObjective> currentObjectives = new CopyOnWriteArrayList<>();
     private final List<WrappedChatComponent> chatQueue = new CopyOnWriteArrayList<>();
 
-    private final Map<QEvent, Integer> eventParticipation = new HashMap<>();
-
     private final Set<QRegion> currentRegions = new HashSet<>();
     @StorageData(type = HashMap.class, keyTypes = String.class, valueTypes = Integer.class, nullability = Nullability.IGNORE)
     private final Map<String, Integer> scores = new HashMap<>();
@@ -146,14 +144,6 @@ public class QPlayer extends StorageDataContainer implements LoadableUser {
     }
 
     /* getter and setter */
-
-    public void participate(@NotNull QEvent event, int amount) {
-        eventParticipation.put(event, amount);
-    }
-
-    public int getEventParticipation(@NotNull QEvent event) {
-       return eventParticipation.get(event);
-    }
 
     public void addScore(@NotNull String score, int amount) {
         setScore(score, scores.getOrDefault(score, 0) + amount);
