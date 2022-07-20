@@ -36,7 +36,7 @@ public class PlayerListener extends AbstractListener {
             return;
         }
         Player player = event.getPlayer();
-        QPlayer qp = cache.get(player);
+        QPlayer qp = cache.getByPlayer(player);
         if (qp.isFrozen()) {
             event.setCancelled(true);
             return;
@@ -69,7 +69,7 @@ public class PlayerListener extends AbstractListener {
         if (dialogueId == null) {
             return;
         }
-        QPlayer player = null; // cache.get(event.getPlayer()); - NYI
+        QPlayer player = cache.getByPlayer(event.getPlayer());
         ActiveDialogue activeDialogue = player.getActiveDialogue();
         if (activeDialogue != null) {
             if (!activeDialogue.getDialogue().getName().equals(dialogueId)) {
@@ -86,7 +86,7 @@ public class PlayerListener extends AbstractListener {
 
     @EventHandler
     public void onChat(AsyncChatEvent event) {
-        QPlayer player = cache.get(event.getPlayer());
+        QPlayer player = cache.getByPlayer(event.getPlayer());
         if (player.isInConversation()) {
             player.sendConversationMsg(QuestsXL.ERROR + "Du kannst den Chat jetzt nicht nutzen.");
             event.setCancelled(true);
@@ -149,7 +149,7 @@ public class PlayerListener extends AbstractListener {
         if (region.getLinkedQuest() == null) {
             return region.hasPublicFlag(flag);
         }
-        QPlayer qplayer = cache.get(player);
+        QPlayer qplayer = cache.getByPlayer(player);
         if (qplayer.hasQuest(region.getLinkedQuest())) {
             return region.hasQuestFlag(flag);
         }

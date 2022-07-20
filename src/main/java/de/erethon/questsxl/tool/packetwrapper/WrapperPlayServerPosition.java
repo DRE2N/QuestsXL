@@ -18,13 +18,13 @@
  */
 package de.erethon.questsxl.tool.packetwrapper;
 
-import java.util.Set;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.EnumWrappers;
+
+import java.util.Set;
 
 public class WrapperPlayServerPosition extends AbstractPacket {
 	public static final PacketType TYPE = PacketType.Play.Server.POSITION;

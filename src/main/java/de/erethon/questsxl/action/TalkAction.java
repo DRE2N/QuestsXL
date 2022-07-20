@@ -19,7 +19,7 @@ public class TalkAction extends QBaseAction {
         messages.put("Hallo zwei", 1);
         messages.put("Hallo zwei diese Nachricht wird etwas dauern.", 10);
         messages.put("Hallo jetzt dauerts nicht mehr so lang", 5);
-        QPlayer qPlayer = cache.get(player);
+        QPlayer qPlayer = cache.getByPlayer(player);
         qPlayer.setInConversation(true);
         int time = 0;
         int numMessage = 0;

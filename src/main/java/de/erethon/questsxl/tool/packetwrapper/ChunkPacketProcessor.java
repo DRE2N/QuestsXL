@@ -18,13 +18,12 @@
  */
 package de.erethon.questsxl.tool.packetwrapper;
 
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.World.Environment;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.StructureModifier;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.World.Environment;
 
 /**
  * Used to process a chunk.

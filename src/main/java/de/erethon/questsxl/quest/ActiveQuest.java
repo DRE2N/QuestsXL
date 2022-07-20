@@ -15,9 +15,13 @@ public class ActiveQuest {
     QStage currentStage;
 
     public ActiveQuest(QPlayer player, QQuest quest) {
+        this(player, quest, 0);
+    }
+
+    public ActiveQuest(QPlayer player, QQuest quest, int stage) {
         this.player = player;
         this.quest = quest;
-        QStage start = quest.getStages().get(0);
+        QStage start = quest.getStages().get(stage);
         this.currentStage = start;
         start.start(player);
         MessageUtil.log("Created new activeQuest for " + player.getPlayer().getName() + " with " + quest.getStages().size() + " stages.");

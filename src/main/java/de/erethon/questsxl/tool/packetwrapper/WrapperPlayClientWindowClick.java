@@ -18,10 +18,9 @@
  */
 package de.erethon.questsxl.tool.packetwrapper;
 
-import org.bukkit.inventory.ItemStack;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
+import org.bukkit.inventory.ItemStack;
 
 public class WrapperPlayClientWindowClick extends AbstractPacket {
 	public static final PacketType TYPE = PacketType.Play.Client.WINDOW_CLICK;

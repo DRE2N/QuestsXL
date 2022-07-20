@@ -18,13 +18,12 @@
  */
 package de.erethon.questsxl.tool.packetwrapper;
 
-import java.util.UUID;
-
-import org.bukkit.boss.BarColor;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import org.bukkit.boss.BarColor;
+
+import java.util.UUID;
 
 public class WrapperPlayServerBoss extends AbstractPacket {
 

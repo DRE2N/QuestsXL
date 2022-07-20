@@ -15,7 +15,7 @@ public abstract class AbstractListener implements Listener {
     QPlayerCache cache = QuestsXL.getInstance().getPlayerCache();
 
     void checkObjectives(Player player, Event event) {
-        for (ActiveObjective objective : cache.get(player).getCurrentObjectives()) {
+        for (ActiveObjective objective : cache.getByPlayer(player).getCurrentObjectives()) {
             objective.check(event);
         }
     }

@@ -26,7 +26,7 @@ public class QuestCommand extends ECommand {
     @Override
     public void onExecute(String[] args, CommandSender commandSender) {
         Player player = (Player) commandSender;
-        QPlayer qPlayer = plugin.getPlayerCache().get(player);
+        QPlayer qPlayer = plugin.getPlayerCache().getByPlayer(player);
         if (args.length > 1 && args[1].equalsIgnoreCase("track")) {
             if (args.length < 3) {
                 MessageUtil.sendMessage(player, QuestsXL.ERROR + "Bitte gebe eine Quest an.");

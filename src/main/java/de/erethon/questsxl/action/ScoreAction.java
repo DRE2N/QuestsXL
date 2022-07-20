@@ -41,7 +41,7 @@ public class ScoreAction extends QBaseAction {
                 }
             }
             case PLAYER -> {
-                QPlayer qp = playerCache.get(player);
+                QPlayer qp = playerCache.getByPlayer(player);
                 switch (operation) {
                     case ADD -> qp.addScore(score, amount);
                     case REMOVE -> qp.removeScore(score, amount);

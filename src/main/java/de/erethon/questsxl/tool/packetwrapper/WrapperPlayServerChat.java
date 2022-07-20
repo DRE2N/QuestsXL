@@ -18,13 +18,13 @@
  */
 package de.erethon.questsxl.tool.packetwrapper;
 
-import java.util.Arrays;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.EnumWrappers.ChatType;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
+
+import java.util.Arrays;
 
 public class WrapperPlayServerChat extends AbstractPacket {
 	public static final PacketType TYPE = PacketType.Play.Server.CHAT;

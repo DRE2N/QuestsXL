@@ -66,7 +66,7 @@ public class TestCommand extends ECommand {
             return;
         }
         if (args[1].equals("text")) {
-            QPlayer qPlayer = QuestsXL.getInstance().getPlayerCache().get(player);
+            QPlayer qPlayer = QuestsXL.getInstance().getPlayerCache().getByPlayer(player);
             qPlayer.setInConversation(true);
             player.sendMessage("Hello");
             player.sendMessage("Hello1");

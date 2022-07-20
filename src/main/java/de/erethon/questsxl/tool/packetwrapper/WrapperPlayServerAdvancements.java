@@ -18,17 +18,21 @@
  */
 package de.erethon.questsxl.tool.packetwrapper;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.AutoWrapper;
+import com.comphenix.protocol.wrappers.BukkitConverters;
+import com.comphenix.protocol.wrappers.Converters;
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.comphenix.protocol.wrappers.MinecraftKey;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import org.bukkit.advancement.Advancement;
+import org.bukkit.inventory.ItemStack;
+
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.*;
-
-import org.bukkit.advancement.Advancement;
-import org.bukkit.inventory.ItemStack;
 
 import static com.comphenix.protocol.utility.MinecraftReflection.getMinecraftClass;
 

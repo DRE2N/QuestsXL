@@ -31,7 +31,7 @@ public abstract class QBaseObjective implements QObjective {
         if (conditions == null || conditions.isEmpty()) {
             return true;
         }
-        QPlayer qPlayer = plugin.getPlayerCache().get(player);
+        QPlayer qPlayer = plugin.getPlayerCache().getByPlayer(player);
         for (QCondition condition : conditions) {
             if (!condition.check(qPlayer)) {
                 condFail(player);
@@ -42,7 +42,7 @@ public abstract class QBaseObjective implements QObjective {
     }
 
     public void complete(Player player, QObjective obj) {
-        QPlayer qPlayer = plugin.getPlayerCache().get(player);
+        QPlayer qPlayer = plugin.getPlayerCache().getByPlayer(player);
         MessageUtil.log("Checking for completion for " + player.getName());
         for (ActiveObjective objective : qPlayer.getCurrentObjectives()) {
             if (objective.getObjective().equals(obj) && objective.getPlayer().equals(qPlayer)) {
@@ -73,7 +73,7 @@ public abstract class QBaseObjective implements QObjective {
     }
 
     public void fail(Player player, QObjective obj) {
-        QPlayer qPlayer = plugin.getPlayerCache().get(player);
+        QPlayer qPlayer = plugin.getPlayerCache().getByPlayer(player);
         for (ActiveObjective objective : qPlayer.getCurrentObjectives()) {
             if (objective.getObjective().equals(obj) && objective.getPlayer().equals(qPlayer)) {
                 if (!persistent) {

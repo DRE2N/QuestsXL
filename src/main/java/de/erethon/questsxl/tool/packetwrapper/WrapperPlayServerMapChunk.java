@@ -18,11 +18,11 @@
  */
 package de.erethon.questsxl.tool.packetwrapper;
 
-import java.util.List;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.nbt.NbtBase;
+
+import java.util.List;
 
 public class WrapperPlayServerMapChunk extends AbstractPacket {
 	public static final PacketType TYPE = PacketType.Play.Server.MAP_CHUNK;

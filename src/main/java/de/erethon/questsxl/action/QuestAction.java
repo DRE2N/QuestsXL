@@ -17,7 +17,7 @@ public class QuestAction extends QBaseAction {
     @Override
     public void play(Player player) {
         if (!conditions(player)) return;
-        QPlayer qPlayer = playerCache.get(player);
+        QPlayer qPlayer = playerCache.getByPlayer(player);
         if (qPlayer.hasQuest(quest)) {
             return;
         }

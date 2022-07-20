@@ -18,13 +18,12 @@
  */
 package de.erethon.questsxl.tool.packetwrapper;
 
-import org.bukkit.World;
-import org.bukkit.entity.Entity;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.BlockPosition;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
 
 /**
  * This packet has been removed from Minecraft and is no longer supported.

@@ -4,7 +4,8 @@ import de.erethon.questsxl.QuestsXL;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class Recording {
 

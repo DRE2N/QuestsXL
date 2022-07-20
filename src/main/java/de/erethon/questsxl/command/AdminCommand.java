@@ -63,7 +63,7 @@ public class AdminCommand extends ECommand {
                 MessageUtil.sendMessage(player, QuestsXL.ERROR + "Dieser Spieler existiert nicht");
                 return;
             }
-            QPlayer qPlayer = plugin.getPlayerCache().get(otherPlayer);
+            QPlayer qPlayer = plugin.getPlayerCache().getByPlayer(otherPlayer);
             if (qPlayer.getActiveQuests().isEmpty()) {
                 MessageUtil.sendMessage(player, QuestsXL.ERROR + "Dieser hat keine aktiven Quests.");
                 return;
@@ -83,7 +83,7 @@ public class AdminCommand extends ECommand {
                 MessageUtil.sendMessage(player, QuestsXL.ERROR + "Dieser Spieler existiert nicht");
                 return;
             }
-            QPlayer qPlayer = plugin.getPlayerCache().get(otherPlayer);
+            QPlayer qPlayer = plugin.getPlayerCache().getByPlayer(otherPlayer);
             if (args.length < 4) {
                 MessageUtil.sendMessage(player, QuestsXL.ERROR + "Bitte gebe eine Quest an.");
                 return;

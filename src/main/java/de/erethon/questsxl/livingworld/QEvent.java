@@ -39,18 +39,22 @@ public class QEvent implements Completable {
         load();
     }
 
+    @Override
     public String getName() {
         return null;
     }
 
+    @Override
     public void reward(QPlayer player) {
 
     }
 
+    @Override
     public void reward(Set<QPlayer> players) {
 
     }
 
+    @Override
     public List<QStage> getStages() {
         return stages;
     }
@@ -67,6 +71,7 @@ public class QEvent implements Completable {
         return state;
     }
 
+    @Override
     public void load() {
         ConfigurationSection stageSection = cfg.getConfigurationSection("stages");
         if (stageSection == null) {

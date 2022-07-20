@@ -29,7 +29,7 @@ public abstract class QBaseAction implements QAction {
 
     @Override
     public boolean conditions(Player player) {
-        QPlayer qPlayer = cache.get(player);
+        QPlayer qPlayer = cache.getByPlayer(player);
         for (QCondition condition : conditions) {
             if (!condition.check(qPlayer)) {
                 return false;

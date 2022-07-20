@@ -18,16 +18,15 @@
  */
 package de.erethon.questsxl.tool.packetwrapper;
 
-import java.util.Collection;
-import java.util.List;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.IntEnum;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
-
 import org.bukkit.ChatColor;
+
+import java.util.Collection;
+import java.util.List;
 
 public class WrapperPlayServerScoreboardTeam extends AbstractPacket {
 	public static final PacketType TYPE =

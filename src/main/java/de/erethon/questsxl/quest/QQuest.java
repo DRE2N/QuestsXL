@@ -30,7 +30,6 @@ public class QQuest implements Completable {
     private final Set<QAction> startActions = new HashSet<>();
     private final Set<QAction> rewards = new HashSet<>();
 
-
     public QQuest(File file) {
         String fileName = file.getName();
         name = fileName.replace(".yml", "");
@@ -42,12 +41,14 @@ public class QQuest implements Completable {
         load();
     }
 
+    @Override
     public void reward(QPlayer player) {
         for (QAction action : rewards) {
             action.play(player.getPlayer());
         }
     }
 
+    @Override
     public void reward(Set<QPlayer> players) {
         for (QPlayer player : players) {
             reward(player);
@@ -64,10 +65,12 @@ public class QQuest implements Completable {
         return true;
     }
 
+    @Override
     public List<QStage> getStages() {
         return stages;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -90,6 +93,7 @@ public class QQuest implements Completable {
         return description;
     }
 
+    @Override
     public void load() {
         // General
         displayName = cfg.getString("displayName");

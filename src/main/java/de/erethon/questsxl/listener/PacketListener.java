@@ -35,7 +35,7 @@ public class PacketListener {
         if (packet.getChatType() == EnumWrappers.ChatType.GAME_INFO) {
             return;
         }
-        QPlayer qPlayer = cache.get(event.getPlayer());
+        QPlayer qPlayer = cache.getByPlayer(event.getPlayer());
         if (qPlayer != null && qPlayer.isInConversation()) {
             event.setCancelled(true);
             qPlayer.addChat(packet.getMessage());

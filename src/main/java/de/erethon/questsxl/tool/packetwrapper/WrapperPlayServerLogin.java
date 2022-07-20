@@ -18,16 +18,15 @@
  */
 package de.erethon.questsxl.tool.packetwrapper;
 
-import org.bukkit.World;
-import org.bukkit.WorldType;
-import org.bukkit.entity.Entity;
-
-import de.erethon.questsxl.tool.packetwrapper.util.Removed;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers.Difficulty;
 import com.comphenix.protocol.wrappers.EnumWrappers.NativeGameMode;
+import de.erethon.questsxl.tool.packetwrapper.util.Removed;
+import org.bukkit.World;
+import org.bukkit.WorldType;
+import org.bukkit.entity.Entity;
 
 public class WrapperPlayServerLogin extends AbstractPacket {
 	public static final PacketType TYPE = PacketType.Play.Server.LOGIN;

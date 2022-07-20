@@ -18,12 +18,11 @@
  */
 package de.erethon.questsxl.tool.packetwrapper;
 
-import java.util.List;
-
-import org.bukkit.inventory.ItemStack;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
 
 public class WrapperPlayServerWindowItems extends AbstractPacket {
 	public static final PacketType TYPE = PacketType.Play.Server.WINDOW_ITEMS;

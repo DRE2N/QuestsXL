@@ -5,12 +5,14 @@ import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
+
 enum EPermissionAction {
     ADD,
     REMOVE,
     ADD_GROUP,
     REMOVE_GROUP
 }
+
 public class PermissionAction extends QBaseAction {
 
     private String permission;
@@ -18,9 +20,11 @@ public class PermissionAction extends QBaseAction {
     private EPermissionAction action;
 
     public PermissionAction() { }
+
     public PermissionAction(String id) {
         this.id = id;
     }
+
     public PermissionAction(String permission, EPermissionAction action) {
         this.permission = permission;
         this.action = action;
@@ -32,18 +36,10 @@ public class PermissionAction extends QBaseAction {
         if (!conditions(player)) return;
         Permission provider = rsp.getProvider();
         switch (action) {
-            case ADD -> {
-                provider.playerAdd(player, permission);
-            }
-            case REMOVE -> {
-                provider.playerRemove(player, permission);
-            }
-            case ADD_GROUP -> {
-                provider.playerAddGroup(player, permission);
-            }
-            case REMOVE_GROUP -> {
-                provider.playerRemoveGroup(player, permission);
-            }
+            case ADD -> provider.playerAdd(player, permission);
+            case REMOVE -> provider.playerRemove(player, permission);
+            case ADD_GROUP -> provider.playerAddGroup(player, permission);
+            case REMOVE_GROUP -> provider.playerRemoveGroup(player, permission);
         }
         onFinish(player);
     }

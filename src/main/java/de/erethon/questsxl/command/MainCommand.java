@@ -13,7 +13,6 @@ import java.util.Date;
 
 public class MainCommand extends ECommand {
 
-
     public MainCommand() {
         setCommand("main");
         setMinArgs(0);
@@ -37,7 +36,7 @@ public class MainCommand extends ECommand {
             File[] playerFiles = QuestsXL.PLAYERS.listFiles();
             if (playerFiles != null) {
                 MessageUtil.sendMessage(player, "&7Players: &6" + playerFiles.length + " &8- &7Loaded: &6"
-                        + plugin.getPlayerCache().getPlayers().keySet().size());
+                        + plugin.getPlayerCache().getCachedUsersAmount());
             }
             MessageUtil.sendMessage(player, "&7Quests: &6" + plugin.getQuestManager().getQuests().size()
                     + "&8 - &7Global Objectives: &6" + plugin.getGlobalObjectives().getObjectives().size());

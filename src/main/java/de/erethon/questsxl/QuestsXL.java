@@ -23,9 +23,10 @@ import de.erethon.questsxl.respawn.RespawnPointManager;
 import de.erethon.questsxl.tool.GitSync;
 import de.fyreum.jobsxl.JobsXL;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,13 +34,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public final class QuestsXL extends EPlugin implements Listener {
 
     static QuestsXL instance;
-    public static String ERROR = "<dark_gray>[<red><bold>!<reset><dark_gray>]<gray> ";
-
-    private WorldEditPlugin worldEditPlugin;
+    public static String ERROR = "<dark_gray>[<red><bold>!<!bold><dark_gray>]<gray> ";
 
     public static File ANIMATIONS;
     public static File QUESTS;
@@ -67,93 +67,59 @@ public final class QuestsXL extends EPlugin implements Listener {
     PlayerJobListener playerJobListener;
     PacketListener packetListener;
 
-    private Map<String, Integer> scores = new HashMap<>();
-
+    private final Map<String, Integer> scores = new HashMap<>();
     private final List<FriendlyError> errors = new ArrayList<>();
     private boolean showStacktraces = true;
 
     Aether aether;
     JobsXL jobsXL;
+    WorldEditPlugin worldEditPlugin;
 
     public QuestsXL() {
         settings = EPluginSettings.builder()
-                .internals(Internals.v1_18_R1)
+                .internals(Internals.v1_18_R2)
+                .forcePaper(true)
                 .build();
     }
 
     @Override
     public void onEnable() {
         super.onEnable();
-        if (!compat.isPaper()) {
-            MessageUtil.log("Please use Paper. https://papermc.io/");
-            Bukkit.getPluginManager().disablePlugin(this);
-        }
         instance = this;
-        if (!getDataFolder().exists()) {
-            getDataFolder().mkdir();
-        }
-        QUESTS = new File(getDataFolder(), "quests");
-        if (!QUESTS.exists()) {
-            QUESTS.mkdir();
-        }
-        EVENTS = new File(getDataFolder(), "events");
-        if (!EVENTS.exists()) {
-            EVENTS.mkdir();
-        }
-        PLAYERS = new File(getDataFolder(), "players");
-        if (!PLAYERS.exists()) {
-            PLAYERS.mkdir();
-        }
-        ANIMATIONS = new File(getDataFolder(), "animations");
-        if (!ANIMATIONS.exists()) {
-            ANIMATIONS.mkdir();
-        }
-        IBCS = new File(getDataFolder(), "blocks");
-        if (!IBCS.exists()) {
-            IBCS.mkdir();
-        }
-        SCHEMATICS = new File(getDataFolder(), "schematics");
-        if (!SCHEMATICS.exists()) {
-            SCHEMATICS.mkdir();
-        }
-        DIALOGUES = new File(getDataFolder(), "dialogues");
-        if (!DIALOGUES.exists()) {
-            DIALOGUES.mkdir();
-        }
-        REGIONS = new File(getDataFolder(), "regions.yml");
-        if (!REGIONS.exists()) {
-            try {
-                REGIONS.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        RESPAWNS = new File(getDataFolder(), "respawnPoints.yml");
-        if (!RESPAWNS.exists()) {
-            try {
-                RESPAWNS.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        GLOBAL_OBJ = new File(getDataFolder(), "globalObjectives.yml");
-        if (!GLOBAL_OBJ.exists()) {
-            try {
-                GLOBAL_OBJ.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        initFolder(getDataFolder());
+        initFolder(QUESTS = new File(getDataFolder(), "quests"));
+        initFolder(EVENTS = new File(getDataFolder(), "events"));
+        initFolder(PLAYERS = new File(getDataFolder(), "players"));
+        initFolder(ANIMATIONS = new File(getDataFolder(), "animations"));
+        initFolder(IBCS = new File(getDataFolder(), "blocks"));
+        initFolder(SCHEMATICS = new File(getDataFolder(), "schematics"));
+        initFolder(DIALOGUES = new File(getDataFolder(), "dialogues"));
+
+        initFile(REGIONS = new File(getDataFolder(), "regions.yml"));
+        initFile(RESPAWNS = new File(getDataFolder(), "respawnPoints.yml"));
+        initFile(GLOBAL_OBJ = new File(getDataFolder(), "globalObjectives.yml"));
+
         aether = (Aether) Bukkit.getPluginManager().getPlugin("Aether");
         jobsXL = (JobsXL) Bukkit.getPluginManager().getPlugin("JobsXL");
-        qPlayerCache = new QPlayerCache();
-        getServer().getPluginManager().registerEvents(qPlayerCache, this);
-
-        // UUUUGLY
-        System.setProperty("net.kyori.adventure.text.warnWhenLegacyFormattingDetected", "false");
-        MessageUtil.log("Warn for legacy formatting: " + System.getProperty("net.kyori.adventure.text.warnWhenLegacyFormattingDetected"));
+        qPlayerCache = new QPlayerCache(this);
 
         loadCore();
+    }
+
+    private void initFolder(File folder) {
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
+    }
+
+    private void initFile(File file) {
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void loadCore() {
@@ -172,7 +138,7 @@ public final class QuestsXL extends EPlugin implements Listener {
             globalObjectives = new GlobalObjectives(GLOBAL_OBJ);
         } catch (Exception e) {
             errors.add(new FriendlyError("Global", "Failed to load global objectives", e.getMessage(), "Schaue im Stacktrace nach dem Fehler.").addStacktrace(e.getStackTrace()));
-            MessageUtil.broadcastMessage("Errors: " + QuestsXL.getInstance().getErrors().size());
+            MessageUtil.broadcastMessageIf("Errors: " + QuestsXL.getInstance().getErrors().size(), p -> p.hasPermission("qxl.admin.info"));
         }
         commandCache = new QCommandCache(this);
         commandCache.register(this);
@@ -289,22 +255,14 @@ public final class QuestsXL extends EPlugin implements Listener {
                     MessageUtil.log("[Git] Pulling...");
                     sync.update();
                 } catch (IOException | InterruptedException e) {
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        if (player.hasPermission("qxl.admin.sync")) {
-                            MessageUtil.sendMessage(player, "&cGithub-Sync-Error: " + e.getMessage());
-                        }
-                    }
+                    MessageUtil.broadcastMessageIf("&cGithub-Sync-Error: " + e.getMessage(), p -> p.hasPermission("qxl.admin.sync"));
                     e.printStackTrace();
                 }
                 BukkitRunnable waitForCopy = new BukkitRunnable() {
                     @Override
                     public void run() {
                         loadCore();
-                        for (Player player : Bukkit.getOnlinePlayers()) {
-                            if (player.hasPermission("qxl.admin.sync")) {
-                                MessageUtil.sendMessage(player, "&aGitHub-Sync abgeschlossen!");
-                            }
-                        }
+                        MessageUtil.broadcastMessageIf("&aGitHub-Sync abgeschlossen!", p -> p.hasPermission("qxl.admin.sync"));
                     }
                 };
                 waitForCopy.runTaskLaterAsynchronously(QuestsXL.getInstance(), 60);
@@ -317,5 +275,10 @@ public final class QuestsXL extends EPlugin implements Listener {
     public void debug(String msg) {
          // check for debug mode here
         MessageUtil.log(msg);
+    }
+
+    @Contract("_ -> new")
+    public static @NotNull File getPlayerFile(@NotNull UUID uuid) {
+        return new File(PLAYERS, uuid + ".yml");
     }
 }

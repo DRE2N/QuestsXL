@@ -1,6 +1,5 @@
 package de.erethon.questsxl.gui;
 
-import de.erethon.aether.creature.ActiveNPC;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.quest.ActiveQuest;
 import de.erethon.questsxl.quest.QQuest;
@@ -9,7 +8,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -42,7 +40,7 @@ public class QuestBook {
 
     public static String stageDesc(Player player, QQuest quest) {
         ActiveQuest active = null;
-        for (ActiveQuest activeQuest : QuestsXL.getInstance().getPlayerCache().get(player).getActiveQuests().keySet()) {
+        for (ActiveQuest activeQuest : QuestsXL.getInstance().getPlayerCache().getByPlayer(player).getActiveQuests().keySet()) {
             if (activeQuest.getQuest() == quest) {
                 active = activeQuest;
             }

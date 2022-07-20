@@ -18,11 +18,10 @@
  */
 package de.erethon.questsxl.tool.packetwrapper;
 
-import org.bukkit.Sound;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers.SoundCategory;
+import org.bukkit.Sound;
 
 public class WrapperPlayServerNamedSoundEffect extends AbstractPacket {
 	public static final PacketType TYPE =

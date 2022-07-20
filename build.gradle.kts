@@ -29,8 +29,9 @@ java {
 dependencies {
     paperDevBundle("1.19-R0.1-SNAPSHOT")
     compileOnly("de.erethon.aether:Aether:1.0.0-SNAPSHOT")
-    implementation("de.fyreum:JobsXL:1.0-SNAPSHOT") { isTransitive = false }
-    implementation("de.erethon:bedrock:1.2.2") { isTransitive = false }
+    compileOnly("de.erethon.aergia:Aergia:1.0.0-SNAPSHOT") { isTransitive = false }
+    compileOnly("de.fyreum:JobsXL:1.0-SNAPSHOT") { isTransitive = false }
+    implementation("de.erethon:bedrock:1.2.3") { isTransitive = false }
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.3.0") { isTransitive = false }
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.3.0") { isTransitive = false }
     compileOnly("com.comphenix.protocol:ProtocolLib:5.0.0-SNAPSHOT")
@@ -73,7 +74,7 @@ tasks {
 
     shadowJar {
         dependencies {
-            include(dependency("de.erethon:bedrock:1.2.2"))
+            include(dependency("de.erethon:bedrock:1.2.3"))
         }
         relocate("de.erethon.bedrock", "de.erethon.questsxl.bedrock")
     }

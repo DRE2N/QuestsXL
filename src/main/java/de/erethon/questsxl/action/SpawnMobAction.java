@@ -1,7 +1,6 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.aether.Aether;
-import de.erethon.aether.creature.ActiveCreatureManager;
 import de.erethon.aether.creature.ActiveNPC;
 import de.erethon.aether.creature.CreatureManager;
 import de.erethon.aether.creature.NPCData;

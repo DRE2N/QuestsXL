@@ -18,7 +18,6 @@
  */
 package de.erethon.questsxl.tool.packetwrapper;
 
-import de.erethon.questsxl.tool.packetwrapper.util.Removed;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.utility.MinecraftReflection;
@@ -27,6 +26,7 @@ import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.EnumWrappers.Direction;
 import com.comphenix.protocol.wrappers.EnumWrappers.Hand;
+import de.erethon.questsxl.tool.packetwrapper.util.Removed;
 
 public class WrapperPlayClientUseItem extends AbstractPacket {
 

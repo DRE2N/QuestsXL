@@ -18,19 +18,18 @@
  */
 package de.erethon.questsxl.tool.packetwrapper;
 
-import java.util.UUID;
-
-import org.bukkit.World;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-
-import de.erethon.questsxl.tool.packetwrapper.util.Removed;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.injector.PacketConstructor;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import de.erethon.questsxl.tool.packetwrapper.util.Removed;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+
+import java.util.UUID;
 
 public class WrapperPlayServerSpawnEntityLiving extends AbstractPacket {
 	public static final PacketType TYPE =

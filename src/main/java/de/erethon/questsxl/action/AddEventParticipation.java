@@ -17,7 +17,7 @@ public class AddEventParticipation extends QBaseAction {
     @Override
     public void play(Player player) {
         if (!conditions(player)) return;
-        playerCache.get(player).participate(event, amount);
+        playerCache.getByPlayer(player).participate(event, amount);
         onFinish(player);
     }
 

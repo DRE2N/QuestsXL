@@ -1,9 +1,9 @@
 package de.erethon.questsxl.condition;
 
+import de.erethon.aergia.Aergia;
+import de.erethon.aergia.group.Group;
 import de.erethon.bedrock.misc.NumberUtil;
-import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.player.QPlayer;
-import de.erethon.questsxl.player.QPlayerCache;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class GroupSizeCondition extends QBaseCondition {
@@ -13,11 +13,8 @@ public class GroupSizeCondition extends QBaseCondition {
 
     @Override
     public boolean check(QPlayer player) {
-        QPlayerCache cache = QuestsXL.getInstance().getPlayerCache();
-        if (!cache.isInGroup(player)) {
-            return fail(player);
-        }
-        if (cache.getGroup(player).getMembers().size() >= min && cache.getGroup(player).getMembers().size() <= max) {
+        Group group = Aergia.inst().getGroupManager().getGroup(player.getPlayer());
+        if (group != null && group.getSize() >= min && group.getSize() <= max) {
             return success(player);
         }
         return fail(player);

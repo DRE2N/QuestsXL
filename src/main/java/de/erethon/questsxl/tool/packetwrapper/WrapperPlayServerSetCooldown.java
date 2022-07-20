@@ -18,14 +18,13 @@
  */
 package de.erethon.questsxl.tool.packetwrapper;
 
-import org.bukkit.Material;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.EquivalentConverter;
 import com.comphenix.protocol.reflect.accessors.Accessors;
 import com.comphenix.protocol.reflect.accessors.MethodAccessor;
 import com.comphenix.protocol.utility.MinecraftReflection;
+import org.bukkit.Material;
 
 public class WrapperPlayServerSetCooldown extends AbstractPacket {
 	private static final Class<?> ITEM_CLASS = MinecraftReflection

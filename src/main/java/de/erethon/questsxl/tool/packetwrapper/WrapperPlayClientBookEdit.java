@@ -20,7 +20,6 @@ package de.erethon.questsxl.tool.packetwrapper;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
-
 import org.bukkit.inventory.ItemStack;
 
 public class WrapperPlayClientBookEdit extends AbstractPacket {

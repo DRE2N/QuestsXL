@@ -1,8 +1,7 @@
 package de.erethon.questsxl.error;
 
+import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.Bukkit;
 
 public class FriendlyError {
 
@@ -17,7 +16,7 @@ public class FriendlyError {
         this.location = location;
         this.exception = exception;
         this.hint = hint;
-        Bukkit.getConsoleSender().sendMessage(MiniMessage.miniMessage().parse("[QXL] " + getMessage()));
+        MessageUtil.log("[QXL] " + getMessage());
     }
 
     public String getMessage() {

@@ -18,10 +18,10 @@
  */
 package de.erethon.questsxl.tool.packetwrapper;
 
-import java.util.UUID;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
+
+import java.util.UUID;
 
 public class WrapperPlayClientSpectate extends AbstractPacket {
 	public static final PacketType TYPE = PacketType.Play.Client.SPECTATE;
