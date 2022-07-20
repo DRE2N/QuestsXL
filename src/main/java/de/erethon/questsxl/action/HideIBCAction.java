@@ -7,7 +7,7 @@ import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
-public class HideIBC extends QBaseAction {
+public class HideIBCAction extends QBaseAction {
 
     BlockCollectionManager manager = QuestsXL.getInstance().getBlockCollectionManager();
     InstancedBlockCollection collection = null;

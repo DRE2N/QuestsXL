@@ -4,7 +4,7 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
-public class SendMessage extends QBaseAction {
+public class SendMessageAction extends QBaseAction {
 
     private String message;
 

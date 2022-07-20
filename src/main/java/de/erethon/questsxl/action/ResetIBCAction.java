@@ -6,7 +6,7 @@ import de.erethon.questsxl.instancing.InstancedBlockCollection;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
-public class ResetIBC extends QBaseAction {
+public class ResetIBCAction extends QBaseAction {
 
     BlockCollectionManager manager = QuestsXL.getInstance().getBlockCollectionManager();
     InstancedBlockCollection collection = null;
