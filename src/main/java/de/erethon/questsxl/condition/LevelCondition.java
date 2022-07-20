@@ -1,6 +1,7 @@
 package de.erethon.questsxl.condition;
 
 import de.erethon.bedrock.misc.NumberUtil;
+import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -11,6 +12,11 @@ public class LevelCondition extends QBaseCondition {
     @Override
     public boolean check(QPlayer player) {
         return false; // missing player level check
+    }
+
+    @Override
+    public boolean check(QEvent event) {
+        return fail(event);
     }
 
     @Override

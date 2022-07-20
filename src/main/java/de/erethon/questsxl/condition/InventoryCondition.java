@@ -1,5 +1,6 @@
 package de.erethon.questsxl.condition;
 
+import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -23,6 +24,11 @@ public class InventoryCondition extends QBaseCondition {
             }
         }
         return fail(player);
+    }
+
+    @Override
+    public boolean check(QEvent event) {
+        return fail(event);
     }
 
     @Override

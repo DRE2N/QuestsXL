@@ -14,7 +14,7 @@ public class QEventManager {
     Set<QEvent> events = new HashSet<>();
 
     public QEventManager() {
-        new EventUpdater().runTaskTimer(QuestsXL.getInstance(), 1200, 1200); // Update events every minute
+        new EventUpdater().runTaskTimer(QuestsXL.getInstance(), 100, 100); // Update events every 5 seconds
     }
 
     public QEvent getByID(String id) {
@@ -33,11 +33,7 @@ public class QEventManager {
 
     public void save() {
         for (QEvent event : events){
-            try {
-                event.save();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            event.save();
         }
     }
 

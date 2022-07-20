@@ -5,6 +5,7 @@ import de.erethon.questsxl.action.ActionManager;
 import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.condition.ConditionManager;
 import de.erethon.questsxl.condition.QCondition;
+import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.objective.ActiveObjective;
 import de.erethon.questsxl.objective.ObjectiveManager;
 import de.erethon.questsxl.objective.QObjective;
@@ -37,6 +38,12 @@ public class QStage {
         }
         for (QAction action : startActions) {
             action.play(qPlayer.getPlayer());
+        }
+    }
+
+    public void start(QEvent event) {
+        for (QAction action : startActions) {
+            action.play(event);
         }
     }
 

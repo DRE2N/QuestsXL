@@ -1,6 +1,7 @@
 package de.erethon.questsxl.condition;
 
 import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -17,6 +18,14 @@ public class LocationCondition extends QBaseCondition {
             return success(player);
         }
         return fail(player);
+    }
+
+    @Override
+    public boolean check(QEvent event) {
+        if (event.getCenterLocation().distance(location) <= radius) {
+            return success(event);
+        }
+        return fail(event);
     }
 
     @Override

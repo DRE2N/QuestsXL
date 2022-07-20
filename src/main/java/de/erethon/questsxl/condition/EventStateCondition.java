@@ -22,6 +22,14 @@ public class EventStateCondition extends QBaseCondition {
     }
 
     @Override
+    public boolean check(QEvent conditionEvent) {
+        if (event.getState() == state) {
+            return success(conditionEvent);
+        }
+        return fail(conditionEvent);
+    }
+
+    @Override
     public void load(ConfigurationSection section) {
         super.load(section);
         event = plugin.getEventManager().getByID(section.getString("id"));

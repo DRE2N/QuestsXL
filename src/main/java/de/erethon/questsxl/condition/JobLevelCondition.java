@@ -3,6 +3,7 @@ package de.erethon.questsxl.condition;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.misc.NumberUtil;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import de.fyreum.jobsxl.JobsXL;
 import de.fyreum.jobsxl.job.PlayerJob;
@@ -30,6 +31,11 @@ public class JobLevelCondition extends QBaseCondition {
             return success(player);
         }
         return fail(player);
+    }
+
+    @Override
+    public boolean check(QEvent event) {
+        return fail(event);
     }
 
     @Override
