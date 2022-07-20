@@ -8,6 +8,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,18 +28,15 @@ public class QRegionManager {
         load();
     }
 
+    @Nullable
     public QRegion getByLocation(Location location) {
         for (QRegion region : cache) {
-            region.getPos1().getWorld().spawnParticle(Particle.VILLAGER_HAPPY, region.getPos1(), 10);
-            region.getPos1().getWorld().spawnParticle(Particle.VILLAGER_HAPPY, region.getPos2(), 10);
             if (region.isInRegion(location)) {
                 region.lastAccessed = System.currentTimeMillis();
                 return region;
             }
         }
         for (QRegion region : regions) {
-            region.getPos1().getWorld().spawnParticle(Particle.VILLAGER_HAPPY, region.getPos1(), 10);
-            region.getPos1().getWorld().spawnParticle(Particle.VILLAGER_HAPPY, region.getPos2(), 10);
             if (region.isInRegion(location)) {
                 cache.add(region);
                 region.lastAccessed = System.currentTimeMillis();
@@ -47,7 +45,7 @@ public class QRegionManager {
         }
         return null;
     }
-
+    @Nullable
     public QRegion getByID(String id) {
         for (QRegion region : regions) {
             if (region.getId().equalsIgnoreCase(id)) {
