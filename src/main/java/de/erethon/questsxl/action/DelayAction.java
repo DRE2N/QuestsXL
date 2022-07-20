@@ -1,8 +1,9 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.livingworld.QEvent;
+import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class DelayAction extends QBaseAction {
     long delay;
 
     @Override
-    public void play(Player player) {
+    public void play(QPlayer player) {
         if (!conditions(player)) return;
         List<QAction> tmp = new ArrayList<>(actions);
         BukkitRunnable runnable = new BukkitRunnable() {

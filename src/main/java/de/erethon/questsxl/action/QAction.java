@@ -1,18 +1,18 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.livingworld.QEvent;
+import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 
 public interface QAction {
 
-    void play(Player player);
+    void play(QPlayer player);
     void play(QEvent event);
-    void onFinish(Player player);
+    void onFinish(QPlayer player);
     void onFinish(QEvent event);
 
-    boolean conditions(Player player);
+    boolean conditions(QPlayer player);
 
     void delayedEnd(int seconds);
 

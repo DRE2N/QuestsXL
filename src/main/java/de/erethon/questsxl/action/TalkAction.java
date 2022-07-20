@@ -3,7 +3,6 @@ package de.erethon.questsxl.action;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.LinkedHashMap;
@@ -14,13 +13,12 @@ public class TalkAction extends QBaseAction {
     Map<String, Integer> messages = new LinkedHashMap<>();
 
     @Override
-    public void play(Player player) {
+    public void play(QPlayer player) {
         messages.put("Hallo", 2);
         messages.put("Hallo zwei", 1);
         messages.put("Hallo zwei diese Nachricht wird etwas dauern.", 10);
         messages.put("Hallo jetzt dauerts nicht mehr so lang", 5);
-        QPlayer qPlayer = cache.getByPlayer(player);
-        qPlayer.setInConversation(true);
+        player.setInConversation(true);
         int time = 0;
         int numMessage = 0;
         int total = messages.size();
@@ -30,11 +28,11 @@ public class TalkAction extends QBaseAction {
             BukkitRunnable later = new BukkitRunnable() {
                 @Override
                 public void run() {
-                    qPlayer.sendConversationMsg("<dark_gray>[<gray>" + finalNumMessage + "<dark_gray>/<gray>" + total + "<dark_gray>] <green>" + msg);
+                    player.sendConversationMsg("<dark_gray>[<gray>" + finalNumMessage + "<dark_gray>/<gray>" + total + "<dark_gray>] <green>" + msg);
                     messages.remove(msg);
                     if (messages.isEmpty()) {
-                        qPlayer.setInConversation(false);
-                        qPlayer.sendMessagesInQueue();
+                        player.setInConversation(false);
+                        player.sendMessagesInQueue();
                         onFinish(player);
                     }
                 }
@@ -45,7 +43,7 @@ public class TalkAction extends QBaseAction {
     }
 
     @Override
-    public void onFinish(Player player) {
+    public void onFinish(QPlayer player) {
         super.onFinish(player);
     }
 

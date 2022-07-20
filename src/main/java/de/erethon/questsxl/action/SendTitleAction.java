@@ -1,9 +1,9 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.questsxl.player.QPlayer;
 import net.kyori.adventure.title.Title;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 
 public class SendTitleAction extends QBaseAction {
 
@@ -14,9 +14,9 @@ public class SendTitleAction extends QBaseAction {
     int fadeOut;
 
     @Override
-    public void play(Player player) {
+    public void play(QPlayer player) {
         if (!conditions(player)) return;
-        player.showTitle(Title.title(MessageUtil.parse(msg), MessageUtil.parse(subtitle)));
+        player.getPlayer().showTitle(Title.title(MessageUtil.parse(msg), MessageUtil.parse(subtitle)));
         onFinish(player);
     }
 

@@ -3,11 +3,11 @@ package de.erethon.questsxl.action;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.condition.ConditionManager;
 import de.erethon.questsxl.condition.QCondition;
+import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.player.QPlayerCache;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -24,23 +24,42 @@ public abstract class QBaseAction implements QAction {
     String id;
 
     @Override
-    public void play(Player player) {
+    public void play(QPlayer player) {
     }
 
     @Override
-    public boolean conditions(Player player) {
-        QPlayer qPlayer = cache.getByPlayer(player);
+    public void play(QEvent event) {
+        event.getPlayersInRange().forEach(this::play);
+    }
+
+    @Override
+    public boolean conditions(QPlayer player) {
         for (QCondition condition : conditions) {
-            if (!condition.check(qPlayer)) {
+            if (!condition.check(player)) {
                 return false;
             }
         }
         return true;
     }
 
-    public void onFinish(Player player) {
+    public boolean conditions(QEvent event) {
+        for (QCondition condition : conditions) {
+            if (!condition.check(event)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void onFinish(QPlayer player) {
         for (QAction action : runAfter) {
             action.play(player);
+        }
+    }
+
+    public void onFinish(QEvent event) {
+        for (QAction action : runAfter) {
+            action.play(event);
         }
     }
 

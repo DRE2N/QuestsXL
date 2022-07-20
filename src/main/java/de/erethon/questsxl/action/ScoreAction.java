@@ -1,14 +1,15 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.player.QPlayerCache;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 
 enum Scope {
     GLOBAL,
-    PLAYER
+    PLAYER,
+    EVENT
 }
 
 enum Operation {
@@ -29,7 +30,7 @@ public class ScoreAction extends QBaseAction {
     private Operation operation;
 
     @Override
-    public void play(Player player) {
+    public void play(QPlayer player) {
         if (!conditions(player)) return;
         switch (scope) {
             case GLOBAL -> {
@@ -41,16 +42,39 @@ public class ScoreAction extends QBaseAction {
                 }
             }
             case PLAYER -> {
-                QPlayer qp = playerCache.getByPlayer(player);
                 switch (operation) {
-                    case ADD -> qp.addScore(score, amount);
-                    case REMOVE -> qp.removeScore(score, amount);
-                    case SET -> qp.setScore(score, amount);
-                    case RESET -> qp.setScore(score, 0);
+                    case ADD -> player.addScore(score, amount);
+                    case REMOVE -> player.removeScore(score, amount);
+                    case SET -> player.setScore(score, amount);
+                    case RESET -> player.setScore(score, 0);
                 }
             }
         }
         onFinish(player);
+    }
+
+    @Override
+    public void play(QEvent event) {
+        if (!conditions(event)) return;
+        switch (scope) {
+            case GLOBAL -> {
+                switch (operation) {
+                    case ADD -> plugin.addScore(score, amount);
+                    case REMOVE -> plugin.removeScore(score, amount);
+                    case SET -> plugin.setScore(score, amount);
+                    case RESET -> plugin.setScore(score, 0);
+                }
+            }
+            case EVENT -> {
+                switch (operation) {
+                    case ADD -> event.addScore(score, amount);
+                    case REMOVE -> event.removeScore(score, amount);
+                    case SET -> event.setScore(score, amount);
+                    case RESET -> event.setScore(score, 0);
+                }
+            }
+        }
+        onFinish(event);
     }
 
     @Override

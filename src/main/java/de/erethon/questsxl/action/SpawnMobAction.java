@@ -4,11 +4,12 @@ import de.erethon.aether.Aether;
 import de.erethon.aether.creature.ActiveNPC;
 import de.erethon.aether.creature.CreatureManager;
 import de.erethon.aether.creature.NPCData;
+import de.erethon.questsxl.livingworld.QEvent;
+import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 
@@ -21,11 +22,19 @@ public class SpawnMobAction extends QBaseAction {
 
 
     @Override
-    public void play(Player player) {
+    public void play(QPlayer player) {
         if (!conditions(player)) return;
         ActiveNPC activeNPC = new ActiveNPC(npcData);
         activeNPC.spawn(location);
         onFinish(player);
+    }
+
+    @Override
+    public void play(QEvent event) {
+        if (!conditions(event)) return;
+        ActiveNPC activeNPC = new ActiveNPC(npcData);
+        activeNPC.spawn(location);
+        onFinish(event);
     }
 
     @Override

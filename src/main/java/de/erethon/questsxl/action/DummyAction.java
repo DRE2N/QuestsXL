@@ -1,20 +1,25 @@
 package de.erethon.questsxl.action;
 
+import de.erethon.questsxl.livingworld.QEvent;
+import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 
 public class DummyAction extends QBaseAction {
     @Override
-    public void play(Player player) {
+    public void play(QPlayer player) {
     }
 
     @Override
-    public boolean conditions(Player player) {
+    public void play(QEvent event) {
+    }
+
+    @Override
+    public boolean conditions(QPlayer player) {
         return true;
     }
 
     @Override
-    public void onFinish(Player player) {
+    public void onFinish(QPlayer player) {
     }
 
     @Override

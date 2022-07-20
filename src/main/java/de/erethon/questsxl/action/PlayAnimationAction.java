@@ -1,17 +1,17 @@
 package de.erethon.questsxl.action;
 
+import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 
 public class PlayAnimationAction extends QBaseAction {
 
     @Override
-    public void play(Player player) {
+    public void play(QPlayer player) {
         super.play(player);
     }
 
     @Override
-    public void onFinish(Player player) {
+    public void onFinish(QPlayer player) {
         super.onFinish(player);
     }
 

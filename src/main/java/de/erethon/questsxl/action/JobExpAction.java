@@ -2,10 +2,11 @@ package de.erethon.questsxl.action;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.misc.NumberUtil;
+import de.erethon.questsxl.livingworld.QEvent;
+import de.erethon.questsxl.player.QPlayer;
 import de.fyreum.jobsxl.job.ExperienceGainReason;
 import de.fyreum.jobsxl.user.User;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 
 import java.util.Random;
 
@@ -20,11 +21,11 @@ public class JobExpAction extends QBaseAction {
     double chance;
 
     @Override
-    public void play(Player player) {
+    public void play(QPlayer player) {
         if (chance != 1 && Math.random() > chance) {
             return;
         }
-        User user = plugin.getJobsXL().getUserCache().getByPlayer(player);
+        User user = plugin.getJobsXL().getUserCache().getByPlayer(player.getPlayer());
         if (user == null) {
             MessageUtil.log("Job exp actions doesn't work while JobsXL is not on the server");
             return;

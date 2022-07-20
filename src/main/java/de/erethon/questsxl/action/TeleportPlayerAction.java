@@ -1,11 +1,11 @@
 package de.erethon.questsxl.action;
 
+import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 
@@ -13,9 +13,9 @@ public class TeleportPlayerAction extends QBaseAction{
 
     Location target;
 
-    public void play(Player player) {
+    public void play(QPlayer player) {
         if (!conditions(player)) return;
-        player.teleport(target);
+        player.getPlayer().teleport(target);
         onFinish(player);
     }
 

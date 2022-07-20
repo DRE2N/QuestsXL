@@ -1,8 +1,8 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Set;
@@ -17,7 +17,7 @@ public class RepeatAction extends QBaseAction {
     int current = 0;
 
     @Override
-    public void play(Player player) {
+    public void play(QPlayer player) {
         if (!conditions(player)) return;
         BukkitRunnable runnable = new BukkitRunnable() {
             @Override

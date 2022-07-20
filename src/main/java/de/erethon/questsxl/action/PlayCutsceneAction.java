@@ -3,8 +3,8 @@ package de.erethon.questsxl.action;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.animation.AnimationManager;
 import de.erethon.questsxl.animation.QCutscene;
+import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 
 public class PlayCutsceneAction extends QBaseAction {
 
@@ -13,12 +13,12 @@ public class PlayCutsceneAction extends QBaseAction {
     QCutscene cutscene;
 
     @Override
-    public void play(Player player) {
-        cutscene.play(player, this);
+    public void play(QPlayer player) {
+        cutscene.play(player.getPlayer(), this);
     }
 
     @Override
-    public void onFinish(Player player) {
+    public void onFinish(QPlayer player) {
         super.onFinish(player);
     }
 

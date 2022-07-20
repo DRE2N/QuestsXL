@@ -1,17 +1,17 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 
 public class SendMessage extends QBaseAction {
 
     private String message;
 
     @Override
-    public void play(Player player) {
+    public void play(QPlayer player) {
         if (!conditions(player)) return;
-        MessageUtil.sendMessage(player, message);
+        MessageUtil.sendMessage(player.getPlayer(), message);
         onFinish(player);
     }
 

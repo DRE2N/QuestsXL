@@ -3,8 +3,8 @@ package de.erethon.questsxl.action;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.instancing.BlockCollectionManager;
 import de.erethon.questsxl.instancing.InstancedBlockCollection;
+import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 
 public class ResetIBC extends QBaseAction {
 
@@ -12,8 +12,8 @@ public class ResetIBC extends QBaseAction {
     InstancedBlockCollection collection = null;
 
     @Override
-    public void play(Player player) {
-        collection.reset(player);
+    public void play(QPlayer player) {
+        collection.reset(player.getPlayer());
     }
 
     @Override

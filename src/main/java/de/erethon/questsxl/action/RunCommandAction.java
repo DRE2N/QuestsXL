@@ -1,6 +1,7 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -14,8 +15,9 @@ public class RunCommandAction extends QBaseAction {
     private boolean console = false;
 
     @Override
-    public void play(Player player) {
-        if (!conditions(player)) return;
+    public void play(QPlayer qPlayer) {
+        if (!conditions(qPlayer)) return;
+        Player player = qPlayer.getPlayer();
         command = command.replace("%player%", player.getName());
         if (console) {
             plugin.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
@@ -26,7 +28,7 @@ public class RunCommandAction extends QBaseAction {
         } else {
             player.performCommand(command);
         }
-        onFinish(player);
+        onFinish(qPlayer);
     }
 
     @Override

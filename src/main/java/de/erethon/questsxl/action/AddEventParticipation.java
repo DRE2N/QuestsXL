@@ -2,9 +2,9 @@ package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.livingworld.QEvent;
+import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.player.QPlayerCache;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 
 public class AddEventParticipation extends QBaseAction {
 
@@ -15,10 +15,15 @@ public class AddEventParticipation extends QBaseAction {
     private int amount;
 
     @Override
-    public void play(Player player) {
+    public void play(QPlayer player) {
         if (!conditions(player)) return;
-        playerCache.getByPlayer(player).participate(event, amount);
+        event.participate(player, amount);
         onFinish(player);
+    }
+
+    @Override
+    public void onFinish(QEvent event) {
+
     }
 
     @Override

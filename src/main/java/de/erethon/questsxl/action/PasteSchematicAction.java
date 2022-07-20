@@ -10,11 +10,12 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.livingworld.QEvent;
+import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
@@ -27,22 +28,28 @@ public class PasteSchematicAction extends QBaseAction {
     int time;
 
     @Override
-    public void play(Player player) {
+    public void play(QPlayer player) {
+        paste();
+    }
+
+    @Override
+    public void play(QEvent event)  {
+        paste(); // Only paste it once, not per player, lol.
+    }
+
+    private void paste() {
         Clipboard clipboard = null;
-        try {
+            try {
             clipboard = FaweAPI.load(schematic);
         } catch (Exception e) {
             MessageUtil.log("Error loading schematic " + schematic.getName());
             e.printStackTrace();
         }
-        if (clipboard == null || location == null) {
+            if (clipboard == null || location == null) {
             return;
         }
-        MessageUtil.broadcastMessage("Clipboard dimensions: " + clipboard.getDimensions().toString());
         com.sk89q.worldedit.world.World world = FaweAPI.getWorld(location.getWorld().getName());
         try (EditSession session = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
-            MessageUtil.broadcastMessage("World: " + session.getWorld().getName());
-            MessageUtil.broadcastMessage("Location: " + location.getX() + ", " + location.getY() + ", " + location.getZ());
             Operation operation = new ClipboardHolder(clipboard)
                     .createPaste(session)
                     .to(BlockVector3.at(location.getX(), location.getY(), location.getZ()))

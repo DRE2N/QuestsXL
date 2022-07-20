@@ -5,7 +5,6 @@ import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.player.QPlayerCache;
 import de.erethon.questsxl.quest.QQuest;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 
 public class QuestAction extends QBaseAction {
 
@@ -15,13 +14,12 @@ public class QuestAction extends QBaseAction {
     QQuest quest;
 
     @Override
-    public void play(Player player) {
+    public void play(QPlayer player) {
         if (!conditions(player)) return;
-        QPlayer qPlayer = playerCache.getByPlayer(player);
-        if (qPlayer.hasQuest(quest)) {
+        if (player.hasQuest(quest)) {
             return;
         }
-        qPlayer.startQuest(quest);
+        player.startQuest(quest);
     }
 
     @Override
