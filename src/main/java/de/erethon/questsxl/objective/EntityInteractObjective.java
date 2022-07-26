@@ -12,7 +12,7 @@ public class EntityInteractObjective extends QBaseObjective {
     String mob;
 
     @Override
-    public void check(Event e) {
+    public void check(ActiveObjective active, Event e) {
         if (!(e instanceof PlayerInteractEntityEvent event)) {
             return;
         }
@@ -27,7 +27,7 @@ public class EntityInteractObjective extends QBaseObjective {
                 return;
             }
         }
-        complete(plugin.getPlayerCache().getByPlayer(player), this);
+        complete(active.getHolder(), this);
     }
 
     @Override

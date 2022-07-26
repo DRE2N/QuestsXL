@@ -12,7 +12,7 @@ public class KillPlayerObjective extends QBaseObjective {
     int alreadyKilled = 0;
 
     @Override
-    public void check(Event e) {
+    public void check(ActiveObjective active, Event e) {
         if (!(e instanceof PlayerDeathEvent event)) {
             return;
         }
@@ -21,7 +21,7 @@ public class KillPlayerObjective extends QBaseObjective {
             return;
         }
         if (++alreadyKilled >= amount) {
-            complete(plugin.getPlayerCache().getByPlayer(killer), this);
+            complete(active.getHolder(), this);
         }
     }
 

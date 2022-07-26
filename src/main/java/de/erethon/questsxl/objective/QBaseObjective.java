@@ -4,13 +4,13 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.ActionManager;
 import de.erethon.questsxl.action.QAction;
+import de.erethon.questsxl.common.ObjectiveHolder;
 import de.erethon.questsxl.condition.ConditionManager;
 import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,6 +20,7 @@ public abstract class QBaseObjective implements QObjective {
     QuestsXL plugin = QuestsXL.getInstance();
     String displayText;
     Set<QAction> successActions = new HashSet<>();
+    Set<QAction> progressActions = new HashSet<>();
     Set<QCondition> conditions = new HashSet<>();
     Set<QAction> conditionFailActions = new HashSet<>();
     Set<QAction> failActions = new HashSet<>();
@@ -28,6 +29,13 @@ public abstract class QBaseObjective implements QObjective {
     boolean persistent = false;
     boolean isGlobal = false;
 
+
+    /**
+     * Checks for the conditions of this objective. If all conditions are met, the objective can be completed.
+     * For QEvents, conditions are checked per player, but the {@link ObjectiveHolder} is a QEvent.
+     * @param player the player to check the conditions for
+     * @return true if the conditions are met
+     */
     public boolean conditions(Player player) {
         if (conditions == null || conditions.isEmpty()) {
             return true;
@@ -35,16 +43,24 @@ public abstract class QBaseObjective implements QObjective {
         QPlayer qPlayer = plugin.getPlayerCache().getByPlayer(player);
         for (QCondition condition : conditions) {
             if (!condition.check(qPlayer)) {
-                condFail(player);
+                condFail(qPlayer);
                 return false;
             }
         }
         return true;
     }
 
+    /**
+     * Completes an objective. Completing removes it from the current stage (if not persistent) and progresses
+     * to the next stage (if available).
+     * Objective completion will also execute success actions, if any.
+     * @param holder the holder that completed the objective
+     * @param obj the objective that was completed.
+     */
     public void complete(ObjectiveHolder holder, QObjective obj) {
         MessageUtil.log("Checking for completion for " + holder.getName());
         for (ActiveObjective activeObjective : holder.getCurrentObjectives()) {
+            MessageUtil.log("Active: Objective: " + activeObjective.getObjective().getClass().getName() + " Holder: " + activeObjective.getHolder().getName() + " | Objective: " + obj.getClass().getName() + " Holder: " + holder.getName());
             if (activeObjective.getObjective() == obj && activeObjective.getHolder() == holder) {
                 activeObjective.setCompleted(true);
                 MessageUtil.log("Completed " + obj.getClass().getName());
@@ -67,71 +83,109 @@ public abstract class QBaseObjective implements QObjective {
         }
     }
 
-
-    public boolean condFail(Player pl) {
-        for (QAction action : conditionFailActions) {
-            action.play(plugin.getPlayerCache().getByPlayer(pl));
+    public void progress(ObjectiveHolder holder) {
+        for (QAction action : progressActions) {
+            if (holder instanceof QPlayer qPlayer) {
+                action.play((QPlayer) holder);
+            } else if (holder instanceof QEvent event) {
+                action.play((QEvent) holder);
+            }
         }
-        return false;
     }
 
-    public void fail(Player player, QObjective obj) {
-        QPlayer qPlayer = plugin.getPlayerCache().getByPlayer(player);
-        for (ActiveObjective objective : qPlayer.getCurrentObjectives()) {
-            if (objective.getObjective().equals(obj) && objective.getHolder().equals(qPlayer)) {
+    private void condFail(QPlayer player) {
+        for (QAction action : conditionFailActions) {
+            action.play(player);
+        }
+    }
+
+    /**
+     * @param holder the ObjectiveHolder to run the actions for
+     * @param obj the QObjective that failed
+     */
+    public void fail(ObjectiveHolder holder, QObjective obj) {
+        for (ActiveObjective objective : holder.getCurrentObjectives()) {
+            if (objective.getObjective().equals(obj) && objective.getHolder().equals(holder)) {
                 if (!persistent) {
-                    qPlayer.getCurrentObjectives().remove(objective);
+                    holder.getCurrentObjectives().remove(objective);
                 }
             }
         }
         for (QAction action : failActions) {
-            action.play(qPlayer);
+            if (holder instanceof QPlayer qPlayer) {
+                action.play(qPlayer);
+            } else if (holder instanceof QEvent event) {
+                action.play(event);
+            }
         }
     }
 
+    /**
+     * @return if the objective has failed
+     */
     @Override
     public boolean isFailed() {
         return failed;
     }
 
+    /**
+     * @return if the objective is optional. Optional objectives are not needed for stage completion.
+     */
     @Override
     public boolean isOptional() {
         return optional;
     }
 
+    /**
+     * @return if the objective is persistent. Persistent objectives are not removed after completion.
+     */
     @Override
     public boolean isPersistent() {
         return persistent;
     }
 
-    @Override
-    public void check(Event event) {
-    }
-
+    /**
+     * @return a set of actions that are run when the objective is completed.
+     */
     @Override
     public Set<QAction> getSuccessActions() {
         return successActions;
     }
 
+    /**
+     * @return a set of actions that are run when the objective has failed.
+     */
     @Override
     public Set<QAction> getFailActions() {
         return failActions;
     }
 
+    /**
+     * @return the text that is displayed to the player.
+     */
     @Override
     public String getDisplayText() {
         return displayText;
     }
 
+    /**
+     * @return a set of conditions that are checked. Conditions are checked per player.
+     */
     public Set<QCondition> getConditions() {
         return conditions;
     }
 
+    /**
+     * @return a set of actions that are run when the conditions are not met.
+     */
     @Override
     public Set<QAction> getConditionFailActions() {
         return conditionFailActions;
     }
 
+    /**
+     * @return if the objective is global, e.g. does not require a Quest or Event.
+     */
     @Override
     public boolean isGlobal() {
         return isGlobal;
@@ -154,6 +208,9 @@ public abstract class QBaseObjective implements QObjective {
         }
         if (section.contains("conditions")) {
             conditions.addAll(ConditionManager.loadConditions(section.getName() + ": conditions", section.getConfigurationSection("conditions")));
+        }
+        if (section.contains("onProgress")) {
+            progressActions.addAll(ActionManager.loadActions(section.getName() + ": onProgress", section.getConfigurationSection("onProgress")));
         }
         if (section.contains("onConditionFail")) {
             conditionFailActions.addAll(ActionManager.loadActions(section.getName() + ": onConditionFail", section.getConfigurationSection("onConditionFail")));

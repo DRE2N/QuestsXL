@@ -6,9 +6,9 @@ import org.bukkit.event.Event;
 public class InstantObjective extends QBaseObjective {
 
     @Override
-    public void check(Event e) {
-        if (!(e instanceof QStageStartEvent event)) return;
-        complete(event.getPlayer(), this);
+    public void check(ActiveObjective active, Event event) {
+        if (!(event instanceof QStageStartEvent)) return;
+        complete(active.getHolder(), this);
     }
 
 }

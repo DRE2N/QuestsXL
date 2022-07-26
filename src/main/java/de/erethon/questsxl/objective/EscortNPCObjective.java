@@ -14,15 +14,15 @@ public class EscortNPCObjective extends QBaseObjective {
     List<Location> path = new ArrayList<>();
 
     @Override
-    public void check(Event e) {
+    public void check(ActiveObjective active, Event e) {
         if (e instanceof InstancedCreatureDeathEvent event) {
             for (Player player : event.getNpc().getViewers()) {
-                fail(player, this);
+                fail(active.getHolder(), this);
             }
         }
         if (e instanceof InstancedCreatureArriveAtPointEvent event) {
             for (Player player : event.getNpc().getViewers()) {
-                complete(plugin.getPlayerCache().getByPlayer(player), this);
+                complete(active.getHolder(), this);
             }
         }
     }

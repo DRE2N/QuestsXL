@@ -1,7 +1,7 @@
 package de.erethon.questsxl.objective;
 
-import de.erethon.questsxl.player.QPlayer;
-import de.erethon.questsxl.quest.QStage;
+import de.erethon.questsxl.common.ObjectiveHolder;
+import de.erethon.questsxl.common.QStage;
 import org.bukkit.event.Event;
 
 public class ActiveObjective {
@@ -19,7 +19,7 @@ public class ActiveObjective {
     }
 
     public void check(Event event) {
-        objective.check(event);
+        objective.check(this, event);
     }
 
     public void setCompleted(boolean completed) {

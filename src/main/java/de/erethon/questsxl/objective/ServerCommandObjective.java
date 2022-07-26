@@ -9,11 +9,11 @@ public class ServerCommandObjective extends QBaseObjective {
     String identifier;
 
     @Override
-    public void check(Event e) {
+    public void check(ActiveObjective objective, Event e) {
         if (!(e instanceof CommandTriggerEvent event)) return;
         if (!conditions(event.getPlayer())) return;
         if (identifier.equals(event.getID())) {
-            complete(plugin.getPlayerCache().getByPlayer(event.getPlayer()), this);
+            complete(objective.getHolder(), this);
         }
 
     }

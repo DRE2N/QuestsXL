@@ -4,6 +4,7 @@ import de.erethon.aether.creature.NPCData;
 import de.erethon.aether.events.CreatureDeathEvent;
 import de.erethon.aether.events.InstancedCreatureDeathEvent;
 import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.questsxl.common.ObjectiveHolder;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -18,7 +19,7 @@ public class MobObjective extends QBaseObjective {
     int alreadyKilled = 0;
 
     @Override
-    public void check(Event e) {
+    public void check(ActiveObjective active, Event e) {
         MessageUtil.log("Checking entity death event...");
         if (e instanceof CreatureDeathEvent event) {
             //check(event.getNpc().getNpc(), event.getKiller());
@@ -28,9 +29,10 @@ public class MobObjective extends QBaseObjective {
         if (e instanceof EntityDeathEvent event) {
             if (event.getEntity().getType().name().equals(mob.toUpperCase())) {
                 alreadyKilled++;
-                MessageUtil.log("Killed mob. " + alreadyKilled + " / " + amount);
+                progress(plugin.getPlayerCache().getByPlayer(event.getEntity().getKiller()));
+                MessageUtil.broadcastMessage("Killed mob. " + alreadyKilled + " / " + amount);
                 if (alreadyKilled >= amount) {
-                    complete(plugin.getPlayerCache().getByPlayer(event.getEntity().getKiller()), this);
+                    complete(active.getHolder(), this);
                 }
             }
         }
@@ -42,6 +44,10 @@ public class MobObjective extends QBaseObjective {
         }
     }
 
+    @Override
+    public void onStart(ObjectiveHolder player) {
+        alreadyKilled = 0;
+    }
 
     @Override
     public void load(String[] c) {

@@ -19,14 +19,14 @@ public class LocationObjective extends AbstractLocationBasedObjective {
     }
 
     @Override
-    public void check(Event e) {
+    public void check(ActiveObjective active, Event e) {
         if (!(e instanceof PlayerMoveEvent event)) return;
         if (!conditions(event.getPlayer())) return;
         if (location == null) {
             return;
         }
         if (event.getTo().distance(location) <= distance) {
-            complete(plugin.getPlayerCache().getByPlayer(event.getPlayer()), this);
+            complete(active.getHolder(), this);
         }
     }
 

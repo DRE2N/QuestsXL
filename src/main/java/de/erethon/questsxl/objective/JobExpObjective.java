@@ -14,7 +14,7 @@ public class JobExpObjective extends QBaseObjective {
     ExperienceGainReason reason;
 
     @Override
-    public void check(Event e) {
+    public void check(ActiveObjective active, Event e) {
         if (!(e instanceof UserGainJobExperienceEvent event)) {
             return;
         }

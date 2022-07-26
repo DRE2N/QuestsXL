@@ -1,6 +1,7 @@
 package de.erethon.questsxl.objective;
 
 import de.erethon.questsxl.action.QAction;
+import de.erethon.questsxl.common.ObjectiveHolder;
 import de.erethon.questsxl.condition.QCondition;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Event;
@@ -10,7 +11,7 @@ import java.util.Set;
 
 public interface QObjective extends Listener {
 
-    void check(Event event);
+    void check(ActiveObjective active, Event event);
 
     boolean isOptional();
     boolean isFailed();
@@ -29,5 +30,6 @@ public interface QObjective extends Listener {
     void load(String[] msg);
 
     void onStart(ObjectiveHolder player);
+
 
 }

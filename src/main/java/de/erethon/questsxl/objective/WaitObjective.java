@@ -1,10 +1,12 @@
 package de.erethon.questsxl.objective;
 
 import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.questsxl.common.ObjectiveHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.Event;
 
 public class WaitObjective extends QBaseObjective {
 
@@ -29,6 +31,11 @@ public class WaitObjective extends QBaseObjective {
                 }
             }, 20, 20);
         }
+    }
+
+    @Override
+    public void check(ActiveObjective active, Event event) {
+
     }
 
     @Override

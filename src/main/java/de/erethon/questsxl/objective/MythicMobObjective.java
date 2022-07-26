@@ -6,7 +6,8 @@ public class MythicMobObjective extends QBaseObjective {
 
 
     @Override
-    public void check(Event event) {
+    public void check(ActiveObjective active, Event event) {
+
     }
 
     @Override
