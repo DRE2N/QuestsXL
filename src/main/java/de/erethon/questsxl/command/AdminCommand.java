@@ -6,7 +6,7 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.ActiveQuest;
 import de.erethon.questsxl.quest.QQuest;
-import de.erethon.questsxl.quest.QStage;
+import de.erethon.questsxl.common.QStage;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

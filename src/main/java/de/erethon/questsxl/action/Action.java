@@ -8,6 +8,7 @@ public enum Action {
     COMMAND(RunCommandAction::new),
     CUTSCENE(PlayCutsceneAction::new),
     DELAY(DelayAction::new),
+    EVENT_PARTICIPATION(AddEventParticipation::new),
     GIVE_ITEM(GiveItemAction::new),
     HIDE_IBC(HideIBCAction::new),
     JOB_EXP(JobExpAction::new),

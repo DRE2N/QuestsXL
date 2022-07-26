@@ -71,7 +71,7 @@ public class PlayerListener extends AbstractListener {
         if (dialogueId == null) {
             return;
         }
-        QPlayer player = cache.getByPlayer(event.getPlayer());
+        /*QPlayer player = cache.getByPlayer(event.getPlayer());
         ActiveDialogue activeDialogue = player.getActiveDialogue();
         if (activeDialogue != null) {
             if (!activeDialogue.getDialogue().getName().equals(dialogueId)) {
@@ -83,7 +83,7 @@ public class PlayerListener extends AbstractListener {
         QDialogue dialogue = dialogueManager.get(dialogueId);
         if (dialogue.canStart(player)) {
             dialogue.start(player);
-        }
+        }*/
     }
 
     @EventHandler

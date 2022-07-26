@@ -2,8 +2,7 @@ package de.erethon.questsxl.quest;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.objective.ActiveObjective;
-import de.erethon.questsxl.objective.QObjective;
+import de.erethon.questsxl.common.QStage;
 import de.erethon.questsxl.player.QPlayer;
 
 public class ActiveQuest {

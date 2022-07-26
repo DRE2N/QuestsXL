@@ -8,13 +8,14 @@ import de.erethon.bedrock.config.storage.StorageData;
 import de.erethon.bedrock.config.storage.StorageDataContainer;
 import de.erethon.bedrock.user.LoadableUser;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.Scorable;
 import de.erethon.questsxl.dialogue.ActiveDialogue;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.objective.ActiveObjective;
-import de.erethon.questsxl.objective.ObjectiveHolder;
+import de.erethon.questsxl.common.ObjectiveHolder;
 import de.erethon.questsxl.objective.QObjective;
 import de.erethon.questsxl.quest.ActiveQuest;
-import de.erethon.questsxl.quest.Completable;
+import de.erethon.questsxl.common.Completable;
 import de.erethon.questsxl.quest.QQuest;
 import de.erethon.questsxl.region.QRegion;
 import de.erethon.questsxl.tool.packetwrapper.WrapperPlayServerChat;
@@ -35,7 +36,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class QPlayer extends StorageDataContainer implements LoadableUser, ObjectiveHolder {
+public class QPlayer extends StorageDataContainer implements LoadableUser, ObjectiveHolder, Scorable {
 
     public static final int CONFIG_VERSION = 1;
 
@@ -156,18 +157,22 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
 
     /* getter and setter */
 
+    @Override
     public void addScore(@NotNull String score, int amount) {
         setScore(score, scores.getOrDefault(score, 0) + amount);
     }
 
+    @Override
     public void removeScore(@NotNull String score, int amount) {
         setScore(score, scores.getOrDefault(score, 0) - amount);
     }
 
+    @Override
     public void setScore(@NotNull String score, int amount) {
         scores.put(score, amount);
     }
 
+    @Override
     public int getScore(@NotNull String id) {
         return scores.getOrDefault(id, 0);
     }

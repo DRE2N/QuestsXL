@@ -1,7 +1,7 @@
 package de.erethon.questsxl.event;
 
 import de.erethon.questsxl.player.QPlayer;
-import de.erethon.questsxl.quest.QStage;
+import de.erethon.questsxl.common.QStage;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
