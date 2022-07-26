@@ -79,7 +79,7 @@ tasks {
         relocate("de.erethon.bedrock", "de.erethon.questsxl.bedrock")
     }
     bukkit {
-        load = BukkitPluginDescription.PluginLoadOrder.STARTUP
+        load = BukkitPluginDescription.PluginLoadOrder.POSTWORLD
         main = "de.erethon.questsxl.QuestsXL"
         apiVersion = "1.18"
         authors = listOf("Malfrador", "Fyreum")
