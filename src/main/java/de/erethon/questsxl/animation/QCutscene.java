@@ -77,7 +77,7 @@ public class QCutscene {
                         player.setGameMode(previousGamemode);
                         //player.getInventory().setItem(EquipmentSlot.HEAD, previousHead);
                         stand.remove();
-                        action.onFinish(player);
+                        action.onFinish(plugin.getPlayerCache().getByPlayer(player));
                         progress.put(player, 0);
                         cancel();
                         return;

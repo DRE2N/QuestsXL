@@ -18,7 +18,7 @@ public abstract class QBaseCondition implements QCondition {
     @Override
     public boolean fail(QPlayer player) {
         for (QAction action : failActions) {
-            action.play(player.getPlayer());
+            action.play(player);
         }
         return false;
     }
@@ -26,7 +26,7 @@ public abstract class QBaseCondition implements QCondition {
     @Override
     public boolean success(QPlayer player) {
         for (QAction action : successActions) {
-            action.play(player.getPlayer());
+            action.play(player);
         }
         return true;
     }

@@ -90,7 +90,7 @@ public class TestCommand extends ECommand {
             return;
         }
         if (args[1].equals("conv")) {
-            new TalkAction().play(player);
+            new TalkAction().play(QuestsXL.getInstance().getPlayerCache().getByPlayer(player));
             return;
         }
         MessageUtil.sendMessage(player, "Invalid test command.");

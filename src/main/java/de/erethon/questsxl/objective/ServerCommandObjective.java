@@ -13,7 +13,7 @@ public class ServerCommandObjective extends QBaseObjective {
         if (!(e instanceof CommandTriggerEvent event)) return;
         if (!conditions(event.getPlayer())) return;
         if (identifier.equals(event.getID())) {
-            complete(event.getPlayer(), this);
+            complete(plugin.getPlayerCache().getByPlayer(event.getPlayer()), this);
         }
 
     }

@@ -56,7 +56,7 @@ public class RunCommand extends ECommand {
             public void run() {
                 MessageUtil.sendMessage(player, "Playing " + finalQActions.size() + " actions...");
                 try {
-                    finalQActions.forEach(action -> action.play(player));
+                    finalQActions.forEach(action -> action.play(QuestsXL.getInstance().getPlayerCache().getByPlayer(player)));
                 } catch (Exception exception) {
                     errors.add(new FriendlyError("Command", "Failed to execute action", exception.getMessage(), "").addStacktrace(exception.getStackTrace()));
                 }

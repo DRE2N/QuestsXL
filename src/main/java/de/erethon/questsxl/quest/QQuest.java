@@ -44,7 +44,7 @@ public class QQuest implements Completable {
     @Override
     public void reward(QPlayer player) {
         for (QAction action : rewards) {
-            action.play(player.getPlayer());
+            action.play(player);
         }
     }
 

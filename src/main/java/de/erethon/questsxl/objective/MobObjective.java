@@ -38,7 +38,7 @@ public class MobObjective extends QBaseObjective {
 
     private void check(NPCData npc, Player killer) {
         if (npc.getID().equalsIgnoreCase(mob) && ++alreadyKilled >= amount) {
-            complete(killer, this);
+            complete(plugin.getPlayerCache().getByPlayer(killer), this);
         }
     }
 

@@ -32,7 +32,7 @@ public class QActiveDialogueStage extends QDialogueStage {
 
     public void onFinish() {
         for (QAction postAction : postActions) {
-            postAction.play(qPlayer.getPlayer());
+            postAction.play(qPlayer);
         }
     }
 }
