@@ -18,10 +18,13 @@ public class RepeatAction extends QBaseAction {
     int repetitions;
     int current = 0;
 
+    BukkitRunnable task;
+
     @Override
     public void play(QPlayer player) {
         if (!conditions(player)) return;
-        BukkitRunnable runnable = new BukkitRunnable() {
+        cancel();
+        task = new BukkitRunnable() {
             @Override
             public void run() {
                 for (QAction action : actions) {
@@ -35,13 +38,14 @@ public class RepeatAction extends QBaseAction {
                 current++;
             }
         };
-        runnable.runTaskTimer(plugin, delay, delay);
+        task.runTaskTimer(plugin, delay, delay);
     }
 
     @Override
     public void play(QEvent event) {
         if (!conditions(event)) return;
-        BukkitRunnable runnable = new BukkitRunnable() {
+        cancel();
+        task = new BukkitRunnable() {
             @Override
             public void run() {
                 for (QAction action : actions) {
@@ -55,8 +59,17 @@ public class RepeatAction extends QBaseAction {
                 current++;
             }
         };
-        runnable.runTaskTimer(plugin, delay, delay);
+        task.runTaskTimer(plugin, delay, delay);
     }
+
+    public void cancel() {
+        if (task != null) {
+            current = 0;
+            task.cancel();
+        }
+    }
+
+
 
     @Override
     public void load(ConfigurationSection cfg) {
