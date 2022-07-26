@@ -44,6 +44,7 @@ public class MainCommand extends ECommand {
                     + "&8 - &7IBCs: &6" + plugin.getBlockCollectionManager().getCollections().size());
             MessageUtil.sendMessage(player, "&7Cutscenes: &6" + plugin.getAnimationManager().getCutscenes().size()
                     + " &8- &7Animations: &6" + plugin.getAnimationManager().getAnimations().size());
+            MessageUtil.sendMessage(player,"&7Events: &6" + plugin.getEventManager().getEvents().size());
             return;
         }
         if (args.length >= 2) {
