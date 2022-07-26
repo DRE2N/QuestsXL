@@ -10,6 +10,9 @@ import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.condition.ConditionManager;
 import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.error.FriendlyError;
+import de.erethon.questsxl.objective.ActiveObjective;
+import de.erethon.questsxl.objective.ObjectiveHolder;
+import de.erethon.questsxl.objective.QObjective;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.player.QPlayerCache;
 import de.erethon.questsxl.quest.Completable;
@@ -23,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.util.*;
 
-public class QEvent extends StorageDataContainer implements Completable {
+public class QEvent implements Completable, ObjectiveHolder {
 
     QPlayerCache playerCache = QuestsXL.getInstance().getPlayerCache();
 
@@ -37,7 +40,8 @@ public class QEvent extends StorageDataContainer implements Completable {
 
     Map<Integer, Set<QAction>> rewards = new HashMap<>();
 
-    @StorageData(type = Integer.class, path = "cooldown")
+    Set<ActiveObjective> currentObjectives = new HashSet<>();
+
     int cooldown;
 
     @StorageData(type = Integer.class, path = "range")
@@ -282,4 +286,38 @@ public class QEvent extends StorageDataContainer implements Completable {
         super.saveData();
     }
 
+    @Override
+    public void addObjective(@NotNull ActiveObjective objective) {
+        currentObjectives.add(objective);
+    }
+
+    @Override
+    public boolean hasObjective(@NotNull QObjective objective) {
+        return currentObjectives.stream().anyMatch(o -> o.getObjective() == objective);
+    }
+
+    @Override
+    public Set<ActiveObjective> getCurrentObjectives() {
+        return currentObjectives;
+    }
+
+    @Override
+    public void removeObjective(@NotNull ActiveObjective objective) {
+        currentObjectives.remove(objective);
+    }
+
+    @Override
+    public void clearObjectives() {
+        currentObjectives.clear();
+    }
+
+    @Override
+    public void progress(@NotNull Completable completable) {
+        progress();
+    }
+
+    @Override
+    public Location getLocation() {
+        return centerLocation;
+    }
 }

@@ -11,6 +11,7 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.dialogue.ActiveDialogue;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.objective.ActiveObjective;
+import de.erethon.questsxl.objective.ObjectiveHolder;
 import de.erethon.questsxl.objective.QObjective;
 import de.erethon.questsxl.quest.ActiveQuest;
 import de.erethon.questsxl.quest.Completable;
@@ -34,7 +35,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class QPlayer extends StorageDataContainer implements LoadableUser {
+public class QPlayer extends StorageDataContainer implements LoadableUser, ObjectiveHolder {
 
     public static final int CONFIG_VERSION = 1;
 
@@ -43,7 +44,7 @@ public class QPlayer extends StorageDataContainer implements LoadableUser {
 
     private final Map<ActiveQuest, Long> activeQuests = new HashMap<>();
     private final Map<QQuest, Long> completedQuests = new HashMap<>();
-    private final List<ActiveObjective> currentObjectives = new CopyOnWriteArrayList<>();
+    private final Set<ActiveObjective> currentObjectives = new HashSet<>();
     private final List<WrappedChatComponent> chatQueue = new CopyOnWriteArrayList<>();
 
     private final Set<QRegion> currentRegions = new HashSet<>();
@@ -82,6 +83,16 @@ public class QPlayer extends StorageDataContainer implements LoadableUser {
         if (completable instanceof QEvent) {
             progressEvent((QEvent) completable);
         }
+    }
+
+    @Override
+    public Location getLocation() {
+        return player.getLocation();
+    }
+
+    @Override
+    public String getName() {
+        return player.getName();
     }
 
     public void progressQuest(@NotNull QQuest quest) {
@@ -161,6 +172,7 @@ public class QPlayer extends StorageDataContainer implements LoadableUser {
         return scores.getOrDefault(id, 0);
     }
 
+    @Override
     public void addObjective(@NotNull ActiveObjective objective) {
         currentObjectives.add(objective);
         MessageUtil.log(player.getName() + " now has " + currentObjectives.size() + " objectives.");
@@ -175,10 +187,12 @@ public class QPlayer extends StorageDataContainer implements LoadableUser {
         activeQuests.put(active, System.currentTimeMillis());
     }
 
+    @Override
     public void clearObjectives() {
         currentObjectives.clear();
     }
 
+    @Override
     public void removeObjective(@NotNull ActiveObjective objective) {
         currentObjectives.remove(objective);
     }
@@ -195,8 +209,14 @@ public class QPlayer extends StorageDataContainer implements LoadableUser {
         return completedQuests;
     }
 
-    public @NotNull List<ActiveObjective> getCurrentObjectives() {
+    @Override
+    public Set<ActiveObjective> getCurrentObjectives() {
         return currentObjectives;
+    }
+
+    @Override
+    public boolean hasObjective(QObjective objective) {
+        return currentObjectives.stream().anyMatch(o -> o.getObjective() == objective);
     }
 
     public boolean isInConversation() {

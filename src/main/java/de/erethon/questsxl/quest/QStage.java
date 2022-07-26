@@ -7,6 +7,7 @@ import de.erethon.questsxl.condition.ConditionManager;
 import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.objective.ActiveObjective;
+import de.erethon.questsxl.objective.ObjectiveHolder;
 import de.erethon.questsxl.objective.ObjectiveManager;
 import de.erethon.questsxl.objective.QObjective;
 import de.erethon.questsxl.player.QPlayer;
@@ -32,26 +33,29 @@ public class QStage {
         this.id = id;
     }
 
-    public void start(QPlayer qPlayer) {
+    public void start(ObjectiveHolder holder) {
+        MessageUtil.log("Starting stage " + id);
         for (QObjective objective : goals) {
-            qPlayer.addObjective(new ActiveObjective(qPlayer, this, objective));
+            MessageUtil.log("Added objective " + objective.getClass().getName());
+            holder.addObjective(new ActiveObjective(holder, this, objective));
         }
-        for (QAction action : startActions) {
-            action.play(qPlayer.getPlayer());
+        if (holder instanceof QPlayer player) {
+            for (QAction action : startActions) {
+                action.play(player);
+            }
         }
-    }
-
-    public void start(QEvent event) {
-        for (QAction action : startActions) {
-            action.play(event);
+        if (holder instanceof QEvent event) {
+            for (QAction action : startActions) {
+                action.play(event);
+            }
         }
     }
 
     // gets called whenever an objective is completed
-    public void checkCompleted(QPlayer player) {
-       if (isCompleted(player)) {
+    public void checkCompleted(ObjectiveHolder holder) {
+       if (isCompleted(holder)) {
            MessageUtil.log("Stage is completed!");
-           player.progress(owner);
+           holder.progress(owner);
            return;
        }
        MessageUtil.log("Stage not completed");
@@ -71,8 +75,8 @@ public class QStage {
         return canStart;
     }
 
-    public boolean isCompleted(QPlayer player) {
-        for (ActiveObjective activeObjective : player.getCurrentObjectives()) {
+    public boolean isCompleted(ObjectiveHolder holder) {
+        for (ActiveObjective activeObjective : holder.getCurrentObjectives()) {
             if (activeObjective.getStage() == null) {
                 continue;
             }

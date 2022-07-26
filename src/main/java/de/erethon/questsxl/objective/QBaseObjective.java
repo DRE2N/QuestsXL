@@ -6,6 +6,7 @@ import de.erethon.questsxl.action.ActionManager;
 import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.condition.ConditionManager;
 import de.erethon.questsxl.condition.QCondition;
+import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -41,29 +42,31 @@ public abstract class QBaseObjective implements QObjective {
         return true;
     }
 
-    public void complete(Player player, QObjective obj) {
-        QPlayer qPlayer = plugin.getPlayerCache().getByPlayer(player);
-        MessageUtil.log("Checking for completion for " + player.getName());
-        for (ActiveObjective objective : qPlayer.getCurrentObjectives()) {
-            if (objective.getObjective().equals(obj) && objective.getPlayer().equals(qPlayer)) {
-                MessageUtil.log("Found objective");
-                objective.setCompleted(true);
-                if (objective.getStage() != null) {
-                    objective.getStage().checkCompleted(qPlayer);
-                }
-                if (successActions != null && !successActions.isEmpty()) {
-                    MessageUtil.log("Playing actions...");
-                    for (QAction action : successActions) {
-                        action.play(player);
-                    }
+    public void complete(ObjectiveHolder holder, QObjective obj) {
+        MessageUtil.log("Checking for completion for " + holder.getName());
+        for (ActiveObjective activeObjective : holder.getCurrentObjectives()) {
+            if (activeObjective.getObjective() == obj && activeObjective.getHolder() == holder) {
+                activeObjective.setCompleted(true);
+                MessageUtil.log("Completed " + obj.getClass().getName());
+                if (activeObjective.getStage() != null) {
+                    activeObjective.getStage().checkCompleted(holder);
                 }
                 if (!persistent) {
-                    qPlayer.getCurrentObjectives().remove(objective);
+                    holder.getCurrentObjectives().remove(activeObjective);
                 }
-                return;
+            }
+        }
+        if (holder instanceof QPlayer qPlayer) {
+            for (QAction action : successActions) {
+                action.play(qPlayer);
+            }
+        } else if (holder instanceof QEvent event) {
+            for (QAction action : successActions) {
+                action.play(event);
             }
         }
     }
+
 
     public boolean condFail(Player pl) {
         for (QAction action : conditionFailActions) {
@@ -75,14 +78,14 @@ public abstract class QBaseObjective implements QObjective {
     public void fail(Player player, QObjective obj) {
         QPlayer qPlayer = plugin.getPlayerCache().getByPlayer(player);
         for (ActiveObjective objective : qPlayer.getCurrentObjectives()) {
-            if (objective.getObjective().equals(obj) && objective.getPlayer().equals(qPlayer)) {
+            if (objective.getObjective().equals(obj) && objective.getHolder().equals(qPlayer)) {
                 if (!persistent) {
                     qPlayer.getCurrentObjectives().remove(objective);
                 }
             }
         }
         for (QAction action : failActions) {
-            action.play(player);
+            action.play(qPlayer);
         }
     }
 
