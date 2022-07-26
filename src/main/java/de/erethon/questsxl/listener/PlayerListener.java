@@ -3,6 +3,7 @@ package de.erethon.questsxl.listener;
 import de.erethon.aether.events.CreatureDeathEvent;
 import de.erethon.aether.events.CreatureInteractEvent;
 import de.erethon.aether.events.InstancedCreatureDeathEvent;
+import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.dialogue.ActiveDialogue;
 import de.erethon.questsxl.dialogue.QDialogue;
@@ -20,6 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -124,6 +126,14 @@ public class PlayerListener extends AbstractListener {
     @EventHandler
     public void onInstancedCreatureDeath(InstancedCreatureDeathEvent event) {
 
+    }
+
+    @EventHandler
+    public void onEntityDeath(EntityDeathEvent event) {
+        if (event.getEntity().getKiller() == null) {
+            return;
+        }
+        checkObjectives(event.getEntity().getKiller(), event);
     }
 
 
