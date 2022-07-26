@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class DelayAction extends QBaseAction {
 
-    private transient final QuestsXL plugin = QuestsXL.getInstance();
+    private final QuestsXL plugin = QuestsXL.getInstance();
 
     Set<QAction> actions;
     long delay;
@@ -31,6 +31,11 @@ public class DelayAction extends QBaseAction {
             }
         };
         runnable.runTaskLater(plugin, delay * 20);
+    }
+
+    @Override
+    public void load (String[] args) {
+        throw new UnsupportedOperationException("DelayAction does not support single-line configs.");
     }
 
     @Override
