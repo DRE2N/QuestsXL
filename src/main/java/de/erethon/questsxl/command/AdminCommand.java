@@ -97,6 +97,14 @@ public class AdminCommand extends ECommand {
             MessageUtil.sendMessage(player, "&a" + player.getName() + " &7hat erfolgreich die Quest &a" + quest.getName() + " &7gestartet.");
             return;
         }
-        MessageUtil.sendMessage(player, QuestsXL.ERROR + "Unbekannter Befehl. Probiere z.B: /q admin info oder /q admin list");
+        if (args[1].equalsIgnoreCase("objectives") || args[1].equalsIgnoreCase("o")) {
+            QPlayer player1 = plugin.getPlayerCache().getByPlayer(player);
+            MessageUtil.sendMessage(player, "&7Aktive Objectives:");
+            player1.getCurrentObjectives().forEach((objective) -> {
+                MessageUtil.sendMessage(player, "&8- &6" + objective.getObjective().getClass().toString());
+            });
+            return;
+        }
+        MessageUtil.sendMessage(player, QuestsXL.ERROR + "Unbekannter Befehl. Probiere z.B: /q admin info, /q admin objectives, /q admin list oder /q admin give");
     }
 }
