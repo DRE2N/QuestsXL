@@ -1,7 +1,9 @@
 package de.erethon.questsxl.objective;
 
+import de.erethon.bedrock.chat.MessageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -31,14 +33,16 @@ public class LocationObjective extends AbstractLocationBasedObjective {
     @Override
     public void load(ConfigurationSection section) {
         super.load(section);
-        String world = section.getString("world");
+        String worldName = section.getString("world", "Erethon");
         double x = section.getDouble("x");
         double y = section.getDouble("y");
         double z = section.getDouble("z");
+        World world = Bukkit.getWorld(worldName);
         if (world == null) {
-            throw new RuntimeException("The location objective in " + section.getName() + " contains a location in an invalid world.");
+            MessageUtil.log("The condition " + section.getName() + " contains a location for a world that is not loaded: " + worldName);
+            return;
         }
-        location = new Location(Bukkit.getWorld(world), x, y, z);
+        location = new Location(world, x, y, z);
         distance = section.getInt("range");
         if (distance <= 0) {
             throw new RuntimeException("The location objective in " + section.getName() + " contains a negative range.");

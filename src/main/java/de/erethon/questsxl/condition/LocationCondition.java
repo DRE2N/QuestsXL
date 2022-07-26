@@ -5,6 +5,7 @@ import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class LocationCondition extends QBaseCondition {
@@ -31,15 +32,16 @@ public class LocationCondition extends QBaseCondition {
     @Override
     public void load(ConfigurationSection section) {
         super.load(section);
-        String world = section.getString("world");
+        String worldName = section.getString("world", "Erethon");
         double x = section.getDouble("x");
         double y = section.getDouble("y");
         double z = section.getDouble("z");
+        World world = Bukkit.getWorld(worldName);
         if (world == null) {
-            MessageUtil.log("The condition " + section.getName() + " contains a location for a world that is not loaded.");
+            MessageUtil.log("The condition " + section.getName() + " contains a location for a world that is not loaded: " + worldName);
             return;
         }
-        location = new Location(Bukkit.getWorld(world), x, y, z);
+        location = new Location(world, x, y, z);
         radius = section.getDouble("range");
     }
 

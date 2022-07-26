@@ -218,6 +218,22 @@ public class QEvent extends StorageDataContainer implements Completable {
 
     @Override
     public void load() {
+        ConfigurationSection locationSection = cfg.getConfigurationSection("startLocation");
+        cooldown = cfg.getInt("cooldown", 0);
+        range = cfg.getInt("range", 32);
+        MessageUtil.log(locationSection.getKeys(false).toString());
+        MessageUtil.log("World: " + locationSection.getString("world"));
+        Bukkit.getWorlds().forEach(world -> MessageUtil.log(world.getName()));
+        String worldName = locationSection.getString("world", "Erethon");
+        double x = locationSection.getDouble("x");
+        double y = locationSection.getDouble("y");
+        double z = locationSection.getDouble("z");
+        World world = Bukkit.getWorld(worldName);
+        if (world == null) {
+            MessageUtil.log("The condition " + locationSection.getName() + " contains a location for a world that is not loaded: " + worldName);
+            return;
+        }
+        centerLocation = new Location(world, x, y, z);
         ConfigurationSection conditionSection = cfg.getConfigurationSection("startConditions");
         if (conditionSection != null) {
             ConditionManager.loadConditions(id, conditionSection);
