@@ -1,6 +1,7 @@
-package de.erethon.questsxl.objective;
+package de.erethon.questsxl.common;
 
-import de.erethon.questsxl.quest.Completable;
+import de.erethon.questsxl.objective.ActiveObjective;
+import de.erethon.questsxl.objective.QObjective;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 

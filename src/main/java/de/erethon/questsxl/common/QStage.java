@@ -1,4 +1,4 @@
-package de.erethon.questsxl.quest;
+package de.erethon.questsxl.common;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.action.ActionManager;
@@ -7,10 +7,10 @@ import de.erethon.questsxl.condition.ConditionManager;
 import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.objective.ActiveObjective;
-import de.erethon.questsxl.objective.ObjectiveHolder;
 import de.erethon.questsxl.objective.ObjectiveManager;
 import de.erethon.questsxl.objective.QObjective;
 import de.erethon.questsxl.player.QPlayer;
+import de.erethon.questsxl.quest.QQuest;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashSet;
@@ -28,11 +28,20 @@ public class QStage {
     private String description = "";
     private String completeMessage = "";
 
-    public QStage(Completable quest,  int id) {
-        this.owner = quest;
+    /**
+     * A stage is a collection of objectives that are completed in order to progress to the next stage. Stages can
+     * belong to both a {@link QEvent} and a {@link QQuest}.
+     * @param completable the completable that owns this stage.
+     * @param id the id of this stage, must be unique within the completable.
+     */
+    public QStage(Completable completable,  int id) {
+        this.owner = completable;
         this.id = id;
     }
 
+    /** Start the stage. This will execute all start actions, and then adds the objectives to the holder.
+     * @param holder the holder to start the stage.
+     */
     public void start(ObjectiveHolder holder) {
         MessageUtil.log("Starting stage " + id);
         for (QObjective objective : goals) {
@@ -51,7 +60,9 @@ public class QStage {
         }
     }
 
-    // gets called whenever an objective is completed
+    /** Checks for completions. This is called every time an objective is completed.
+     * @param holder the holder that completed the objective.
+     */
     public void checkCompleted(ObjectiveHolder holder) {
        if (isCompleted(holder)) {
            MessageUtil.log("Stage is completed!");
@@ -61,7 +72,12 @@ public class QStage {
        MessageUtil.log("Stage not completed");
     }
 
-    // Checked before the stage gets started
+    /**
+     * @deprecated Currently unused.
+     * @param player the player to check
+     * @return true if the player can start this stage, false otherwise.
+     */
+    @Deprecated
     public boolean canStart(QPlayer player) {
         Set<QCondition> failed = new HashSet<>();
         boolean canStart = true;
@@ -75,6 +91,10 @@ public class QStage {
         return canStart;
     }
 
+    /** Checks if all objectives are completed for this stage.
+     * @param holder the holder to check.
+     * @return true if the holder has completed this stage, false otherwise.
+     */
     public boolean isCompleted(ObjectiveHolder holder) {
         for (ActiveObjective activeObjective : holder.getCurrentObjectives()) {
             if (activeObjective.getStage() == null) {
@@ -86,6 +106,14 @@ public class QStage {
                 }
             }
         }
+        for (QAction qAction : completeActions) {
+            if (holder instanceof QPlayer player) {
+                qAction.play(player);
+            }
+            if (holder instanceof QEvent event) {
+                qAction.play(event);
+            }
+        }
         return true;
     }
 
@@ -94,6 +122,9 @@ public class QStage {
         return goals.contains(obj);
     }
 
+    /**
+     * @return a unique id for this stage.
+     */
     public int getId() {
         return id;
     }

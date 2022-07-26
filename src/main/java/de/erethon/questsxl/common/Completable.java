@@ -1,5 +1,6 @@
-package de.erethon.questsxl.quest;
+package de.erethon.questsxl.common;
 
+import de.erethon.questsxl.common.QStage;
 import de.erethon.questsxl.player.QPlayer;
 
 import java.util.List;
