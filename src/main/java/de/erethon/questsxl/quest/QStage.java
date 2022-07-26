@@ -127,9 +127,9 @@ public class QStage {
     }
 
     public void load(ConfigurationSection section) {
-        startMessage = section.getString("startMessage");
-        completeMessage = section.getString("completeMessage");
-        description = section.getString("description");
+        startMessage = section.getString("startMessage", "");
+        completeMessage = section.getString("completeMessage", "");
+        description = section.getString("description", "");
         if (section.getConfigurationSection("conditions") != null) {
             conditions.addAll(ConditionManager.loadConditions(this.owner.getName() + " - " + id + ": conditions", section.getConfigurationSection("conditions")));
         }
