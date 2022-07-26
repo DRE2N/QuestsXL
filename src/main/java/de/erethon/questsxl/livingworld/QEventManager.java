@@ -22,11 +22,9 @@ public class QEventManager {
     }
 
     public void load(File file)  {
+        events.clear();
         for (File file1 : file.listFiles()) {
             events.add(new QEvent(file1));
-        }
-        for (QEvent event : events) {
-            event.load();
         }
         MessageUtil.log("Loaded " + events.size() + " events.");
     }
@@ -35,6 +33,14 @@ public class QEventManager {
         for (QEvent event : events){
             event.save();
         }
+    }
+
+    public Set<QEvent> getEvents() {
+        return events;
+    }
+
+    public Set<QEvent> getActiveEvents() {
+        return events.stream().filter(event -> event.getState() == EventState.ACTIVE).collect(HashSet::new, HashSet::add, HashSet::addAll);
     }
 
     class EventUpdater extends BukkitRunnable {

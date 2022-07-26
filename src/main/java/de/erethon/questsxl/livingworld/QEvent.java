@@ -1,9 +1,6 @@
 package de.erethon.questsxl.livingworld;
 
 import de.erethon.bedrock.chat.MessageUtil;
-import de.erethon.bedrock.config.storage.Nullability;
-import de.erethon.bedrock.config.storage.StorageData;
-import de.erethon.bedrock.config.storage.StorageDataContainer;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.ActionManager;
 import de.erethon.questsxl.action.QAction;
@@ -17,7 +14,9 @@ import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.player.QPlayerCache;
 import de.erethon.questsxl.quest.Completable;
 import de.erethon.questsxl.quest.QStage;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -44,19 +43,14 @@ public class QEvent implements Completable, ObjectiveHolder {
 
     int cooldown;
 
-    @StorageData(type = Integer.class, path = "range")
     int range;
 
-    // State - Persistence
-    // @StorageData(type = Enum.class, path = "state.state") - NYI
     EventState state;
-    @StorageData(type = HashMap.class, keyTypes = String.class, valueTypes = Integer.class, nullability = Nullability.IGNORE)
+
     private final Map<String, Integer> scores = new HashMap<>();
 
-    @StorageData(type = Location.class, path = "state.center", nullability = Nullability.FORBID)
     private Location centerLocation = null;
 
-    @StorageData(type = Long.class, path = "state.timeLastCompleted")
     long timeLastCompleted;
 
     QStage currentStage;
@@ -66,7 +60,6 @@ public class QEvent implements Completable, ObjectiveHolder {
     private final Map<QPlayer, Integer> eventParticipation = new HashMap<>();
 
     public QEvent(File file) {
-        super(file, 1);
         String fileName = file.getName();
         this.file = file;
         id = fileName.replace(".yml", "");
@@ -120,25 +113,28 @@ public class QEvent implements Completable, ObjectiveHolder {
     }
 
     public void update() {
+        MessageUtil.log("Event: " + getName() + " | State: " + state);
         switch (state) {
             case ACTIVE -> {
                 playersInRange.clear();
-                for (Player player : centerLocation.getNearbyEntitiesByType(Player.class, range)) {
+                for (Player player : centerLocation.getNearbyPlayers(range)) {
                     playersInRange.add(playerCache.getByPlayer(player));
                 }
                 for (QAction action : updateActions) {
                     action.play(this);
                 }
+                MessageUtil.log("Players in range: " + playersInRange.size());
             }
             case NOT_STARTED -> {
                 for (QCondition condition : startConditions) {
                     if (!condition.check(this)) {
                         return;
                     }
-                    stages.get(0).start(this);
-                    MessageUtil.log("Event " + getName() + " started.");
-                    state = EventState.ACTIVE;
                 }
+                stages.get(0).start(this);
+                currentStage = stages.get(0);
+                MessageUtil.log("Event " + getName() + " started with stage " + currentStage.getId() + " with " + getCurrentObjectives().size() + " objectives.");
+                state = EventState.ACTIVE;
             }
             case COMPLETED -> {
                 if (System.currentTimeMillis() - timeLastCompleted > cooldown * 1000L) {
@@ -168,7 +164,8 @@ public class QEvent implements Completable, ObjectiveHolder {
     }
 
     public void finish() {
-
+        MessageUtil.log("Event " + getName() + " finished.");
+        state = EventState.COMPLETED;
     }
 
     public void setCurrentStage(int id) {
@@ -243,6 +240,8 @@ public class QEvent implements Completable, ObjectiveHolder {
             ConditionManager.loadConditions(id, conditionSection);
         }
 
+        state = EventState.valueOf(cfg.getString("state.state", "NOT_STARTED"));
+
         ConfigurationSection updateSection = cfg.getConfigurationSection("onUpdate");
         if (updateSection != null) {
             ActionManager.loadActions(id, updateSection);
@@ -273,17 +272,16 @@ public class QEvent implements Completable, ObjectiveHolder {
             try {
                 stage.load(stageS);
             } catch (Exception e) {
-                QuestsXL.getInstance().getErrors().add(new FriendlyError("Event: " + this.getName(), "Stage " + id + " konnte nicht geladen werden.", e.getMessage(), "..."));
+                QuestsXL.getInstance().getErrors().add(new FriendlyError("Event: " + this.getName(), "Stage " + id + " konnte nicht geladen werden.", e.getMessage(), "...").addStacktrace(e.getStackTrace()));
             }
             stages.add(stage);
         }
 
-        super.load();
-        MessageUtil.log("Loaded event " + id + " with " + stages.size() + " stages.");
+        MessageUtil.log("Loaded event " + id + " with " + stages.size() + " at " + centerLocation.getWorld().getName() + " / " + centerLocation.getX() + " / " + centerLocation.getY() + " / " + centerLocation.getZ());
     }
 
     public void save() {
-        super.saveData();
+
     }
 
     @Override
