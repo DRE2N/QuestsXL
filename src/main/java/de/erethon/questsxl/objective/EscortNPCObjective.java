@@ -22,7 +22,7 @@ public class EscortNPCObjective extends QBaseObjective {
         }
         if (e instanceof InstancedCreatureArriveAtPointEvent event) {
             for (Player player : event.getNpc().getViewers()) {
-                complete(player, this);
+                complete(plugin.getPlayerCache().getByPlayer(player), this);
             }
         }
     }

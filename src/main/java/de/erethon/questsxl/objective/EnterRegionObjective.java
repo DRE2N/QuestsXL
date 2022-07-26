@@ -19,7 +19,7 @@ public class EnterRegionObjective extends QBaseObjective {
             return;
         }
         if (event.getRegion() == region) {
-            complete(event.getPlayer(), this);
+            complete(plugin.getPlayerCache().getByPlayer(event.getPlayer()), this);
         }
     }
 

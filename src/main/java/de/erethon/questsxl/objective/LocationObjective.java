@@ -26,7 +26,7 @@ public class LocationObjective extends AbstractLocationBasedObjective {
             return;
         }
         if (event.getTo().distance(location) <= distance) {
-            complete(event.getPlayer(), this);
+            complete(plugin.getPlayerCache().getByPlayer(event.getPlayer()), this);
         }
     }
 

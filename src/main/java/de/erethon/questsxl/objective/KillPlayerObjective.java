@@ -1,6 +1,5 @@
 package de.erethon.questsxl.objective;
 
-import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -13,11 +12,6 @@ public class KillPlayerObjective extends QBaseObjective {
     int alreadyKilled = 0;
 
     @Override
-    public void onStart(QPlayer player) {
-        this.player = player.getPlayer().getName();
-    }
-
-    @Override
     public void check(Event e) {
         if (!(e instanceof PlayerDeathEvent event)) {
             return;
@@ -27,7 +21,7 @@ public class KillPlayerObjective extends QBaseObjective {
             return;
         }
         if (++alreadyKilled >= amount) {
-            complete(killer, this);
+            complete(plugin.getPlayerCache().getByPlayer(killer), this);
         }
     }
 

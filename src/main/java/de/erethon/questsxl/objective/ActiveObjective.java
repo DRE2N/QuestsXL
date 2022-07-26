@@ -6,16 +6,16 @@ import org.bukkit.event.Event;
 
 public class ActiveObjective {
 
-    private final QPlayer player;
+    private final ObjectiveHolder holder;
     private final QObjective objective;
     private final QStage stage;
     private boolean completed = false;
 
-    public ActiveObjective(QPlayer player, QStage stage,  QObjective objective) {
-        this.player = player;
+    public ActiveObjective(ObjectiveHolder holder, QStage stage, QObjective objective) {
+        this.holder = holder;
         this.objective = objective;
         this.stage = stage;
-        objective.onStart(player);
+        objective.onStart(holder);
     }
 
     public void check(Event event) {
@@ -26,8 +26,8 @@ public class ActiveObjective {
         this.completed = completed;
     }
 
-    public QPlayer getPlayer() {
-        return player;
+    public ObjectiveHolder getHolder() {
+        return holder;
     }
 
     public String getMessage() {

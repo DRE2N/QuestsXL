@@ -27,7 +27,7 @@ public class EntityInteractObjective extends QBaseObjective {
                 return;
             }
         }
-        complete(player, this);
+        complete(plugin.getPlayerCache().getByPlayer(player), this);
     }
 
     @Override

@@ -15,7 +15,7 @@ public class LeaveRegionObjective extends QBaseObjective {
         if (!(e instanceof QRegionLeaveEvent event)) return;
         if (!conditions(event.getPlayer())) return;
         if (event.getRegion() == region) {
-            complete(event.getPlayer(), this);
+            complete(plugin.getPlayerCache().getByPlayer(event.getPlayer()), this);
         }
     }
 
