@@ -1,8 +1,9 @@
 package de.erethon.questsxl.objective;
 
-import de.erethon.questsxl.player.QPlayer;
+import de.erethon.bedrock.chat.MessageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class WaitObjective extends QBaseObjective {
@@ -14,14 +15,14 @@ public class WaitObjective extends QBaseObjective {
     int durationWaited = 0;
 
     @Override
-    public void onStart(QPlayer player) {
+    public void onStart(ObjectiveHolder holder) {
         if (location == null) {
-            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> complete(player.getPlayer(), this), duration);
+            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> complete(holder, this), duration);
         } else {
             Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
-                if (player.getPlayer().getLocation().distance(location) <= distance) {
+                if (holder.getLocation().distance(location) <= distance) {
                     if (++durationWaited >= duration) {
-                        complete(player.getPlayer(), this);
+                        complete(holder, this);
                     }
                 } else {
                     durationWaited = 0;
@@ -41,14 +42,16 @@ public class WaitObjective extends QBaseObjective {
         if (locationSection == null) {
             return;
         }
-        String world = locationSection.getString("world");
-        double x = locationSection.getDouble("x");
-        double y = locationSection.getDouble("y");
-        double z = locationSection.getDouble("z");
+        String worldName = section.getString("world", "Erethon");
+        double x = section.getDouble("x");
+        double y = section.getDouble("y");
+        double z = section.getDouble("z");
+        World world = Bukkit.getWorld(worldName);
         if (world == null) {
-            throw new RuntimeException("The location objective in " + section.getName() + " contains a location in an invalid world.");
+            MessageUtil.log("The condition " + section.getName() + " contains a location for a world that is not loaded: " + worldName);
+            return;
         }
-        location = new Location(Bukkit.getWorld(world), x, y, z);
+        location = new Location(world, x, y, z);
         distance = section.getInt("range");
         if (distance <= 0) {
             throw new RuntimeException("The wait objective in " + section.getName() + " contains a negative range.");

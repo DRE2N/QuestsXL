@@ -2,7 +2,6 @@ package de.erethon.questsxl.objective;
 
 import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.condition.QCondition;
-import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
@@ -29,6 +28,6 @@ public interface QObjective extends Listener {
     void load(ConfigurationSection section);
     void load(String[] msg);
 
-    void onStart(QPlayer player);
+    void onStart(ObjectiveHolder player);
 
 }

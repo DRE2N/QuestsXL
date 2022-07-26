@@ -70,7 +70,7 @@ public abstract class QBaseObjective implements QObjective {
 
     public boolean condFail(Player pl) {
         for (QAction action : conditionFailActions) {
-            action.play(pl);
+            action.play(plugin.getPlayerCache().getByPlayer(pl));
         }
         return false;
     }
@@ -173,7 +173,7 @@ public abstract class QBaseObjective implements QObjective {
     }
 
     @Override
-    public void onStart(QPlayer player) {
+    public void onStart(ObjectiveHolder player) {
 
     }
 }
