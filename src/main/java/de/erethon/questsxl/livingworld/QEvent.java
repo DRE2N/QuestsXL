@@ -212,6 +212,10 @@ public class QEvent extends StorageDataContainer implements Completable {
         return eventParticipation.get(player);
     }
 
+    public Map<QPlayer, Integer> getParticipants() {
+        return eventParticipation;
+    }
+
     @Override
     public void load() {
         ConfigurationSection conditionSection = cfg.getConfigurationSection("startConditions");

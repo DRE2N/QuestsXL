@@ -17,6 +17,7 @@ public enum Action {
     PERMISSION(PermissionAction::new),
     REPEAT(RepeatAction::new),
     RESET_IBC(ResetIBCAction::new),
+    RUN_AS(RunAsAction::new),
     SHOW_BEAM(DisplayLocationMarkerAction::new),
     SHOW_IBC(ShowIBCAction::new),
     SPAWN_MOB(SpawnMobAction::new),
