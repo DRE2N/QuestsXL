@@ -4,6 +4,8 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.ActionManager;
 import de.erethon.questsxl.action.QAction;
+import de.erethon.questsxl.common.Completable;
+import de.erethon.questsxl.common.QStage;
 import de.erethon.questsxl.condition.ConditionManager;
 import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.error.FriendlyError;
@@ -21,7 +23,6 @@ public class QQuest implements Completable {
 
     File file;
     YamlConfiguration cfg;
-
     String name;
     String displayName;
     String description;
@@ -30,6 +31,9 @@ public class QQuest implements Completable {
     private final Set<QAction> startActions = new HashSet<>();
     private final Set<QAction> rewards = new HashSet<>();
 
+    /** A quest is a collection of stages that are completed in order to progress. Quests can only belong to {@link QPlayer}s.
+     * @param file the file that contains the quest data.
+     */
     public QQuest(File file) {
         String fileName = file.getName();
         name = fileName.replace(".yml", "");

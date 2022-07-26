@@ -4,16 +4,17 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.ActionManager;
 import de.erethon.questsxl.action.QAction;
+import de.erethon.questsxl.common.Scorable;
 import de.erethon.questsxl.condition.ConditionManager;
 import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.objective.ActiveObjective;
-import de.erethon.questsxl.objective.ObjectiveHolder;
+import de.erethon.questsxl.common.ObjectiveHolder;
 import de.erethon.questsxl.objective.QObjective;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.player.QPlayerCache;
-import de.erethon.questsxl.quest.Completable;
-import de.erethon.questsxl.quest.QStage;
+import de.erethon.questsxl.common.Completable;
+import de.erethon.questsxl.common.QStage;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -25,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.util.*;
 
-public class QEvent implements Completable, ObjectiveHolder {
+public class QEvent implements Completable, ObjectiveHolder, Scorable {
 
     QPlayerCache playerCache = QuestsXL.getInstance().getPlayerCache();
 
@@ -89,7 +90,7 @@ public class QEvent implements Completable, ObjectiveHolder {
     public void reward() {
         for (Map.Entry<QPlayer, Integer> playerEntry : eventParticipation.entrySet()) {
             for (Map.Entry<Integer, Set<QAction>> reward : rewards.entrySet()) {
-                if (reward.getKey() >= playerEntry.getValue()) {
+                if (reward.getKey() <= playerEntry.getValue()) {
                     for (QAction action : reward.getValue()) {
                         action.play(playerEntry.getKey());
                     }
@@ -113,7 +114,6 @@ public class QEvent implements Completable, ObjectiveHolder {
     }
 
     public void update() {
-        MessageUtil.log("Event: " + getName() + " | State: " + state);
         switch (state) {
             case ACTIVE -> {
                 playersInRange.clear();
@@ -123,7 +123,6 @@ public class QEvent implements Completable, ObjectiveHolder {
                 for (QAction action : updateActions) {
                     action.play(this);
                 }
-                MessageUtil.log("Players in range: " + playersInRange.size());
             }
             case NOT_STARTED -> {
                 for (QCondition condition : startConditions) {
@@ -165,25 +164,31 @@ public class QEvent implements Completable, ObjectiveHolder {
 
     public void finish() {
         MessageUtil.log("Event " + getName() + " finished.");
+        reward();
         state = EventState.COMPLETED;
+        clearObjectives();
     }
 
     public void setCurrentStage(int id) {
         currentStage = stages.get(id);
     }
 
+    @Override
     public void addScore(@NotNull String score, int amount) {
         setScore(score, scores.getOrDefault(score, 0) + amount);
     }
 
+    @Override
     public void removeScore(@NotNull String score, int amount) {
         setScore(score, scores.getOrDefault(score, 0) - amount);
     }
 
+    @Override
     public void setScore(@NotNull String score, int amount) {
         scores.put(score, amount);
     }
 
+    @Override
     public int getScore(@NotNull String id) {
         return scores.getOrDefault(id, 0);
     }
