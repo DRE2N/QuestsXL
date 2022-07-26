@@ -98,9 +98,12 @@ public final class QuestsXL extends EPlugin implements Listener {
         initFile(REGIONS = new File(getDataFolder(), "regions.yml"));
         initFile(RESPAWNS = new File(getDataFolder(), "respawnPoints.yml"));
         initFile(GLOBAL_OBJ = new File(getDataFolder(), "globalObjectives.yml"));
-
-        aether = (Aether) Bukkit.getPluginManager().getPlugin("Aether");
-        jobsXL = (JobsXL) Bukkit.getPluginManager().getPlugin("JobsXL");
+        if (getServer().getPluginManager().getPlugin("Aether") != null) {
+            aether = (Aether) getServer().getPluginManager().getPlugin("Aether");
+        }
+        if (getServer().getPluginManager().getPlugin("JobsXL") != null) {
+            jobsXL = (JobsXL) getServer().getPluginManager().getPlugin("JobsXL");
+        }
         qPlayerCache = new QPlayerCache(this);
 
         loadCore();
