@@ -13,6 +13,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public abstract class QBaseObjective implements QObjective {
@@ -59,7 +60,9 @@ public abstract class QBaseObjective implements QObjective {
      */
     public void complete(ObjectiveHolder holder, QObjective obj) {
         MessageUtil.log("Checking for completion for " + holder.getName());
-        for (ActiveObjective activeObjective : holder.getCurrentObjectives()) {
+        Iterator<ActiveObjective> iterator = holder.getCurrentObjectives().iterator();
+        while (iterator.hasNext()) {
+            ActiveObjective activeObjective = iterator.next();
             MessageUtil.log("Active: Objective: " + activeObjective.getObjective().getClass().getName() + " Holder: " + activeObjective.getHolder().getName() + " | Objective: " + obj.getClass().getName() + " Holder: " + holder.getName());
             if (activeObjective.getObjective() == obj && activeObjective.getHolder() == holder) {
                 activeObjective.setCompleted(true);
@@ -68,7 +71,7 @@ public abstract class QBaseObjective implements QObjective {
                     activeObjective.getStage().checkCompleted(holder);
                 }
                 if (!persistent) {
-                    holder.getCurrentObjectives().remove(activeObjective);
+                    iterator.remove();
                 }
             }
         }
