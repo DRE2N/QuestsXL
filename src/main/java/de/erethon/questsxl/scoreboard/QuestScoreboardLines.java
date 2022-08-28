@@ -1,0 +1,47 @@
+package de.erethon.questsxl.scoreboard;
+
+import de.erethon.aergia.player.EPlayer;
+import de.erethon.aergia.scoreboard.ScoreboardLines;
+import de.erethon.aergia.util.DynamicString;
+import de.erethon.commons.chat.MessageUtil;
+import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.player.QPlayer;
+import de.erethon.questsxl.quest.ActiveQuest;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * @author Fyreum
+ */
+public class QuestScoreboardLines implements ScoreboardLines {
+
+    final QuestsXL plugin = QuestsXL.getInstance();
+
+    @Override
+    public @NotNull List<DynamicString> getLines(@NotNull EPlayer ePlayer) {
+        QPlayer qPlayer = plugin.getPlayerCache().getByUniqueId(ePlayer.getUniqueId());
+        if (qPlayer == null) {
+            return Collections.emptyList();
+        }
+        Set<ActiveQuest> quests = qPlayer.getActiveQuests().keySet();
+        List<DynamicString> lines = new ArrayList<>(Math.min(quests.size(), 5));
+
+        for (ActiveQuest quest : quests) {
+            if (lines.size() == 4) {
+                lines.add(p -> MessageUtil.color("&e» &6" + (quests.size() - 4) + " &7weitere"));
+                break;
+            }
+            lines.add(p -> MessageUtil.color("&e» &7" + quest.getScoreboardLine()));
+        }
+        return lines;
+    }
+
+    @Override
+    public int getPriority() {
+        return 5;
+    }
+}

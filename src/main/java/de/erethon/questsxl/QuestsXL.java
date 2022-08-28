@@ -1,6 +1,8 @@
 package de.erethon.questsxl;
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import de.erethon.aergia.Aergia;
+import de.erethon.aergia.scoreboard.ScoreboardLines;
 import de.erethon.aether.Aether;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.compatibility.Internals;
@@ -20,9 +22,9 @@ import de.erethon.questsxl.player.QPlayerCache;
 import de.erethon.questsxl.quest.QuestManager;
 import de.erethon.questsxl.region.QRegionManager;
 import de.erethon.questsxl.respawn.RespawnPointManager;
+import de.erethon.questsxl.scoreboard.QuestScoreboardLines;
 import de.erethon.questsxl.tool.GitSync;
 import de.fyreum.jobsxl.JobsXL;
-import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.Contract;
@@ -71,6 +73,7 @@ public final class QuestsXL extends EPlugin implements Listener {
     private final List<FriendlyError> errors = new ArrayList<>();
     private boolean showStacktraces = true;
 
+    Aergia aergia;
     Aether aether;
     JobsXL jobsXL;
     WorldEditPlugin worldEditPlugin;
@@ -98,6 +101,9 @@ public final class QuestsXL extends EPlugin implements Listener {
         initFile(REGIONS = new File(getDataFolder(), "regions.yml"));
         initFile(RESPAWNS = new File(getDataFolder(), "respawnPoints.yml"));
         initFile(GLOBAL_OBJ = new File(getDataFolder(), "globalObjectives.yml"));
+        if (getServer().getPluginManager().getPlugin("Aergia") != null) {
+            aergia = (Aergia) getServer().getPluginManager().getPlugin("Aergia");
+        }
         if (getServer().getPluginManager().getPlugin("Aether") != null) {
             aether = (Aether) getServer().getPluginManager().getPlugin("Aether");
         }
@@ -158,8 +164,10 @@ public final class QuestsXL extends EPlugin implements Listener {
             playerJobListener = new PlayerJobListener();
             getServer().getPluginManager().registerEvents(playerJobListener, this);
         }
+        if (aergia != null) {
+            aergia.getEScoreboard().addScores(new QuestScoreboardLines());
+        }
     }
-
 
     @Override
     public void onDisable() {
