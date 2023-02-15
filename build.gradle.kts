@@ -7,10 +7,12 @@ repositories {
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
     maven("https://repo.dmulloy2.net/repository/public/")
     maven("https://jitpack.io")
+    maven("https://papermc.io/repo/repository/maven-public/")
     mavenCentral()
 }
 plugins {
     `java-library`
+    `maven-publish`
     id("io.papermc.paperweight.userdev") version "1.3.6-SNAPSHOT"
     id("xyz.jpenilla.run-paper") version "1.0.6" // Adds runServer and runMojangMappedServer tasks for testing
     id ("com.github.johnrengelman.shadow") version "7.1.2"
@@ -26,21 +28,30 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
 
+val papyrusVersion = "1.19.3-R0.1-SNAPSHOT"
+
 dependencies {
-    paperDevBundle("1.19-R0.1-SNAPSHOT")
+    paperweightDevBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true }
     compileOnly("de.erethon.aether:Aether:1.0.0-SNAPSHOT")
     compileOnly("de.erethon.aergia:Aergia:1.0.0-SNAPSHOT") { isTransitive = false }
     compileOnly("de.fyreum:JobsXL:1.0-SNAPSHOT") { isTransitive = false }
-    implementation("de.erethon:bedrock:1.2.3") { isTransitive = false }
+    implementation("de.erethon:bedrock:1.2.5") { isTransitive = false }
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.3.0") { isTransitive = false }
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.3.0") { isTransitive = false }
     compileOnly("com.comphenix.protocol:ProtocolLib:5.0.0-SNAPSHOT")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7") { isTransitive = false }
-    // paperweightDevBundle("com.example.paperfork", "1.18.1-R0.1-SNAPSHOT")
+}
 
-    // You will need to manually specify the full dependency if using the groovy gradle dsl
-    // (paperDevBundle and paperweightDevBundle functions do not work in groovy)
-    // paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.18.1-R0.1-SNAPSHOT")
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "${project.group}"
+            artifactId = "Aether"
+            version = "${project.version}"
+
+            from(components["java"])
+        }
+    }
 }
 
 tasks {
@@ -48,6 +59,15 @@ tasks {
     assemble {
         dependsOn(reobfJar)
         dependsOn(shadowJar)
+    }
+
+    runServer {
+        if (!project.buildDir.exists()) {
+            project.buildDir.mkdir()
+        }
+        val f = File(project.buildDir, "server.jar");
+        uri("https://github.com/DRE2N/Papyrus/releases/download/latest/papyrus-paperclip-$papyrusVersion-reobf.jar").toURL().openStream().use { it.copyTo(f.outputStream()) }
+        serverJar(f)
     }
 
     compileJava {

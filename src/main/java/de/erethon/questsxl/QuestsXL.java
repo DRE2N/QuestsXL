@@ -115,7 +115,7 @@ public final class QuestsXL extends EPlugin implements Listener {
         loadCore();
     }
 
-    private void initFolder(File folder) {
+    public void initFolder(File folder) {
         if (!folder.exists()) {
             folder.mkdir();
         }

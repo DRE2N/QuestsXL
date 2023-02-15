@@ -18,7 +18,6 @@ import de.erethon.questsxl.quest.ActiveQuest;
 import de.erethon.questsxl.common.Completable;
 import de.erethon.questsxl.quest.QQuest;
 import de.erethon.questsxl.region.QRegion;
-import de.erethon.questsxl.tool.packetwrapper.WrapperPlayServerChat;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -280,14 +279,15 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
         if (chatQueue.isEmpty()) {
             return;
         }
-        player.sendMessage(MessageUtil.parse("<hover:show_text:'<yellow><italic>Diese Nachrichten hast du verpasst,\nwährend du die Quest-Konversation gelesen hast.'><dark_gray>[...]"));
+        // Needs rewrite due to 1.19 chat
+        /*player.sendMessage(MessageUtil.parse("<hover:show_text:'<yellow><italic>Diese Nachrichten hast du verpasst,\nwährend du die Quest-Konversation gelesen hast.'><dark_gray>[...]"));
         for (WrappedChatComponent chatComponent : chatQueue) {
             WrapperPlayServerChat chat = new WrapperPlayServerChat();
             chat.setMessage(chatComponent);
             chat.setChatType(EnumWrappers.ChatType.CHAT);
             chat.sendPacket(player);
         }
-        chatQueue.clear();
+        chatQueue.clear();*/
     }
 
     public void sendConversationMsg(@NotNull String raw) {

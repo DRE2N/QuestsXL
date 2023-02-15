@@ -10,7 +10,6 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.player.QPlayerCache;
-import de.erethon.questsxl.tool.packetwrapper.WrapperPlayServerChat;
 
 public class PacketListener {
 
@@ -25,12 +24,12 @@ public class PacketListener {
         protocol.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.CHAT) {
             @Override
             public void onPacketSending(PacketEvent event) {
-                onChat(event);
+                //onChat(event);
             }
         });
     }
 
-    private void onChat(PacketEvent event) {
+    /*private void onChat(PacketEvent event) {
         WrapperPlayServerChat packet = new WrapperPlayServerChat(event.getPacket());
         if (packet.getChatType() == EnumWrappers.ChatType.GAME_INFO) {
             return;
@@ -40,5 +39,5 @@ public class PacketListener {
             event.setCancelled(true);
             qPlayer.addChat(packet.getMessage());
         }
-    }
+    }*/
 }

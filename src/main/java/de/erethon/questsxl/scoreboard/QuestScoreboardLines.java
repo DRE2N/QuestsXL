@@ -3,7 +3,7 @@ package de.erethon.questsxl.scoreboard;
 import de.erethon.aergia.player.EPlayer;
 import de.erethon.aergia.scoreboard.ScoreboardLines;
 import de.erethon.aergia.util.DynamicString;
-import de.erethon.commons.chat.MessageUtil;
+import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.ActiveQuest;
@@ -31,11 +31,11 @@ public class QuestScoreboardLines implements ScoreboardLines {
         List<DynamicString> lines = new ArrayList<>(Math.min(quests.size(), 5));
 
         for (ActiveQuest quest : quests) {
-            if (lines.size() == 4) {
-                lines.add(p -> MessageUtil.color("&e» &6" + (quests.size() - 4) + " &7weitere"));
+            /*if (lines.size() == 4) {
+                lines.add(p -> MessageUtil.parse("&e» &6" + (quests.size() - 4) + " &7weitere"));
                 break;
             }
-            lines.add(p -> MessageUtil.color("&e» &7" + quest.getScoreboardLine()));
+            lines.add(p -> MessageUtil.parse("&e» &7" + quest.getScoreboardLine()));*/
         }
         return lines;
     }
