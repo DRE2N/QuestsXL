@@ -1,5 +1,6 @@
 package de.erethon.questsxl.objective;
 
+import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.quest.QuestMarkerType;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -21,7 +22,7 @@ public abstract class AbstractLocationBasedObjective extends QBaseObjective {
     char DOWN = '▼';
     char SAME = '◆';
 
-    Location location;
+    QLocation location;
     int distance = 2;
     double lineProgress = 2;
     QuestMarkerType markerType;
@@ -30,11 +31,11 @@ public abstract class AbstractLocationBasedObjective extends QBaseObjective {
         this.markerType = type;
     }
 
-    public Location getLocation() {
+    public QLocation getLocation() {
         return location;
     }
 
-    public void setLocation(Location location) {
+    public void setLocation(QLocation location) {
         this.location = location;
     }
 
@@ -44,8 +45,8 @@ public abstract class AbstractLocationBasedObjective extends QBaseObjective {
 
     public char getDirectionalMarker(Player player) {
         Location fromLoc = player.getLocation().clone();
-        Location toLoc = location.clone();
-        if (location.getWorld() != fromLoc.getWorld()) {
+        Location toLoc = location.get(player.getLocation());
+        if (toLoc.getWorld() != fromLoc.getWorld()) {
             return UNKNOWN;
         }
         Vector toVector = toLoc.clone().subtract(fromLoc).toVector().normalize();
@@ -89,7 +90,7 @@ public abstract class AbstractLocationBasedObjective extends QBaseObjective {
 
     public char getVerticalMarker(Player player) {
         Location fromLoc = player.getLocation().clone();
-        Location toLoc = location.clone();
+        Location toLoc = location.get(player.getLocation()).clone();
         int fromY = fromLoc.getBlockY();
         int toY = toLoc.getBlockY();
         if (fromY < toY) {
@@ -104,8 +105,8 @@ public abstract class AbstractLocationBasedObjective extends QBaseObjective {
 
     public void showDirectLine(Player player) {
         Location fromLoc = player.getLocation().clone();
-        Location toLoc = location.clone();
-        if (location.getWorld() != fromLoc.getWorld()) {
+        Location toLoc = location.get(player.getLocation()).clone();
+        if (toLoc.getWorld() != fromLoc.getWorld()) {
             return;
         }
         Vector toVector = toLoc.clone().subtract(fromLoc).toVector().normalize();

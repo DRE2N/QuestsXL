@@ -1,6 +1,7 @@
 package de.erethon.questsxl.condition;
 
 import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Bukkit;
@@ -12,7 +13,7 @@ import org.bukkit.entity.Player;
 
 public class LookingAtCondition extends QBaseCondition {
 
-    Location locTarget;
+    QLocation locTarget;
     double accuracy;
     Material block;
 
@@ -29,7 +30,7 @@ public class LookingAtCondition extends QBaseCondition {
             }
             return fail(qp);
         }
-        if (target.getLocation().distance(locTarget) < accuracy) {
+        if (target.getLocation().distance(locTarget.get(qp.getLocation())) < accuracy) {
             return success(qp);
         }
         return fail(qp);
@@ -47,16 +48,8 @@ public class LookingAtCondition extends QBaseCondition {
             block = Material.valueOf(section.getString("block"));
             return;
         }
-        String world = section.getString("world");
-        double x = section.getDouble("x");
-        double y = section.getDouble("y");
-        double z = section.getDouble("z");
-        if (world == null) {
-            MessageUtil.log("The condition " + section.getName() + " contains a location for a world that is not loaded.");
-            return;
-        }
         accuracy = section.getDouble("accuracy");
-        locTarget = new Location(Bukkit.getWorld(world), x, y, z);
+        locTarget = new QLocation(section);
     }
 
 }

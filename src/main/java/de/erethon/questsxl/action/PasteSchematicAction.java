@@ -10,11 +10,11 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.ObjectiveHolder;
+import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -24,20 +24,20 @@ import java.util.Arrays;
 public class PasteSchematicAction extends QBaseAction {
 
     File schematic;
-    Location location;
+    QLocation location;
     int time;
 
     @Override
     public void play(QPlayer player) {
-        paste();
+        paste(player);
     }
 
     @Override
     public void play(QEvent event)  {
-        paste(); // Only paste it once, not per player, lol.
+        paste(event); // Only paste it once, not per player, lol.
     }
 
-    private void paste() {
+    private void paste(ObjectiveHolder holder) {
         Clipboard clipboard = null;
             try {
             clipboard = FaweAPI.load(schematic);
@@ -48,7 +48,14 @@ public class PasteSchematicAction extends QBaseAction {
             if (clipboard == null || location == null) {
             return;
         }
-        com.sk89q.worldedit.world.World world = FaweAPI.getWorld(location.getWorld().getName());
+        Location bukkitLocation = null;
+        if (holder instanceof QEvent event) {
+            bukkitLocation = location.get(event.getLocation());
+        }
+        if (holder instanceof QPlayer player) {
+            bukkitLocation = location.get(player.getLocation());
+        }
+        com.sk89q.worldedit.world.World world = FaweAPI.getWorld(bukkitLocation.getWorld().getName());
         try (EditSession session = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
             Operation operation = new ClipboardHolder(clipboard)
                     .createPaste(session)
@@ -72,14 +79,6 @@ public class PasteSchematicAction extends QBaseAction {
     @Override
     public void load(String[] msg) {
         MessageUtil.log("Loading from array: " + Arrays.toString(msg));
-        World world = Bukkit.getWorld(msg[1]);
-        double x = Double.parseDouble(msg[2]);
-        double y = Double.parseDouble(msg[3]);
-        double z = Double.parseDouble(msg[4]);
-        if (world == null) {
-            throw new RuntimeException("The action " + Arrays.toString(msg) + " contains a location in an invalid world.");
-        }
-        location = new Location(world, x, y, z);
 
         String schematicID = msg[0];
         MessageUtil.log("Loading schematic " + msg[0]);
@@ -91,23 +90,14 @@ public class PasteSchematicAction extends QBaseAction {
         if (schematic == null) {
             throw new RuntimeException("The action " + id + " tried to load schematic that does not exist: " + schematicID);
         }
-        time = Integer.parseInt(msg[5]);
+        time = Integer.parseInt(msg[1]);
+        location = new QLocation(msg, 2);
     }
 
     @Override
     public void load(ConfigurationSection section) {
         super.load(section);
-        MessageUtil.log("Loading from section");
-        String world = section.getString("world");
-        double x = section.getDouble("x");
-        double y = section.getDouble("y");
-        double z = section.getDouble("z");
-        float yaw = (float) section.getDouble("yaw", 0.00);
-        float pitch = (float) section.getDouble("pitch", 0.00);
-        if (world == null) {
-            throw new RuntimeException("The action " + id + " contains a location in an invalid world.");
-        }
-        location = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
+        location = new QLocation(section);
 
         String schematicID = section.getString("schematic");
         MessageUtil.log("Loading schematic " + schematicID);

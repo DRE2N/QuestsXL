@@ -1,7 +1,6 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.tool.BeamTool;
 import org.bukkit.Location;

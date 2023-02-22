@@ -4,6 +4,7 @@ import de.erethon.aether.Aether;
 import de.erethon.aether.creature.ActiveNPC;
 import de.erethon.aether.creature.CreatureManager;
 import de.erethon.aether.creature.NPCData;
+import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Bukkit;
@@ -18,14 +19,14 @@ public class SpawnMobAction extends QBaseAction {
     Aether aether = plugin.getAether();
     CreatureManager creatureManager = aether.getCreatureManager();
     NPCData npcData = null;
-    Location location = null;
+    QLocation location = null;
 
 
     @Override
     public void play(QPlayer player) {
         if (!conditions(player)) return;
         ActiveNPC activeNPC = new ActiveNPC(npcData);
-        activeNPC.spawn(location);
+        activeNPC.spawn(location.get(player.getLocation()));
         onFinish(player);
     }
 
@@ -33,34 +34,20 @@ public class SpawnMobAction extends QBaseAction {
     public void play(QEvent event) {
         if (!conditions(event)) return;
         ActiveNPC activeNPC = new ActiveNPC(npcData);
-        activeNPC.spawn(location);
+        activeNPC.spawn(location.get(event.getLocation()));
         onFinish(event);
     }
 
     @Override
     public void load(String[] msg) {
-        World world = Bukkit.getWorld(msg[0]);
-        double x = Double.parseDouble(msg[1]);
-        double y = Double.parseDouble(msg[2]);
-        double z = Double.parseDouble(msg[3]);
-        if (world == null) {
-            throw new RuntimeException("The action " + Arrays.toString(msg) + " contains a location in an invalid world.");
-        }
-        location = new Location(world, x, y, z);
-        npcData = creatureManager.getByID(msg[4]);
+        npcData = creatureManager.getByID(msg[0]);
+        location = new QLocation(msg, 1);
     }
 
     @Override
     public void load(ConfigurationSection section) {
         super.load(section);
-        String world = section.getString("world");
-        double x = section.getDouble("x");
-        double y = section.getDouble("y");
-        double z = section.getDouble("z");
-        if (world == null) {
-            throw new RuntimeException("The action " + id + " contains a location in an invalid world.");
-        }
-        location = new Location(Bukkit.getWorld(world), x, y, z);
+        location = new QLocation(section);
         npcData = creatureManager.getByID(section.getString("id"));
     }
 }
