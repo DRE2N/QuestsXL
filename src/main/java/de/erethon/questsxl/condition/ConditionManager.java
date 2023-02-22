@@ -18,7 +18,12 @@ public class ConditionManager {
             if (isValid(key)) {
                 type = key;
                 shorthand = true;
-            } else {
+            }
+            else if (section.isConfigurationSection(key)) {
+                subsection = section.getConfigurationSection(key);
+                type = key;
+            }
+            else {
                 subsection = section.getConfigurationSection(key);
                 type = subsection.getString("type");
             }
