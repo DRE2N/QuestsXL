@@ -73,7 +73,7 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
     private boolean frozen = false;
 
     Pattern pattern = Pattern.compile("\"color\"\\s*:\\s*\"([^\"]*)\"");
-    MiniMessage miniMessage = MiniMessage.miniMessage();
+    MiniMessage miniMessage = MiniMessage.get();
 
     public QPlayer(@NotNull Player player) {
         super(QuestsXL.getPlayerFile(player.getUniqueId()), CONFIG_VERSION);
@@ -319,7 +319,7 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
         for (String s : dialogueRecollection) {
             hoverText.append(s + "\n");
         }
-        TextComponent recollection = Component.text("Dialog mit " + sender + " beendet.", NamedTextColor.GRAY)
+        Component recollection = Component.text("Dialog mit " + sender + " beendet.", NamedTextColor.GRAY)
                 .hoverEvent(HoverEvent.showText(Component.text(hoverText.toString())))
                 .decorate(TextDecoration.ITALIC);
         player.sendMessage(recollection);
