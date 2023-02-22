@@ -6,6 +6,9 @@ Quests:
  - Jump/Runs
  - Checkpoints
 
+ General:
+ - Relative Locations
+
 Objectives:
  - Shouldn't register one
  - Click button
