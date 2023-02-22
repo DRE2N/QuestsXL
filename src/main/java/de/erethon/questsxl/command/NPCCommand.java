@@ -23,7 +23,7 @@ public class NPCCommand extends ECommand {
     @Override
     public void onExecute(String[] args, CommandSender commandSender) {
         Player player = (Player) commandSender;
-        if (player.getTargetBlock(10) == null) {
+        if (player.getTargetBlockExact(10) == null) {
             MessageUtil.sendMessage(player, "&cNo target.");
             return;
         }

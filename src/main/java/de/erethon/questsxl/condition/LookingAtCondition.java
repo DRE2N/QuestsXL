@@ -19,7 +19,7 @@ public class LookingAtCondition extends QBaseCondition {
     @Override
     public boolean check(QPlayer qp) {
         Player player = qp.getPlayer();
-        Block target = player.getTargetBlock(32);
+        Block target = player.getTargetBlockExact(32);
         if (target == null) {
             return fail(qp);
         }

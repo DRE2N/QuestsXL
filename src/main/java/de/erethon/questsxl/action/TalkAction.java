@@ -28,11 +28,11 @@ public class TalkAction extends QBaseAction {
             BukkitRunnable later = new BukkitRunnable() {
                 @Override
                 public void run() {
-                    player.sendConversationMsg("<dark_gray>[<gray>" + finalNumMessage + "<dark_gray>/<gray>" + total + "<dark_gray>] <green>" + msg);
+                    player.sendConversationMsg("<dark_gray>[<gray>" + finalNumMessage + "<dark_gray>/<gray>" + total + "<dark_gray>] <green>" + msg, "", 1, 1);
                     messages.remove(msg);
                     if (messages.isEmpty()) {
                         player.setInConversation(false);
-                        player.sendMessagesInQueue();
+                        player.sendMessagesInQueue(false);
                         onFinish(player);
                     }
                 }

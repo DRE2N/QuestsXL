@@ -22,7 +22,7 @@ public class QActiveDialogueStage extends QDialogueStage {
         if (entry == null) {
             throw new NullPointerException("No messages left");
         }
-        qPlayer.sendConversationMsg("&5" + sender + "&8: &7" + entry.getKey());
+        qPlayer.sendConversationMsg(entry.getKey(), sender, maxMessageCount - messages.size(), maxMessageCount);
         return entry.getValue();
     }
 

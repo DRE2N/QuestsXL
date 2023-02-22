@@ -46,9 +46,8 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             groupId = "${project.group}"
-            artifactId = "Aether"
+            artifactId = "QuestsXL"
             version = "${project.version}"
-
             from(components["java"])
         }
     }
@@ -94,7 +93,7 @@ tasks {
 
     shadowJar {
         dependencies {
-            include(dependency("de.erethon:bedrock:1.2.3"))
+            include(dependency("de.erethon:bedrock:1.2.5"))
         }
         relocate("de.erethon.bedrock", "de.erethon.questsxl.bedrock")
     }
@@ -111,7 +110,7 @@ tasks {
                 usage = "/qxl help"
             }
         }
-        depend = listOf("ProtocolLib")
+        depend = listOf("Aergia")
         softDepend = listOf("Aether")
     }
 }

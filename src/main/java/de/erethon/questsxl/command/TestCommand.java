@@ -72,9 +72,9 @@ public class TestCommand extends ECommand {
             player.sendMessage("Hello1");
             player.sendMessage("Hello2");
             player.sendMessage("Hello3");
-            qPlayer.sendConversationMsg("<gray>[1/3]<green> Test test test");
-            qPlayer.sendConversationMsg("<gray>[2/3]<green> Test test ");
-            qPlayer.sendConversationMsg("<gray>[3/3]<green> Test ");
+            qPlayer.sendConversationMsg("<gray>[1/3]<green> Test test test", "", 1, 3);
+            qPlayer.sendConversationMsg("<gray>[2/3]<green> Test test ", "", 2, 3);
+            qPlayer.sendConversationMsg("<gray>[3/3]<green> Test ", "", 3, 3);
             player.sendMessage("Hello4");
             player.sendMessage("Hello5");
             player.sendMessage("Hello6");
@@ -83,7 +83,7 @@ public class TestCommand extends ECommand {
             BukkitRunnable later = new BukkitRunnable() {
                 @Override
                 public void run() {
-                    qPlayer.sendMessagesInQueue();
+                    qPlayer.sendMessagesInQueue(false);
                 }
             };
             later.runTaskLater(QuestsXL.getInstance(), 20);

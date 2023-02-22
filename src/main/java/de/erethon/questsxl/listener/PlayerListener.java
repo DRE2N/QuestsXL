@@ -3,6 +3,7 @@ package de.erethon.questsxl.listener;
 import de.erethon.aether.events.CreatureDeathEvent;
 import de.erethon.aether.events.CreatureInteractEvent;
 import de.erethon.aether.events.InstancedCreatureDeathEvent;
+import de.erethon.aether.network.AetherPacketHandler;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.dialogue.ActiveDialogue;
@@ -15,8 +16,11 @@ import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.region.QRegion;
 import de.erethon.questsxl.region.QRegionManager;
 import de.erethon.questsxl.region.RegionFlag;
+import io.netty.channel.ChannelPipeline;
 import io.papermc.paper.event.player.AsyncChatEvent;
+import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -25,12 +29,27 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 public class PlayerListener extends AbstractListener {
 
-    QRegionManager regionManager = QuestsXL.getInstance().getRegionManager();
-    QDialogueManager dialogueManager = QuestsXL.getInstance().getDialogueManager();
+    QuestsXL plugin = QuestsXL.getInstance();
+    QRegionManager regionManager = plugin.getRegionManager();
+    QDialogueManager dialogueManager = plugin.getDialogueManager();
+
+    @EventHandler
+    public void onLogin(PlayerJoinEvent event) {
+        CraftPlayer bukkitPlayer = (CraftPlayer) event.getPlayer();
+        ServerPlayer serverPlayer = bukkitPlayer.getHandle();
+        QPacketListener packetHandler = new QPacketListener(plugin, serverPlayer);
+        ChannelPipeline pipeline = serverPlayer.connection.connection.channel.pipeline();
+        if (plugin.getAether() != null) {
+            pipeline.addAfter("aether_handler", "qxl_handler", packetHandler); // Server -> Aether -> QXL -> Client
+        } else {
+            pipeline.addAfter("packet_handler", "qxl_handler", packetHandler); // Server -> QXL -> Client
+        }
+    }
 
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
@@ -71,7 +90,7 @@ public class PlayerListener extends AbstractListener {
         if (dialogueId == null) {
             return;
         }
-        /*QPlayer player = cache.getByPlayer(event.getPlayer());
+        QPlayer player = cache.getByPlayer(event.getPlayer());
         ActiveDialogue activeDialogue = player.getActiveDialogue();
         if (activeDialogue != null) {
             if (!activeDialogue.getDialogue().getName().equals(dialogueId)) {
@@ -83,15 +102,15 @@ public class PlayerListener extends AbstractListener {
         QDialogue dialogue = dialogueManager.get(dialogueId);
         if (dialogue.canStart(player)) {
             dialogue.start(player);
-        }*/
+        }
     }
 
     @EventHandler
     public void onChat(AsyncChatEvent event) {
         QPlayer player = cache.getByPlayer(event.getPlayer());
         if (player.isInConversation()) {
-            player.sendConversationMsg(QuestsXL.ERROR + "Du kannst den Chat jetzt nicht nutzen.");
-            event.setCancelled(true);
+            MessageUtil.sendActionBarMessage(player.getPlayer(), QuestsXL.ERROR + "Du kannst den Chat jetzt nicht nutzen.");
+            event.setCancelled(true); // TODO: Aergia seems to ignore this
         }
     }
 

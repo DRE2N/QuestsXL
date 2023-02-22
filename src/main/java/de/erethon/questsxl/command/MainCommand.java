@@ -30,8 +30,7 @@ public class MainCommand extends ECommand {
             MessageUtil.sendMessage(player, "&8&m   &r &aQuests&2XL &6" + plugin.getDescription().getVersion() + " &7by Malfrador &8&m   &r");
             MessageUtil.sendMessage(player, "");
             MessageUtil.sendMessage(player, "&7Internals: &6" + MinecraftServer.getServer().getServerModName()
-                    + " " + MinecraftServer.getServer().getServerVersion()
-                    + " &8- &7ProtocolLib: &6" + ProtocolLibrary.getPlugin().getDescription().getVersion());
+                    + " " + MinecraftServer.getServer().getServerVersion());
             MessageUtil.sendMessage(player, "&7Last sync from GitHub: &6" + new Date(plugin.lastSync));
             File[] playerFiles = QuestsXL.PLAYERS.listFiles();
             if (playerFiles != null) {

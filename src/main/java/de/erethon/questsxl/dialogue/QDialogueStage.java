@@ -22,12 +22,14 @@ import java.util.TreeMap;
 public class QDialogueStage {
 
     protected final TreeMap<String, Integer> messages;
+    protected int maxMessageCount;
     protected final List<QCondition> conditions;
     protected final List<QAction> postActions;
 
     public QDialogueStage(@NotNull TreeMap<String, Integer> messages, @NotNull List<QCondition> conditions,
                           @NotNull List<QAction> postActions) {
         this.messages = messages;
+        this.maxMessageCount = messages.size();
         this.conditions = conditions;
         this.postActions = postActions;
     }
@@ -49,7 +51,6 @@ public class QDialogueStage {
     }
 
     public QActiveDialogueStage start(@NotNull QPlayer player) {
-        player.setInConversation(true);
         return new QActiveDialogueStage(player, this);
     }
 

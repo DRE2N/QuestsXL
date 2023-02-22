@@ -1,39 +1,52 @@
 package de.erethon.questsxl.player;
 
-import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.config.storage.Nullability;
 import de.erethon.bedrock.config.storage.StorageData;
 import de.erethon.bedrock.config.storage.StorageDataContainer;
 import de.erethon.bedrock.user.LoadableUser;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.Completable;
+import de.erethon.questsxl.common.ObjectiveHolder;
 import de.erethon.questsxl.common.Scorable;
 import de.erethon.questsxl.dialogue.ActiveDialogue;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.objective.ActiveObjective;
-import de.erethon.questsxl.common.ObjectiveHolder;
 import de.erethon.questsxl.objective.QObjective;
 import de.erethon.questsxl.quest.ActiveQuest;
-import de.erethon.questsxl.common.Completable;
 import de.erethon.questsxl.quest.QQuest;
 import de.erethon.questsxl.region.QRegion;
+import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class QPlayer extends StorageDataContainer implements LoadableUser, ObjectiveHolder, Scorable {
 
@@ -41,11 +54,13 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
 
     UUID uuid;
     Player player;
+    ServerPlayer serverPlayer;
 
     private final Map<ActiveQuest, Long> activeQuests = new HashMap<>();
     private final Map<QQuest, Long> completedQuests = new HashMap<>();
     private final Set<ActiveObjective> currentObjectives = new HashSet<>();
-    private final List<WrappedChatComponent> chatQueue = new CopyOnWriteArrayList<>();
+    private final List<Component> chatQueue = new CopyOnWriteArrayList<>();
+    private final List<String> dialogueRecollection = new ArrayList<>();
 
     private final Set<QRegion> currentRegions = new HashSet<>();
     @StorageData(type = HashMap.class, keyTypes = String.class, valueTypes = Integer.class, nullability = Nullability.IGNORE)
@@ -57,10 +72,15 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
     private boolean isInConversation = false;
     private boolean frozen = false;
 
+    Pattern pattern = Pattern.compile("\"color\"\\s*:\\s*\"([^\"]*)\"");
+    MiniMessage miniMessage = MiniMessage.miniMessage();
+
     public QPlayer(@NotNull Player player) {
         super(QuestsXL.getPlayerFile(player.getUniqueId()), CONFIG_VERSION);
         this.uuid = player.getUniqueId();
         this.player = player;
+        CraftPlayer craftPlayer = (CraftPlayer) player;
+        serverPlayer = craftPlayer.getHandle();
         for (QObjective objective : QuestsXL.getInstance().getGlobalObjectives().getObjectives()) {
             currentObjectives.add(new ActiveObjective(this, null, objective));
         }
@@ -231,7 +251,7 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
         isInConversation = inConversation;
     }
 
-    public void addChat(@NotNull WrappedChatComponent chatComponent) {
+    public void addChat(@NotNull Component chatComponent) {
         chatQueue.add(chatComponent);
     }
 
@@ -275,29 +295,55 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
         this.frozen = frozen;
     }
 
-    public void sendMessagesInQueue() {
+    public void sendMessagesInQueue(boolean darkmode) {
         if (chatQueue.isEmpty()) {
             return;
         }
-        // Needs rewrite due to 1.19 chat
-        /*player.sendMessage(MessageUtil.parse("<hover:show_text:'<yellow><italic>Diese Nachrichten hast du verpasst,\nwährend du die Quest-Konversation gelesen hast.'><dark_gray>[...]"));
-        for (WrappedChatComponent chatComponent : chatQueue) {
-            WrapperPlayServerChat chat = new WrapperPlayServerChat();
-            chat.setMessage(chatComponent);
-            chat.setChatType(EnumWrappers.ChatType.CHAT);
-            chat.sendPacket(player);
+        if (darkmode) {
+            for (int i = 0; i < 12; i++) {
+                sendMarkedMessage(Component.empty());
+            }
         }
-        chatQueue.clear();*/
+        for (Component chatComponent : chatQueue) {
+            String original = PaperAdventure.asJsonString(chatComponent, Locale.ENGLISH).replaceAll("\"color\":\"blue\"", "\"color\":\"dark_gray\"");
+            Matcher matcher = pattern.matcher(original);
+            String output = matcher.replaceAll("\"color\": \"dark_gray\"");
+
+            Component darkComponent = GsonComponentSerializer.gson().deserialize(output);
+            sendMarkedMessage(darkmode ? darkComponent : chatComponent);
+        }
     }
 
-    public void sendConversationMsg(@NotNull String raw) {
-        sendConversationMsg(MessageUtil.parse(raw));
+    public void endDialogueAndSendRecollection(String sender) {
+        StringBuilder hoverText = new StringBuilder();
+        for (String s : dialogueRecollection) {
+            hoverText.append(s + "\n");
+        }
+        TextComponent recollection = Component.text("Dialog mit " + sender + " beendet.", NamedTextColor.GRAY)
+                .hoverEvent(HoverEvent.showText(Component.text(hoverText.toString())))
+                .decorate(TextDecoration.ITALIC);
+        player.sendMessage(recollection);
     }
 
-    public void sendConversationMsg(@NotNull Component message) {
-        isInConversation = false;
-        player.sendMessage(message);
-        isInConversation = true;
+    public void sendConversationMsg(@NotNull String raw, String senderName, int id, int max) {
+        sendConversationMsg(MessageUtil.parse(raw), senderName, id, max);
+    }
+
+    public void sendConversationMsg(@NotNull Component message, String senderName, int id, int max) {
+        sendMessagesInQueue(true);
+        sendMarkedMessage(Component.empty());
+        sendMarkedMessage(Component.empty());
+        sendMarkedMessage(Component.empty());
+        Component header = miniMessage.deserialize("<green>                      <b>" + senderName + "<!b> <dark_gray> -  <gray>[" + id + "/" + max + "]");
+        sendMarkedMessage(header);
+        sendMarkedMessage(Component.empty());
+        sendMarkedMessage(message);
+        dialogueRecollection.add(senderName + ": " + PlainTextComponentSerializer.plainText().serialize(message));
+        sendMarkedMessage(Component.empty());
+    }
+
+    public void sendMarkedMessage(Component component) {
+        player.sendMessage(component.append(Component.text("").clickEvent(ClickEvent.runCommand("qxl_marker"))));
     }
 
     public boolean hasQuest(@NotNull QQuest quest) {
@@ -318,7 +364,7 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
         return null;
     }
 
-    public @NotNull List<WrappedChatComponent> getChatQueue() {
+    public @NotNull List<Component> getChatQueue() {
         return chatQueue;
     }
 

@@ -15,7 +15,7 @@ enum RUN_MODE {
 }
 public class RunAsAction extends QBaseAction {
 
-    private RUN_MODE runMode;
+    private RUN_MODE runMode = RUN_MODE.ONLINE;
     private int runValue;
     private Set<QAction> actions;
 

@@ -86,8 +86,9 @@ public class ActiveDialogue extends BukkitRunnable {
     private void cancel(String msg) {
         qPlayer.setActiveDialogue(null);
         qPlayer.setInConversation(false);
-        qPlayer.send(msg);
-        qPlayer.sendMessagesInQueue();
+        //qPlayer.send(msg);
+        qPlayer.sendMessagesInQueue(false);
+        qPlayer.endDialogueAndSendRecollection(dialogue.getSenderName());
         super.cancel();
     }
 

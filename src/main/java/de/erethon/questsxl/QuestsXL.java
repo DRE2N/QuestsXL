@@ -14,7 +14,6 @@ import de.erethon.questsxl.dialogue.QDialogueManager;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.global.GlobalObjectives;
 import de.erethon.questsxl.instancing.BlockCollectionManager;
-import de.erethon.questsxl.listener.PacketListener;
 import de.erethon.questsxl.listener.PlayerJobListener;
 import de.erethon.questsxl.listener.PlayerListener;
 import de.erethon.questsxl.livingworld.QEventManager;
@@ -25,7 +24,9 @@ import de.erethon.questsxl.respawn.RespawnPointManager;
 import de.erethon.questsxl.scoreboard.QuestScoreboardLines;
 import de.erethon.questsxl.tool.GitSync;
 import de.fyreum.jobsxl.JobsXL;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -67,7 +68,6 @@ public final class QuestsXL extends EPlugin implements Listener {
     GlobalObjectives globalObjectives;
     PlayerListener playerListener;
     PlayerJobListener playerJobListener;
-    PacketListener packetListener;
 
     private final Map<String, Integer> scores = new HashMap<>();
     private final List<FriendlyError> errors = new ArrayList<>();
@@ -80,7 +80,7 @@ public final class QuestsXL extends EPlugin implements Listener {
 
     public QuestsXL() {
         settings = EPluginSettings.builder()
-                .internals(Internals.v1_18_R2)
+                .internals(Internals.v1_19_R1)
                 .forcePaper(true)
                 .build();
     }
@@ -154,7 +154,6 @@ public final class QuestsXL extends EPlugin implements Listener {
         setCommandCache(commandCache);
 
         playerListener = new PlayerListener();
-        packetListener = new PacketListener();
 
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(playerListener, this);
@@ -175,6 +174,7 @@ public final class QuestsXL extends EPlugin implements Listener {
         blockCollectionManager.save();
         animationManager.save();
         eventManager.save();
+        HandlerList.unregisterAll((Plugin) this);
     }
 
     public void addScore(String score, int amount) {
