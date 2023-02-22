@@ -49,7 +49,6 @@ public class RunCommand extends ECommand {
             errors.clear();
             return;
         }
-        MessageUtil.sendMessage(player, "Loaded " + args[2]);
         Set<QAction> finalQActions = qActions;
         BukkitRunnable later = new BukkitRunnable() {
             @Override
@@ -68,6 +67,6 @@ public class RunCommand extends ECommand {
                 }
             }
         };
-        later.runTaskLater(QuestsXL.getInstance(), 20);
+        later.runTaskLater(QuestsXL.getInstance(), 0);
     }
 }
