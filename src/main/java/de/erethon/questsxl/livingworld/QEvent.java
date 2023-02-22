@@ -146,6 +146,21 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
         }
     }
 
+    public void startFromAction(boolean skipConditions) {
+        if (state == EventState.DISABLED || state == EventState.ACTIVE) {
+            return;
+        }
+        for (QCondition condition : startConditions) {
+            if (!condition.check(this) && !skipConditions) {
+                return;
+            }
+        }
+        stages.get(0).start(this);
+        currentStage = stages.get(0);
+        MessageUtil.log("Event " + getName() + " started from action.");
+        state = EventState.ACTIVE;
+    }
+
     public void progress() {
         MessageUtil.log("Progressing event " + id);
         QStage next = null;

@@ -23,6 +23,7 @@ public enum Action {
     SHOW_IBC(ShowIBCAction::new),
     SPAWN_MOB(SpawnMobAction::new),
     STAGE(StageAction::new),
+    START_EVENT(StartEventAction::new),
     START_QUEST(QuestAction::new),
     TELEPORT(TeleportPlayerAction::new),
     TITLE(SendTitleAction::new);
