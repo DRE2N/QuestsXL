@@ -37,7 +37,7 @@ public class QDialogueStage {
     // copy constructor
     @Contract(pure = true)
     protected QDialogueStage(@NotNull QDialogueStage stage) {
-        this(stage.messages, stage.conditions, stage.postActions);
+        this(new TreeMap<>(stage.messages), new ArrayList<>(stage.conditions), new ArrayList<>(stage.postActions));
     }
 
     public boolean canStart(@NotNull QPlayer player) {

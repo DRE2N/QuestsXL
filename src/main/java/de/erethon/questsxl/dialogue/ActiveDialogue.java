@@ -25,7 +25,7 @@ public class ActiveDialogue extends BukkitRunnable {
         this.currentStageIndex = 0;
         this.activeStage = activeStage();
         this.passedTicks = 0;
-        this.messageDelay = activeStage.messages.firstEntry().getValue();
+        this.messageDelay = 0;
     }
 
     public BukkitTask start() {
