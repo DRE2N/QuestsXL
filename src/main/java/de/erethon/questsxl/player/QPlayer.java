@@ -141,6 +141,7 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
         if (activeDialogue != null) {
             activeDialogue.cancel();
         }
+        activeDialogue = null;
         player = null;
     }
 

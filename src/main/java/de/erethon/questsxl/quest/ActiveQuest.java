@@ -78,7 +78,4 @@ public class ActiveQuest {
         return quest;
     }
 
-    public String getScoreboardLine() {
-        return quest.getDisplayName(); // todo: show the current progress
-    }
 }
