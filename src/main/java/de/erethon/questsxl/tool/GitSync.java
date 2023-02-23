@@ -1,101 +1,102 @@
 package de.erethon.questsxl.tool;
 
 import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.bedrock.misc.FileUtil;
 import de.erethon.questsxl.QuestsXL;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.Bukkit;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.MergeResult;
+import org.eclipse.jgit.api.PullResult;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.transport.CredentialsProvider;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.sql.Date;
+import java.time.Instant;
 
 public class GitSync {
 
-    String loc = QuestsXL.getInstance().getDataFolder().getAbsolutePath() + "/git_cache";
+    File cache = new File(Bukkit.getWorldContainer() + "/git_cache/");
+    File questsFolder = new File(cache + "/QuestsXL/");
+    File itemsFolder = new File(cache + "/ItemsXL/");
+    File aetherFolder = new File(cache + "/Aether/");
+    Repository repository;
+    Git git;
+    QuestsXL plugin = QuestsXL.getInstance();
 
-
-    public void setupRepo() throws IOException, InterruptedException {
-        String[] commands = new String[] {
-                "git",
-                "clone",
-                "https://github.com/DRE2N/Erethon",
-                loc
-        };
-        BukkitRunnable wait = new BukkitRunnable() {
-            @Override
-            public void run() {
-                MessageUtil.log("Syncing from GitHub...");
-                ProcessBuilder builder = new ProcessBuilder(commands);
-                try {
-                    builder.start();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        wait.runTaskLaterAsynchronously(QuestsXL.getInstance(), 20);
+    public GitSync() throws IOException, GitAPIException, InterruptedException {
+        if (cache.exists()) {
+            MessageUtil.log("Found existing repo at " + cache);
+            git = Git.open(cache);
+            repository = git.getRepository();
+            return;
+        }
+        cache.mkdir();
+        setupRepo();
     }
 
-    public void update() throws IOException, InterruptedException {
-        String[] commands = new String[]{
-                "git",
-                "-C",
-                loc,
-                "pull",
-        };
-        ProcessBuilder builder = new ProcessBuilder(commands);
-        builder.redirectErrorStream(true);
-        final Process git = builder.start();
-        BukkitRunnable watcher = new BukkitRunnable() {
-            @Override
-            public void run() {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(git.getInputStream()));
-                String line;
-                try {
-                    while ((line = reader.readLine()) != null) {
-                        MessageUtil.log(line);
-                    }
-                } catch (IOException e) {
-                    MessageUtil.log(e.getMessage());
-                }
-            }
-        };
-        watcher.runTaskAsynchronously(QuestsXL.getInstance());
-        git.waitFor();
-        copyQuests();
+
+    public void setupRepo() throws GitAPIException {
+        if (!plugin.isGitSync()) {
+            return;
+        }
+        String token = QuestsXL.getInstance().getGitToken();
+        CredentialsProvider credentialsProvider = new UsernamePasswordCredentialsProvider(token, "");
+        git = Git.cloneRepository()
+                .setURI("https://github.com/DRE2N/Erethon")
+                .setCredentialsProvider(credentialsProvider)
+                .setBranch(plugin.getGitBranch())
+                .setDirectory(cache)
+                .call();
+        repository = git.getRepository();
     }
 
-    private void copyQuests() throws IOException, InterruptedException {
-        delete(QuestsXL.QUESTS);
-        QuestsXL.QUESTS.mkdir();
-        MessageUtil.log("Copying...");
-        String[] commands = new String[]{
-                "cmd",
-                "/c",
-                "xcopy",
-                "\"" + loc + "/quests" + "\"",
-                "\"" + QuestsXL.getInstance().getDataFolder().getAbsolutePath() + "/quests" + "\"",
-                "/sy"
-        };
-        ProcessBuilder builder = new ProcessBuilder(commands);
-        builder.redirectErrorStream(true);
-        final Process git = builder.start();
-        BukkitRunnable watcher = new BukkitRunnable() {
-            @Override
-            public void run() {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(git.getInputStream()));
-                String line;
-                try {
-                    while ((line = reader.readLine()) != null) {
-                        MessageUtil.log(line);
-                    }
-                } catch (IOException e) {
-                    MessageUtil.log(e.getMessage());
-                }
-            }
-        };
-        watcher.runTaskAsynchronously(QuestsXL.getInstance());
-        git.waitFor();
+    public void update() throws IOException, InterruptedException, GitAPIException {
+        if (!plugin.isGitSync()) {
+            return;
+        }
+        copyFromPlugins();
+        commit();
+        push();
+        PullResult pullResult = git.pull()
+                .setCredentialsProvider(new UsernamePasswordCredentialsProvider(plugin.getGitToken(), ""))
+                .setRemoteBranchName(plugin.getGitBranch())
+                .call();
+        MergeResult mergeResult = pullResult.getMergeResult();
+        MessageUtil.log("Git sync merge result: " + mergeResult.getMergeStatus());
+        copyToPlugins();
+    }
+
+    public void commit() throws GitAPIException {
+        if (!plugin.isGitSync()) {
+            return;
+        }
+        git.add().addFilepattern(".").call();
+        git.add().addFilepattern(".").setUpdate(true).call();
+        git.commit()
+                .setMessage("Automated server commit - " + Date.from(Instant.now()))
+                .call();
+    }
+
+    public void push() throws GitAPIException {
+        git.push().setCredentialsProvider(new UsernamePasswordCredentialsProvider(plugin.getGitToken(), "")).call();
+    }
+
+    public void copyToPlugins() throws IOException, InterruptedException {
+        File pluginsFolder = Bukkit.getPluginsFolder();
+        FileUtil.copyDir(questsFolder, new File(pluginsFolder + "/QuestsXL/"));
+        FileUtil.copyDir(itemsFolder, new File(pluginsFolder + "/ItemsXL/"));
+        FileUtil.copyDir(aetherFolder, new File(pluginsFolder + "/Aether/"));
+    }
+
+    public void copyFromPlugins() {
+        File pluginsFolder = Bukkit.getPluginsFolder();
+        FileUtil.copyDir(new File(pluginsFolder + "/QuestsXL/"), questsFolder);
+        FileUtil.copyDir(new File(pluginsFolder + "/ItemsXL/"), itemsFolder);
+        FileUtil.copyDir(new File(pluginsFolder + "/Aether/"), aetherFolder);
     }
 
     private boolean delete(File file) {

@@ -40,6 +40,7 @@ dependencies {
         exclude(group = "net.kyori.adventure.text", module = "minimessage")
     }*/
     implementation("de.erethon:bedrock:1.2.5") { isTransitive = false }
+    implementation("org.eclipse.jgit:org.eclipse.jgit:6.4.0.202211300538-r")
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.3.0") { isTransitive = false }
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.3.0") { isTransitive = false }
     compileOnly("com.comphenix.protocol:ProtocolLib:5.0.0-SNAPSHOT")
@@ -98,8 +99,10 @@ tasks {
     shadowJar {
         dependencies {
             include(dependency("de.erethon:bedrock:1.2.5"))
+            include(dependency("org.eclipse.jgit:org.eclipse.jgit:6.4.0.202211300538-r"))
         }
         relocate("de.erethon.bedrock", "de.erethon.questsxl.bedrock")
+        relocate("org.eclipse.jgit", "de.erethon.questsxl.jgit")
     }
     bukkit {
         load = BukkitPluginDescription.PluginLoadOrder.POSTWORLD
