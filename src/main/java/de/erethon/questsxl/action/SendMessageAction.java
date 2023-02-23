@@ -1,6 +1,7 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -16,8 +17,8 @@ public class SendMessageAction extends QBaseAction {
     }
 
     @Override
-    public void load(String[] msg) {
-        message = msg[0];
+    public void load(QLineConfig cfg) {
+        message = cfg.getString("message");
     }
 
     @Override

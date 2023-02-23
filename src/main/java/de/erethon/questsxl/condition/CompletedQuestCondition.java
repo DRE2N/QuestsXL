@@ -1,5 +1,6 @@
 package de.erethon.questsxl.condition;
 
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.QQuest;
@@ -31,7 +32,7 @@ public class CompletedQuestCondition extends QBaseCondition {
     }
 
     @Override
-    public void load(String[] c) {
-        questName = c[0];
+    public void load(QLineConfig section) {
+        questName = section.getString("quest");
     }
 }

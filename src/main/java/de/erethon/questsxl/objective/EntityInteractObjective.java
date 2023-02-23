@@ -1,6 +1,7 @@
 package de.erethon.questsxl.objective;
 
 import de.erethon.aether.creature.ActiveNPC;
+import de.erethon.questsxl.common.QLineConfig;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -28,6 +29,11 @@ public class EntityInteractObjective extends QBaseObjective {
             }
         }
         complete(active.getHolder(), this);
+    }
+
+    @Override
+    public void load(QLineConfig section) {
+        mob = section.getString("mob");
     }
 
     @Override

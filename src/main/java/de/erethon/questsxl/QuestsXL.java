@@ -8,7 +8,6 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.compatibility.Internals;
 import de.erethon.bedrock.plugin.EPlugin;
 import de.erethon.bedrock.plugin.EPluginSettings;
-import de.erethon.dungeonsxl.api.DungeonsAPI;
 import de.erethon.questsxl.animation.AnimationManager;
 import de.erethon.questsxl.command.QCommandCache;
 import de.erethon.questsxl.dialogue.QDialogueManager;
@@ -78,7 +77,7 @@ public final class QuestsXL extends EPlugin implements Listener {
     Aether aether;
     JobsXL jobsXL;
 
-    DungeonsAPI dungeonsAPI;
+    //DungeonsAPI dungeonsAPI;
     WorldEditPlugin worldEditPlugin;
 
     public QuestsXL() {
@@ -113,9 +112,9 @@ public final class QuestsXL extends EPlugin implements Listener {
         if (getServer().getPluginManager().getPlugin("JobsXL") != null) {
             jobsXL = (JobsXL) getServer().getPluginManager().getPlugin("JobsXL");
         }
-        if (getServer().getPluginManager().getPlugin("DungeonsXL") != null) {
+        /*if (getServer().getPluginManager().getPlugin("DungeonsXL") != null) {
             dungeonsAPI = (DungeonsAPI) getServer().getPluginManager().getPlugin("DungeonsXL");
-        }
+        }*/
         qPlayerCache = new QPlayerCache(this);
 
         loadCore();
@@ -223,9 +222,9 @@ public final class QuestsXL extends EPlugin implements Listener {
         return jobsXL;
     }
 
-    public DungeonsAPI getDungeonsAPI() {
+    /*public DungeonsAPI getDungeonsAPI() {
         return dungeonsAPI;
-    }
+    }*/
 
     public QRegionManager getRegionManager() {
         return regionManager;

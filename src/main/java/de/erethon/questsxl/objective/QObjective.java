@@ -2,6 +2,7 @@ package de.erethon.questsxl.objective;
 
 import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.common.ObjectiveHolder;
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.condition.QCondition;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Event;
@@ -27,7 +28,7 @@ public interface QObjective extends Listener {
     String getDisplayText();
 
     void load(ConfigurationSection section);
-    void load(String[] msg);
+    void load(QLineConfig section);
 
     void onStart(ObjectiveHolder player);
 

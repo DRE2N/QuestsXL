@@ -1,6 +1,7 @@
 package de.erethon.questsxl.condition;
 
 import de.erethon.bedrock.misc.NumberUtil;
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -63,12 +64,12 @@ public class TimeCondition extends QBaseCondition {
     }
 
     @Override
-    public void load(String[] c) {
-        minHour = NumberUtil.parseInt(c[0]);
-        minMinute = NumberUtil.parseInt(c[1]);
-        maxHour = NumberUtil.parseInt(c[2]);
-        maxMinute = NumberUtil.parseInt(c[3]);
-        String timeZone = c.length > 4 ? c[4] : "ECT";
+    public void load(QLineConfig section) {
+        minHour = section.getInt("minHour");
+        minMinute = section.getInt("minMinute");
+        maxHour = section.getInt("maxHour");
+        maxMinute = section.getInt("maxMinute");
+        String timeZone = section.getString("timeZone", "ECT");
         dateFormat.setTimeZone(TimeZone.getTimeZone(timeZone));
     }
 }

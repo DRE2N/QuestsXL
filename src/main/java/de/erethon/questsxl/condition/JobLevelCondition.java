@@ -3,6 +3,7 @@ package de.erethon.questsxl.condition;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.misc.NumberUtil;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import de.fyreum.jobsxl.JobsXL;
@@ -46,8 +47,8 @@ public class JobLevelCondition extends QBaseCondition {
     }
 
     @Override
-    public void load(String[] c) {
-        job = c[0];
-        level = NumberUtil.parseInt(c[1]);
+    public void load(QLineConfig section) {
+        job = section.getString("job");
+        level = section.getInt("level");
     }
 }

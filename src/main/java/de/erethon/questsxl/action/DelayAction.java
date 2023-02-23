@@ -1,6 +1,7 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -34,7 +35,7 @@ public class DelayAction extends QBaseAction {
     }
 
     @Override
-    public void load (String[] args) {
+    public void load (QLineConfig cfg) {
         throw new UnsupportedOperationException("DelayAction does not support single-line configs.");
     }
 

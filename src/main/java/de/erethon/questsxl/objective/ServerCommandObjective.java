@@ -1,5 +1,6 @@
 package de.erethon.questsxl.objective;
 
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.event.CommandTriggerEvent;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Event;
@@ -16,6 +17,11 @@ public class ServerCommandObjective extends QBaseObjective {
             complete(objective.getHolder(), this);
         }
 
+    }
+
+    @Override
+    public void load(QLineConfig section) {
+        identifier = section.getString("identifier");
     }
 
     @Override

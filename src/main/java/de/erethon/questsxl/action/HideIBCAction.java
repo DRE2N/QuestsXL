@@ -1,6 +1,7 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.instancing.BlockCollectionManager;
 import de.erethon.questsxl.instancing.InstancedBlockCollection;
 import de.erethon.questsxl.livingworld.QEvent;
@@ -23,10 +24,10 @@ public class HideIBCAction extends QBaseAction {
     }
 
     @Override
-    public void load(String[] msg) {
-        collection = manager.getByID(msg[0]);
+    public void load(QLineConfig cfg) {
+        collection = manager.getByID(cfg.getString("id"));
         if (collection == null) {
-            throw new RuntimeException("Collection " + msg[0] + " does not exist.");
+            throw new RuntimeException("Collection " + cfg.getString("id") + " does not exist.");
         }
     }
 

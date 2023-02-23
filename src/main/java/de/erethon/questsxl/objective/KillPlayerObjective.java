@@ -1,5 +1,6 @@
 package de.erethon.questsxl.objective;
 
+import de.erethon.questsxl.common.QLineConfig;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -22,6 +23,14 @@ public class KillPlayerObjective extends QBaseObjective {
         }
         if (++alreadyKilled >= amount) {
             complete(active.getHolder(), this);
+        }
+    }
+
+    @Override
+    public void load(QLineConfig section) {
+        amount = section.getInt("amount");
+        if (amount <= 0) {
+            throw new RuntimeException("The kill player objective in " + section + " contains a negative amount.");
         }
     }
 

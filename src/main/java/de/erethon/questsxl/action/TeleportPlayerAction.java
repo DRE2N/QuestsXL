@@ -1,5 +1,6 @@
 package de.erethon.questsxl.action;
 
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Material;
@@ -20,8 +21,8 @@ public class TeleportPlayerAction extends QBaseAction{
     }
 
     @Override
-    public void load(String[] msg) {
-        target = new QLocation(msg, 0);
+    public void load(QLineConfig cfg) {
+        target = new QLocation(cfg);
     }
 
     @Override

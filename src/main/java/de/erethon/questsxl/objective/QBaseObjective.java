@@ -5,6 +5,8 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.ActionManager;
 import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.common.ObjectiveHolder;
+import de.erethon.questsxl.common.QLineConfig;
+import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.condition.ConditionManager;
 import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.livingworld.QEvent;
@@ -200,7 +202,7 @@ public abstract class QBaseObjective implements QObjective {
     }
 
     @Override
-    public void load(String[] c) {
+    public void load(QLineConfig section) {
 
     }
 

@@ -1,5 +1,6 @@
 package de.erethon.questsxl.action;
 
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Bukkit;
@@ -56,7 +57,7 @@ public class RunAsAction extends QBaseAction {
     }
 
     @Override
-    public void load(String[] msg) {
+    public void load(QLineConfig cfg) {
         throw new UnsupportedOperationException("RunAsAction does not support single-line configs.");
     }
 

@@ -1,6 +1,7 @@
 package de.erethon.questsxl.condition;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.livingworld.EventState;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
@@ -37,8 +38,8 @@ public class EventStateCondition extends QBaseCondition {
     }
 
     @Override
-    public void load(String[] c) {
-        event = plugin.getEventManager().getByID(c[0]);
-        state = EventState.valueOf(c[1].toUpperCase());
+    public void load(QLineConfig section) {
+        event = plugin.getEventManager().getByID(section.getString("id"));
+        state = EventState.valueOf(section.getString("state"));
     }
 }

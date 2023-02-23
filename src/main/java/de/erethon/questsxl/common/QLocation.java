@@ -1,8 +1,6 @@
 package de.erethon.questsxl.common;
 
 import de.erethon.bedrock.chat.MessageUtil;
-import de.erethon.dungeonsxl.api.DungeonsAPI;
-import de.erethon.dungeonsxl.api.dungeon.Game;
 import de.erethon.questsxl.QuestsXL;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -16,7 +14,7 @@ import org.bukkit.configuration.ConfigurationSection;
 public class QLocation {
 
     private final QuestsXL plugin = QuestsXL.getInstance();
-    private final DungeonsAPI dungeonsAPI = plugin.getDungeonsAPI();
+    //private final DungeonsAPI dungeonsAPI = plugin.getDungeonsAPI();
 
     private String worldID;
     private String dungeonID;
@@ -70,25 +68,23 @@ public class QLocation {
         this.isRelative = isRelative;
     }
 
-    public QLocation(String[] args, int arrayStart) {
-        if (args[arrayStart].contains("~")) {
+    public QLocation(QLineConfig section) {
+        if (section.contains("world")) {
+            worldID = section.getString("world");
+        }
+        if (section.contains("dungeon")) {
+            dungeonID = section.getString("dungeon");
+        }
+        if (section.getString("x").contains("~")) {
             isRelative = true;
-            x = Double.parseDouble(args[arrayStart].replace("~", ""));
-            y = Double.parseDouble(args[arrayStart + 1].replace("~", ""));
-            z = Double.parseDouble(args[arrayStart + 2].replace("~", ""));
+            x = Double.parseDouble(section.getString("x").replace("~", ""));
+            y = Double.parseDouble(section.getString("y").replace("~", ""));
+            z = Double.parseDouble(section.getString("z").replace("~", ""));
             return;
         }
-        if (args[arrayStart].contains("dungeon:")) {
-            dungeonID = args[arrayStart].replace("dungeon:", "");
-            x = Double.parseDouble(args[arrayStart + 1]);
-            y = Double.parseDouble(args[arrayStart + 2]);
-            z = Double.parseDouble(args[arrayStart + 3]);
-            return;
-        }
-        worldID = args[arrayStart];
-        x = Double.parseDouble(args[arrayStart + 1]);
-        y = Double.parseDouble(args[arrayStart + 2]);
-        z = Double.parseDouble(args[arrayStart + 3]);
+        x = section.getDouble("x");
+        y = section.getDouble("y");
+        z = section.getDouble("z");
     }
 
     public QLocation(ConfigurationSection section) {
@@ -118,11 +114,14 @@ public class QLocation {
         if (isRelative) {
             return location.clone().add(x, y, z);
         }
-        if (Bukkit.getWorld(worldID) == null) {
-            MessageUtil.log("World " + worldID + " does not exist!");
+        World world;
+        if (worldID == null) {
+            world = location.getWorld();
             return null;
+        } else {
+            world = Bukkit.getWorld(worldID);
         }
-        return new Location(Bukkit.getWorld(worldID), x, y, z);
+        return new Location(world, x, y, z);
     }
 
     /**
@@ -133,10 +132,11 @@ public class QLocation {
         if (location.getWorld().getName().equals(worldID) && location.getX() == x && location.getY() == y && location.getZ() == z) {
             return true;
         }
-        Game game = dungeonsAPI.getGame(location.getWorld());
+        // Wartet auf ein DXL Update
+        /*Game game = dungeonsAPI.getGame(location.getWorld());
         if (location.getX() == x && location.getY() == y && location.getZ() == z && game != null && game.getDungeon().getName().equals(dungeonID)) {
             return true;
-        }
+        }*/
         return false;
     }
 

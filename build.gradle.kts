@@ -35,7 +35,10 @@ dependencies {
     compileOnly("de.erethon.aether:Aether:1.0.0-SNAPSHOT")
     compileOnly("de.erethon.aergia:Aergia:1.0.0-SNAPSHOT") { isTransitive = false }
     compileOnly("de.fyreum:JobsXL:1.0-SNAPSHOT") { isTransitive = false }
-    compileOnly("de.erethon.dungeonsxl:dungeonsxl-api:0.18-PRE-02") { isTransitive = false }
+    // Why... just why.
+   /* compileOnly("de.erethon.dungeonsxl:dungeonsxl-api:0.18-PRE-02") {
+        exclude(group = "net.kyori.adventure.text", module = "minimessage")
+    }*/
     implementation("de.erethon:bedrock:1.2.5") { isTransitive = false }
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.3.0") { isTransitive = false }
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.3.0") { isTransitive = false }

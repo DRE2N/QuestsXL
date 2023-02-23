@@ -2,6 +2,7 @@ package de.erethon.questsxl.action;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.player.QPlayerCache;
@@ -42,9 +43,9 @@ public class StageAction extends QBaseAction {
     }
 
     @Override
-    public void load(String[] msg) {
-        questID = msg[0];
-        stageID = Integer.parseInt(msg[1]);
+    public void load(QLineConfig cfg) {
+        questID = cfg.getString("quest");
+        stageID = cfg.getInt("id");
     }
 
     @Override

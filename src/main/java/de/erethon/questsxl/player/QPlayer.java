@@ -73,7 +73,7 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
     private boolean frozen = false;
 
     Pattern pattern = Pattern.compile("\"color\"\\s*:\\s*\"([^\"]*)\"");
-    MiniMessage miniMessage = MiniMessage.get();
+    MiniMessage miniMessage = MiniMessage.miniMessage();
 
     public QPlayer(@NotNull Player player) {
         super(QuestsXL.getPlayerFile(player.getUniqueId()), CONFIG_VERSION);

@@ -1,5 +1,6 @@
 package de.erethon.questsxl.action;
 
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Material;
@@ -23,6 +24,6 @@ public interface QAction {
     String getID();
 
     void load(ConfigurationSection cfg);
-    void load(String[] msg);
+    void load(QLineConfig cfg);
 
 }

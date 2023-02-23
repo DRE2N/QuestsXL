@@ -1,6 +1,7 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -26,12 +27,12 @@ public class StartEventAction extends QBaseAction {
     }
 
     @Override
-    public void load(String[] msg) {
-        event = plugin.getEventManager().getByID(msg[0]);
+    public void load(QLineConfig cfg) {
+        event = plugin.getEventManager().getByID(cfg.getString("id"));
         if (event == null) {
-            throw new RuntimeException("Event " + msg[0] + " does not exist.");
+            throw new RuntimeException("Event " + cfg.getString("id") + " does not exist.");
         }
-        skipConditions = Boolean.parseBoolean(msg[1]);
+        skipConditions = cfg.getBoolean("skipConditions", false);
     }
 
     @Override

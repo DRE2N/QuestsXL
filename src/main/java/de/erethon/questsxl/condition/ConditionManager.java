@@ -1,6 +1,7 @@
 package de.erethon.questsxl.condition;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.error.FriendlyError;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -47,7 +48,8 @@ public class ConditionManager {
             }
             try {
                 if (shorthand) {
-                    condition.load(split(section.getString(key)));
+                    QLineConfig cfg = new QLineConfig(section.getString(key));
+                    condition.load(cfg);
                 } else {
                     condition.load(subsection);
                 }

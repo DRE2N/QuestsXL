@@ -4,6 +4,7 @@ import de.erethon.aether.Aether;
 import de.erethon.aether.creature.ActiveNPC;
 import de.erethon.aether.creature.CreatureManager;
 import de.erethon.aether.creature.NPCData;
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
@@ -39,9 +40,9 @@ public class SpawnMobAction extends QBaseAction {
     }
 
     @Override
-    public void load(String[] msg) {
-        npcData = creatureManager.getByID(msg[0]);
-        location = new QLocation(msg, 1);
+    public void load(QLineConfig cfg) {
+        npcData = creatureManager.getByID(cfg.getString("id"));
+        location = new QLocation(cfg);
     }
 
     @Override

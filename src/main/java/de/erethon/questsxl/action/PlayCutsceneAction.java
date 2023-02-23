@@ -3,6 +3,7 @@ package de.erethon.questsxl.action;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.animation.AnimationManager;
 import de.erethon.questsxl.animation.QCutscene;
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -23,10 +24,10 @@ public class PlayCutsceneAction extends QBaseAction {
     }
 
     @Override
-    public void load(String[] msg) {
-        cutscene = manager.getCutscene(msg[0]);
+    public void load(QLineConfig cfg) {
+        cutscene = manager.getCutscene(cfg.getString("id"));
         if (cutscene == null) {
-            throw  new RuntimeException("Cutscene " + msg[0] + " does not exist.");
+            throw  new RuntimeException("Cutscene " + cfg.getString("id") + " does not exist.");
         }
     }
 

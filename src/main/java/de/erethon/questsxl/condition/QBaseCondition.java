@@ -2,6 +2,7 @@ package de.erethon.questsxl.condition;
 
 import de.erethon.questsxl.action.ActionManager;
 import de.erethon.questsxl.action.QAction;
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -67,7 +68,7 @@ public abstract class QBaseCondition implements QCondition {
         }
     }
     @Override
-    public void load(String[] c) {
+    public void load(QLineConfig section) {
 
     }
 

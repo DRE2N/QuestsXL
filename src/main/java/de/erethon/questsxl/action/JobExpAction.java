@@ -2,6 +2,7 @@ package de.erethon.questsxl.action;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.misc.NumberUtil;
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import de.fyreum.jobsxl.job.ExperienceGainReason;
@@ -43,11 +44,10 @@ public class JobExpAction extends QBaseAction {
     }
 
     @Override
-    public void load(String[] msg) {
-        min = NumberUtil.parseInt(msg[0]);
-        max = NumberUtil.parseInt(msg[1]);
-        if (msg.length > 2) {
-            chance = Math.min(NumberUtil.parseDouble(msg[2], 1), 1);
-        }
+    public void load(QLineConfig cfg) {
+        min = cfg.getInt("min");
+        max = cfg.getInt("max");
+        chance = Math.min(cfg.getDouble("chance", 1), 1);
+
     }
 }

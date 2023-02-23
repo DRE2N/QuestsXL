@@ -2,6 +2,7 @@ package de.erethon.questsxl.condition;
 
 import de.erethon.bedrock.misc.NumberUtil;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -31,12 +32,12 @@ public class GlobalScoreCondition extends QBaseCondition {
     public void load(ConfigurationSection section) {
         super.load(section);
         score = section.getString("score");
-        value = section.getInt("value");
+        value = section.getInt("value", 1);
     }
 
     @Override
-    public void load(String[] c) {
-        score = c[0];
-        value = NumberUtil.parseInt(c[1]);
+    public void load(QLineConfig section) {
+        score = section.getString("score");
+        value = section.getInt("value", 1);
     }
 }

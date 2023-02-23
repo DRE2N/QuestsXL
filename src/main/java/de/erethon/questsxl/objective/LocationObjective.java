@@ -1,5 +1,6 @@
 package de.erethon.questsxl.objective;
 
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLocation;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Event;
@@ -30,12 +31,12 @@ public class LocationObjective extends AbstractLocationBasedObjective {
     }
 
     @Override
-    public void load(String[] c) {
-        distance = Integer.parseInt(c[0]);
+    public void load(QLineConfig section) {
+        location = new QLocation(section);
+        distance = section.getInt("range", 2);
         if (distance <= 0) {
-            throw new RuntimeException("The location objective in " + Arrays.toString(c) + " contains a negative range.");
+            throw new RuntimeException("The location objective in " + section + " contains a negative range.");
         }
-        location = new QLocation(c, 1);
     }
 
     @Override

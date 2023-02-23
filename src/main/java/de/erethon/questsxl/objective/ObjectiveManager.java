@@ -1,6 +1,7 @@
 package de.erethon.questsxl.objective;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.error.FriendlyError;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -49,7 +50,8 @@ public class ObjectiveManager {
             }
             try {
                 if (shorthand) {
-                    objective.load(split(section.getString(key)));
+                    QLineConfig cfg = new QLineConfig(section.getString(key));
+                    objective.load(cfg);
                 } else {
                     objective.load(subsection);
                 }

@@ -5,6 +5,7 @@ import de.erethon.aether.events.CreatureDeathEvent;
 import de.erethon.aether.events.InstancedCreatureDeathEvent;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.common.ObjectiveHolder;
+import de.erethon.questsxl.common.QLineConfig;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -50,12 +51,11 @@ public class MobObjective extends QBaseObjective {
     }
 
     @Override
-    public void load(String[] c) {
-        super.load(c);
-        mob = c[0];
-        amount = Integer.parseInt(c[1]);
+    public void load(QLineConfig section) {
+        mob = section.getString("mob");
+        amount = section.getInt("amount");
         if (amount <= 0) {
-            throw new RuntimeException("The kill player objective in " + Arrays.toString(c) + " contains a negative amount.");
+            throw new RuntimeException("The kill player objective in " + section + " contains a negative amount.");
         }
     }
 

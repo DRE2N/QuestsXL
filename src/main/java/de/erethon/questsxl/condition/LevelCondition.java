@@ -1,6 +1,7 @@
 package de.erethon.questsxl.condition;
 
 import de.erethon.bedrock.misc.NumberUtil;
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -26,7 +27,7 @@ public class LevelCondition extends QBaseCondition {
     }
 
     @Override
-    public void load(String[] c) {
-        level = NumberUtil.parseInt(c[0]);
+    public void load(QLineConfig section) {
+        level = section.getInt("level");
     }
 }

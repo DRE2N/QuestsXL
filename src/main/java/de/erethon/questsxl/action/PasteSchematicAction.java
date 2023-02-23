@@ -11,6 +11,7 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.ObjectiveHolder;
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
@@ -77,11 +78,9 @@ public class PasteSchematicAction extends QBaseAction {
     }
 
     @Override
-    public void load(String[] msg) {
-        MessageUtil.log("Loading from array: " + Arrays.toString(msg));
-
-        String schematicID = msg[0];
-        MessageUtil.log("Loading schematic " + msg[0]);
+    public void load(QLineConfig cfg) {
+        String schematicID = cfg.getString("schematic");
+        MessageUtil.log("Loading schematic " + schematicID);
         for (File file : QuestsXL.SCHEMATICS.listFiles()) {
             if (file.getName().equals(schematicID)) {
                 schematic = file;
@@ -90,8 +89,8 @@ public class PasteSchematicAction extends QBaseAction {
         if (schematic == null) {
             throw new RuntimeException("The action " + id + " tried to load schematic that does not exist: " + schematicID);
         }
-        time = Integer.parseInt(msg[1]);
-        location = new QLocation(msg, 2);
+        time = cfg.getInt("time", 0);
+        location = new QLocation(cfg);
     }
 
     @Override

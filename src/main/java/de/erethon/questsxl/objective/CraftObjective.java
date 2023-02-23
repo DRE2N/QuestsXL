@@ -1,5 +1,6 @@
 package de.erethon.questsxl.objective;
 
+import de.erethon.questsxl.common.QLineConfig;
 import de.fyreum.jobsxl.user.event.UserCraftItemEvent;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -23,6 +24,11 @@ public class CraftObjective extends QBaseObjective {
                 complete(active.getHolder(), this);
             }
         }
+    }
+
+    @Override
+    public void load(QLineConfig section) {
+        id = section.getString("id");
     }
 
     @Override

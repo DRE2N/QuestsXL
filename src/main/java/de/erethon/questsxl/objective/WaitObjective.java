@@ -2,6 +2,7 @@ package de.erethon.questsxl.objective;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.common.ObjectiveHolder;
+import de.erethon.questsxl.common.QLineConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -36,6 +37,11 @@ public class WaitObjective extends QBaseObjective {
     @Override
     public void check(ActiveObjective active, Event event) {
 
+    }
+
+    @Override
+    public void load(QLineConfig section) {
+        throw new RuntimeException("The wait objective does not support single-line configuration.");
     }
 
     @Override

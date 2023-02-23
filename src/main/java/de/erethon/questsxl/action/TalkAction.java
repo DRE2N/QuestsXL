@@ -48,11 +48,6 @@ public class TalkAction extends QBaseAction {
     }
 
     @Override
-    public void load(String[] msg) {
-        super.load(msg);
-    }
-
-    @Override
     public void load(ConfigurationSection section) {
         super.load(section);
     }

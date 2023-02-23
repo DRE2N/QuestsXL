@@ -1,6 +1,7 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.error.FriendlyError;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -30,7 +31,8 @@ public class ActionManager {
             QAction action = Action.valueOf(type.toUpperCase()).newInstance();
             try {
                 if (shorthand) {
-                    action.load(split(section.getString(key)));
+                    QLineConfig cfg = new QLineConfig(section.getString(key));
+                    action.load(cfg);
                 } else {
                     action.load(subsection);
                 }

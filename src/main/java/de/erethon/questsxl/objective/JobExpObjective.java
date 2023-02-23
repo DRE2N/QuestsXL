@@ -1,6 +1,7 @@
 package de.erethon.questsxl.objective;
 
 import de.erethon.bedrock.misc.EnumUtil;
+import de.erethon.questsxl.common.QLineConfig;
 import de.fyreum.jobsxl.job.ExperienceGainReason;
 import de.fyreum.jobsxl.user.event.UserGainJobExperienceEvent;
 import org.bukkit.configuration.ConfigurationSection;
@@ -25,6 +26,22 @@ public class JobExpObjective extends QBaseObjective {
         alreadyGained += event.getAmount();
         if (alreadyGained >= amount) {
             complete(plugin.getPlayerCache().getByPlayer(player), this);
+        }
+    }
+
+    @Override
+    public void load(QLineConfig section) {
+        amount = section.getInt("amount");
+        if (amount <= 0) {
+            throw new RuntimeException("The job exp objective in " + section + " contains a negative experience amount.");
+        }
+        String reasonString = section.getString("reason");
+        if (reasonString == null) {
+            return;
+        }
+        this.reason = EnumUtil.getEnumIgnoreCase(ExperienceGainReason.class, reasonString);
+        if (this.reason == null) {
+            throw new RuntimeException("The job exp objective in " + section + " contains an unknown experience gain reason.");
         }
     }
 

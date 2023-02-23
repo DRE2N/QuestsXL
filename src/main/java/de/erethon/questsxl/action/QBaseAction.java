@@ -1,6 +1,8 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QLineConfig;
+import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.condition.ConditionManager;
 import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.livingworld.QEvent;
@@ -84,7 +86,7 @@ public abstract class QBaseAction implements QAction {
     }
 
     @Override
-    public void load(String[] msg) {
+    public void load(QLineConfig cfg) {
     }
 
     @Override

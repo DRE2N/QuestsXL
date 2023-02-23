@@ -1,6 +1,7 @@
 package de.erethon.questsxl.condition;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.region.QRegion;
@@ -33,7 +34,7 @@ public class RegionCondition extends QBaseCondition {
     }
 
     @Override
-    public void load(String[] c) {
-        region = QuestsXL.getInstance().getRegionManager().getByID(c[0]);
+    public void load(QLineConfig section) {
+        region = QuestsXL.getInstance().getRegionManager().getByID(section.getString("region"));
     }
 }

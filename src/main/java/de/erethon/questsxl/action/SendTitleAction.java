@@ -1,6 +1,7 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.player.QPlayer;
 import net.kyori.adventure.title.Title;
 import org.bukkit.configuration.ConfigurationSection;
@@ -21,12 +22,12 @@ public class SendTitleAction extends QBaseAction {
     }
 
     @Override
-    public void load(String[] msg) {
-        this.msg = msg[0];
-        subtitle = msg[1];
-        fadeOut = Integer.parseInt(msg[2]);
-        stay = Integer.parseInt(msg[3]);
-        fadeOut = Integer.parseInt(msg[4]);
+    public void load(QLineConfig cfg) {
+        msg = cfg.getString("title", "");
+        msg = cfg.getString("subtitle", "");
+        fadeIn = cfg.getInt("fadeIn", 1);
+        stay = cfg.getInt("stay", 1);
+        fadeOut = cfg.getInt("fadeOut", 1);
     }
 
     @Override
