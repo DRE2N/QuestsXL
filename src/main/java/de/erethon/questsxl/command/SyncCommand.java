@@ -13,6 +13,7 @@ public class SyncCommand extends ECommand {
         setMinArgs(0);
         setMaxArgs(0);
         setPlayerCommand(true);
+        setConsoleCommand(true);
         setHelp("Help.");
         setPermission("qxl.admin.sync");
     }

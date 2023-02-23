@@ -24,10 +24,13 @@ import de.erethon.questsxl.respawn.RespawnPointManager;
 import de.erethon.questsxl.scoreboard.QuestScoreboardLines;
 import de.erethon.questsxl.tool.GitSync;
 import de.fyreum.jobsxl.JobsXL;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -73,6 +76,13 @@ public final class QuestsXL extends EPlugin implements Listener {
     private final List<FriendlyError> errors = new ArrayList<>();
     private boolean showStacktraces = true;
 
+    File gitConfig = new File(Bukkit.getPluginsFolder().getParent(), "gitConfig.yml");
+
+    String gitToken;
+    String gitBranch;
+
+    boolean gitSync = true;
+
     Aergia aergia;
     Aether aether;
     JobsXL jobsXL;
@@ -91,6 +101,9 @@ public final class QuestsXL extends EPlugin implements Listener {
     public void onEnable() {
         super.onEnable();
         instance = this;
+        YamlConfiguration gitConfig = YamlConfiguration.loadConfiguration(this.gitConfig);
+        gitToken = gitConfig.getString("token");
+        gitBranch = gitConfig.getString("branch");
         initFolder(getDataFolder());
         initFolder(QUESTS = new File(getDataFolder(), "quests"));
         initFolder(EVENTS = new File(getDataFolder(), "events"));
@@ -116,8 +129,19 @@ public final class QuestsXL extends EPlugin implements Listener {
             dungeonsAPI = (DungeonsAPI) getServer().getPluginManager().getPlugin("DungeonsXL");
         }*/
         qPlayerCache = new QPlayerCache(this);
-
-        loadCore();
+        MessageUtil.log(" ");
+        MessageUtil.log(" ");
+        MessageUtil.log(" --- Sync ---");
+        if (gitToken == null || gitBranch == null) {
+            MessageUtil.log("Environment: OFFLINE");
+            gitSync = false;
+            loadCore();
+        } else {
+            MessageUtil.log("Environment: " + gitBranch);
+            sync();
+        }
+        MessageUtil.log(" ");
+        MessageUtil.log(" ");
     }
 
     public void initFolder(File folder) {
@@ -269,12 +293,10 @@ public final class QuestsXL extends EPlugin implements Listener {
             @Override
             public void run() {
                 try {
+                    MessageUtil.log("Syncing...");
                     GitSync sync = new GitSync();
-                    MessageUtil.log("[Git] Setting up...");
-                    sync.setupRepo();
-                    MessageUtil.log("[Git] Pulling...");
                     sync.update();
-                } catch (IOException | InterruptedException e) {
+                } catch (IOException | InterruptedException | GitAPIException e) {
                     MessageUtil.broadcastMessageIf("&cGithub-Sync-Error: " + e.getMessage(), p -> p.hasPermission("qxl.admin.sync"));
                     e.printStackTrace();
                 }
@@ -300,5 +322,17 @@ public final class QuestsXL extends EPlugin implements Listener {
     @Contract("_ -> new")
     public static @NotNull File getPlayerFile(@NotNull UUID uuid) {
         return new File(PLAYERS, uuid + ".yml");
+    }
+
+    public String getGitToken() {
+        return gitToken;
+    }
+
+    public String getGitBranch() {
+        return gitBranch;
+    }
+
+    public boolean isGitSync() {
+        return gitSync;
     }
 }

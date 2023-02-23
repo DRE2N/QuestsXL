@@ -20,7 +20,7 @@ public class ActionManager {
                 type = key;
                 shorthand = true;
             }
-            else if (section.isConfigurationSection(key)) {
+            else if (section.isConfigurationSection(key) && isValid(key)) {
                 subsection = section.getConfigurationSection(key);
                 type = key;
             }
