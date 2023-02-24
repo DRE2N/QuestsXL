@@ -12,21 +12,23 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.TreeMap;
+import java.util.Map;
 
 /**
  * @author Fyreum
  */
 public class QDialogueStage {
 
-    protected final TreeMap<String, Integer> messages;
+    protected final LinkedList<Map.Entry<String, Integer>> messages;
     protected int maxMessageCount;
     protected final List<QCondition> conditions;
     protected final List<QAction> postActions;
 
-    public QDialogueStage(@NotNull TreeMap<String, Integer> messages, @NotNull List<QCondition> conditions,
+    public QDialogueStage(@NotNull LinkedList<Map.Entry<String, Integer>> messages, @NotNull List<QCondition> conditions,
                           @NotNull List<QAction> postActions) {
         this.messages = messages;
         this.maxMessageCount = messages.size();
@@ -37,7 +39,7 @@ public class QDialogueStage {
     // copy constructor
     @Contract(pure = true)
     protected QDialogueStage(@NotNull QDialogueStage stage) {
-        this(new TreeMap<>(stage.messages), new ArrayList<>(stage.conditions), new ArrayList<>(stage.postActions));
+        this(new LinkedList<>(stage.messages), new ArrayList<>(stage.conditions), new ArrayList<>(stage.postActions));
     }
 
     public boolean canStart(@NotNull QPlayer player) {
@@ -60,7 +62,7 @@ public class QDialogueStage {
             QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Nachrichten konnten nicht geladen werden.", "message list is empty", "Wahrscheinlich falsche Einrückung."));
             return null;
         }
-        TreeMap<String, Integer> messages = new TreeMap<>();
+        LinkedList<Map.Entry<String, Integer>> messages = new LinkedList<>();
         for (String string : stringList) {
             int lastSeparatorIndex = string.lastIndexOf(";");
             if (lastSeparatorIndex == -1) {
@@ -73,7 +75,7 @@ public class QDialogueStage {
                 QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Nachricht konnte nicht geladen werden.", "message delay has to be a number", "Wahrscheinlich vergessen anzugeben."));
                 continue;
             }
-            messages.put(message, messageDelay * 20); // message delay in seconds
+            messages.add(new AbstractMap.SimpleEntry<>(message, messageDelay * 20)); // message delay in seconds
         }
         if (messages.isEmpty()) {
             QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Nachrichten konnten nicht geladen werden.", "not enough messages", "Siehe dir die vorherigen Fehlermeldungen an."));

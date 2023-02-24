@@ -4,6 +4,7 @@ import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.player.QPlayer;
 
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  * @author Fyreum
@@ -17,11 +18,8 @@ public class QActiveDialogueStage extends QDialogueStage {
         this.qPlayer = qPlayer;
     }
 
-    public int sendMessage(String sender) throws NullPointerException {
-        Map.Entry<String, Integer> entry = messages.pollFirstEntry();
-        if (entry == null) {
-            throw new NullPointerException("No messages left");
-        }
+    public int sendMessage(String sender) throws NoSuchElementException {
+        Map.Entry<String, Integer> entry = messages.pop();
         qPlayer.sendConversationMsg(entry.getKey(), sender, maxMessageCount - messages.size(), maxMessageCount);
         return entry.getValue();
     }

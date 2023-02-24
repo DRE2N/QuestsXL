@@ -18,12 +18,12 @@ public class SendMessageAction extends QBaseAction {
 
     @Override
     public void load(QLineConfig cfg) {
-        message = cfg.getString("message");
+        message = cfg.getString("message", cfg.toString());
     }
 
     @Override
     public void load(ConfigurationSection section) {
         super.load(section);
-        message = section.getString("message");
+        message = section.getString("message", "MESSAGE_NOT_FOUND");
     }
 }
