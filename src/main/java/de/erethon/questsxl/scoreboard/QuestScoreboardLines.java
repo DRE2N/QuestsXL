@@ -29,13 +29,13 @@ public class QuestScoreboardLines implements ScoreboardLines {
         }
         List<DynamicString> lines = new ArrayList<>();
         if (qPlayer.getTrackedQuest() != null) {
-            lines.add(e -> "<green>Quest: " + qPlayer.getTrackedQuest().getQuest().getDisplayName());
-            lines.add(e -> "<green><i>" + qPlayer.getTrackedQuest().getObjectiveDisplayText());
+            lines.add(e -> "§aQuest: " + qPlayer.getTrackedQuest().getQuest().getDisplayName());
+            lines.add(e -> "§a§o" + qPlayer.getTrackedQuest().getObjectiveDisplayText());
         }
         if (qPlayer.getTrackedEvent() != null) {
             lines.add(e -> " ");
-            lines.add(e -> "<gold>Event: " + qPlayer.getTrackedEvent().getName());
-            lines.add(e -> "<gold><i>" + qPlayer.getTrackedEvent().getObjectiveDisplayText());
+            lines.add(e -> "§6Event: " + qPlayer.getTrackedEvent().getName());
+            lines.add(e -> "§6§o" + qPlayer.getTrackedEvent().getObjectiveDisplayText());
         }
         return lines;
     }
