@@ -2,16 +2,16 @@ sender: "MalfRad"
 stages:
   0:
     conditions:
-      permission: qxl.test.dialogue
+      permission: permission=qxl.test.dialogue
     messages:
       - Hallo Reisender!;4
       - Kann ich Ihnen eines meiner neuesten Raritäten anbieten?;10
     onFinish:
-      message: "Stage 1 erfüllt"
+      message: message=Stage 1 erfüllt
   1:
     messages:
       - Dachte ich es mir doch! Lass mich mal sehen...;8
       - Moment.;3
-      - Da hab ich es! Ein seltener Trank aus Thenor; gestern geliefert worden.;10
+      - Da hab ich es! Ein seltener Trank aus Theanor; gestern geliefert worden.;10
     onFinish:
-      message: "Fertig!"
+      message: message=Fertig!

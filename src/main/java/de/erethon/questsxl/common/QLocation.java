@@ -140,6 +140,14 @@ public class QLocation {
         return false;
     }
 
+    /**
+     * @param location the Bukkit location
+     * @return true if the given location shares the same world as the QLocation.
+     */
+    public boolean sameWorld(Location location) {
+        return location.getWorld().getName().equals(worldID);
+    }
+
     public double getX() {
         return x;
     }

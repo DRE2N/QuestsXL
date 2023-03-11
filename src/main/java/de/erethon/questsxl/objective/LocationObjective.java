@@ -22,7 +22,7 @@ public class LocationObjective extends AbstractLocationBasedObjective {
     public void check(ActiveObjective active, Event e) {
         if (!(e instanceof PlayerMoveEvent event)) return;
         if (!conditions(event.getPlayer())) return;
-        if (location == null) {
+        if (location == null || !location.sameWorld(event.getTo())) {
             return;
         }
         if (event.getTo().distance(location.get(event.getTo())) <= distance) {

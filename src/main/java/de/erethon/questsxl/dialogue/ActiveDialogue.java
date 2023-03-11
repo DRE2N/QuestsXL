@@ -5,6 +5,8 @@ import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.NoSuchElementException;
+
 /**
  * @author Fyreum
  */
@@ -43,16 +45,16 @@ public class ActiveDialogue extends BukkitRunnable {
 
     public void continueDialogue() {
         passedTicks = 0;
-        messageDelay = activeStage.sendMessage(dialogue.getSenderName());
-
-        if (activeStage.isCompleted()) {
+        try {
+            messageDelay = activeStage.sendMessage(dialogue.getSenderName());
+        } catch (NoSuchElementException e) {
             activeStage.onFinish();
             try {
                 activeStage = nextStage();
                 if (!activeStage.canStart(qPlayer)) {
                     cancel();
                 }
-            } catch (IndexOutOfBoundsException e) {
+            } catch (IndexOutOfBoundsException e2) {
                 finish();
             }
         }

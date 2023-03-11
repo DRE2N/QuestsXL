@@ -8,8 +8,8 @@ import java.util.Map;
 
 public class QLineConfig {
 
-    private Map<String, String> result = new HashMap<>();
-    private String input;
+    private final Map<String, String> result = new HashMap<>();
+    private final String input;
 
     public QLineConfig(String string) {
         input = string;

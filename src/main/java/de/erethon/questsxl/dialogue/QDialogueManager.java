@@ -1,5 +1,6 @@
 package de.erethon.questsxl.dialogue;
 
+import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.misc.FileUtil;
 import de.erethon.bedrock.misc.Registry;
 
@@ -17,7 +18,6 @@ public class QDialogueManager extends Registry<String, QDialogue> {
     public QDialogueManager(File folder) {
         this.folder = folder;
         this.npcRegistry = new Registry<>();
-        load();
     }
 
     public void load() {
@@ -26,6 +26,7 @@ public class QDialogueManager extends Registry<String, QDialogue> {
             add(dialogue.getName(), dialogue);
             npcRegistry.add(dialogue.getNPCId(), dialogue.getName());
         }
+        MessageUtil.log("Loaded " + size() + " dialogues.");
     }
 
     public Registry<String, String> getNPCRegistry() {
