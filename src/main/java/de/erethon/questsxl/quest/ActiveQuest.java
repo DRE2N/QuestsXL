@@ -13,6 +13,8 @@ public class ActiveQuest {
     QQuest quest;
     QStage currentStage;
 
+    String objectiveDisplayText;
+
     public ActiveQuest(QPlayer player, QQuest quest) {
         this(player, quest, 0);
     }
@@ -78,7 +80,11 @@ public class ActiveQuest {
         return quest;
     }
 
-    public String getScoreboardLine() {
-        return quest.getDisplayName(); // todo: show the current progress
+    public String getObjectiveDisplayText() {
+        return objectiveDisplayText;
+    }
+
+    public void setObjectiveDisplayText(String objectiveDisplayText) {
+        this.objectiveDisplayText = objectiveDisplayText;
     }
 }

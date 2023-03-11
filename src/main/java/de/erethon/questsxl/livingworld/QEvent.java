@@ -42,6 +42,8 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
 
     Set<ActiveObjective> currentObjectives = new HashSet<>();
 
+    private String objectiveDisplayText;
+
     int cooldown;
 
     int range;
@@ -337,5 +339,13 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
     @Override
     public Location getLocation() {
         return centerLocation;
+    }
+
+    public String getObjectiveDisplayText() {
+        return objectiveDisplayText;
+    }
+
+    public void setObjectiveDisplayText(String objectiveDisplayText) {
+        this.objectiveDisplayText = objectiveDisplayText;
     }
 }

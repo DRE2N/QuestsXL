@@ -1,5 +1,7 @@
 package de.erethon.questsxl.action;
 
+import de.erethon.questsxl.condition.DialogueAction;
+
 import java.util.function.Supplier;
 
 public enum Action {
@@ -8,6 +10,7 @@ public enum Action {
     COMMAND(RunCommandAction::new),
     CUTSCENE(PlayCutsceneAction::new),
     DELAY(DelayAction::new),
+    DIALOGUE(DialogueAction::new),
     EVENT_PARTICIPATION(AddEventParticipation::new),
     GIVE_ITEM(GiveItemAction::new),
     HIDE_IBC(HideIBCAction::new),

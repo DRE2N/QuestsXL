@@ -33,12 +33,12 @@ public class EntityInteractObjective extends QBaseObjective {
 
     @Override
     public void load(QLineConfig section) {
-        mob = section.getString("mob");
+        mob = section.getString("id");
     }
 
     @Override
     public void load(ConfigurationSection section) {
         super.load(section);
-        mob = section.getString("mob");
+        mob = section.getString("id");
     }
 }

@@ -27,15 +27,15 @@ public class QuestScoreboardLines implements ScoreboardLines {
         if (qPlayer == null) {
             return Collections.emptyList();
         }
-        Set<ActiveQuest> quests = qPlayer.getActiveQuests().keySet();
-        List<DynamicString> lines = new ArrayList<>(Math.min(quests.size(), 5));
-
-        for (ActiveQuest quest : quests) {
-            /*if (lines.size() == 4) {
-                lines.add(p -> MessageUtil.parse("&e» &6" + (quests.size() - 4) + " &7weitere"));
-                break;
-            }
-            lines.add(p -> MessageUtil.parse("&e» &7" + quest.getScoreboardLine()));*/
+        List<DynamicString> lines = new ArrayList<>();
+        if (qPlayer.getTrackedQuest() != null) {
+            lines.add(e -> "<green>Quest: " + qPlayer.getTrackedQuest().getQuest().getDisplayName());
+            lines.add(e -> "<green><i>" + qPlayer.getTrackedQuest().getObjectiveDisplayText());
+        }
+        if (qPlayer.getTrackedEvent() != null) {
+            lines.add(e -> " ");
+            lines.add(e -> "<gold>Event: " + qPlayer.getTrackedEvent().getName());
+            lines.add(e -> "<gold><i>" + qPlayer.getTrackedEvent().getObjectiveDisplayText());
         }
         return lines;
     }

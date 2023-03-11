@@ -52,7 +52,7 @@ public class MobObjective extends QBaseObjective {
 
     @Override
     public void load(QLineConfig section) {
-        mob = section.getString("mob");
+        mob = section.getString("id");
         amount = section.getInt("amount");
         if (amount <= 0) {
             throw new RuntimeException("The kill player objective in " + section + " contains a negative amount.");
@@ -62,7 +62,7 @@ public class MobObjective extends QBaseObjective {
     @Override
     public void load(ConfigurationSection section) {
         super.load(section);
-        mob = section.getString("mob");
+        mob = section.getString("id");
         amount = section.getInt("amount");
         if (amount <= 0) {
             throw new RuntimeException("The kill player objective in " + section.getName() + " contains a negative amount.");

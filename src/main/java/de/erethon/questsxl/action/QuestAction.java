@@ -25,18 +25,18 @@ public class QuestAction extends QBaseAction {
 
     @Override
     public void load(QLineConfig cfg) {
-        quest = plugin.getQuestManager().getByName(cfg.getString("quest"));
+        quest = plugin.getQuestManager().getByName(cfg.getString("id"));
         if (quest == null) {
-            throw new RuntimeException("Quest " + cfg.getString("quest") + " does not exist.");
+            throw new RuntimeException("Quest " + cfg.getString("id") + " does not exist.");
         }
     }
 
     @Override
     public void load(ConfigurationSection section) {
         super.load(section);
-        quest = plugin.getQuestManager().getByName(section.getString("quest"));
+        quest = plugin.getQuestManager().getByName(section.getString("id"));
         if (quest == null) {
-            throw new RuntimeException("Quest " + section.getString("quest") + " does not exist.");
+            throw new RuntimeException("Quest " + section.getString("id") + " does not exist.");
         }
     }
 

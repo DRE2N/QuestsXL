@@ -35,6 +35,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.w3c.dom.html.HTMLScriptElement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,6 +75,9 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
 
     Pattern pattern = Pattern.compile("\"color\"\\s*:\\s*\"([^\"]*)\"");
     MiniMessage miniMessage = MiniMessage.miniMessage();
+
+    private ActiveQuest trackedQuest;
+    private QEvent trackedEvent;
 
     public QPlayer(@NotNull Player player) {
         super(QuestsXL.getPlayerFile(player.getUniqueId()), CONFIG_VERSION);
@@ -229,6 +233,15 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
         return activeQuests;
     }
 
+    public ActiveQuest getActiveQuest(QQuest quest) {
+        for (ActiveQuest activeQuest : activeQuests.keySet()) {
+            if (activeQuest.getQuest() == quest) {
+                return activeQuest;
+            }
+        }
+        return null;
+    }
+
     public @NotNull Map<QQuest, Long> getCompletedQuests() {
         return completedQuests;
     }
@@ -364,6 +377,14 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
         return null;
     }
 
+    public ActiveQuest getTrackedQuest() {
+        return trackedQuest;
+    }
+
+    public void setTrackedQuest(ActiveQuest trackedQuest) {
+        this.trackedQuest = trackedQuest;
+    }
+
     public @NotNull List<Component> getChatQueue() {
         return chatQueue;
     }
@@ -377,5 +398,13 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
         if (uuid.equals(player.getUniqueId())) {
             this.player = player;
         }
+    }
+
+    public QEvent getTrackedEvent() {
+        return trackedEvent;
+    }
+
+    public void setTrackedEvent(QEvent trackedEvent) {
+        this.trackedEvent = trackedEvent;
     }
 }
