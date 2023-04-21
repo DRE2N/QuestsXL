@@ -29,11 +29,11 @@ public class ActiveQuestCondition extends QBaseCondition {
 
     @Override
     public void load(ConfigurationSection section) {
-        quest = questManager.getByName(section.getString("quest"));
+        quest = questManager.getByName(section.getString("id"));
     }
 
     @Override
     public void load(QLineConfig section) {
-        quest = questManager.getByName(section.getString("quest"));
+        quest = questManager.getByName(section.getString("id"));
     }
 }

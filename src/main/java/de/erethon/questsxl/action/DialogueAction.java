@@ -1,4 +1,4 @@
-package de.erethon.questsxl.condition;
+package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.QBaseAction;

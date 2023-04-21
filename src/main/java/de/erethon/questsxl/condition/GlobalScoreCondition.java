@@ -7,7 +7,7 @@ import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
-public class GlobalScoreCondition extends QBaseCondition {
+public class    GlobalScoreCondition extends QBaseCondition {
 
     String score;
     int value;

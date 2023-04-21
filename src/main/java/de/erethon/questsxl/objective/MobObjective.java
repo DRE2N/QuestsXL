@@ -55,7 +55,7 @@ public class MobObjective extends QBaseObjective {
         mob = section.getString("id");
         amount = section.getInt("amount");
         if (amount <= 0) {
-            throw new RuntimeException("The kill player objective in " + section + " contains a negative amount.");
+            throw new RuntimeException("The kill objective in " + section + " contains a negative amount.");
         }
     }
 
@@ -65,7 +65,7 @@ public class MobObjective extends QBaseObjective {
         mob = section.getString("id");
         amount = section.getInt("amount");
         if (amount <= 0) {
-            throw new RuntimeException("The kill player objective in " + section.getName() + " contains a negative amount.");
+            throw new RuntimeException("The kill objective in " + section.getName() + " contains a negative amount.");
         }
     }
 }

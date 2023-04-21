@@ -33,6 +33,6 @@ public class CompletedQuestCondition extends QBaseCondition {
 
     @Override
     public void load(QLineConfig section) {
-        questName = section.getString("quest");
+        questName = section.getString("id");
     }
 }

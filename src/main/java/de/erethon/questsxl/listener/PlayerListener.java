@@ -20,7 +20,7 @@ import io.netty.channel.ChannelPipeline;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -139,12 +139,12 @@ public class PlayerListener extends AbstractListener {
 
     @EventHandler
     public void onCreatureDeath(CreatureDeathEvent event) {
-
+        checkObjectives(event.getKiller(), event);
     }
 
     @EventHandler
     public void onInstancedCreatureDeath(InstancedCreatureDeathEvent event) {
-
+        checkObjectives(event.getKiller(), event);
     }
 
     @EventHandler

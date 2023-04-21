@@ -37,6 +37,8 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +79,7 @@ public final class QuestsXL extends EPlugin implements Listener {
     private boolean showStacktraces = true;
 
     File gitConfig = new File(Bukkit.getPluginsFolder().getParent(), "gitConfig.yml");
+    List<String> folders;
 
     String gitToken;
     String gitBranch;
@@ -104,6 +107,7 @@ public final class QuestsXL extends EPlugin implements Listener {
         YamlConfiguration gitConfig = YamlConfiguration.loadConfiguration(this.gitConfig);
         gitToken = gitConfig.getString("token");
         gitBranch = gitConfig.getString("branch");
+        folders = gitConfig.getStringList("folders");
         initFolder(getDataFolder());
         initFolder(QUESTS = new File(getDataFolder(), "quests"));
         initFolder(EVENTS = new File(getDataFolder(), "events"));
@@ -294,7 +298,8 @@ public final class QuestsXL extends EPlugin implements Listener {
             public void run() {
                 try {
                     MessageUtil.log("Syncing...");
-                    GitSync sync = new GitSync();
+                    MessageUtil.log("Included folders: " + Arrays.toString(folders.toArray()));
+                    GitSync sync = new GitSync(folders);
                     sync.update();
                 } catch (IOException | InterruptedException | GitAPIException e) {
                     MessageUtil.broadcastMessageIf("&cGithub-Sync-Error: " + e.getMessage(), p -> p.hasPermission("qxl.admin.sync"));

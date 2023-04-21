@@ -3,6 +3,7 @@ package de.erethon.questsxl.tool;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.misc.FileUtil;
 import de.erethon.questsxl.QuestsXL;
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.MergeResult;
@@ -11,23 +12,37 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import oshi.util.FileSystemUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class GitSync {
 
     File cache = new File(Bukkit.getWorldContainer() + "/git_cache/");
-    File questsFolder = new File(cache + "/QuestsXL/");
-    File itemsFolder = new File(cache + "/ItemsXL/");
-    File aetherFolder = new File(cache + "/Aether/");
+    Set<String> foldersToSync = new HashSet<>();
+    Set<File> foldersInCache = new HashSet<>();
+    Set<File> foldersInPlugins = new HashSet<>();
     Repository repository;
     Git git;
     QuestsXL plugin = QuestsXL.getInstance();
 
-    public GitSync() throws IOException, GitAPIException, InterruptedException {
+    public GitSync(List<String> names) throws IOException, GitAPIException, InterruptedException {
+        foldersToSync = new HashSet<>(names);
+        for (String name : foldersToSync) {
+            File file = new File(Bukkit.getPluginsFolder() + "/" + name);
+            if (!file.exists()) {
+                MessageUtil.log("Could not find folder " + name + " in plugins folder. Skipping.");
+                continue;
+            }
+            foldersInPlugins.add(new File(Bukkit.getPluginsFolder() + "/" + name));
+            foldersInCache.add(new File(cache + "/" + name));
+        }
         if (cache.exists()) {
             MessageUtil.log("Found existing repo at " + cache);
             git = Git.open(cache);
@@ -87,16 +102,16 @@ public class GitSync {
 
     public void copyToPlugins() throws IOException, InterruptedException {
         File pluginsFolder = Bukkit.getPluginsFolder();
-        FileUtil.copyDir(questsFolder, new File(pluginsFolder + "/QuestsXL/"));
-        FileUtil.copyDir(itemsFolder, new File(pluginsFolder + "/ItemsXL/"));
-        FileUtil.copyDir(aetherFolder, new File(pluginsFolder + "/Aether/"));
+        for (File file : foldersInCache) {
+            FileUtil.copyDir(file, new File(pluginsFolder + "/" + file.getName() + "/"));
+        }
     }
 
-    public void copyFromPlugins() {
+    public void copyFromPlugins() throws IOException {
         File pluginsFolder = Bukkit.getPluginsFolder();
-        FileUtil.copyDir(new File(pluginsFolder + "/QuestsXL/"), questsFolder);
-        FileUtil.copyDir(new File(pluginsFolder + "/ItemsXL/"), itemsFolder);
-        FileUtil.copyDir(new File(pluginsFolder + "/Aether/"), aetherFolder);
+        for (File file : foldersInPlugins) {
+            FileUtil.copyDir(file, new File(pluginsFolder + "/" + file.getName() + "/"));
+        }
     }
 
     private boolean delete(File file) {
