@@ -1,7 +1,5 @@
 package de.erethon.questsxl.action;
 
-import de.erethon.questsxl.condition.DialogueAction;
-
 import java.util.function.Supplier;
 
 public enum Action {
@@ -24,6 +22,7 @@ public enum Action {
     RUN_AS(RunAsAction::new),
     SHOW_BEAM(DisplayLocationMarkerAction::new),
     SHOW_IBC(ShowIBCAction::new),
+    SPAWNER(SpawnerAction::new),
     SPAWN_MOB(SpawnMobAction::new),
     STAGE(StageAction::new),
     START_EVENT(StartEventAction::new),
