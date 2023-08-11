@@ -13,7 +13,7 @@ repositories {
 plugins {
     `java-library`
     `maven-publish`
-    id("io.papermc.paperweight.userdev") version "1.5.3"
+    id("io.papermc.paperweight.userdev") version "1.5.5"
     id("xyz.jpenilla.run-paper") version "1.0.6" // Adds runServer and runMojangMappedServer tasks for testing
     id ("com.github.johnrengelman.shadow") version "7.1.2"
     id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
@@ -28,7 +28,7 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
 
-val papyrusVersion = "1.19.4-R0.1-SNAPSHOT"
+val papyrusVersion = "1.20.1-R0.1-SNAPSHOT"
 
 dependencies {
     paperweightDevBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true }
@@ -43,7 +43,6 @@ dependencies {
     implementation("org.eclipse.jgit:org.eclipse.jgit:6.4.0.202211300538-r")
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.3.0") { isTransitive = false }
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.3.0") { isTransitive = false }
-    compileOnly("com.comphenix.protocol:ProtocolLib:5.0.0-SNAPSHOT")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7") { isTransitive = false }
 }
 

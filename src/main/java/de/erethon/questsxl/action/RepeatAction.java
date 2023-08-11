@@ -28,7 +28,6 @@ public class RepeatAction extends QBaseAction {
             @Override
             public void run() {
                 for (QAction action : actions) {
-                    MessageUtil.log("Playing repeated action..");
                     action.play(player);
                 }
                 if (current >= repetitions) {
@@ -49,7 +48,6 @@ public class RepeatAction extends QBaseAction {
             @Override
             public void run() {
                 for (QAction action : actions) {
-                    MessageUtil.log("Playing repeated action..");
                     action.play(event);
                 }
                 if (current >= repetitions) {

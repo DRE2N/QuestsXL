@@ -16,7 +16,7 @@ import java.util.Set;
 
 /**
  * @author Fyreum
- */
+ * pls fix
 public class QuestScoreboardLines implements ScoreboardLines {
 
     final QuestsXL plugin = QuestsXL.getInstance();
@@ -44,4 +44,4 @@ public class QuestScoreboardLines implements ScoreboardLines {
     public int getPriority() {
         return 5;
     }
-}
+}*/

@@ -1,6 +1,5 @@
 package de.erethon.questsxl.command;
 
-import com.comphenix.protocol.ProtocolLibrary;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import de.erethon.questsxl.QuestsXL;

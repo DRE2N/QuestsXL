@@ -21,7 +21,7 @@ import de.erethon.questsxl.player.QPlayerCache;
 import de.erethon.questsxl.quest.QuestManager;
 import de.erethon.questsxl.region.QRegionManager;
 import de.erethon.questsxl.respawn.RespawnPointManager;
-import de.erethon.questsxl.scoreboard.QuestScoreboardLines;
+//import de.erethon.questsxl.scoreboard.QuestScoreboardLines;
 import de.erethon.questsxl.tool.GitSync;
 import de.fyreum.jobsxl.JobsXL;
 import org.bukkit.Bukkit;
@@ -197,7 +197,7 @@ public final class QuestsXL extends EPlugin implements Listener {
             getServer().getPluginManager().registerEvents(playerJobListener, this);
         }
         if (aergia != null) {
-            aergia.getEScoreboard().addScores(new QuestScoreboardLines());
+            //aergia.getEScoreboard().addScores(new QuestScoreboardLines());
         }
     }
 
