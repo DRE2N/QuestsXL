@@ -1,0 +1,20 @@
+Mobs:
+ - Per player
+
+Quests:
+ - Animations
+ - Jump/Runs
+ - Checkpoints
+
+ General:
+ - Relative Locations
+
+Objectives:
+ - Shouldn't register one
+ - Click button
+ - Place (client only)
+ - Redstone signal
+ - Command received
+
+Actions:
+- Teleport
