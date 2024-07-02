@@ -1,0 +1,75 @@
+displayName: 'Eine kuhle Testquest'
+description: 'Eine Beschreibung der Quest'
+onStart:
+  - "message: message=huhu"
+stages:
+  0:
+    startMessage: Gehe zum Steinturm!
+    completeMessage: Du hast es in den Turm geschafft!
+    onStart:
+      message: Der Turm dort sieht interessant aus.
+    objectives:
+      impossible: nix
+      goToTower:
+        type: location
+        display: Gehe zum großen, hässlichen Steinturm
+        world: world
+        x: -62
+        y: 61
+        z: -31
+        range: 10
+        onComplete:
+          message: '&7Es sieht so aus als gäbe es keinen Eingang. Hmm, was tun wir nun?'
+          d:
+            type: delay
+            duration: 2
+            actions:
+              message: '&aAh, das haben wir gleich!'
+              teleport: w=world;x=-71;y=87;z=-22;
+              stage: quest=Testquest;id=1
+  1:
+    startMessage: Und nun?
+    completeMessage: Huh.
+    description: 'Besteige die Treppe.'
+    objectives:
+      impossible: nix
+      ending:
+        type: location
+        world: world
+        x: -70
+        y: 112
+        z: -34
+        range: 2
+        onComplete:
+          stage: quest=Testquest;id=2
+      tower1Enter:
+        type: enter_region
+        id: tower1
+        onComplete:
+          show_ibc: id=t1
+      tower1Leave:
+        type: leave_region
+        id: tower1
+        onComplete:
+          reset_ibc: id=t1
+      tower2Enter:
+        type: enter_region
+        id: tower2
+        onComplete:
+          show_ibc: id=t2
+      tower2Leave:
+        type: leave_region
+        id: tower2
+        onComplete:
+          reset_ibc: id=t2
+  2:
+    description: Cutscene
+    objectives:
+      impossible: nix
+    onStart:
+      cs:
+        type: cutscene
+        id: towerDown
+        runAfter:
+          teleport: w=world;x=32;y=65;z=-127
+          message: Du hast es geschafft. Wenn du die Quest nochmal spielen willst - einfach reloggen.

@@ -1,0 +1,36 @@
+cooldown: 60
+range: 64
+state:
+  state: NOT_STARTED
+startLocation:
+  world: world
+  x: 0
+  y: 100
+  z: 0
+rewards:
+    0:
+      message: "message=<green>Du hast erfolgreich den Steinbruch verteidigt. Hier ist deine Belohnung: <gray>1x Teilnehmerurkunde"
+stages:
+  0:
+    objectives:
+      kills:
+        type: mob
+        id: vindicator
+        amount: 40
+        onProgress:
+          event_participation: id=Steinbruch;amount=2
+    onStart:
+      command: command="minecraft:time set night;false;true"
+      test:
+        type: run_as
+        mode: event_in_range
+        actions:
+          message: "<red>Der Steinbruch wird angegriffen!"
+      spawning:
+        type: repeat
+        delay: 20
+        repetitions: 40
+        actions:
+          spawn_mob: x=0;y=100;z=0;world=world;id=Malf
+    onFinish:
+      command: command="minecraft:time set noon;false;true"
