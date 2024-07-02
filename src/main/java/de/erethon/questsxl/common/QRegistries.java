@@ -43,7 +43,7 @@ public class QRegistries {
         ACTIONS.register("repeat", RepeatAction::new);
         ACTIONS.register("reset_ibc", ResetIBCAction::new);
         ACTIONS.register("run_as", RunAsAction::new);
-        ACTIONS.register("run_command", RunCommandAction::new);
+        ACTIONS.register("command", RunCommandAction::new);
         ACTIONS.register("score", ScoreAction::new);
         ACTIONS.register("message", SendMessageAction::new);
         ACTIONS.register("title", SendTitleAction::new);

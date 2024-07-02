@@ -39,7 +39,7 @@ public class QConfigLoader {
                     loadable.load(new QLineConfig(section.getString(key)));
                     loadables.add(loadable);
                 } catch (Exception e) {
-                    QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Failed to load " + key, e.getMessage(), "Pfad:\n" + section.getCurrentPath() + "." + key).addStacktrace(e.getStackTrace()));
+                    QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Failed to load " + key, e.getMessage(), "Path:\n" + section.getCurrentPath() + "." + key).addStacktrace(e.getStackTrace()));
                     e.printStackTrace();
                 }
                 continue;
@@ -57,7 +57,7 @@ public class QConfigLoader {
                     type = subsection.getString("type");
                 }
                 if (type == null) {
-                    QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Unknown type", type, "Pfad:\n" + section.getCurrentPath() + "." + key));
+                    QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Unknown type", type, "Path:\n" + section.getCurrentPath() + "." + key));
                     continue;
                 }
                 if (registry.isValid(type)) {
@@ -66,11 +66,13 @@ public class QConfigLoader {
                         loadable.load(subsection);
                         loadables.add(loadable);
                     } catch (Exception e) {
-                        QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Failed to load " + type + " " + key, e.getMessage(), "Pfad:\n" + section.getCurrentPath() + "." + key).addStacktrace(e.getStackTrace()));
+                        QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Failed to load " + type + " " + key, e.getMessage(), "Path:\n" + section.getCurrentPath() + "." + key).addStacktrace(e.getStackTrace()));
                         e.printStackTrace();
                     }
                 }
+                continue;
             }
+            QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Unknown type: " + key, key, "Path:\n" + section.getCurrentPath() + "." + key + "\n Maybe the type is not loaded in the registry."));
         }
         return loadables;
     }
@@ -85,7 +87,7 @@ public class QConfigLoader {
         for (String s : strings) {
             String type = s.split(":")[0];
             QLoadable loadable;
-            if (registry.isValid(type))
+            if (registry.isValid(type)) {
                 try {
                     loadable = registry.get(type).getClass().getDeclaredConstructor().newInstance();
                     loadable.load(new QLineConfig(s.replace(type + ":", "")));
@@ -94,6 +96,9 @@ public class QConfigLoader {
                     QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Failed to load " + type, e.getMessage(), "Pfad:\n" + s).addStacktrace(e.getStackTrace()));
                     e.printStackTrace();
                 }
+                continue;
+            }
+            QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Unknown type: " + s, s, "Path:\n" + id + "\n Maybe the type is not loaded in the registry."));
         }
         return loadables;
     }
