@@ -91,18 +91,15 @@ public class QRegistries {
     private static void initObjectives() {
         OBJECTIVES.register("block_interact", BlockInteractObjective::new);
         OBJECTIVES.register("consume_item", ConsumeItemObjective::new);
-        OBJECTIVES.register("craft", CraftObjective::new);
         OBJECTIVES.register("death", DeathObjective::new);
         OBJECTIVES.register("drop_item", DropItemObjective::new);
         OBJECTIVES.register("enter_region", EnterRegionObjective::new);
         OBJECTIVES.register("entity_interact", EntityInteractObjective::new);
-        OBJECTIVES.register("escort_mob", EscortNPCObjective::new);
         OBJECTIVES.register("experience", ExperienceObjective::new);
         OBJECTIVES.register("feed_mob", FeedMobObjective::new);
         OBJECTIVES.register("impossible", ImpossibleObjective::new);
         OBJECTIVES.register("instant", InstantObjective::new);
         OBJECTIVES.register("item_pickup", ItemPickupObjective::new);
-        OBJECTIVES.register("kill_mob", KillMobObjective::new);
         OBJECTIVES.register("kill_player", KillPlayerObjective::new);
         OBJECTIVES.register("leave_region", LeaveRegionObjective::new);
         OBJECTIVES.register("location", LocationObjective::new);
@@ -112,5 +109,12 @@ public class QRegistries {
         OBJECTIVES.register("take_damage", TakeDamageObjective::new);
         OBJECTIVES.register("use_item", UseItemObjective::new);
         OBJECTIVES.register("wait", WaitObjective::new);
+        if (qxl.isAetherEnabled()) {
+            OBJECTIVES.register("escort_mob", EscortNPCObjective::new);
+            OBJECTIVES.register("kill_mob", KillMobObjective::new);
+        }
+        if (qxl.isJXLEnabled()) {
+            OBJECTIVES.register("craft", CraftObjective::new);
+        }
     }
 }
