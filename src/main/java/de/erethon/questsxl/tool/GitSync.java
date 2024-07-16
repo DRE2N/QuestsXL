@@ -91,6 +91,9 @@ public class GitSync {
         }
         git.add().addFilepattern(".").call();
         git.add().addFilepattern(".").setUpdate(true).call();
+        if (git.status().call().isClean()) {
+            return;
+        }
         git.commit()
                 .setMessage("Automated server commit - " + Date.from(Instant.now()))
                 .call();
