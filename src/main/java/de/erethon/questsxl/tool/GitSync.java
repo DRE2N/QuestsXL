@@ -3,7 +3,6 @@ package de.erethon.questsxl.tool;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.misc.FileUtil;
 import de.erethon.questsxl.QuestsXL;
-import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.MergeResult;
@@ -12,7 +11,6 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
-import oshi.util.FileSystemUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +29,8 @@ public class GitSync {
     Repository repository;
     Git git;
     QuestsXL plugin = QuestsXL.getInstance();
+
+    private static final List<String> EXCLUSIONS = List.of("players", "playerdata", "inventories", "backups", "factions", "users", "ips", "debug.txt");
 
     public GitSync(List<String> names) throws IOException, GitAPIException, InterruptedException {
         foldersToSync = new HashSet<>(names);
@@ -92,6 +92,7 @@ public class GitSync {
         git.add().addFilepattern(".").call();
         git.add().addFilepattern(".").setUpdate(true).call();
         if (git.status().call().isClean()) {
+            MessageUtil.log("No changes to commit.");
             return;
         }
         git.commit()
@@ -106,16 +107,28 @@ public class GitSync {
     public void copyToPlugins() throws IOException, InterruptedException {
         File pluginsFolder = Bukkit.getPluginsFolder();
         for (File file : foldersInCache) {
+            if (!file.exists()) {
+                MessageUtil.log("Could not find folder " + file.getName() + " in cache. Skipping.");
+                continue;
+            }
             FileUtil.copyDir(file, new File(pluginsFolder + "/" + file.getName() + "/"));
         }
     }
 
-    public void copyFromPlugins() throws IOException {
-        File pluginsFolder = Bukkit.getPluginsFolder();
-        for (File file : foldersInPlugins) {
-            FileUtil.copyDir(file, new File(pluginsFolder + "/" + file.getName() + "/"));
+    public void copyFromPlugins() {
+        try {
+            for (File file : foldersInPlugins) {
+                if (!file.exists()) {
+                    MessageUtil.log("Could not find folder " + file.getName() + " in plugins folder. Skipping.");
+                    continue;
+                }
+                FileUtil.copyDir(file, new File(cache + "/" + file.getName() + "/"), EXCLUSIONS.toArray(new String[0]));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
+
 
     private boolean delete(File file) {
 
