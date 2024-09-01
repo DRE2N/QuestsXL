@@ -27,6 +27,7 @@ public class QEventManager {
             QEvent event = new QEvent(file1);
             if (event.isValid()) {
                 events.add(event);
+                event.loadProgress(event.getCfg());
             }
         }
         MessageUtil.log("Loaded " + events.size() + " events.");

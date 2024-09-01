@@ -17,12 +17,13 @@ public class BlockInteractObjective extends QBaseObjective {
         if (!conditions(e.getPlayer())) return;
         if (e.getClickedBlock() == null) return;
         if (location.equals(e.getClickedBlock().getLocation())) {
-            checkCompletion(active, this);
+            checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(e.getPlayer()));
         }
     }
 
     @Override
     public void load(QLineConfig section) {
+        super.load(section);
         location = new QLocation(section);
     }
 

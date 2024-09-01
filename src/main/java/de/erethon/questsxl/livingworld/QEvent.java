@@ -23,6 +23,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,9 +40,11 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
     private final String id;
     private final List<QStage> stages = new ArrayList<>();
     private final List<QAction> updateActions = new ArrayList<>();
+    private final List<QAction> startActions = new ArrayList<>();
     private final Set<QCondition> startConditions = new HashSet<>();
 
     private final Map<Integer, Set<QAction>> rewards = new HashMap<>();
+    private boolean giveAllRewards = true;
 
     private final Set<ActiveObjective> currentObjectives = new HashSet<>();
 
@@ -95,11 +98,23 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
 
     public void reward() {
         for (Map.Entry<QPlayer, Integer> playerEntry : eventParticipation.entrySet()) {
-            for (Map.Entry<Integer, Set<QAction>> reward : rewards.entrySet()) {
-                if (reward.getKey() <= playerEntry.getValue()) {
-                    for (QAction action : reward.getValue()) {
-                        action.play(playerEntry.getKey());
+            if (giveAllRewards) {
+                for (Map.Entry<Integer, Set<QAction>> reward : rewards.entrySet()) {
+                    if (reward.getKey() <= playerEntry.getValue()) {
+                        for (QAction action : reward.getValue()) {
+                            action.play(playerEntry.getKey());
+                        }
                     }
+                }
+                return;
+            }
+            int highestRewardKey = rewards.keySet().stream()
+                    .filter(key -> key <= playerEntry.getValue())
+                    .max(Integer::compareTo)
+                    .orElse(-1);
+            if (highestRewardKey != -1) {
+                for (QAction action : rewards.get(highestRewardKey)) {
+                    action.play(playerEntry.getKey());
                 }
             }
         }
@@ -140,10 +155,11 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
                         return;
                     }
                 }
-                stages.get(0).start(this);
-                currentStage = stages.get(0);
+                if (timeLastCompleted > 0 && System.currentTimeMillis() - timeLastCompleted < cooldown * 1000L) {
+                    return;
+                }
+                startEvent();
                 MessageUtil.log("Event " + getName() + " started with stage " + currentStage.getId() + " with " + getCurrentObjectives().size() + " objectives.");
-                state = EventState.ACTIVE;
             }
             case COMPLETED -> {
                 if (System.currentTimeMillis() - timeLastCompleted > cooldown * 1000L) {
@@ -157,7 +173,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
     }
 
     public void startFromAction(boolean skipConditions) {
-        if (state == EventState.DISABLED || state == EventState.ACTIVE) {
+        if (state == EventState.DISABLED || state == EventState.ACTIVE && !skipConditions) {
             return;
         }
         for (QCondition condition : startConditions) {
@@ -165,14 +181,20 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
                 return;
             }
         }
+        startEvent();
+        MessageUtil.log("Event " + getName() + " started from action.");
+    }
+
+    private void startEvent() {
         stages.get(0).start(this);
         currentStage = stages.get(0);
-        MessageUtil.log("Event " + getName() + " started from action.");
         state = EventState.ACTIVE;
+        for (QAction action : startActions) {
+            action.play(this);
+        }
     }
 
     public void progress() {
-        MessageUtil.log("Progressing event " + id);
         QStage next = null;
         int currentID = currentStage.getId();
         for (QStage stage : getStages()) {
@@ -184,7 +206,10 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
             finish();
             return;
         }
+        clearObjectives();
         currentStage = next;
+        next.start(this);
+        MessageUtil.log("Event " + getName() + " progressed to stage " + currentStage.getId());
     }
 
     public void finish() {
@@ -192,6 +217,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
         reward();
         state = EventState.COMPLETED;
         clearObjectives();
+        timeLastCompleted = System.currentTimeMillis();
     }
 
     public void setCurrentStage(int id) {
@@ -235,7 +261,8 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
     }
 
     public void participate(@NotNull QPlayer player, int amount) {
-        eventParticipation.put(player, amount);
+        eventParticipation.put(player, eventParticipation.getOrDefault(player, 0) + amount);
+        MessageUtil.log("Player " + player.getName() + " participated in event " + getName() + " with " + amount + " points. (Total: " + eventParticipation.get(player) + ")");
     }
 
     public int getEventParticipation(@NotNull QPlayer player) {
@@ -272,12 +299,16 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
             updateActions.addAll((Collection<? extends QAction>) QConfigLoader.load("onUpdate", cfg, QRegistries.ACTIONS));
         }
 
+        if (cfg.contains("onStart")) {
+            startActions.addAll((Collection<? extends QAction>) QConfigLoader.load("onStart", cfg, QRegistries.ACTIONS));
+        }
+
         if (cfg.contains("rewards")) {
             ConfigurationSection rewardSection = cfg.getConfigurationSection("rewards");
             for (String key : rewardSection.getKeys(false)) {
                 ConfigurationSection rewardEntry = rewardSection.getConfigurationSection(key);
                 int id = Integer.parseInt(key);
-                Set<QLoadable> rewardSet = (Set<QLoadable>) QConfigLoader.load("rewards", rewardEntry, QRegistries.ACTIONS);
+                Set<QLoadable> rewardSet = (Set<QLoadable>) QConfigLoader.load(key, rewardSection, QRegistries.ACTIONS);
                 if (rewardSet == null) {
                     continue;
                 }
@@ -290,6 +321,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
                 rewards.put(id, actionSet);
             }
         }
+        giveAllRewards = cfg.getBoolean("giveAllRewards", true);
 
         ConfigurationSection stageSection = cfg.getConfigurationSection("stages");
         if (stageSection == null) {
@@ -315,7 +347,6 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
             currentStage = stages.stream().filter(s -> s.getId() == currentStageID).findFirst().orElse(null);
         }
         timeLastCompleted = cfg.getInt("state.timeLastCompleted", 0);
-        loadProgress(cfg);
 
         isValid = true;
         MessageUtil.log("Loaded event " + id + " with " + stages.size() + " at " + centerLocation.getWorld().getName() + " / " + centerLocation.getX() + " / " + centerLocation.getY() + " / " + centerLocation.getZ());
@@ -323,7 +354,11 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
 
     public void save() {
         cfg.set("state.state", state.name());
-        cfg.set("state.currentStage", currentStage.getId());
+        if (currentStage != null) {
+            cfg.set("state.currentStage", currentStage.getId());
+        } else {
+            cfg.set("state.currentStage", 0);
+        }
         cfg.set("state.timeLastCompleted", timeLastCompleted);
         saveProgress(cfg);
         try {
@@ -398,5 +433,9 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
 
     public void setObjectiveDisplayText(String objectiveDisplayText) {
         this.objectiveDisplayText = objectiveDisplayText;
+    }
+
+    public YamlConfiguration getCfg() {
+        return cfg;
     }
 }

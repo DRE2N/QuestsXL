@@ -2,8 +2,10 @@ package de.erethon.questsxl.action;
 
 import de.erethon.aether.Aether;
 import de.erethon.aether.creature.ActiveNPC;
+import de.erethon.aether.creature.AetherBaseMob;
 import de.erethon.aether.creature.CreatureManager;
 import de.erethon.aether.creature.NPCData;
+import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.livingworld.QEvent;
@@ -26,14 +28,21 @@ public class SpawnMobAction extends QBaseAction {
     @Override
     public void play(QPlayer player) {
         if (!conditions(player)) return;
-        npcData.spawn(location.get(player.getPlayer().getLocation()));
+        Location pLocation = player.getLocation();
+        AetherBaseMob mob = npcData.spawn(location.get(pLocation));
+        mob.setPos(location.getX(pLocation), location.getY(pLocation), location.getZ(pLocation));
+        mob.addToWorld();
         onFinish(player);
     }
 
     @Override
     public void play(QEvent event) {
         if (!conditions(event)) return;
-        npcData.spawn(location.get(event.getLocation()));
+        Location loc = event.getLocation();
+        AetherBaseMob mob = npcData.spawn(location.get(loc));
+        mob.setPos(location.getX(loc), location.getY(loc), location.getZ(loc));
+        mob.addToWorld();
+        MessageUtil.log("Spawned " + npcData.getID() + " at " + location.get(event.getLocation()));
         onFinish(event);
     }
 

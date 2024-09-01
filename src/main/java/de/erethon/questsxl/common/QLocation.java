@@ -22,6 +22,8 @@ public class QLocation {
     private double y;
     private double z;
     private boolean isRelative = false;
+    private double randomXZ = 0;
+    private double randomY = 0;
 
     public QLocation(World world, double x, double y, double z) {
         this.worldID = world.getName();
@@ -75,6 +77,8 @@ public class QLocation {
         if (section.contains("d")) {
             dungeonID = section.getString("d");
         }
+        randomXZ = section.getDouble("randomxz", 0);
+        randomY = section.getDouble("randomy", 0);
         if (section.getString("x").contains("~")) {
             isRelative = true;
             x = Double.parseDouble(section.getString("x").replace("~", ""));
@@ -94,6 +98,8 @@ public class QLocation {
         if (section.contains("d")) {
             dungeonID = section.getString("d");
         }
+        randomXZ = section.getDouble("randomxz", 0);
+        randomY = section.getDouble("randomy", 0);
         if (section.getString("x").contains("~")) {
             isRelative = true;
             x = Double.parseDouble(section.getString("x").replace("~", ""));
@@ -111,6 +117,14 @@ public class QLocation {
      * @return A Bukkit location, relative to the given location if the QLocation is relative
      */
     public Location get(Location location) {
+        double x = this.x;
+        double y = this.y;
+        double z = this.z;
+        if (randomXZ != 0 || randomY != 0) {
+            x += Math.random() * randomXZ - randomXZ / 2;
+            y += Math.random() * randomY - randomY / 2;
+            z += Math.random() * randomXZ - randomXZ / 2;
+        }
         if (isRelative) {
             return location.clone().add(x, y, z);
         }
@@ -152,12 +166,24 @@ public class QLocation {
         return x;
     }
 
+    public double getX(Location location) {
+        return get(location).getX();
+    }
+
     public double getY() {
         return y;
     }
 
+    public double getY(Location location) {
+        return get(location).getY();
+    }
+
     public double getZ() {
         return z;
+    }
+
+    public double getZ(Location location) {
+        return get(location).getZ();
     }
 
     public String getWorldID() {

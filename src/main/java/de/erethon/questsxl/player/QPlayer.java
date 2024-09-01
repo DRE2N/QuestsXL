@@ -88,8 +88,10 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
         CraftPlayer craftPlayer = (CraftPlayer) player;
         serverPlayer = craftPlayer.getHandle();
         GlobalObjectives globalObjectives = QuestsXL.getInstance().getGlobalObjectives();
-        for (QObjective objective : globalObjectives.getObjectives()) {
-            currentObjectives.add(new ActiveObjective(this, globalObjectives, globalObjectives.getStages().getFirst(), objective));
+        if (globalObjectives != null) {
+            for (QObjective objective : globalObjectives.getObjectives()) {
+                currentObjectives.add(new ActiveObjective(this, globalObjectives, globalObjectives.getStages().getFirst(), objective));
+            }
         }
         defaultLoadProcess();
         MessageUtil.sendMessage(player, "&2[QXL] &7Loaded " + currentObjectives.size() + " objectives.");

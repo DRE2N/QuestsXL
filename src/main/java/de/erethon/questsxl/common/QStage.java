@@ -162,7 +162,9 @@ public class QStage {
         if (section.contains("conditions")) {
             conditions.addAll((Collection<? extends QCondition>) QConfigLoader.load("conditions", section, QRegistries.CONDITIONS));
         }
-        goals.addAll((Collection<? extends QObjective>) QConfigLoader.load("objectives", section, QRegistries.OBJECTIVES));
+        if (section.contains("objectives")) {
+            goals.addAll((Collection<? extends QObjective>) QConfigLoader.load("objectives", section, QRegistries.OBJECTIVES));
+        }
         if (section.contains("onStart")) {
             startActions.addAll((Collection<? extends QAction>) QConfigLoader.load("onStart", section, QRegistries.ACTIONS));
         }

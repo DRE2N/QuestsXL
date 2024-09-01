@@ -17,7 +17,8 @@ public class QLineConfig {
     }
 
     private void parse() {
-        String[] pairs = input.split(";");
+        String cleanedInput = input.trim().replaceAll("\\s*=\\s*", "=").replaceAll(";\\s*", ";");// Remove spaces around = and after ;
+        String[] pairs = cleanedInput.split(";");
         for (String pair : pairs) {
             String[] keyValue = pair.split("=");
             if (keyValue.length == 2) {

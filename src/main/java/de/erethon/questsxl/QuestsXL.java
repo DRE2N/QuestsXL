@@ -2,7 +2,6 @@ package de.erethon.questsxl;
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import de.erethon.aergia.Aergia;
-import de.erethon.aergia.scoreboard.ScoreboardLines;
 import de.erethon.aether.Aether;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.compatibility.Internals;
@@ -14,11 +13,11 @@ import de.erethon.hephaestus.items.HItemLibrary;
 import de.erethon.questsxl.animation.AnimationManager;
 import de.erethon.questsxl.command.QCommandCache;
 import de.erethon.questsxl.common.QRegistries;
-import de.erethon.questsxl.common.QRegistry;
 import de.erethon.questsxl.dialogue.QDialogueManager;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.global.GlobalObjectives;
 import de.erethon.questsxl.instancing.BlockCollectionManager;
+import de.erethon.questsxl.listener.AetherListener;
 import de.erethon.questsxl.listener.PlayerJobListener;
 import de.erethon.questsxl.listener.PlayerListener;
 import de.erethon.questsxl.livingworld.QEventManager;
@@ -43,13 +42,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public final class QuestsXL extends EPlugin implements Listener {
+public final class QuestsXL extends EPlugin {
 
     static QuestsXL instance;
     public static String ERROR = "<dark_gray>[<red><bold>!<!bold><dark_gray>]<gray> ";
@@ -78,6 +76,7 @@ public final class QuestsXL extends EPlugin implements Listener {
     private GlobalObjectives globalObjectives;
     private PlayerListener playerListener;
     private PlayerJobListener playerJobListener;
+    private AetherListener aetherListener;
 
     private final Map<String, Integer> scores = new HashMap<>();
     private final List<FriendlyError> errors = new ArrayList<>();
@@ -199,16 +198,19 @@ public final class QuestsXL extends EPlugin implements Listener {
 
         playerListener = new PlayerListener();
 
-        getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(playerListener, this);
 
         // dependency listeners
-        if (jobsXL != null) {
+        if (isJXLEnabled()) {
             playerJobListener = new PlayerJobListener();
             getServer().getPluginManager().registerEvents(playerJobListener, this);
         }
-        if (aergia != null) {
+        if (isAergiaEnabled()) {
             //aergia.getEScoreboard().addScores(new QuestScoreboardLines());
+        }
+        if (isAetherEnabled()) {
+            aetherListener = new AetherListener();
+            getServer().getPluginManager().registerEvents(aetherListener, this);
         }
     }
 
