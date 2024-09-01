@@ -119,6 +119,10 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
         timeLastCompleted = System.currentTimeMillis();
     }
 
+    public void setState(EventState state) {
+        this.state = state;
+    }
+
     public void update() {
         switch (state) {
             case ACTIVE -> {
@@ -271,7 +275,6 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
         ConfigurationSection rewardSection = cfg.getConfigurationSection("rewards");
         if (rewardSection == null) {
             MessageUtil.log("Event " + id + " does not contain any rewards!");
-            return;
         }
         for (String key : rewardSection.getKeys(false)) {
             ConfigurationSection rewardEntry = rewardSection.getConfigurationSection(key);
@@ -368,6 +371,26 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
     @Override
     public Location getLocation() {
         return centerLocation;
+    }
+
+    public int getRange() {
+        return range;
+    }
+
+    public QStage getCurrentStage() {
+        return currentStage;
+    }
+
+    public QPlayer getTopPlayer() {
+        QPlayer top = null;
+        int topScore = 0;
+        for (Map.Entry<QPlayer, Integer> entry : eventParticipation.entrySet()) {
+            if (entry.getValue() > topScore) {
+                top = entry.getKey();
+                topScore = entry.getValue();
+            }
+        }
+        return top;
     }
 
     public String getObjectiveDisplayText() {
