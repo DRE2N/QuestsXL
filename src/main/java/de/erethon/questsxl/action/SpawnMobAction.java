@@ -26,23 +26,24 @@ public class SpawnMobAction extends QBaseAction {
     @Override
     public void play(QPlayer player) {
         if (!conditions(player)) return;
-        ActiveNPC activeNPC = new ActiveNPC(npcData);
-        activeNPC.spawn(location.get(player.getLocation()));
+        npcData.spawn(location.get(player.getPlayer().getLocation()));
         onFinish(player);
     }
 
     @Override
     public void play(QEvent event) {
         if (!conditions(event)) return;
-        ActiveNPC activeNPC = new ActiveNPC(npcData);
-        activeNPC.spawn(location.get(event.getLocation()));
+        npcData.spawn(location.get(event.getLocation()));
         onFinish(event);
     }
 
     @Override
     public void load(QLineConfig cfg) {
-        npcData = creatureManager.getByID(cfg.getString("id"));
         location = new QLocation(cfg);
+        npcData = creatureManager.getByID(cfg.getString("id"));
+        if (npcData == null) {
+            throw new IllegalArgumentException("NPCData with id " + cfg.getString("id") + " not found.");
+        }
     }
 
     @Override
@@ -50,5 +51,8 @@ public class SpawnMobAction extends QBaseAction {
         super.load(section);
         location = new QLocation(section);
         npcData = creatureManager.getByID(section.getString("id"));
+        if (npcData == null) {
+            throw new IllegalArgumentException("NPCData with id " + section.getString("id") + " not found.");
+        }
     }
 }
