@@ -56,7 +56,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
 
     private Location centerLocation = null;
 
-    long timeLastCompleted;
+    private long timeLastCompleted;
 
     private QStage currentStage;
 
@@ -229,7 +229,6 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
         this.centerLocation = centerLocation;
     }
 
-
     public void participate(@NotNull QPlayer player, int amount) {
         eventParticipation.put(player, amount);
     }
@@ -263,8 +262,6 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
         if (cfg.contains("startConditions")) {
             startConditions.addAll((Collection<? extends QCondition>) QConfigLoader.load("startConditions", cfg, QRegistries.CONDITIONS));
         }
-
-        state = EventState.valueOf(cfg.getString("state.state", "NOT_STARTED"));
 
         if (cfg.contains("onUpdate")) {
             updateActions.addAll((Collection<? extends QAction>) QConfigLoader.load("onUpdate", cfg, QRegistries.ACTIONS));
@@ -308,12 +305,22 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
             stages.add(stage);
         }
 
+        // Restore state
+        state = EventState.valueOf(cfg.getString("state.state", "NOT_STARTED"));
+        int currentStageID = cfg.getInt("state.currentStage", 0);
+        if (currentStageID != 0) {
+            currentStage = stages.get(currentStageID);
+        }
+        timeLastCompleted = cfg.getInt("state.timeLastCompleted", 0);
+
         isValid = true;
         MessageUtil.log("Loaded event " + id + " with " + stages.size() + " at " + centerLocation.getWorld().getName() + " / " + centerLocation.getX() + " / " + centerLocation.getY() + " / " + centerLocation.getZ());
     }
 
     public void save() {
-
+        cfg.set("state.state", state.name());
+        cfg.set("state.currentStage", currentStage.getId());
+        cfg.set("state.timeLastCompleted", timeLastCompleted);
     }
 
     public boolean isValid() {
