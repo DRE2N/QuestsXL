@@ -53,14 +53,17 @@ public class QRegistries {
         ACTIONS.register("talk", TalkAction::new);
         ACTIONS.register("teleport", TeleportPlayerAction::new);
         if (qxl.isWEEnabled()) {
+            MessageUtil.log("Found WorldEdit, enabling WorldEdit actions.");
             ACTIONS.register("paste_schematic", PasteSchematicAction::new);
         }
         if (qxl.isAetherEnabled()) {
+            MessageUtil.log("Found Aether, enabling Aether actions.");
             ACTIONS.register("spawn_mob", SpawnMobAction::new);
             ACTIONS.register("mob_follow", MobFollowPlayerAction::new);
             ACTIONS.register("spawner", SpawnerAction::new);
         }
         if (qxl.isAetherEnabled()) {
+            MessageUtil.log("Found JobsXL, enabling JobsXL actions.");
             ACTIONS.register("job_exp", JobExpAction::new);
         }
     }
@@ -81,9 +84,11 @@ public class QRegistries {
         CONDITIONS.register("region", RegionCondition::new);
         CONDITIONS.register("time", TimeCondition::new);
         if (qxl.isAergiaEnabled()) {
+            MessageUtil.log("Found Aergia, enabling Aergia conditions.");
             CONDITIONS.register("group_size", GroupSizeCondition::new);
         }
         if (qxl.isJXLEnabled()) {
+            MessageUtil.log("Found JobsXL, enabling JobsXL conditions.");
             CONDITIONS.register("job_level", JobLevelCondition::new);
         }
     }
@@ -105,13 +110,16 @@ public class QRegistries {
         OBJECTIVES.register("take_damage", TakeDamageObjective::new);
         OBJECTIVES.register("wait", WaitObjective::new);
         if (qxl.isAetherEnabled()) {
+            MessageUtil.log("Found Aether, enabling Aether objectives.");
             OBJECTIVES.register("escort_mob", EscortNPCObjective::new);
             OBJECTIVES.register("kill_mob", KillMobObjective::new);
         }
         if (qxl.isJXLEnabled()) {
+            MessageUtil.log("Found JobsXL, enabling JobsXL objectives.");
             OBJECTIVES.register("craft", CraftObjective::new);
         }
         if (qxl.isHephaestusEnabled()) {
+            MessageUtil.log("Found Hephaestus, enabling Hephaestus objectives.");
             OBJECTIVES.register("consume_item", ConsumeItemObjective::new);
             OBJECTIVES.register("drop_item", DropItemObjective::new);
             OBJECTIVES.register("item_pickup", ItemPickupObjective::new);

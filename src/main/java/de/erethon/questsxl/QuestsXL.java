@@ -114,19 +114,7 @@ public final class QuestsXL extends EPlugin implements Listener {
         gitToken = gitConfig.getString("token");
         gitBranch = gitConfig.getString("branch");
         folders = gitConfig.getStringList("folders");
-        QRegistries.init();
-        initFolder(getDataFolder());
-        initFolder(QUESTS = new File(getDataFolder(), "quests"));
-        initFolder(EVENTS = new File(getDataFolder(), "events"));
-        initFolder(PLAYERS = new File(getDataFolder(), "players"));
-        initFolder(ANIMATIONS = new File(getDataFolder(), "animations"));
-        initFolder(IBCS = new File(getDataFolder(), "blocks"));
-        initFolder(SCHEMATICS = new File(getDataFolder(), "schematics"));
-        initFolder(DIALOGUES = new File(getDataFolder(), "dialogues"));
-
-        initFile(REGIONS = new File(getDataFolder(), "regions.yml"));
-        initFile(RESPAWNS = new File(getDataFolder(), "respawnPoints.yml"));
-        initFile(GLOBAL_OBJ = new File(getDataFolder(), "globalObjectives.yml"));
+        // Check for dependencies
         if (getServer().getPluginManager().getPlugin("Aergia") != null) {
             aergia = (Aergia) getServer().getPluginManager().getPlugin("Aergia");
         }
@@ -139,6 +127,22 @@ public final class QuestsXL extends EPlugin implements Listener {
         if (getServer().getPluginManager().getPlugin("Hephaestus") != null) {
             hephaestus = (Hephaestus) getServer().getPluginManager().getPlugin("Hephaestus");
         }
+        // Initialize QRegistries
+        QRegistries.init();
+
+        // Now we can start loading content
+        initFolder(getDataFolder());
+        initFolder(QUESTS = new File(getDataFolder(), "quests"));
+        initFolder(EVENTS = new File(getDataFolder(), "events"));
+        initFolder(PLAYERS = new File(getDataFolder(), "players"));
+        initFolder(ANIMATIONS = new File(getDataFolder(), "animations"));
+        initFolder(IBCS = new File(getDataFolder(), "blocks"));
+        initFolder(SCHEMATICS = new File(getDataFolder(), "schematics"));
+        initFolder(DIALOGUES = new File(getDataFolder(), "dialogues"));
+
+        initFile(REGIONS = new File(getDataFolder(), "regions.yml"));
+        initFile(RESPAWNS = new File(getDataFolder(), "respawnPoints.yml"));
+        initFile(GLOBAL_OBJ = new File(getDataFolder(), "globalObjectives.yml"));
         qPlayerCache = new QPlayerCache(this);
         MessageUtil.log(" ");
         MessageUtil.log(" ");
