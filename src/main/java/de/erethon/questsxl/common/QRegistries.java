@@ -90,24 +90,19 @@ public class QRegistries {
 
     private static void initObjectives() {
         OBJECTIVES.register("block_interact", BlockInteractObjective::new);
-        OBJECTIVES.register("consume_item", ConsumeItemObjective::new);
         OBJECTIVES.register("death", DeathObjective::new);
-        OBJECTIVES.register("drop_item", DropItemObjective::new);
         OBJECTIVES.register("enter_region", EnterRegionObjective::new);
         OBJECTIVES.register("entity_interact", EntityInteractObjective::new);
         OBJECTIVES.register("experience", ExperienceObjective::new);
         OBJECTIVES.register("feed_mob", FeedMobObjective::new);
         OBJECTIVES.register("impossible", ImpossibleObjective::new);
         OBJECTIVES.register("instant", InstantObjective::new);
-        OBJECTIVES.register("item_pickup", ItemPickupObjective::new);
         OBJECTIVES.register("kill_player", KillPlayerObjective::new);
         OBJECTIVES.register("leave_region", LeaveRegionObjective::new);
         OBJECTIVES.register("location", LocationObjective::new);
         OBJECTIVES.register("mythic_mob", MythicMobObjective::new);
-        OBJECTIVES.register("place_item", PlaceItemInContainerObjective::new);
         OBJECTIVES.register("server_command", ServerCommandObjective::new);
         OBJECTIVES.register("take_damage", TakeDamageObjective::new);
-        OBJECTIVES.register("use_item", UseItemObjective::new);
         OBJECTIVES.register("wait", WaitObjective::new);
         if (qxl.isAetherEnabled()) {
             OBJECTIVES.register("escort_mob", EscortNPCObjective::new);
@@ -115,6 +110,13 @@ public class QRegistries {
         }
         if (qxl.isJXLEnabled()) {
             OBJECTIVES.register("craft", CraftObjective::new);
+        }
+        if (qxl.isHephaestusEnabled()) {
+            OBJECTIVES.register("consume_item", ConsumeItemObjective::new);
+            OBJECTIVES.register("drop_item", DropItemObjective::new);
+            OBJECTIVES.register("item_pickup", ItemPickupObjective::new);
+            OBJECTIVES.register("place_item", PlaceItemInContainerObjective::new);
+            OBJECTIVES.register("use_item", UseItemObjective::new);
         }
     }
 }

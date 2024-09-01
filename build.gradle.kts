@@ -32,18 +32,18 @@ val papyrusVersion = "1.21.1-R0.1-SNAPSHOT"
 
 dependencies {
     paperweight.devBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true }
+    implementation("de.erethon:bedrock:1.4.0") { isTransitive = false }
+    // Objectives
     compileOnly("de.erethon.aether:Aether:1.0.0-SNAPSHOT")
     compileOnly("de.erethon.aergia:Aergia:1.0.0-SNAPSHOT") { isTransitive = false }
     compileOnly("de.fyreum:JobsXL:1.0-SNAPSHOT") { isTransitive = false }
-    // Why... just why.
-   /* compileOnly("de.erethon.dungeonsxl:dungeonsxl-api:0.18-PRE-02") {
-        exclude(group = "net.kyori.adventure.text", module = "minimessage")
-    }*/
-    implementation("de.erethon:bedrock:1.4.0") { isTransitive = false }
+    compileOnly("de.erethon.hephaestus:Hephaestus:1.0-SNAPSHOT")
+    // Sync
     implementation("org.eclipse.jgit:org.eclipse.jgit:6.4.0.202211300538-r")
+    // Schematic actions
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.3.0") { isTransitive = false }
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.3.0") { isTransitive = false }
-    compileOnly("com.github.MilkBowl:VaultAPI:1.7") { isTransitive = false }
+    compileOnly("com.github.MilkBowl:VaultAPI:1.7") { isTransitive = false } // idk what we use this for tbh
 }
 
 publishing {
