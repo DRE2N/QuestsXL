@@ -24,7 +24,10 @@ public class QEventManager {
     public void load(File file)  {
         events.clear();
         for (File file1 : file.listFiles()) {
-            events.add(new QEvent(file1));
+            QEvent event = new QEvent(file1);
+            if (event.isValid()) {
+                events.add(event);
+            }
         }
         MessageUtil.log("Loaded " + events.size() + " events.");
     }

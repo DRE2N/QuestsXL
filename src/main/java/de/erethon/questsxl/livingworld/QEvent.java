@@ -29,27 +29,28 @@ import java.util.*;
 
 public class QEvent implements Completable, ObjectiveHolder, Scorable {
 
-    QPlayerCache playerCache = QuestsXL.getInstance().getPlayerCache();
+    private final QPlayerCache playerCache = QuestsXL.getInstance().getPlayerCache();
 
-    File file;
-    YamlConfiguration cfg;
+    private File file;
+    private final YamlConfiguration cfg;
+    private boolean isValid;
 
-    String id;
-    List<QStage> stages = new ArrayList<>();
-    List<QAction> updateActions = new ArrayList<>();
-    Set<QCondition> startConditions = new HashSet<>();
+    private final String id;
+    private final List<QStage> stages = new ArrayList<>();
+    private final List<QAction> updateActions = new ArrayList<>();
+    private final Set<QCondition> startConditions = new HashSet<>();
 
-    Map<Integer, Set<QAction>> rewards = new HashMap<>();
+    private final Map<Integer, Set<QAction>> rewards = new HashMap<>();
 
-    Set<ActiveObjective> currentObjectives = new HashSet<>();
+    private final Set<ActiveObjective> currentObjectives = new HashSet<>();
 
     private String objectiveDisplayText;
 
-    int cooldown;
+    private int cooldown;
 
-    int range;
+    private int range;
 
-    EventState state;
+    private EventState state;
 
     private final Map<String, Integer> scores = new HashMap<>();
 
@@ -57,7 +58,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
 
     long timeLastCompleted;
 
-    QStage currentStage;
+    private QStage currentStage;
 
     // State - runtime stuff
     private Set<QPlayer> playersInRange = new HashSet<>();
@@ -70,6 +71,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
         cfg = YamlConfiguration.loadConfiguration(file);
         if (cfg.getKeys(false).size() == 0) {
             QuestsXL.getInstance().getErrors().add(new FriendlyError("Event: " + this.getName(), "Datei ungültig.", "Datei " + file.getName() + " ist ungültig.", "Wahrscheinlich falsche Einrückung."));
+            isValid = false;
             return;
         }
         load();
@@ -306,11 +308,16 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
             stages.add(stage);
         }
 
+        isValid = true;
         MessageUtil.log("Loaded event " + id + " with " + stages.size() + " at " + centerLocation.getWorld().getName() + " / " + centerLocation.getX() + " / " + centerLocation.getY() + " / " + centerLocation.getZ());
     }
 
     public void save() {
 
+    }
+
+    public boolean isValid() {
+        return isValid;
     }
 
     @Override

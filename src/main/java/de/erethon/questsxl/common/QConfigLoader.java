@@ -72,7 +72,7 @@ public class QConfigLoader {
                 }
                 continue;
             }
-            QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Unknown type: " + key, key, "Path:\n" + section.getCurrentPath() + "." + key + "\n Maybe the type is not loaded in the registry."));
+            QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Unknown type: " + key + " (Format: MultiLine)", key, "Path:\n" + section.getCurrentPath() + "." + key + "\n Maybe the type is not loaded in the registry."));
         }
         return loadables;
     }
@@ -98,7 +98,7 @@ public class QConfigLoader {
                 }
                 continue;
             }
-            QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Unknown type: " + s, s, "Path:\n" + id + "\n Maybe the type is not loaded in the registry."));
+            QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Unknown type: " + s + "(Format: SingleLine)", s, "Path:\n" + id + "\n Maybe the type is not loaded in the registry."));
         }
         return loadables;
     }
