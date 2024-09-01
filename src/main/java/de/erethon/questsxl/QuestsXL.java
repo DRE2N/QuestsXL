@@ -8,6 +8,9 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.compatibility.Internals;
 import de.erethon.bedrock.plugin.EPlugin;
 import de.erethon.bedrock.plugin.EPluginSettings;
+import de.erethon.hephaestus.Hephaestus;
+import de.erethon.hephaestus.blocks.HBlockLibrary;
+import de.erethon.hephaestus.items.HItemLibrary;
 import de.erethon.questsxl.animation.AnimationManager;
 import de.erethon.questsxl.command.QCommandCache;
 import de.erethon.questsxl.common.QRegistries;
@@ -63,37 +66,38 @@ public final class QuestsXL extends EPlugin implements Listener {
     public static File DIALOGUES;
     public long lastSync = 0;
 
-    QPlayerCache qPlayerCache;
-    RespawnPointManager respawnPointManager;
-    QuestManager questManager;
-    QEventManager eventManager;
-    QRegionManager regionManager;
-    AnimationManager animationManager;
-    BlockCollectionManager blockCollectionManager;
-    QDialogueManager dialogueManager;
-    QCommandCache commandCache;
-    GlobalObjectives globalObjectives;
-    PlayerListener playerListener;
-    PlayerJobListener playerJobListener;
+    private QPlayerCache qPlayerCache;
+    private RespawnPointManager respawnPointManager;
+    private QuestManager questManager;
+    private QEventManager eventManager;
+    private QRegionManager regionManager;
+    private AnimationManager animationManager;
+    private BlockCollectionManager blockCollectionManager;
+    private QDialogueManager dialogueManager;
+    private QCommandCache commandCache;
+    private GlobalObjectives globalObjectives;
+    private PlayerListener playerListener;
+    private PlayerJobListener playerJobListener;
 
     private final Map<String, Integer> scores = new HashMap<>();
     private final List<FriendlyError> errors = new ArrayList<>();
     private boolean showStacktraces = true;
 
-    File gitConfig = new File(Bukkit.getPluginsFolder().getParent(), "gitConfig.yml");
-    List<String> folders;
+    private File gitConfig = new File(Bukkit.getPluginsFolder().getParent(), "gitConfig.yml");
+    private List<String> folders;
 
-    String gitToken;
-    String gitBranch;
+    private String gitToken;
+    private String gitBranch;
 
     boolean gitSync = true;
 
-    Aergia aergia;
-    Aether aether;
-    JobsXL jobsXL;
+    private Aergia aergia;
+    private Aether aether;
+    private JobsXL jobsXL;
 
     //DungeonsAPI dungeonsAPI;
-    WorldEditPlugin worldEditPlugin;
+    private WorldEditPlugin worldEditPlugin;
+    private Hephaestus hephaestus;
 
     public QuestsXL() {
         settings = EPluginSettings.builder()
@@ -132,9 +136,9 @@ public final class QuestsXL extends EPlugin implements Listener {
         if (getServer().getPluginManager().getPlugin("JobsXL") != null) {
             jobsXL = (JobsXL) getServer().getPluginManager().getPlugin("JobsXL");
         }
-        /*if (getServer().getPluginManager().getPlugin("DungeonsXL") != null) {
-            dungeonsAPI = (DungeonsAPI) getServer().getPluginManager().getPlugin("DungeonsXL");
-        }*/
+        if (getServer().getPluginManager().getPlugin("Hephaestus") != null) {
+            hephaestus = (Hephaestus) getServer().getPluginManager().getPlugin("Hephaestus");
+        }
         qPlayerCache = new QPlayerCache(this);
         MessageUtil.log(" ");
         MessageUtil.log(" ");
@@ -253,9 +257,13 @@ public final class QuestsXL extends EPlugin implements Listener {
         return jobsXL;
     }
 
-    /*public DungeonsAPI getDungeonsAPI() {
-        return dungeonsAPI;
-    }*/
+    public HItemLibrary getItemLibrary() {
+        return hephaestus.getLibrary();
+    }
+
+    public HBlockLibrary getBlockLibrary() {
+        return hephaestus.getBlockLibrary();
+    }
 
     public QRegionManager getRegionManager() {
         return regionManager;
@@ -297,6 +305,10 @@ public final class QuestsXL extends EPlugin implements Listener {
 
     public boolean isJXLEnabled() {
         return jobsXL != null && jobsXL.isEnabled();
+    }
+
+    public boolean isHephaestusEnabled() {
+        return hephaestus != null && hephaestus.isEnabled();
     }
 
     public boolean isRunningPapyrus() {

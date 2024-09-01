@@ -10,6 +10,7 @@ import de.erethon.questsxl.common.Completable;
 import de.erethon.questsxl.common.ObjectiveHolder;
 import de.erethon.questsxl.common.Scorable;
 import de.erethon.questsxl.dialogue.ActiveDialogue;
+import de.erethon.questsxl.global.GlobalObjectives;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.objective.ActiveObjective;
 import de.erethon.questsxl.objective.QObjective;
@@ -29,6 +30,7 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -85,8 +87,9 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
         this.player = player;
         CraftPlayer craftPlayer = (CraftPlayer) player;
         serverPlayer = craftPlayer.getHandle();
-        for (QObjective objective : QuestsXL.getInstance().getGlobalObjectives().getObjectives()) {
-            currentObjectives.add(new ActiveObjective(this, null, objective));
+        GlobalObjectives globalObjectives = QuestsXL.getInstance().getGlobalObjectives();
+        for (QObjective objective : globalObjectives.getObjectives()) {
+            currentObjectives.add(new ActiveObjective(this, globalObjectives, globalObjectives.getStages().getFirst(), objective));
         }
         defaultLoadProcess();
         MessageUtil.sendMessage(player, "&2[QXL] &7Loaded " + currentObjectives.size() + " objectives.");
@@ -170,12 +173,15 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
                 activeQuests.put(new ActiveQuest(this, quest, currentStage), started);
             }
         }
+        loadProgress(config);
         super.load(); // Important to still call this! Else the container won't work properly.
     }
+
 
     @Override
     public void saveData() {
         activeQuests.forEach((quest, started) -> config.set("activeQuests." + quest.getQuest().getName(), Map.of("currentStage", quest.getCurrentStage(), "started", started)));
+        saveProgress(config);
         super.saveData(); // Important to still call this! Else the container won't work properly.
     }
 
