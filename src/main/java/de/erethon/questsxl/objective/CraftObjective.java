@@ -16,18 +16,19 @@ public class CraftObjective extends QBaseObjective {
         if (e instanceof CraftItemEvent event) { // default crafting
             Player player = (Player) event.getWhoClicked();
             if (conditions(player) && event.getRecipe().getResult().getType().name().equalsIgnoreCase(id)) {
-                checkCompletion(active, this);
+                checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(player));
             }
         } else if (e instanceof UserCraftItemEvent event) { // job crafting
             Player player = event.getUser().getPlayer();
             if (conditions(player) && event.getResult().getId().equalsIgnoreCase(id)) {
-                checkCompletion(active, this);
+                checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(player));
             }
         }
     }
 
     @Override
     public void load(QLineConfig section) {
+        super.load(section);
         id = section.getString("id");
     }
 

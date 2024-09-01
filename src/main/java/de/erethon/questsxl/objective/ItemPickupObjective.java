@@ -24,7 +24,7 @@ public class ItemPickupObjective extends QBaseObjective {
         HItem item = itemLibrary.get(e.getItem().getItemStack()).getItem();
         if (item == null) return;
         if (item.getKey().equals(itemID)) {
-            complete(active.getHolder(), this);
+            checkCompletion(active, this, plugin.getPlayerCache().getByPlayer((Player) e.getEntity()));
             if (cancel) {
                 e.setCancelled(true);
             }
@@ -33,6 +33,7 @@ public class ItemPickupObjective extends QBaseObjective {
 
     @Override
     public void load(QLineConfig section) {
+        super.load(section);
         itemID = NamespacedKey.fromString(section.getString("item"));
         cancel = section.getBoolean("cancel", false);
     }

@@ -25,12 +25,13 @@ public class JobExpObjective extends QBaseObjective {
         }
         alreadyGained += event.getAmount();
         if (alreadyGained >= amount) {
-            checkCompletion(active, this);
+            checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(player));
         }
     }
 
     @Override
     public void load(QLineConfig section) {
+        super.load(section);
         amount = section.getInt("amount");
         if (amount <= 0) {
             throw new RuntimeException("The job exp objective in " + section + " contains a negative experience amount.");

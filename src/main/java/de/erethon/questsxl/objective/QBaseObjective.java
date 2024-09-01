@@ -33,7 +33,7 @@ public abstract class QBaseObjective implements QObjective {
     private boolean persistent = false;
     private boolean isGlobal = false;
 
-    protected int progressGoal = 0;
+    protected int progressGoal = 1;
 
     /**
      * Checks for the conditions of this objective. If all conditions are met, the objective can be completed.
@@ -55,7 +55,10 @@ public abstract class QBaseObjective implements QObjective {
         return true;
     }
 
-    protected void checkCompletion(ActiveObjective active, QObjective objective) {
+    protected void checkCompletion(ActiveObjective active, QObjective objective, ObjectiveHolder instigator) {
+        active.addProgress(1);
+        progress(active.getHolder(), instigator);
+        MessageUtil.log("Progress: " + active.getProgress() + " Goal: " + progressGoal);
         if (active.getProgress() >= progressGoal) {
             complete(active.getHolder(), objective);
         }
@@ -71,6 +74,7 @@ public abstract class QBaseObjective implements QObjective {
     protected void complete(ObjectiveHolder holder, QObjective obj) {
         MessageUtil.log("Checking for completion for " + holder.getName());
         Iterator<ActiveObjective> iterator = holder.getCurrentObjectives().iterator();
+        HashSet<ActiveObjective> toRemove = new HashSet<>();
         while (iterator.hasNext()) {
             ActiveObjective activeObjective = iterator.next();
             MessageUtil.log("Active: Objective: " + activeObjective.getObjective().getClass().getName() + " Holder: " + activeObjective.getHolder().getName() + " | Objective: " + obj.getClass().getName() + " Holder: " + holder.getName());
@@ -81,10 +85,11 @@ public abstract class QBaseObjective implements QObjective {
                     activeObjective.getStage().checkCompleted(holder);
                 }
                 if (!persistent) {
-                    iterator.remove();
+                    toRemove.add(activeObjective);
                 }
             }
         }
+        holder.getCurrentObjectives().removeAll(toRemove);
         if (holder instanceof QPlayer qPlayer) {
             for (QAction action : successActions) {
                 action.play(qPlayer);
@@ -96,12 +101,22 @@ public abstract class QBaseObjective implements QObjective {
         }
     }
 
-    public void progress(ObjectiveHolder holder) {
+    public void progress(ObjectiveHolder holder, ObjectiveHolder instigator) {
+        for (QAction action : progressActions) {
+            if (instigator instanceof QPlayer player) {
+                action.play(player);
+            } else if (instigator instanceof QEvent event) {
+                action.play(event);
+            }
+        }
+    }
+
+    public void progress(ObjectiveHolder holder, Player player) {
         for (QAction action : progressActions) {
             if (holder instanceof QPlayer qPlayer) {
-                action.play((QPlayer) holder);
+                action.play(qPlayer);
             } else if (holder instanceof QEvent event) {
-                action.play((QEvent) holder);
+                action.play(event);
             }
         }
     }

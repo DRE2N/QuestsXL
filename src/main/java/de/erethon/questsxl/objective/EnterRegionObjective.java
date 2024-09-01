@@ -20,11 +20,12 @@ public class EnterRegionObjective extends QBaseObjective {
             return;
         }
         if (event.getRegion() == region) {
-            checkCompletion(active, this);
+            checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(event.getPlayer()));
         }
     }
 
     public void load(QLineConfig section) {
+        super.load(section);
         region = QuestsXL.getInstance().getRegionManager().getByID(section.getString("id"));
     }
 

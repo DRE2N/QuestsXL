@@ -14,13 +14,14 @@ public class ServerCommandObjective extends QBaseObjective {
         if (!(e instanceof CommandTriggerEvent event)) return;
         if (!conditions(event.getPlayer())) return;
         if (identifier.equals(event.getID())) {
-            checkCompletion(objective, this);
+            checkCompletion(objective, this, plugin.getPlayerCache().getByPlayer(event.getPlayer()));
         }
 
     }
 
     @Override
     public void load(QLineConfig section) {
+        super.load(section);
         identifier = section.getString("identifier");
     }
 

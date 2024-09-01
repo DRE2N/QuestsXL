@@ -8,7 +8,7 @@ public class InstantObjective extends QBaseObjective {
     @Override
     public void check(ActiveObjective active, Event event) {
         if (!(event instanceof QStageStartEvent)) return;
-        checkCompletion(active, this);
+        checkCompletion(active, this, null);
     }
 
 }

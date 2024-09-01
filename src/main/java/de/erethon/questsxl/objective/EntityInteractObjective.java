@@ -28,11 +28,12 @@ public class EntityInteractObjective extends QBaseObjective {
                 return;
             }
         }
-        checkCompletion(active, this);
+        checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(player));
     }
 
     @Override
     public void load(QLineConfig section) {
+        super.load(section);
         mob = section.getString("id");
     }
 

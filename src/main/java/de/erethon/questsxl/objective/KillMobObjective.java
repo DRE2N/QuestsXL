@@ -17,22 +17,27 @@ public class KillMobObjective extends QBaseObjective {
 
     @Override
     public void check(ActiveObjective active, Event e) {
-        MessageUtil.log("Checking entity death event...");
         if (e instanceof CreatureDeathEvent event) {
-            //check(event.getNpc().getNpc(), event.getKiller());
+            check(event.getNpc(), event.getKiller(), active);
         } else if (e instanceof InstancedCreatureDeathEvent event) {
-            //check(event.getNpc().getNpc(), event.getKiller());
+            check(event.getNpc().getNpc(), event.getKiller(), active);
         }
         if (e instanceof EntityDeathEvent event) {
-            if (event.getEntity().getType().name().equals(mob.toUpperCase())) {
-                progress(plugin.getPlayerCache().getByPlayer(event.getEntity().getKiller()));
-                checkCompletion(active, this);
+            if (event.getEntity().getType().name().equals(mob.toUpperCase()) && event.getEntity().getKiller() instanceof Player player) {
+                checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(player));
             }
+        }
+    }
+
+    private void check(NPCData npc, Player player, ActiveObjective active) {
+        if (npc.getID().equals(mob)) {
+            checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(player));
         }
     }
 
     @Override
     public void load(QLineConfig section) {
+        super.load(section);
         mob = section.getString("id");
     }
 

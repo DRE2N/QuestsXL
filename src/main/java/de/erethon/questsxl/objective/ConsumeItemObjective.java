@@ -22,12 +22,13 @@ public class ConsumeItemObjective extends QBaseObjective {
         HItem item = itemLibrary.get(e.getItem()).getItem();
         if (item == null) return;
         if (item.getKey().equals(itemID)) {
-            checkCompletion(active, this);
+            checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(e.getPlayer()));
         }
     }
 
     @Override
     public void load(QLineConfig section) {
+        super.load(section);
         itemID = NamespacedKey.fromString(section.getString("item"));
     }
 

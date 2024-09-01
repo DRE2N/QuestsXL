@@ -7,7 +7,6 @@ import org.bukkit.event.Event;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 public class KillPlayerObjective extends QBaseObjective {
-
     String player;
 
     @Override
@@ -19,12 +18,14 @@ public class KillPlayerObjective extends QBaseObjective {
         if (killer == null || !killer.getName().equalsIgnoreCase(player) || !conditions(killer)) {
             return;
         }
-        checkCompletion(active, this);
+
+        checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(event.getPlayer()));
 
     }
 
     @Override
     public void load(QLineConfig section) {
+        super.load(section);
         player = section.getString("player");
     }
 

@@ -68,5 +68,6 @@ public class EventCommand extends ECommand {
             MessageUtil.sendMessage(commandSender, "&7Top Player&8: &a" + event.getTopPlayer());
             return;
         }
+        MessageUtil.sendMessage(commandSender, QuestsXL.ERROR + "Bitte gebe eine gültige Aktion an: active, complete, disable, inactive, info");
     }
 }

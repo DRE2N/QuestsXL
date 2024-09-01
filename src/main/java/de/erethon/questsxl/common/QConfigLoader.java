@@ -33,7 +33,7 @@ public class QConfigLoader {
             QLoadable loadable;
             String type = null;
             // Format: <type>: <QLineConfig>
-            if (registry.isValid(key)) {
+            if (registry.isValid(key) && section.isString(key)) {
                 try {
                     loadable = registry.get(key).getClass().getDeclaredConstructor().newInstance();
                     loadable.load(new QLineConfig(section.getString(key)));
@@ -45,8 +45,8 @@ public class QConfigLoader {
                 continue;
             }
             // Format:
-            // blabla:
-            //  type: <type>
+            // blabla or <type>:
+            //  type: <type> (Optional)
             //  value: key
             if (section.isConfigurationSection(key)) {
                 ConfigurationSection subsection = section.getConfigurationSection(key);
@@ -55,6 +55,8 @@ public class QConfigLoader {
                 }
                 if (subsection.contains("type")) {
                     type = subsection.getString("type");
+                } else {
+                    type = subsection.getName();
                 }
                 if (type == null) {
                     QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Unknown type", type, "Path:\n" + section.getCurrentPath() + "." + key));
@@ -69,6 +71,8 @@ public class QConfigLoader {
                         QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Failed to load " + type + " " + key, e.getMessage(), "Path:\n" + section.getCurrentPath() + "." + key).addStacktrace(e.getStackTrace()));
                         e.printStackTrace();
                     }
+                } else {
+                    QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Unknown type: " + type, type, "Path:\n" + section.getCurrentPath() + "." + key + "\n Maybe the type is not loaded in the registry."));
                 }
                 continue;
             }
@@ -88,9 +92,11 @@ public class QConfigLoader {
             String type = s.split(":")[0];
             QLoadable loadable;
             if (registry.isValid(type)) {
+                MessageUtil.log("Loading " + type + " from " + s);
                 try {
                     loadable = registry.get(type).getClass().getDeclaredConstructor().newInstance();
                     loadable.load(new QLineConfig(s.replace(type + ":", "")));
+                    MessageUtil.log("Loadable: " + loadable);
                     loadables.add(loadable);
                 } catch (Exception e) {
                     QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Failed to load " + type, e.getMessage(), "Pfad:\n" + s).addStacktrace(e.getStackTrace()));

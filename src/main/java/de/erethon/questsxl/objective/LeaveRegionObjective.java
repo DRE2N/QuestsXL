@@ -16,12 +16,13 @@ public class LeaveRegionObjective extends QBaseObjective {
         if (!(e instanceof QRegionLeaveEvent event)) return;
         if (!conditions(event.getPlayer())) return;
         if (event.getRegion() == region) {
-            checkCompletion(active, this);
+            checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(event.getPlayer()));
         }
     }
 
     @Override
     public void load(QLineConfig section) {
+        super.load(section);
         region = QuestsXL.getInstance().getRegionManager().getByID(section.getString("id"));
     }
 

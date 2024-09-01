@@ -26,12 +26,13 @@ public class LocationObjective extends AbstractLocationBasedObjective {
             return;
         }
         if (event.getTo().distance(location.get(event.getTo())) <= distance) {
-            checkCompletion(active, this);
+            checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(event.getPlayer()));
         }
     }
 
     @Override
     public void load(QLineConfig section) {
+        super.load(section);
         location = new QLocation(section);
         distance = section.getInt("range", 2);
         if (distance <= 0) {

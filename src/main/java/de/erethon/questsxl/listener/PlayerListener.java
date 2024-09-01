@@ -1,14 +1,7 @@
 package de.erethon.questsxl.listener;
 
-import de.erethon.aether.events.CreatureDeathEvent;
-import de.erethon.aether.events.CreatureInteractEvent;
-import de.erethon.aether.events.InstancedCreatureDeathEvent;
-import de.erethon.aether.network.AetherPacketHandler;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.dialogue.ActiveDialogue;
-import de.erethon.questsxl.dialogue.QDialogue;
-import de.erethon.questsxl.dialogue.QDialogueManager;
 import de.erethon.questsxl.event.QRegionEnterEvent;
 import de.erethon.questsxl.event.QRegionLeaveEvent;
 import de.erethon.questsxl.objective.ActiveObjective;
@@ -19,10 +12,7 @@ import de.erethon.questsxl.region.RegionFlag;
 import io.netty.channel.ChannelPipeline;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.entity.CraftEntity;
-import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -39,7 +29,6 @@ public class PlayerListener extends AbstractListener {
 
     QuestsXL plugin = QuestsXL.getInstance();
     QRegionManager regionManager = plugin.getRegionManager();
-    QDialogueManager dialogueManager = plugin.getDialogueManager();
 
     @EventHandler
     public void onLogin(PlayerJoinEvent event) {
@@ -84,27 +73,6 @@ public class PlayerListener extends AbstractListener {
     }
 
     @EventHandler
-    public void onInteractCreature(CreatureInteractEvent event) {
-        String dialogueId = dialogueManager.getNPCRegistry().get(event.getID());
-        if (dialogueId == null) {
-            return;
-        }
-        QPlayer player = cache.getByPlayer(event.getPlayer());
-        ActiveDialogue activeDialogue = player.getActiveDialogue();
-        if (activeDialogue != null) {
-            if (!activeDialogue.getDialogue().getName().equals(dialogueId)) {
-                return;
-            }
-            activeDialogue.continueDialogue();
-            return;
-        }
-        QDialogue dialogue = dialogueManager.get(dialogueId);
-        if (dialogue.canStart(player)) {
-            dialogue.start(player);
-        }
-    }
-
-    @EventHandler
     public void onChat(AsyncChatEvent event) {
         QPlayer player = cache.getByPlayer(event.getPlayer());
         if (player.isInConversation()) {
@@ -135,16 +103,6 @@ public class PlayerListener extends AbstractListener {
             checkObjectives(killer, event);
         }
     }
-
-    /*@EventHandler
-    public void onCreatureDeath(CreatureDeathEvent event) {
-        //checkObjectives(event.getKiller(), event);
-    }*/
-
-    /*@EventHandler
-    public void onInstancedCreatureDeath(InstancedCreatureDeathEvent event) {
-        checkObjectives(event.getKiller(), event);
-    }*/
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {

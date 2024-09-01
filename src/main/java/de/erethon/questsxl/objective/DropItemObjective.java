@@ -32,6 +32,7 @@ public class DropItemObjective extends QBaseObjective {
 
     @Override
     public void load(QLineConfig section) {
+        super.load(section);
         itemID = NamespacedKey.fromString(section.getString("item"));
         cancel = section.getBoolean("cancel", false);
     }
