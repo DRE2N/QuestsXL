@@ -20,13 +20,10 @@ public abstract class AbstractListener implements Listener {
 
     void checkObjectives(Player player, Event event) {
         for (ActiveObjective objective : cache.getByPlayer(player).getCurrentObjectives()) {
-            MessageUtil.log("Checking objective for " + player.getName() + ": " + objective.getClass().getName());
             objective.check(event);
         }
         for (QEvent qEvent : eventManager.getActiveEvents()) {
-            MessageUtil.log("Event: " + qEvent.getName());
             for (ActiveObjective objective : qEvent.getCurrentObjectives()) {
-                MessageUtil.log("Checking objective for " + player.getName() + ": " + objective.getClass().getName() + " in event " + qEvent.getName());
                 objective.check(event);
             }
         }
