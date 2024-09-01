@@ -36,8 +36,7 @@ public class EventCommand extends ECommand {
             return;
         }
         if (args.length > 2 && args[2].equalsIgnoreCase("active")) {
-            event.setState(EventState.ACTIVE);
-            event.update();
+            event.startFromAction(true);
             MessageUtil.sendMessage(commandSender, "&7Das Event &a" + event.getName() + " &7ist nun aktiv");
             return;
         }

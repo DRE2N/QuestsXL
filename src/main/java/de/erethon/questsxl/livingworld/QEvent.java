@@ -272,24 +272,23 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
             updateActions.addAll((Collection<? extends QAction>) QConfigLoader.load("onUpdate", cfg, QRegistries.ACTIONS));
         }
 
-        ConfigurationSection rewardSection = cfg.getConfigurationSection("rewards");
-        if (rewardSection == null) {
-            MessageUtil.log("Event " + id + " does not contain any rewards!");
-        }
-        for (String key : rewardSection.getKeys(false)) {
-            ConfigurationSection rewardEntry = rewardSection.getConfigurationSection(key);
-            int id = Integer.parseInt(key);
-            Set<QLoadable> rewardSet = (Set<QLoadable>) QConfigLoader.load("rewards", rewardEntry, QRegistries.ACTIONS);
-            if (rewardSet == null) {
-                continue;
-            }
-            Set<QAction> actionSet = new HashSet<>();
-            for (QLoadable loadable : rewardSet) {
-                if (loadable instanceof QAction action) {
-                    actionSet.add(action);
+        if (cfg.contains("rewards")) {
+            ConfigurationSection rewardSection = cfg.getConfigurationSection("rewards");
+            for (String key : rewardSection.getKeys(false)) {
+                ConfigurationSection rewardEntry = rewardSection.getConfigurationSection(key);
+                int id = Integer.parseInt(key);
+                Set<QLoadable> rewardSet = (Set<QLoadable>) QConfigLoader.load("rewards", rewardEntry, QRegistries.ACTIONS);
+                if (rewardSet == null) {
+                    continue;
                 }
+                Set<QAction> actionSet = new HashSet<>();
+                for (QLoadable loadable : rewardSet) {
+                    if (loadable instanceof QAction action) {
+                        actionSet.add(action);
+                    }
+                }
+                rewards.put(id, actionSet);
             }
-            rewards.put(id, actionSet);
         }
 
         ConfigurationSection stageSection = cfg.getConfigurationSection("stages");
