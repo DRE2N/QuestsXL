@@ -20,7 +20,7 @@ public class EnterRegionObjective extends QBaseObjective {
             return;
         }
         if (event.getRegion() == region) {
-            complete(active.getHolder(), this);
+            checkCompletion(active, this);
         }
     }
 

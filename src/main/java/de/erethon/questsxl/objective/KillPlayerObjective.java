@@ -9,8 +9,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 public class KillPlayerObjective extends QBaseObjective {
 
     String player;
-    int amount;
-    int alreadyKilled = 0;
 
     @Override
     public void check(ActiveObjective active, Event e) {
@@ -21,25 +19,18 @@ public class KillPlayerObjective extends QBaseObjective {
         if (killer == null || !killer.getName().equalsIgnoreCase(player) || !conditions(killer)) {
             return;
         }
-        if (++alreadyKilled >= amount) {
-            complete(active.getHolder(), this);
-        }
+        checkCompletion(active, this);
+
     }
 
     @Override
     public void load(QLineConfig section) {
-        amount = section.getInt("amount");
-        if (amount <= 0) {
-            throw new RuntimeException("The kill player objective in " + section + " contains a negative amount.");
-        }
+        player = section.getString("player");
     }
 
     @Override
     public void load(ConfigurationSection section) {
         super.load(section);
-        amount = section.getInt("amount");
-        if (amount <= 0) {
-            throw new RuntimeException("The kill player objective in " + section.getName() + " contains a negative amount.");
-        }
+        player = section.getString("player");
     }
 }

@@ -28,7 +28,7 @@ public class EntityInteractObjective extends QBaseObjective {
                 return;
             }
         }
-        complete(active.getHolder(), this);
+        checkCompletion(active, this);
     }
 
     @Override

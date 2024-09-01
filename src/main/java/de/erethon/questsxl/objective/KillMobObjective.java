@@ -14,8 +14,6 @@ import org.bukkit.event.entity.EntityDeathEvent;
 public class KillMobObjective extends QBaseObjective {
 
     String mob;
-    int amount;
-    int alreadyKilled = 0;
 
     @Override
     public void check(ActiveObjective active, Event e) {
@@ -27,43 +25,20 @@ public class KillMobObjective extends QBaseObjective {
         }
         if (e instanceof EntityDeathEvent event) {
             if (event.getEntity().getType().name().equals(mob.toUpperCase())) {
-                alreadyKilled++;
                 progress(plugin.getPlayerCache().getByPlayer(event.getEntity().getKiller()));
-                MessageUtil.broadcastMessage("Killed mob. " + alreadyKilled + " / " + amount);
-                if (alreadyKilled >= amount) {
-                    complete(active.getHolder(), this);
-                }
+                checkCompletion(active, this);
             }
         }
-    }
-
-    private void check(NPCData npc, Player killer) {
-        if (npc.getID().equalsIgnoreCase(mob) && ++alreadyKilled >= amount) {
-            complete(plugin.getPlayerCache().getByPlayer(killer), this);
-        }
-    }
-
-    @Override
-    public void onStart(ObjectiveHolder player) {
-        alreadyKilled = 0;
     }
 
     @Override
     public void load(QLineConfig section) {
         mob = section.getString("id");
-        amount = section.getInt("amount");
-        if (amount <= 0) {
-            throw new RuntimeException("The kill objective in " + section + " contains a negative amount.");
-        }
     }
 
     @Override
     public void load(ConfigurationSection section) {
         super.load(section);
         mob = section.getString("id");
-        amount = section.getInt("amount");
-        if (amount <= 0) {
-            throw new RuntimeException("The kill objective in " + section.getName() + " contains a negative amount.");
-        }
     }
 }

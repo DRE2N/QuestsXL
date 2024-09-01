@@ -20,6 +20,7 @@ public interface QObjective extends Listener, QLoadable {
     Set<QAction> getFailActions();
     Set<QAction> getConditionFailActions();
     Set<QCondition> getConditions();
+    int getProgressGoal();
 
     void setGlobal(boolean global);
     boolean isGlobal();

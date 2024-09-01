@@ -7,25 +7,28 @@ import de.erethon.questsxl.player.QPlayer;
 
 public class ActiveQuest {
 
-    QuestsXL plugin = QuestsXL.getInstance();
+    private final QuestsXL plugin = QuestsXL.getInstance();
 
-    QPlayer player;
-    QQuest quest;
-    QStage currentStage;
+    private final QPlayer player;
+    private final QQuest quest;
+    private QStage currentStage;
 
-    String objectiveDisplayText;
+    private String objectiveDisplayText;
 
     public ActiveQuest(QPlayer player, QQuest quest) {
-        this(player, quest, 0);
+        this.player = player;
+        this.quest = quest;
+        QStage start = quest.getStages().get(0);
+        this.currentStage = start;
+        start.start(player);
+        MessageUtil.log("Created new activeQuest for " + player.getPlayer().getName() + " with " + quest.getStages().size() + " stages.");
     }
 
     public ActiveQuest(QPlayer player, QQuest quest, int stage) {
         this.player = player;
         this.quest = quest;
-        QStage start = quest.getStages().get(stage);
-        this.currentStage = start;
-        start.start(player);
-        MessageUtil.log("Created new activeQuest for " + player.getPlayer().getName() + " with " + quest.getStages().size() + " stages.");
+        this.currentStage = quest.getStages().get(stage);
+        MessageUtil.log("Loaded already started activeQuest for " + player.getPlayer().getName() + " with " + quest.getStages().size() + " stages.");
     }
 
     public void progress(QPlayer player) {

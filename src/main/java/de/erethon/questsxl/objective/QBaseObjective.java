@@ -12,6 +12,7 @@ import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -20,18 +21,19 @@ import java.util.Set;
 
 public abstract class QBaseObjective implements QObjective {
 
-    QuestsXL plugin = QuestsXL.getInstance();
-    String displayText;
-    Set<QAction> successActions = new HashSet<>();
-    Set<QAction> progressActions = new HashSet<>();
-    Set<QCondition> conditions = new HashSet<>();
-    Set<QAction> conditionFailActions = new HashSet<>();
-    Set<QAction> failActions = new HashSet<>();
-    boolean failed = false;
-    boolean optional = false;
-    boolean persistent = false;
-    boolean isGlobal = false;
+    protected final QuestsXL plugin = QuestsXL.getInstance();
+    private String displayText;
+    private final Set<QAction> successActions = new HashSet<>();
+    private final Set<QAction> progressActions = new HashSet<>();
+    private final Set<QCondition> conditions = new HashSet<>();
+    private final Set<QAction> conditionFailActions = new HashSet<>();
+    private final Set<QAction> failActions = new HashSet<>();
+    private boolean failed = false;
+    private boolean optional = false;
+    private boolean persistent = false;
+    private boolean isGlobal = false;
 
+    protected int progressGoal = 0;
 
     /**
      * Checks for the conditions of this objective. If all conditions are met, the objective can be completed.
@@ -53,6 +55,12 @@ public abstract class QBaseObjective implements QObjective {
         return true;
     }
 
+    protected void checkCompletion(ActiveObjective active, QObjective objective) {
+        if (active.getProgress() >= progressGoal) {
+            complete(active.getHolder(), objective);
+        }
+    }
+
     /**
      * Completes an objective. Completing removes it from the current stage (if not persistent) and progresses
      * to the next stage (if available).
@@ -60,7 +68,7 @@ public abstract class QBaseObjective implements QObjective {
      * @param holder the holder that completed the objective
      * @param obj the objective that was completed.
      */
-    public void complete(ObjectiveHolder holder, QObjective obj) {
+    protected void complete(ObjectiveHolder holder, QObjective obj) {
         MessageUtil.log("Checking for completion for " + holder.getName());
         Iterator<ActiveObjective> iterator = holder.getCurrentObjectives().iterator();
         while (iterator.hasNext()) {
@@ -201,9 +209,19 @@ public abstract class QBaseObjective implements QObjective {
         isGlobal = global;
     }
 
+    /**
+     * @return the progress goal of the objective.
+     */
+    @Override
+    public int getProgressGoal() {
+        return progressGoal;
+    }
+
     @Override
     public void load(QLineConfig section) {
-
+        if (section.contains("goal")) {
+            progressGoal = section.getInt("goal");
+        }
     }
 
     @Override
@@ -231,6 +249,12 @@ public abstract class QBaseObjective implements QObjective {
         }
         if (section.contains("persistent")) {
             persistent = section.getBoolean("persistent");
+        }
+        if (section.contains("global")) {
+            isGlobal = section.getBoolean("global");
+        }
+        if (section.contains("goal")) {
+            progressGoal = section.getInt("goal");
         }
     }
 

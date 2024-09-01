@@ -26,7 +26,7 @@ public class LocationObjective extends AbstractLocationBasedObjective {
             return;
         }
         if (event.getTo().distance(location.get(event.getTo())) <= distance) {
-            complete(active.getHolder(), this);
+            checkCompletion(active, this);
         }
     }
 

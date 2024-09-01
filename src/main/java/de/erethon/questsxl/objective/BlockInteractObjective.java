@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class BlockInteractObjective extends QBaseObjective {
 
-    QLocation location;
+    private QLocation location;
 
     @Override
     public void check(ActiveObjective active, Event event) {
@@ -17,7 +17,7 @@ public class BlockInteractObjective extends QBaseObjective {
         if (!conditions(e.getPlayer())) return;
         if (e.getClickedBlock() == null) return;
         if (location.equals(e.getClickedBlock().getLocation())) {
-            complete(active.getHolder(), this);
+            checkCompletion(active, this);
         }
     }
 

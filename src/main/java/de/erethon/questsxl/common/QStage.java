@@ -44,7 +44,7 @@ public class QStage {
         MessageUtil.log("Starting stage " + id);
         for (QObjective objective : goals) {
             MessageUtil.log("Added objective " + objective.getClass().getName());
-            holder.addObjective(new ActiveObjective(holder, this, objective));
+            holder.addObjective(new ActiveObjective(holder, getQuest(), this, objective));
         }
         if (holder instanceof QPlayer player) {
             for (QAction action : startActions) {

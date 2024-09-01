@@ -25,7 +25,7 @@ public class JobExpObjective extends QBaseObjective {
         }
         alreadyGained += event.getAmount();
         if (alreadyGained >= amount) {
-            complete(plugin.getPlayerCache().getByPlayer(player), this);
+            checkCompletion(active, this);
         }
     }
 

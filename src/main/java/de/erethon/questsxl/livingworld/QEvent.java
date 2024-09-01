@@ -25,6 +25,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 public class QEvent implements Completable, ObjectiveHolder, Scorable {
@@ -61,7 +62,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
     private QStage currentStage;
 
     // State - runtime stuff
-    private Set<QPlayer> playersInRange = new HashSet<>();
+    private final Set<QPlayer> playersInRange = new HashSet<>();
     private final Map<QPlayer, Integer> eventParticipation = new HashMap<>();
 
     public QEvent(File file) {
@@ -309,9 +310,10 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
         state = EventState.valueOf(cfg.getString("state.state", "NOT_STARTED"));
         int currentStageID = cfg.getInt("state.currentStage", 0);
         if (currentStageID != 0) {
-            currentStage = stages.get(currentStageID);
+            currentStage = stages.stream().filter(s -> s.getId() == currentStageID).findFirst().orElse(null);
         }
         timeLastCompleted = cfg.getInt("state.timeLastCompleted", 0);
+        loadProgress(cfg);
 
         isValid = true;
         MessageUtil.log("Loaded event " + id + " with " + stages.size() + " at " + centerLocation.getWorld().getName() + " / " + centerLocation.getX() + " / " + centerLocation.getY() + " / " + centerLocation.getZ());
@@ -321,6 +323,12 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
         cfg.set("state.state", state.name());
         cfg.set("state.currentStage", currentStage.getId());
         cfg.set("state.timeLastCompleted", timeLastCompleted);
+        saveProgress(cfg);
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public boolean isValid() {
