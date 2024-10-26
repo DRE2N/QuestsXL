@@ -7,6 +7,7 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.common.ObjectiveHolder;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
+import de.erethon.questsxl.livingworld.QEvent;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -14,10 +15,25 @@ import org.bukkit.event.entity.EntityDeathEvent;
 
 public class KillMobObjective extends QBaseObjective {
 
-    String mob;
+    private String mob;
+    private int radius;
 
     @Override
     public void check(ActiveObjective active, Event e) {
+        if (radius > 0) {
+            if (active.getHolder() instanceof QEvent qEvent) {
+                if (e instanceof CreatureDeathEvent event && event.getKiller().getLocation().distance(qEvent.getLocation()) <= radius) {
+                    return;
+                }
+                if (e instanceof InstancedCreatureDeathEvent event && event.getKiller().getLocation().distance(qEvent.getLocation()) <= radius) {
+                    return;
+                }
+                if (e instanceof EntityDeathEvent event && event.getEntity().getLocation().distance(qEvent.getLocation()) <= radius) {
+                    return;
+                }
+            }
+            return;
+        }
         if (e instanceof CreatureDeathEvent event) {
             check(event.getNpc(), event.getKiller(), active);
         } else if (e instanceof InstancedCreatureDeathEvent event) {
@@ -40,5 +56,6 @@ public class KillMobObjective extends QBaseObjective {
     public void load(QConfig cfg) {
         super.load(cfg);
         mob = cfg.getString("id");
+        radius = cfg.getInt("radius", -1);
     }
 }
