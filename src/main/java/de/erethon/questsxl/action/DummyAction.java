@@ -1,5 +1,6 @@
 package de.erethon.questsxl.action;
 
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
@@ -37,10 +38,6 @@ public class DummyAction extends QBaseAction {
     }
 
     @Override
-    public void load(QLineConfig cfg) {
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
+    public void load(QConfig cfg) {
     }
 }

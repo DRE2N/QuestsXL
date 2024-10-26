@@ -1,6 +1,7 @@
 package de.erethon.questsxl.condition;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
@@ -28,12 +29,9 @@ public class ActiveQuestCondition extends QBaseCondition {
     }
 
     @Override
-    public void load(ConfigurationSection section) {
-        quest = questManager.getByName(section.getString("id"));
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        quest = questManager.getByName(cfg.getString("id"));
     }
 
-    @Override
-    public void load(QLineConfig section) {
-        quest = questManager.getByName(section.getString("id"));
-    }
 }

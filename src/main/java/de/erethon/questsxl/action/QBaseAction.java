@@ -1,6 +1,7 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QConfigLoader;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QRegistries;
@@ -83,23 +84,18 @@ public abstract class QBaseAction implements QAction {
 
     @Override
     public String getID() {
-        return null;
+        return id;
     }
 
 
-
     @Override
-    public void load(QLineConfig cfg) {
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        id = section.getName();
-        if (section.contains("runAfter")) {
-            runAfter.addAll((Collection<? extends QAction>) QConfigLoader.load("runAfter", section, QRegistries.ACTIONS));
+    public void load(QConfig cfg) {
+        id = cfg.getName();
+        if (cfg.contains("runAfter")) {
+            runAfter.addAll(cfg.getActions("runAfter"));
         }
-        if (section.contains("conditions")) {
-            conditions.addAll((Collection<? extends QCondition>) QConfigLoader.load("conditions", section, QRegistries.CONDITIONS));
+        if (cfg.contains("conditions")) {
+            conditions.addAll(cfg.getConditions("conditions"));
         }
     }
 

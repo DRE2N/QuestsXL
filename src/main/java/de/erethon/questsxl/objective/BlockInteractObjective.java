@@ -1,5 +1,6 @@
 package de.erethon.questsxl.objective;
 
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.event.QRegionLeaveEvent;
@@ -22,14 +23,8 @@ public class BlockInteractObjective extends QBaseObjective {
     }
 
     @Override
-    public void load(QLineConfig section) {
-        super.load(section);
-        location = new QLocation(section);
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        location = new QLocation(section);
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        location = cfg.getQLocation("location");
     }
 }

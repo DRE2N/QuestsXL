@@ -53,6 +53,7 @@ public class QConfigLoader {
                 if (subsection == null) {
                     continue;
                 }
+                QConfigurationSection qConfigurationSection = new QConfigurationSection(subsection);
                 if (subsection.contains("type")) {
                     type = subsection.getString("type");
                 } else {
@@ -65,7 +66,7 @@ public class QConfigLoader {
                 if (registry.isValid(type)) {
                     try {
                         loadable = registry.get(type).getClass().getDeclaredConstructor().newInstance();
-                        loadable.load(subsection);
+                        loadable.load(qConfigurationSection);
                         loadables.add(loadable);
                     } catch (Exception e) {
                         QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Failed to load " + type + " " + key, e.getMessage(), "Path:\n" + section.getCurrentPath() + "." + key).addStacktrace(e.getStackTrace()));

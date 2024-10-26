@@ -2,6 +2,7 @@ package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.QBaseAction;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.dialogue.QDialogue;
 import de.erethon.questsxl.dialogue.QDialogueManager;
@@ -23,12 +24,8 @@ public class DialogueAction extends QBaseAction {
     }
 
     @Override
-    public void load(QLineConfig section) {
-        dialogue = dialogueManager.get(section.getString("id"));
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        dialogue = dialogueManager.get(section.getString("id"));
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        dialogue = dialogueManager.get(cfg.getString("id"));
     }
 }

@@ -6,6 +6,7 @@ import de.erethon.aether.creature.AetherBaseMob;
 import de.erethon.aether.creature.CreatureManager;
 import de.erethon.aether.creature.NPCData;
 import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.livingworld.QEvent;
@@ -47,21 +48,12 @@ public class SpawnMobAction extends QBaseAction {
     }
 
     @Override
-    public void load(QLineConfig cfg) {
-        location = new QLocation(cfg);
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        location = cfg.getQLocation("location");
         npcData = creatureManager.getByID(cfg.getString("id"));
         if (npcData == null) {
             throw new IllegalArgumentException("NPCData with id " + cfg.getString("id") + " not found.");
-        }
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        location = new QLocation(section);
-        npcData = creatureManager.getByID(section.getString("id"));
-        if (npcData == null) {
-            throw new IllegalArgumentException("NPCData with id " + section.getString("id") + " not found.");
         }
     }
 }

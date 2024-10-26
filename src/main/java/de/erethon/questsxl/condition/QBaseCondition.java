@@ -1,6 +1,7 @@
 package de.erethon.questsxl.condition;
 
 import de.erethon.questsxl.action.QAction;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QConfigLoader;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QRegistries;
@@ -56,22 +57,18 @@ public abstract class QBaseCondition implements QCondition {
     }
 
     @Override
-    public void load(ConfigurationSection section) {
-        if (section.getString("displayText") == null || section.getString("displayText").equals("none")) {
+    public void load(QConfig cfg) {
+        if (cfg.getString("displayText") == null || cfg.getString("displayText").equals("none")) {
             display = null;
             return;
         }
-        display = section.getString("displayText");
-        if (section.contains("onFail")) {
-            failActions.addAll((Collection<? extends QAction>) QConfigLoader.load("onFail", section, QRegistries.ACTIONS));
+        display = cfg.getString("displayText");
+        if (cfg.contains("onFail")) {
+            failActions.addAll(cfg.getActions("onFail"));
         }
-        if (section.contains("onSuccess")) {
-            successActions.addAll((Collection<? extends QAction>) QConfigLoader.load("onSuccess", section, QRegistries.ACTIONS));
+        if (cfg.contains("onSuccess")) {
+            successActions.addAll(cfg.getActions("onSuccess"));
         }
-    }
-    @Override
-    public void load(QLineConfig section) {
-
     }
 
 }

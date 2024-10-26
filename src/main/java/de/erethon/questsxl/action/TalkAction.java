@@ -1,6 +1,7 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -48,7 +49,7 @@ public class TalkAction extends QBaseAction {
     }
 
     @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
+    public void load(QConfig cfg) {
+        super.load(cfg);
     }
 }

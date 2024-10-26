@@ -1,6 +1,7 @@
 package de.erethon.questsxl.objective;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.event.QRegionLeaveEvent;
 import de.erethon.questsxl.region.QRegion;
@@ -21,14 +22,8 @@ public class LeaveRegionObjective extends QBaseObjective {
     }
 
     @Override
-    public void load(QLineConfig section) {
-        super.load(section);
-        region = QuestsXL.getInstance().getRegionManager().getByID(section.getString("id"));
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        region = QuestsXL.getInstance().getRegionManager().getByID(section.getString("id"));
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        region = QuestsXL.getInstance().getRegionManager().getByID(cfg.getString("id"));
     }
 }

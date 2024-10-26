@@ -1,5 +1,6 @@
 package de.erethon.questsxl.action;
 
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QConfigLoader;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QRegistries;
@@ -59,17 +60,12 @@ public class RunAsAction extends QBaseAction {
     }
 
     @Override
-    public void load(QLineConfig cfg) {
-        throw new UnsupportedOperationException("RunAsAction does not support single-line configs.");
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        runMode = RUN_MODE.valueOf(section.getString("mode", "online").toUpperCase());
-        runValue = section.getInt("value", 0);
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        runMode = RUN_MODE.valueOf(cfg.getString("mode", "online").toUpperCase());
+        runValue = cfg.getInt("value", 0);
         try {
-            actions = (Set<QAction>) QConfigLoader.load("actions", section, QRegistries.ACTIONS);
+            actions = cfg.getActions("actions");
             if (actions.isEmpty()) {
                 throw new RuntimeException("Action list is empty.");
             }

@@ -1,5 +1,6 @@
 package de.erethon.questsxl.action;
 
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -17,12 +18,7 @@ public class PlayAnimationAction extends QBaseAction {
     }
 
     @Override
-    public void load(QLineConfig cfg) {
+    public void load(QConfig cfg) {
         super.load(cfg);
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
     }
 }

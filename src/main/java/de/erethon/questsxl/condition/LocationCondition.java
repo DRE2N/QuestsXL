@@ -1,5 +1,6 @@
 package de.erethon.questsxl.condition;
 
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.livingworld.QEvent;
@@ -30,21 +31,12 @@ public class LocationCondition extends QBaseCondition {
     }
 
     @Override
-    public void load(QLineConfig section) {
-        location = new QLocation(section);
-        radius = section.getDouble("range");
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        location = cfg.getQLocation("location");
+        radius = cfg.getDouble("range");
         if (radius <= 0) {
-            throw new RuntimeException("The location condition in " + section + " contains a negative radius.");
-        }
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        location = new QLocation(section);
-        radius = section.getDouble("range");
-        if (radius <= 0) {
-            throw new RuntimeException("The location condition in " + section.getName() + " contains a negative radius.");
+            throw new RuntimeException("The location condition in " + cfg.getName() + " contains a negative radius.");
         }
     }
 

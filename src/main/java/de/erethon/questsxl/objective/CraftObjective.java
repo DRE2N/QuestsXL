@@ -1,5 +1,6 @@
 package de.erethon.questsxl.objective;
 
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.fyreum.jobsxl.user.event.UserCraftItemEvent;
 import org.bukkit.configuration.ConfigurationSection;
@@ -27,14 +28,8 @@ public class CraftObjective extends QBaseObjective {
     }
 
     @Override
-    public void load(QLineConfig section) {
-        super.load(section);
-        id = section.getString("id");
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        id = section.getString("id");
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        id = cfg.getString("id");
     }
 }

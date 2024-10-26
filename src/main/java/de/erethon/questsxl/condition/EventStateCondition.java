@@ -1,6 +1,7 @@
 package de.erethon.questsxl.condition;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.livingworld.EventState;
 import de.erethon.questsxl.livingworld.QEvent;
@@ -31,15 +32,10 @@ public class EventStateCondition extends QBaseCondition {
     }
 
     @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        event = plugin.getEventManager().getByID(section.getString("id"));
-        state = EventState.valueOf(section.getString("state"));
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        event = plugin.getEventManager().getByID(cfg.getString("id"));
+        state = EventState.valueOf(cfg.getString("state"));
     }
 
-    @Override
-    public void load(QLineConfig section) {
-        event = plugin.getEventManager().getByID(section.getString("id"));
-        state = EventState.valueOf(section.getString("state"));
-    }
 }

@@ -1,6 +1,7 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QConfigLoader;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QRegistries;
@@ -37,13 +38,9 @@ public class DelayAction extends QBaseAction {
     }
 
     @Override
-    public void load (QLineConfig cfg) {
-        throw new UnsupportedOperationException("DelayAction does not support single-line configs.");
-    }
-
-    @Override
-    public void load(ConfigurationSection cfg) {
-        actions = (Set<QAction>) QConfigLoader.load("actions", cfg, QRegistries.ACTIONS);
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        actions =  cfg.getActions("actions");
         delay = cfg.getLong("duration");
         if (actions.isEmpty()) {
             throw new RuntimeException("Action list is empty.");

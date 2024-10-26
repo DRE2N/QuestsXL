@@ -1,6 +1,7 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.player.QPlayerCache;
@@ -24,19 +25,11 @@ public class QuestAction extends QBaseAction {
     }
 
     @Override
-    public void load(QLineConfig cfg) {
+    public void load(QConfig cfg) {
+        super.load(cfg);
         quest = plugin.getQuestManager().getByName(cfg.getString("id"));
         if (quest == null) {
             throw new RuntimeException("Quest " + cfg.getString("id") + " does not exist.");
-        }
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        quest = plugin.getQuestManager().getByName(section.getString("id"));
-        if (quest == null) {
-            throw new RuntimeException("Quest " + section.getString("id") + " does not exist.");
         }
     }
 

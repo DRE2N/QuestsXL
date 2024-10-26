@@ -1,6 +1,7 @@
 package de.erethon.questsxl.condition;
 
 import de.erethon.bedrock.misc.NumberUtil;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
@@ -28,15 +29,9 @@ public class PlayerScoreCondition extends QBaseCondition {
     }
 
     @Override
-    public void load(QLineConfig section) {
-        score = section.getString("score");
-        value = section.getInt("value");
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        score = section.getString("score");
-        value = section.getInt("value");
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        score = cfg.getString("score");
+        value = cfg.getInt("value");
     }
 }

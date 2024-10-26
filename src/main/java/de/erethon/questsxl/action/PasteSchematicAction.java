@@ -11,6 +11,7 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.ObjectiveHolder;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.livingworld.QEvent;
@@ -78,7 +79,10 @@ public class PasteSchematicAction extends QBaseAction {
     }
 
     @Override
-    public void load(QLineConfig cfg) {
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        location = cfg.getQLocation("location");
+
         String schematicID = cfg.getString("schematic");
         MessageUtil.log("Loading schematic " + schematicID);
         for (File file : QuestsXL.SCHEMATICS.listFiles()) {
@@ -89,25 +93,6 @@ public class PasteSchematicAction extends QBaseAction {
         if (schematic == null) {
             throw new RuntimeException("The action " + id + " tried to load schematic that does not exist: " + schematicID);
         }
-        time = cfg.getInt("time", 0);
-        location = new QLocation(cfg);
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        location = new QLocation(section);
-
-        String schematicID = section.getString("schematic");
-        MessageUtil.log("Loading schematic " + schematicID);
-        for (File file : QuestsXL.SCHEMATICS.listFiles()) {
-            if (file.getName().equals(schematicID)) {
-                schematic = file;
-            }
-        }
-        if (schematic == null) {
-            throw new RuntimeException("The action " + id + " tried to load schematic that does not exist: " + schematicID);
-        }
-        time = section.getInt("time", 60);
+        time = cfg.getInt("time", 60);
     }
 }

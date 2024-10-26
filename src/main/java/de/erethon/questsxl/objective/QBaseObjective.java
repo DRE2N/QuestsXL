@@ -4,6 +4,7 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.common.ObjectiveHolder;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QConfigLoader;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QRegistries;
@@ -233,43 +234,36 @@ public abstract class QBaseObjective implements QObjective {
     }
 
     @Override
-    public void load(QLineConfig section) {
-        if (section.contains("goal")) {
-            progressGoal = section.getInt("goal");
+    public void load(QConfig cfg) {
+        if (cfg.contains("display")) {
+            displayText = cfg.getString("display");
         }
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        if (section.contains("display")) {
-            displayText = section.getString("display");
+        if (cfg.contains("conditions")) {
+            conditions.addAll(cfg.getConditions("conditions"));
         }
-        if (section.contains("conditions")) {
-            conditions.addAll((Collection<? extends QCondition>) QConfigLoader.load("conditions", section, QRegistries.CONDITIONS));
+        if (cfg.contains("onProgress")) {
+            progressActions.addAll(cfg.getActions("onProgress"));
         }
-        if (section.contains("onProgress")) {
-            progressActions.addAll((Collection<? extends QAction>) QConfigLoader.load("onProgress", section, QRegistries.ACTIONS));
+        if (cfg.contains("onConditionFail")) {
+            conditionFailActions.addAll(cfg.getActions("onConditionFail"));
         }
-        if (section.contains("onConditionFail")) {
-            conditionFailActions.addAll((Collection<? extends QAction>) QConfigLoader.load("onConditionFail", section, QRegistries.ACTIONS));
+        if (cfg.contains("onComplete")) {
+            successActions.addAll(cfg.getActions("onComplete"));
         }
-        if (section.contains("onComplete")) {
-            successActions.addAll((Collection<? extends QAction>) QConfigLoader.load("onComplete", section, QRegistries.ACTIONS));
+        if (cfg.contains("onFail")) {
+            failActions.addAll(cfg.getActions("onFail"));
         }
-        if (section.contains("onFail")) {
-            failActions.addAll((Collection<? extends QAction>) QConfigLoader.load("onFail", section, QRegistries.ACTIONS));
+        if (cfg.contains("optional")) {
+            optional = cfg.getBoolean("optional");
         }
-        if (section.contains("optional")) {
-            optional = section.getBoolean("optional");
+        if (cfg.contains("persistent")) {
+            persistent = cfg.getBoolean("persistent");
         }
-        if (section.contains("persistent")) {
-            persistent = section.getBoolean("persistent");
+        if (cfg.contains("global")) {
+            isGlobal = cfg.getBoolean("global");
         }
-        if (section.contains("global")) {
-            isGlobal = section.getBoolean("global");
-        }
-        if (section.contains("goal")) {
-            progressGoal = section.getInt("goal");
+        if (cfg.contains("goal")) {
+            progressGoal = cfg.getInt("goal");
         }
     }
 

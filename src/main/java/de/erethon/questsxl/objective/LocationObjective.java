@@ -1,5 +1,6 @@
 package de.erethon.questsxl.objective;
 
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLocation;
 import org.bukkit.configuration.ConfigurationSection;
@@ -31,22 +32,12 @@ public class LocationObjective extends AbstractLocationBasedObjective {
     }
 
     @Override
-    public void load(QLineConfig section) {
-        super.load(section);
-        location = new QLocation(section);
-        distance = section.getInt("range", 2);
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        location = cfg.getQLocation("location");
+        distance = cfg.getInt("range");
         if (distance <= 0) {
-            throw new RuntimeException("The location objective in " + section + " contains a negative range.");
-        }
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        location = new QLocation(section);
-        distance = section.getInt("range");
-        if (distance <= 0) {
-            throw new RuntimeException("The location objective in " + section.getName() + " contains a negative range.");
+            throw new RuntimeException("The location objective in " + cfg.getName() + " contains a negative range.");
         }
     }
 }

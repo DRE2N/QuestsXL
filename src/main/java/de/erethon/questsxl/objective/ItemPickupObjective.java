@@ -3,6 +3,7 @@ package de.erethon.questsxl.objective;
 import de.erethon.hephaestus.items.HItem;
 import de.erethon.hephaestus.items.HItemLibrary;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
@@ -32,16 +33,9 @@ public class ItemPickupObjective extends QBaseObjective {
     }
 
     @Override
-    public void load(QLineConfig section) {
-        super.load(section);
-        itemID = NamespacedKey.fromString(section.getString("item"));
-        cancel = section.getBoolean("cancel", false);
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        itemID = NamespacedKey.fromString(section.getString("item"));
-        cancel = section.getBoolean("cancel", false);
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        itemID = NamespacedKey.fromString(cfg.getString("item"));
+        cancel = cfg.getBoolean("cancel", false);
     }
 }

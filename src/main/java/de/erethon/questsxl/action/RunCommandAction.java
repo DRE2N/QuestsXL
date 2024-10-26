@@ -1,6 +1,7 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Bukkit;
@@ -38,17 +39,10 @@ public class RunCommandAction extends QBaseAction {
     }
 
     @Override
-    public void load(QLineConfig cfg) {
+    public void load(QConfig cfg) {
+        super.load(cfg);
         command = cfg.getString("command");
         op = cfg.getBoolean("op", false);
         console = cfg.getBoolean("console", false);
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        command = section.getString("command");
-        op = section.getBoolean("op", false);
-        console = section.getBoolean("console", false);
     }
 }

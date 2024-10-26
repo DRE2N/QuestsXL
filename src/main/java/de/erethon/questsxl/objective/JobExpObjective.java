@@ -1,6 +1,7 @@
 package de.erethon.questsxl.objective;
 
 import de.erethon.bedrock.misc.EnumUtil;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.fyreum.jobsxl.job.ExperienceGainReason;
 import de.fyreum.jobsxl.user.event.UserGainJobExperienceEvent;
@@ -30,36 +31,19 @@ public class JobExpObjective extends QBaseObjective {
     }
 
     @Override
-    public void load(QLineConfig section) {
-        super.load(section);
-        amount = section.getInt("amount");
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        amount = cfg.getInt("amount");
         if (amount <= 0) {
-            throw new RuntimeException("The job exp objective in " + section + " contains a negative experience amount.");
+            throw new RuntimeException("The job exp objective in " + cfg.getName() + " contains a negative experience amount.");
         }
-        String reasonString = section.getString("reason");
+        String reasonString = cfg.getString("reason");
         if (reasonString == null) {
             return;
         }
         this.reason = EnumUtil.getEnumIgnoreCase(ExperienceGainReason.class, reasonString);
         if (this.reason == null) {
-            throw new RuntimeException("The job exp objective in " + section + " contains an unknown experience gain reason.");
-        }
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        amount = section.getInt("amount");
-        if (amount <= 0) {
-            throw new RuntimeException("The job exp objective in " + section.getName() + " contains a negative experience amount.");
-        }
-        String reasonString = section.getString("reason");
-        if (reasonString == null) {
-            return;
-        }
-        this.reason = EnumUtil.getEnumIgnoreCase(ExperienceGainReason.class, reasonString);
-        if (this.reason == null) {
-            throw new RuntimeException("The job exp objective in " + section.getName() + " contains an unknown experience gain reason.");
+            throw new RuntimeException("The job exp objective in " + cfg.getName() + " contains an unknown experience gain reason.");
         }
     }
 }

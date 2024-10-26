@@ -1,5 +1,6 @@
 package de.erethon.questsxl.objective;
 
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -24,14 +25,8 @@ public class KillPlayerObjective extends QBaseObjective {
     }
 
     @Override
-    public void load(QLineConfig section) {
-        super.load(section);
-        player = section.getString("player");
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        player = section.getString("player");
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        player = cfg.getString("player");
     }
 }

@@ -5,6 +5,7 @@ import de.erethon.aether.events.CreatureDeathEvent;
 import de.erethon.aether.events.InstancedCreatureDeathEvent;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.common.ObjectiveHolder;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -36,14 +37,8 @@ public class KillMobObjective extends QBaseObjective {
     }
 
     @Override
-    public void load(QLineConfig section) {
-        super.load(section);
-        mob = section.getString("id");
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        mob = section.getString("id");
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        mob = cfg.getString("id");
     }
 }

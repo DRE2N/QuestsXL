@@ -1,6 +1,7 @@
 package de.erethon.questsxl.objective;
 
 import de.erethon.aether.creature.ActiveNPC;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -23,23 +24,18 @@ public class EntityInteractObjective extends QBaseObjective {
         }
         Entity entity = event.getRightClicked();
         if (!entity.getType().name().equalsIgnoreCase(mob)) {
+            /* Needs rework for new Aether
             ActiveNPC activeNPC = plugin.getAether().getActiveCreatureManager().get(entity.getUniqueId());
             if (activeNPC == null || !activeNPC.getNpc().getID().equalsIgnoreCase(mob)) {
                 return;
-            }
+            }*/
         }
         checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(player));
     }
 
     @Override
-    public void load(QLineConfig section) {
-        super.load(section);
-        mob = section.getString("id");
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        mob = section.getString("id");
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        mob = cfg.getString("id");
     }
 }

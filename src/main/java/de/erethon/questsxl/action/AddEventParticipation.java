@@ -1,6 +1,7 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.livingworld.QEvent;
@@ -34,16 +35,10 @@ public class AddEventParticipation extends QBaseAction {
     }
 
     @Override
-    public void load(QLineConfig cfg) {
+    public void load(QConfig cfg) {
+        super.load(cfg);
         id = cfg.getString("id");
         amount = cfg.getInt("amount", 1);
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        id =  section.getString("id");
-        amount = section.getInt("amount");
     }
 
 }

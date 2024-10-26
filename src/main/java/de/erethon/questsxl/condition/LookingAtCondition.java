@@ -1,6 +1,7 @@
 package de.erethon.questsxl.condition;
 
 import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.livingworld.QEvent;
@@ -43,24 +44,14 @@ public class LookingAtCondition extends QBaseCondition {
     }
 
     @Override
-    public void load(QLineConfig section) {
-        if (section.contains("block")) {
-            block = Material.valueOf(section.getString("block"));
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        if (cfg.contains("block")) {
+            block = Material.valueOf(cfg.getString("block"));
             return;
         }
-        accuracy = section.getDouble("accuracy", 1);
-        locTarget = new QLocation(section);
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        if (section.contains("block")) {
-            block = Material.valueOf(section.getString("block"));
-            return;
-        }
-        accuracy = section.getDouble("accuracy", 1);
-        locTarget = new QLocation(section);
+        accuracy = cfg.getDouble("accuracy", 1);
+        locTarget = cfg.getQLocation("location");
     }
 
 }

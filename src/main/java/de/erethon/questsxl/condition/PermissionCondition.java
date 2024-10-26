@@ -1,5 +1,6 @@
 package de.erethon.questsxl.condition;
 
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
@@ -23,13 +24,9 @@ public class PermissionCondition extends QBaseCondition {
     }
 
     @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        permission = section.getString("permission");
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        permission = cfg.getString("permission");
     }
 
-    @Override
-    public void load(QLineConfig section) {
-        permission = section.getString("permission");
-    }
 }

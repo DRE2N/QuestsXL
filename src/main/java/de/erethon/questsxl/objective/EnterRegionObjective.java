@@ -2,6 +2,7 @@ package de.erethon.questsxl.objective;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.event.QRegionEnterEvent;
 import de.erethon.questsxl.region.QRegion;
@@ -10,7 +11,7 @@ import org.bukkit.event.Event;
 
 public class EnterRegionObjective extends QBaseObjective {
 
-    QRegion region;
+    private QRegion region;
 
     @Override
     public void check(ActiveObjective active, Event e) {
@@ -24,13 +25,9 @@ public class EnterRegionObjective extends QBaseObjective {
         }
     }
 
-    public void load(QLineConfig section) {
-        super.load(section);
-        region = QuestsXL.getInstance().getRegionManager().getByID(section.getString("id"));
-    }
-
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        region = QuestsXL.getInstance().getRegionManager().getByID(section.getString("id"));
+    @Override
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        region = QuestsXL.getInstance().getRegionManager().getByID(cfg.getString("id"));
     }
 }

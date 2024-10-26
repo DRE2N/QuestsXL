@@ -1,7 +1,9 @@
 package de.erethon.questsxl.condition;
 
 import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QConfigLoader;
+import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QRegistries;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
@@ -35,9 +37,9 @@ public class InvertedCondition extends QBaseCondition {
     }
 
     @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        conditions = (Set<QCondition>) QConfigLoader.load("conditions", section, QRegistries.CONDITIONS);
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        conditions = cfg.getConditions("conditions");
     }
 
 }

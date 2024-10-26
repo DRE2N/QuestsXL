@@ -1,6 +1,7 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
@@ -79,19 +80,11 @@ public class ScoreAction extends QBaseAction {
     }
 
     @Override
-    public void load(QLineConfig cfg) {
-        score = cfg.getString("score");
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        score =  cfg.getString("score");
         amount = cfg.getInt("value");
         scope = Scope.valueOf(cfg.getString("scope", "player").toUpperCase());
         operation = Operation.valueOf(cfg.getString("operation", "add").toUpperCase());
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        score =  section.getString("score");
-        amount = section.getInt("value");
-        scope = Scope.valueOf(section.getString("scope", "player").toUpperCase());
-        operation = Operation.valueOf(section.getString("operation", "add").toUpperCase());
     }
 }

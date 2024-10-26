@@ -287,8 +287,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
         double z = locationSection.getDouble("z");
         World world = Bukkit.getWorld(worldName);
         if (world == null) {
-            MessageUtil.log("The condition " + locationSection.getName() + " contains a location for a world that is not loaded: " + worldName);
-            return;
+            throw new RuntimeException("The startLocation contains the world " + id + ", which does not exist.");
         }
         centerLocation = new Location(world, x, y, z);
         if (cfg.contains("startConditions")) {

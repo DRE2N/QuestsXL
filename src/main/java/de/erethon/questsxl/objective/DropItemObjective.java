@@ -3,9 +3,8 @@ package de.erethon.questsxl.objective;
 import de.erethon.hephaestus.items.HItem;
 import de.erethon.hephaestus.items.HItemLibrary;
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.common.QLineConfig;
+import de.erethon.questsxl.common.QConfig;
 import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDropItemEvent;
@@ -31,16 +30,9 @@ public class DropItemObjective extends QBaseObjective {
     }
 
     @Override
-    public void load(QLineConfig section) {
-        super.load(section);
-        itemID = NamespacedKey.fromString(section.getString("item"));
-        cancel = section.getBoolean("cancel", false);
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        itemID = NamespacedKey.fromString(section.getString("item"));
-        cancel = section.getBoolean("cancel", false);
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        itemID = NamespacedKey.fromString(cfg.getString("item"));
+        cancel = cfg.getBoolean("cancel", false);
     }
 }

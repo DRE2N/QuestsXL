@@ -1,6 +1,7 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
@@ -25,16 +26,9 @@ public class ObjectiveDisplayTextAction extends QBaseAction {
     }
 
     @Override
-    public void load(QLineConfig cfg) {
+    public void load(QConfig cfg) {
         super.load(cfg);
         text = cfg.getString("text");
         quest = QuestsXL.getInstance().getQuestManager().getByName(cfg.getString("id"));
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        text = section.getString("text");
-        quest = QuestsXL.getInstance().getQuestManager().getByName(section.getString("id"));
     }
 }

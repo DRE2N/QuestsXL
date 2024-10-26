@@ -1,6 +1,7 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
@@ -27,13 +28,8 @@ public class SendMessageAction extends QBaseAction {
     }
 
     @Override
-    public void load(QLineConfig cfg) {
-        message = cfg.getString("message", cfg.toString());
-    }
-
-    @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        message = section.getString("message", "MESSAGE_NOT_FOUND");
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        message = cfg.getString("message", "MESSAGE_NOT_FOUND");
     }
 }

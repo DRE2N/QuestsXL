@@ -2,6 +2,7 @@ package de.erethon.questsxl.action;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QConfigLoader;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QRegistries;
@@ -71,13 +72,8 @@ public class RepeatAction extends QBaseAction {
     }
 
     @Override
-    public void load(QLineConfig cfg) {
-        throw new UnsupportedOperationException("RepeatAction does not support single-line configs");
-    }
-
-    @Override
-    public void load(ConfigurationSection cfg) {
-        actions = (Set<QAction>) QConfigLoader.load("actions", cfg, QRegistries.ACTIONS);
+    public void load(QConfig cfg) {
+        actions = cfg.getActions("actions");
         delay = cfg.getLong("delay");
         repetitions = cfg.getInt("repetitions") - 1;
     }

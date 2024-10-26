@@ -3,6 +3,7 @@ package de.erethon.questsxl.condition;
 import de.erethon.aergia.Aergia;
 import de.erethon.aergia.group.Group;
 import de.erethon.bedrock.misc.NumberUtil;
+import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
@@ -28,15 +29,10 @@ public class GroupSizeCondition extends QBaseCondition {
     }
 
     @Override
-    public void load(ConfigurationSection section) {
-        super.load(section);
-        min = section.getInt("min");
-        max = section.getInt("max");
+    public void load(QConfig cfg) {
+        super.load(cfg);
+        min = cfg.getInt("min");
+        max = cfg.getInt("max");
     }
 
-    @Override
-    public void load(QLineConfig section) {
-        min = section.getInt("min");
-        max = section.getInt("max");
-    }
 }
