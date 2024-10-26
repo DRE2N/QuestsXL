@@ -1,4 +1,7 @@
-import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
+plugins {
+    `java-library`
+    `maven-publish`
+}
 
 repositories {
     mavenLocal()
@@ -6,116 +9,94 @@ repositories {
     maven("https://jitpack.io")
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
     maven("https://repo.dmulloy2.net/repository/public/")
-    maven("https://jitpack.io")
     maven("https://papermc.io/repo/repository/maven-public/")
     mavenCentral()
 }
-plugins {
-    `java-library`
-    `maven-publish`
-    id("io.papermc.paperweight.userdev") version "1.7.1"
-    id("xyz.jpenilla.run-paper") version "1.0.6" // Adds runServer and runMojangMappedServer tasks for testing
-    id("io.github.goooler.shadow") version "8.1.5" // Use fork until shadow has updated to Java 21
-    id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
-}
 
-group = "de.erethon.questsxl"
-version = "1.0.0-SNAPSHOT"
-description = "Quest & World event plugin for Erethon"
+allprojects {
+    group = "de.erethon.questsxl"
+    version = "1.0.0-SNAPSHOT"
 
-java {
-    // Configure the java toolchain. This allows gradle to auto-provision JDK 17 on systems that only have JDK 8 installed for example.
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+    repositories {
+        mavenLocal()
+        maven("https://erethon.de/repo")
+        maven("https://jitpack.io")
+        maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+        maven("https://repo.dmulloy2.net/repository/public/")
+        maven("https://papermc.io/repo/repository/maven-public/")
+        mavenCentral()
+    }
+
+    apply(plugin = "java-library")
+
+    java {
+        toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+        withSourcesJar()
+    }
+
+    tasks.withType<JavaCompile> {
+        options.encoding = Charsets.UTF_8.name()
+        options.release.set(21)
+    }
+
+    tasks.withType<Javadoc> {
+        options.encoding = Charsets.UTF_8.name()
+    }
+
+    tasks.withType<ProcessResources> {
+        filteringCharset = Charsets.UTF_8.name()
+    }
 }
 
 val papyrusVersion = "1.21.1-R0.1-SNAPSHOT"
-paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
+
 
 dependencies {
-    paperweight.devBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true }
-    implementation("de.erethon:bedrock:1.4.0") { isTransitive = false }
-    // Objectives
-    compileOnly("de.erethon.aether:Aether:1.0.0-SNAPSHOT")
-    compileOnly("de.erethon.aergia:Aergia:1.0.0-SNAPSHOT") { isTransitive = false }
-    compileOnly("de.fyreum:JobsXL:1.0-SNAPSHOT") { isTransitive = false }
-    compileOnly("de.erethon.hephaestus:Hephaestus:1.0-SNAPSHOT")
-    // Sync
-    implementation("org.eclipse.jgit:org.eclipse.jgit:6.4.0.202211300538-r")
-    // Schematic actions
-    compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.3.0") { isTransitive = false }
-    compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.3.0") { isTransitive = false }
-    compileOnly("com.github.MilkBowl:VaultAPI:1.7") { isTransitive = false } // idk what we use this for tbh
+    annotationProcessor("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
+    annotationProcessor("de.erethon:bedrock:1.4.0") { isTransitive = false }
+    annotationProcessor("de.erethon.aether:Aether:1.0.0-SNAPSHOT")
+    annotationProcessor("de.erethon.aergia:Aergia:1.0.0-SNAPSHOT") { isTransitive = false }
+    annotationProcessor("de.fyreum:JobsXL:1.0-SNAPSHOT") { isTransitive = false }
+    annotationProcessor("de.erethon.hephaestus:Hephaestus:1.0-SNAPSHOT")
+    annotationProcessor("org.eclipse.jgit:org.eclipse.jgit:6.4.0.202211300538-r")
+    annotationProcessor("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.3.0") { isTransitive = false }
+    annotationProcessor("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.3.0") { isTransitive = false }
+    annotationProcessor("com.github.MilkBowl:VaultAPI:1.7") { isTransitive = false }
+}
+
+tasks.register<JavaCompile>("runAnnotationProcessor") {
+    dependsOn(":doc-gen:classes", ":plugin:classes") // Ensure doc-gen and plugin are compiled first
+    source = fileTree("plugin/src/main/java")
+    classpath = files(
+        sourceSets["main"].runtimeClasspath,
+        project(":doc-gen").sourceSets["main"].output,
+        project(":plugin").sourceSets["main"].output,
+        configurations.runtimeClasspath
+    )
+    destinationDirectory.set(file("plugin/build/classes/java/main"))
+    options.annotationProcessorPath = files(
+        project(":doc-gen").sourceSets["main"].output,
+        project(":plugin").sourceSets["main"].output,
+        configurations["annotationProcessor"]
+    )
+    options.compilerArgs.add("-processor")
+    options.compilerArgs.add("de.erethon.questsxl.QDocGenerator")
+    options.encoding = "UTF-8"
+    options.release.set(21)
+}
+
+subprojects {
+    apply(plugin = "java-library")
+
+    tasks.withType<JavaCompile> {
+        options.annotationProcessorPath = configurations["annotationProcessor"]
+    }
 }
 
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = "${project.group}"
-            artifactId = "QuestsXL"
-            version = "${project.version}"
             from(components["java"])
         }
-    }
-}
-
-tasks {
-    // Configure reobfJar to run when invoking the build task
-    assemble {
-        dependsOn(shadowJar)
-    }
-
-    runServer {
-        if (!project.buildDir.exists()) {
-            project.buildDir.mkdir()
-        }
-        val f = File(project.buildDir, "server.jar");
-        uri("https://github.com/DRE2N/Papyrus/releases/download/latest/papyrus-paperclip-$papyrusVersion-mojmap.jar").toURL().openStream().use { it.copyTo(f.outputStream()) }
-        serverJar(f)
-    }
-
-    compileJava {
-        options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
-
-        // Set the release flag. This configures what version bytecode the compiler will emit, as well as what JDK APIs are usable.
-        // See https://openjdk.java.net/jeps/247 for more information.
-        options.release.set(21)
-    }
-    javadoc {
-        options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
-    }
-    processResources {
-        filteringCharset = Charsets.UTF_8.name() // We want UTF-8 for everything
-    }
-
-    /*
-    reobfJar {
-      // This is an example of how you might change the output location for reobfJar. It's recommended not to do this
-      // for a variety of reasons, however it's asked frequently enough that an example of how to do it is included here.
-      outputJar.set(layout.buildDirectory.file("libs/PaperweightTestPlugin-${project.version}.jar"))
-    }
-     */
-
-    shadowJar {
-        dependencies {
-            include(dependency("de.erethon:bedrock:1.4.0"))
-            include(dependency("org.eclipse.jgit:org.eclipse.jgit:6.4.0.202211300538-r"))
-        }
-        relocate("de.erethon.bedrock", "de.erethon.questsxl.bedrock")
-        relocate("org.eclipse.jgit", "de.erethon.questsxl.jgit")
-    }
-    bukkit {
-        load = BukkitPluginDescription.PluginLoadOrder.POSTWORLD
-        main = "de.erethon.questsxl.QuestsXL"
-        apiVersion = "1.21"
-        authors = listOf("Malfrador", "Fyreum")
-        commands {
-            register("quests") {
-                description = "Main command for QXL"
-                aliases = listOf("q", "qxl")
-                permission = "qxl.cmd"
-                usage = "/qxl help"
-            }
-        }
-        softDepend = listOf("Aether", "Aergia")
     }
 }

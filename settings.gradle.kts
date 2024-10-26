@@ -6,3 +6,5 @@ pluginManagement {
 }
 
 rootProject.name = "QuestsXL"
+include("doc-gen")
+include("plugin")

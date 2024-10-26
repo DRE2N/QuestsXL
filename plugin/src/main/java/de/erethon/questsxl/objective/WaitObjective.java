@@ -1,14 +1,9 @@
 package de.erethon.questsxl.objective;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.common.ObjectiveHolder;
 import de.erethon.questsxl.common.QConfig;
-import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLocation;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Event;
 
 public class WaitObjective extends QBaseObjective {
