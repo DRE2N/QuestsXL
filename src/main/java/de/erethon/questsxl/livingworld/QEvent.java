@@ -186,6 +186,9 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
     }
 
     private void startEvent() {
+        if (state == EventState.ACTIVE) {
+            return;
+        }
         stages.get(0).start(this);
         currentStage = stages.get(0);
         state = EventState.ACTIVE;
