@@ -65,19 +65,21 @@ dependencies {
 }
 
 tasks.register<JavaCompile>("runAnnotationProcessor") {
-    dependsOn(":doc-gen:classes", ":plugin:classes") // Ensure doc-gen and plugin are compiled first
+    dependsOn(":doc-gen:classes", ":plugin:classes")
     source = fileTree("plugin/src/main/java")
     classpath = files(
         sourceSets["main"].runtimeClasspath,
         project(":doc-gen").sourceSets["main"].output,
         project(":plugin").sourceSets["main"].output,
-        configurations.runtimeClasspath
+        configurations.runtimeClasspath,
+        project(":plugin").configurations["compileClasspath"],
+        project(":plugin").configurations["runtimeClasspath"]
     )
     destinationDirectory.set(file("plugin/build/classes/java/main"))
     options.annotationProcessorPath = files(
         project(":doc-gen").sourceSets["main"].output,
-        project(":plugin").sourceSets["main"].output,
-        configurations["annotationProcessor"]
+        configurations["annotationProcessor"],
+        project(":plugin").sourceSets["main"].output
     )
     options.compilerArgs.add("-processor")
     options.compilerArgs.add("de.erethon.questsxl.QDocGenerator")
