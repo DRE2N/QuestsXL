@@ -9,6 +9,8 @@ import de.erethon.questsxl.quest.ActiveQuest;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 public class QuestCommand extends ECommand {
 
     QuestsXL plugin = QuestsXL.getInstance();
@@ -70,5 +72,15 @@ public class QuestCommand extends ECommand {
             }
             MessageUtil.sendMessage(player, "&8- &a" + objective.getDisplayText());
         }
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, String[] args) {
+        if (args.length == 2) {
+            List<String> names = plugin.getQuestManager().getQuestNames();
+            names.removeIf(name -> !name.toLowerCase().startsWith(args[1].toLowerCase()));
+            return names;
+        }
+        return super.onTabComplete(sender, args);
     }
 }

@@ -4,7 +4,9 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class QuestManager {
@@ -54,6 +56,14 @@ public class QuestManager {
 
     public Set<QQuest> getQuests() {
         return quests;
+    }
+
+    public List<String> getQuestNames() {
+        List<String> names = new ArrayList<>();
+        for (QQuest quest : quests) {
+            names.add(quest.getName());
+        }
+        return names;
     }
 
 }
