@@ -29,6 +29,7 @@ java {
 }
 
 val papyrusVersion = "1.21.1-R0.1-SNAPSHOT"
+paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
 
 dependencies {
     paperweight.devBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true }
@@ -60,7 +61,6 @@ publishing {
 tasks {
     // Configure reobfJar to run when invoking the build task
     assemble {
-        dependsOn(reobfJar)
         dependsOn(shadowJar)
     }
 
@@ -69,7 +69,7 @@ tasks {
             project.buildDir.mkdir()
         }
         val f = File(project.buildDir, "server.jar");
-        //uri("https://github.com/DRE2N/Papyrus/releases/download/latest/papyrus-paperclip-$papyrusVersion-mojmap.jar").toURL().openStream().use { it.copyTo(f.outputStream()) }
+        uri("https://github.com/DRE2N/Papyrus/releases/download/latest/papyrus-paperclip-$papyrusVersion-mojmap.jar").toURL().openStream().use { it.copyTo(f.outputStream()) }
         serverJar(f)
     }
 
