@@ -9,6 +9,8 @@ import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.merge.ContentMergeStrategy;
+import org.eclipse.jgit.merge.MergeStrategy;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
@@ -79,6 +81,8 @@ public class GitSync {
         PullResult pullResult = git.pull()
                 .setCredentialsProvider(new UsernamePasswordCredentialsProvider(plugin.getGitToken(), ""))
                 .setRemoteBranchName(plugin.getGitBranch())
+                .setContentMergeStrategy(ContentMergeStrategy.THEIRS)
+                .setStrategy(MergeStrategy.RESOLVE)
                 .call();
         MergeResult mergeResult = pullResult.getMergeResult();
         MessageUtil.log("Git sync merge result: " + mergeResult.getMergeStatus());
