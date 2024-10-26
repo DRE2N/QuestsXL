@@ -8,6 +8,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.FIELD)
 public @interface QParamDoc {
-    String value() default "";
+    String name() default "";
     String description() default "";
+    String def() default "";
+    boolean required() default false;
 }

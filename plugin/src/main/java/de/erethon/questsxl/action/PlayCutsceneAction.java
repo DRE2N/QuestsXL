@@ -5,13 +5,25 @@ import de.erethon.questsxl.animation.AnimationManager;
 import de.erethon.questsxl.animation.QCutscene;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
+import de.erethon.questsxl.common.QLoadableDoc;
+import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
+@QLoadableDoc(
+        value = "play_cutscene",
+        description = "Plays a cutscene. The cutscene needs to be created first.",
+        shortExample = "- 'play_cutscene: id=example_cutscene'",
+        longExample = {
+                "play_cutscene:",
+                "  id: example_cutscene",
+        }
+)
 public class PlayCutsceneAction extends QBaseAction {
 
     AnimationManager manager = QuestsXL.getInstance().getAnimationManager();
 
+    @QParamDoc(name = "id", description = "The ID of the cutscene to play", required = true)
     QCutscene cutscene;
 
     @Override

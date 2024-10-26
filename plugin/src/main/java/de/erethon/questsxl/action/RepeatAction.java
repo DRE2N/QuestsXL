@@ -1,25 +1,38 @@
 package de.erethon.questsxl.action;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
-import de.erethon.questsxl.common.QConfigLoader;
-import de.erethon.questsxl.common.QLineConfig;
-import de.erethon.questsxl.common.QRegistries;
+import de.erethon.questsxl.common.QLoadableDoc;
+import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Set;
 
+@QLoadableDoc(
+        value = "repeat",
+        description = "Repeats a set of actions a specified amount of times with a delay between each repetition.",
+        shortExample = "<no short example>",
+        longExample = {
+                "repeat:",
+                "  delay: 10",
+                "  repetitions: 5",
+                "  actions:",
+                "    - 'message: message=Hello world'"
+        }
+)
 public class RepeatAction extends QBaseAction {
 
     private transient final QuestsXL plugin = QuestsXL.getInstance();
 
-    Set<QAction> actions;
+    @QParamDoc(name = "delay", description = "The delay between each repetition in seconds", def="0")
     long delay;
+    @QParamDoc(name = "repetitions", description = "The amount of repetitions", def = "1")
     int repetitions;
+    @QParamDoc(name = "actions", description = "The list of actions to repeat", required = true)
+    Set<QAction> actions;
+
     int current = 0;
 
     BukkitRunnable task;
@@ -74,7 +87,7 @@ public class RepeatAction extends QBaseAction {
     @Override
     public void load(QConfig cfg) {
         actions = cfg.getActions("actions");
-        delay = cfg.getLong("delay");
-        repetitions = cfg.getInt("repetitions") - 1;
+        delay = cfg.getLong("delay", 0);
+        repetitions = cfg.getInt("repetitions", 1);
     }
 }

@@ -1,6 +1,7 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.tool.BeamTool;
 import org.bukkit.Location;
@@ -14,11 +15,10 @@ enum BeamChange {
     CHANGE_COLOR
 }
 
-/**
- * Displays a guardian beam to the player.
- * the start location needs to be in frame for the player,
- * otherwise it won't get rendered
- */
+@QLoadableDoc(
+        value = "display_marker",
+        description = "**Currently not implemented**"
+)
 public class DisplayLocationMarkerAction extends QBaseAction {
 
     private Location start;

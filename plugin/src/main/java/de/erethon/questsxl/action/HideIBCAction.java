@@ -3,15 +3,27 @@ package de.erethon.questsxl.action;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
+import de.erethon.questsxl.common.QLoadableDoc;
+import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.instancing.BlockCollectionManager;
 import de.erethon.questsxl.instancing.InstancedBlockCollection;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
+@QLoadableDoc(
+        value = "hide_ibc",
+        description = "Hides an InstancedBlockCollection from a player.",
+        shortExample = "- 'hide_ibc: id=example_collection'",
+        longExample = {
+                "hide_ibc:",
+                "  id: example_collection"
+        }
+)
 public class HideIBCAction extends QBaseAction {
 
     BlockCollectionManager manager = QuestsXL.getInstance().getBlockCollectionManager();
+    @QParamDoc(name = "id", description = "The ID of the IBC to hide", required = true)
     InstancedBlockCollection collection = null;
 
     @Override

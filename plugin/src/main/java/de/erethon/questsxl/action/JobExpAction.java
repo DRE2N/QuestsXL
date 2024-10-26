@@ -4,6 +4,8 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.misc.NumberUtil;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
+import de.erethon.questsxl.common.QLoadableDoc;
+import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import de.fyreum.jobsxl.job.ExperienceGainReason;
@@ -15,12 +17,26 @@ import java.util.Random;
 /**
  * @author Fyreum
  */
+@QLoadableDoc(
+        value = "job_exp",
+        description = "Gives the player job experience.",
+        shortExample = "- 'job_exp: min=1; max=10; chance=0.5'",
+        longExample = {
+                "job_exp:",
+                "  min: 1",
+                "  max: 10",
+                "  chance: 0.5"
+        }
+)
 public class JobExpAction extends QBaseAction {
 
-    Random random = new Random();
-    int min;
-    int max;
-    double chance;
+    private Random random = new Random();
+    @QParamDoc(name = "min", description = "The minimum amount of experience to give", required = true)
+    private int min;
+    @QParamDoc(name = "max", description = "The maximum amount of experience to give", required = true)
+    private int max;
+    @QParamDoc(name = "chance", description = "The chance of the action being executed. 1 is 100% chance, 0 is 0% chance", def="1")
+    private double chance;
 
     @Override
     public void play(QPlayer player) {

@@ -83,6 +83,7 @@ tasks.register<JavaCompile>("runAnnotationProcessor") {
     )
     options.compilerArgs.add("-processor")
     options.compilerArgs.add("de.erethon.questsxl.QDocGenerator")
+    options.compilerArgs.add("-AdocOutputDir=${project.rootDir}/docs")
     options.encoding = "UTF-8"
     options.release.set(21)
 }

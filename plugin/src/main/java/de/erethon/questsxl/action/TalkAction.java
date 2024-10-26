@@ -2,8 +2,8 @@ package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
+import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.player.QPlayer;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.LinkedHashMap;

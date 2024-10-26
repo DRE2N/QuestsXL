@@ -10,14 +10,26 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-@QLoadableDoc("delay")
+
+@QLoadableDoc(
+        value = "delay",
+        description = "Delays the execution of a list of actions by a certain amount of time.",
+        shortExample = "<no short example>",
+        longExample = {
+                "delay:",
+                "  duration: 10",
+                "  actions:",
+                "    - 'message: message=Hello world'"
+        }
+)
 public class DelayAction extends QBaseAction {
 
-    QuestsXL plugin = QuestsXL.getInstance();
+    private final QuestsXL plugin = QuestsXL.getInstance();
 
-    Set<QAction> actions;
-    @QParamDoc("Duration in seconds")
-    long delay;
+    @QParamDoc(name = "duration", description = "The duration in seconds", def="0", required = true)
+    private long delay;
+    @QParamDoc(name = "actions", description = "The list of actions to execute after the delay", required = true)
+    private Set<QAction> actions;
 
     @Override
     public void play(QPlayer player) {

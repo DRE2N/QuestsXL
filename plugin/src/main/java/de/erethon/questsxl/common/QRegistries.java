@@ -2,7 +2,7 @@ package de.erethon.questsxl.common;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.action.AddEventParticipation;
+import de.erethon.questsxl.action.AddEventParticipationAction;
 import de.erethon.questsxl.action.*;
 import de.erethon.questsxl.condition.ActiveQuestCondition;
 import de.erethon.questsxl.condition.*;
@@ -28,7 +28,7 @@ public class QRegistries {
     }
 
     private static void initActions() {
-        ACTIONS.register("event_participation", AddEventParticipation::new);
+        ACTIONS.register("event_participation", AddEventParticipationAction::new);
         ACTIONS.register("delay", DelayAction::new);
         ACTIONS.register("dialogue", DialogueAction::new);
         ACTIONS.register("display_marker", DisplayLocationMarkerAction::new);

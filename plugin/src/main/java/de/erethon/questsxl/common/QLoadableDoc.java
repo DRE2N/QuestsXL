@@ -11,5 +11,5 @@ public @interface QLoadableDoc {
     String value() default "";
     String description() default "";
     String shortExample() default "";
-    String longExample() default "";
+    String[] longExample() default {};
 }

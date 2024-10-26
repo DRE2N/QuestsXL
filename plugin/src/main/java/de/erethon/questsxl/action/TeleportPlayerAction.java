@@ -1,14 +1,27 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.common.QConfig;
-import de.erethon.questsxl.common.QLineConfig;
+import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QLocation;
+import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 
+@QLoadableDoc(
+        value = "teleport",
+        description = "Teleports the player to a location",
+        shortExample = "- 'teleport: target=~0, ~1, ~0' # Teleports the player one block up",
+        longExample = {
+                "teleport:",
+                "  target:",
+                "    x: 0",
+                "    y: 64",
+                "    z: 0",
+        }
+)
 public class TeleportPlayerAction extends QBaseAction{
 
+    @QParamDoc(name = "target", description = "The location to teleport the player to", required = true)
     QLocation target;
 
     public void play(QPlayer player) {

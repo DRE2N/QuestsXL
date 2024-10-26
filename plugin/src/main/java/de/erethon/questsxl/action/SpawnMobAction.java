@@ -8,7 +8,9 @@ import de.erethon.aether.creature.NPCData;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
+import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QLocation;
+import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Bukkit;
@@ -18,11 +20,27 @@ import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.Arrays;
 
+@QLoadableDoc(
+        value = "spawn_mob",
+        description = "Spawns a mob at a location.",
+        shortExample = "- 'spawn_mob: id=example_mob; location: 0, 0, 0'",
+        longExample = {
+                "spawn_mob:",
+                "  id: example_mob",
+                "  location: ",
+                "    x: ~40",
+                "    y: ~0",
+                "    z: ~5"
+        }
+)
 public class SpawnMobAction extends QBaseAction {
 
     Aether aether = plugin.getAether();
     CreatureManager creatureManager = aether.getCreatureManager();
+
+    @QParamDoc(name = "id", description = "The ID of the mob to spawn", required = true)
     NPCData npcData = null;
+    @QParamDoc(name = "location", description = "The location to spawn the mob at. QLocation", required = true)
     QLocation location = null;
 
 

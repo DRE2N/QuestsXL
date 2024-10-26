@@ -13,7 +13,9 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.ObjectiveHolder;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
+import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QLocation;
+import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Location;
@@ -23,11 +25,28 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.File;
 import java.util.Arrays;
 
+@QLoadableDoc(
+        value = "paste_schematic",
+        description = "Pastes a schematic at a location and undoes it after a certain amount of time, optionally.",
+        shortExample = "- 'paste_schematic: location=~0,~0,~0; schematic=example.schematic; time=60'",
+        longExample = {
+                "paste_schematic:",
+                "  location:",
+                "    x: 123",
+                "    y: 64",
+                "    z: 321",
+                "  schematic: example.schematic",
+                "  time: 60"
+        }
+)
 public class PasteSchematicAction extends QBaseAction {
 
-    File schematic;
-    QLocation location;
-    int time;
+    @QParamDoc(name = "location", description = "The location to paste the schematic at. QLocation", required = true)
+    private QLocation location;
+    @QParamDoc(name = "schematic", description = "The name of the schematic file in the FAWE schematics folder", required = true)
+    private File schematic;
+    @QParamDoc(name = "time", description = "The time in ticks after which the schematic will be undone", def="60")
+    private int time;
 
     @Override
     public void play(QPlayer player) {

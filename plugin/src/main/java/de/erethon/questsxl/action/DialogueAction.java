@@ -4,16 +4,28 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.QBaseAction;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
+import de.erethon.questsxl.common.QLoadableDoc;
+import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.dialogue.QDialogue;
 import de.erethon.questsxl.dialogue.QDialogueManager;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
+@QLoadableDoc(
+        value = "dialogue",
+        description = "Starts playing a dialogue. The dialogue needs to be defined in a separate file in. \nIf the dialogue is not found, the action will fail on load.",
+        shortExample = "- 'dialogue: id=example_dialogue'",
+        longExample = {
+                "dialogue:",
+                "  id: example_dialogue",
+        }
+)
 public class DialogueAction extends QBaseAction {
 
     QuestsXL plugin = QuestsXL.getInstance();
     QDialogueManager dialogueManager = plugin.getDialogueManager();
+    @QParamDoc(name = "id", description = "The ID of the dialogue to play", required = true)
     QDialogue dialogue;
 
     @Override
