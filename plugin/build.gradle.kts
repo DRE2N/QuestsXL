@@ -61,6 +61,7 @@ tasks {
     }
 
     shadowJar {
+        archiveBaseName.set("QuestsXL")
         dependencies {
             include(dependency("de.erethon:bedrock:1.4.0"))
             include(dependency("org.eclipse.jgit:org.eclipse.jgit:6.4.0.202211300538-r"))
@@ -72,6 +73,7 @@ tasks {
         load = BukkitPluginDescription.PluginLoadOrder.POSTWORLD
         main = "de.erethon.questsxl.QuestsXL"
         apiVersion = "1.21"
+        name = "QuestsXL"
         authors = listOf("Malfrador", "Fyreum")
         commands {
             register("quests") {
