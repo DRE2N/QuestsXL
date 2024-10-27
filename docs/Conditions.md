@@ -7,15 +7,15 @@ Checks if the player has the specified quest active.
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
-| `id` | The ID of the quest. |  | true |
+| `quest` | The ID of the quest. |  | true |
 
 ```yaml
-'active_quest: id=example_quest'
+'active_quest: quest=example_quest'
 ```
 
 ```yaml
 active_quest:
-  id: example_quest
+  quest: example_quest
 ```
 
 ## completed_quest
@@ -27,12 +27,12 @@ Checks if the player has the specified quest completed.
 |-----------|-------------|---------|----------|
 
 ```yaml
-'completed_quest: id=example_quest'
+'completed_quest: quest=example_quest'
 ```
 
 ```yaml
 completed_quest:
-  id: example_quest
+  quest: example_quest
 ```
 
 ## event_state
@@ -42,16 +42,16 @@ Checks if the specified event is in the specified state.
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
-| `id` | The ID of the event. |  | true |
+| `event` | The ID of the event. |  | true |
 | `state` | The state the event should be in. One of `active`, `inactive`, `completed` or `disabled` | active | false |
 
 ```yaml
-'event_state: id=example_event; state=active'
+'event_state: event=example_event; state=active'
 ```
 
 ```yaml
 event_state:
-  id: example_event
+  event: example_event
   state: active
 ```
 

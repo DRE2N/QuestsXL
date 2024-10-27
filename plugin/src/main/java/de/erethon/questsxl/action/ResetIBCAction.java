@@ -13,17 +13,17 @@ import org.bukkit.configuration.ConfigurationSection;
 @QLoadableDoc(
         value = "reset_ibc",
         description = "Resets an InstancedBlockCollection for a player (restores real, shared world state).",
-        shortExample = "- 'reset_ibc: id=example_collection'",
+        shortExample = "- 'reset_ibc: ibc=example_collection'",
         longExample = {
                 "reset_ibc:",
-                "  id: example_collection"
+                "  ibc: example_collection"
         }
 )
 public class ResetIBCAction extends QBaseAction {
 
     BlockCollectionManager manager = QuestsXL.getInstance().getBlockCollectionManager();
 
-    @QParamDoc(name = "id", description = "The ID of the IBC to reset", required = true)
+    @QParamDoc(name = "ibc", description = "The ID of the IBC to reset", required = true)
     InstancedBlockCollection collection = null;
 
     @Override
@@ -33,9 +33,9 @@ public class ResetIBCAction extends QBaseAction {
 
     @Override
     public void load(QConfig cfg) {
-        collection = manager.getByID(cfg.getString("id"));
+        collection = manager.getByID(cfg.getString("ibc"));
         if (collection == null) {
-            throw new RuntimeException("Collection " + cfg.getString("id") + " does not exist.");
+            throw new RuntimeException("Collection " + cfg.getString("ibc") + " does not exist.");
         }
     }
 

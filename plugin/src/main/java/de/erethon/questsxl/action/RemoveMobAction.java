@@ -9,17 +9,17 @@ import de.erethon.questsxl.player.QPlayer;
 @QLoadableDoc(
         value = "remove_mob",
         description = "Removes one or multiple mobs from the world.",
-        shortExample = "- 'remove_mob: id=example_mob; radius=32'",
+        shortExample = "- 'remove_mob: mob=example_mob; radius=32'",
         longExample = {
                 "remove_mob:",
-                "  id: example_mob",
+                "  mob: example_mob",
                 "  radius: 32",
                 "  doDamage: true"
         }
 )
 public class RemoveMobAction extends QBaseAction {
 
-    @QParamDoc(name = "id", description = "The ID of the mob to remove", required = true)
+    @QParamDoc(name = "mob", description = "The ID of the mob to remove", required = true)
     private String mob;
     @QParamDoc(name = "radius", description = "The radius in which to remove the mob", def = "32")
     private int radius;
@@ -39,7 +39,7 @@ public class RemoveMobAction extends QBaseAction {
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        mob = cfg.getString("id");
+        mob = cfg.getString("mob");
         radius = cfg.getInt("radius", 32);
         doDamage = cfg.getBoolean("doDamage", false);
     }

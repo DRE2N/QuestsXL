@@ -30,7 +30,6 @@ public class QRegistries {
     private static void initActions() {
         ACTIONS.register("event_participation", AddEventParticipationAction::new);
         ACTIONS.register("delay", DelayAction::new);
-        ACTIONS.register("dialogue", DialogueAction::new);
         ACTIONS.register("display_marker", DisplayLocationMarkerAction::new);
         ACTIONS.register("dummy", DummyAction::new);
         ACTIONS.register("give_item", GiveItemAction::new);
@@ -38,8 +37,8 @@ public class QRegistries {
         ACTIONS.register("objective_display", ObjectiveDisplayTextAction::new);
         ACTIONS.register("permission", PermissionAction::new);
         ACTIONS.register("play_animation", PlayAnimationAction::new);
+        ACTIONS.register("play_dialogue", DialogueAction::new);
         ACTIONS.register("play_cutscene", PlayCutsceneAction::new);
-        ACTIONS.register("quest", QuestAction::new);
         ACTIONS.register("repeat", RepeatAction::new);
         ACTIONS.register("reset_ibc", ResetIBCAction::new);
         ACTIONS.register("run_as", RunAsAction::new);
@@ -50,6 +49,7 @@ public class QRegistries {
         ACTIONS.register("show_ibc", ShowIBCAction::new);
         ACTIONS.register("stage", StageAction::new);
         ACTIONS.register("start_event", StartEventAction::new);
+        ACTIONS.register("start_quest", QuestAction::new);
         ACTIONS.register("talk", TalkAction::new);
         ACTIONS.register("teleport", TeleportPlayerAction::new);
         if (qxl.isWEEnabled()) {

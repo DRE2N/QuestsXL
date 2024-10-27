@@ -11,10 +11,10 @@ import org.bukkit.configuration.ConfigurationSection;
 @QLoadableDoc(
         value = "completed_quest",
         description = "Checks if the player has the specified quest completed.",
-        shortExample = "'completed_quest: id=example_quest'",
+        shortExample = "'completed_quest: quest=example_quest'",
         longExample = {
                 "completed_quest:",
-                "  id: example_quest",
+                "  quest: example_quest",
         }
 )
 public class CompletedQuestCondition extends QBaseCondition {
@@ -39,7 +39,7 @@ public class CompletedQuestCondition extends QBaseCondition {
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        questName = cfg.getString("id");
+        questName = cfg.getString("quest");
     }
 
 }

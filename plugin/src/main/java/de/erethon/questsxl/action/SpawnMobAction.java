@@ -24,10 +24,10 @@ import java.util.Arrays;
 @QLoadableDoc(
         value = "spawn_mob",
         description = "Spawns a mob at a location.",
-        shortExample = "- 'spawn_mob: id=example_mob; x=5; y=0; z=0;'",
+        shortExample = "- 'spawn_mob: mob=example_mob; x=5; y=0; z=0;'",
         longExample = {
                 "spawn_mob:",
-                "  id: example_mob",
+                "  mob: example_mob",
                 "  location: ",
                 "    x: ~40",
                 "    y: ~0",
@@ -39,7 +39,7 @@ public class SpawnMobAction extends QBaseAction {
     Aether aether = plugin.getAether();
     CreatureManager creatureManager = aether.getCreatureManager();
 
-    @QParamDoc(name = "id", description = "The ID of the mob to spawn", required = true)
+    @QParamDoc(name = "mob", description = "The ID of the mob to spawn", required = true)
     NPCData npcData = null;
     @QParamDoc(name = "location", description = "The location to spawn the mob at. QLocation", required = true)
     QLocation location = null;
@@ -82,9 +82,12 @@ public class SpawnMobAction extends QBaseAction {
     public void load(QConfig cfg) {
         super.load(cfg);
         location = cfg.getQLocation("location");
-        npcData = creatureManager.getByID(cfg.getString("id"));
+        npcData = creatureManager.getByID(cfg.getString("mob"));
+        if (npcData == null) { // Legacy support
+            npcData = creatureManager.getByID(cfg.getString("id"));
+        }
         if (npcData == null) {
-            throw new IllegalArgumentException("NPCData with id " + cfg.getString("id") + " not found.");
+            throw new IllegalArgumentException("NPCData with id " + cfg.getString("mob") + " not found.");
         }
     }
 }

@@ -14,7 +14,7 @@ import org.bukkit.configuration.ConfigurationSection;
 @QLoadableDoc(
         value = "hide_ibc",
         description = "Hides an InstancedBlockCollection from a player.",
-        shortExample = "- 'hide_ibc: id=example_collection'",
+        shortExample = "hide_ibc: id=example_collection",
         longExample = {
                 "hide_ibc:",
                 "  id: example_collection"

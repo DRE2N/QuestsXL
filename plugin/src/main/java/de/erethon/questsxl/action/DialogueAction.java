@@ -13,9 +13,9 @@ import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
 @QLoadableDoc(
-        value = "dialogue",
+        value = "play_dialogue",
         description = "Starts playing a dialogue. The dialogue needs to be defined in a separate file in. \nIf the dialogue is not found, the action will fail on load.",
-        shortExample = "- 'dialogue: id=example_dialogue'",
+        shortExample = "play_dialogue: dialogue=example_dialogue",
         longExample = {
                 "dialogue:",
                 "  id: example_dialogue",
@@ -25,7 +25,7 @@ public class DialogueAction extends QBaseAction {
 
     QuestsXL plugin = QuestsXL.getInstance();
     QDialogueManager dialogueManager = plugin.getDialogueManager();
-    @QParamDoc(name = "id", description = "The ID of the dialogue to play", required = true)
+    @QParamDoc(name = "dialogue", description = "The ID of the dialogue to play", required = true)
     QDialogue dialogue;
 
     @Override
@@ -38,6 +38,6 @@ public class DialogueAction extends QBaseAction {
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        dialogue = dialogueManager.get(cfg.getString("id"));
+        dialogue = dialogueManager.get(cfg.getString("dialogue"));
     }
 }

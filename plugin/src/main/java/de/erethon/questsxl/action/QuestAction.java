@@ -11,12 +11,12 @@ import de.erethon.questsxl.quest.QQuest;
 import org.bukkit.configuration.ConfigurationSection;
 
 @QLoadableDoc(
-        value = "quest",
+        value = "start_quest",
         description = "Starts a quest for the player. If the player already has the quest, the action will be skipped.",
-        shortExample = "- 'quest: id=example_quest'",
+        shortExample = "- 'start_quest: quest=example_quest'",
         longExample = {
-                "quest:",
-                "  id: example_quest",
+                "start_quest:",
+                "  quest: example_quest",
         }
 )
 public class QuestAction extends QBaseAction {
@@ -24,7 +24,7 @@ public class QuestAction extends QBaseAction {
     QuestsXL plugin = QuestsXL.getInstance();
     QPlayerCache playerCache = plugin.getPlayerCache();
 
-    @QParamDoc(name = "id", description = "The ID of the quest to start", required = true)
+    @QParamDoc(name = "quest", description = "The ID of the quest to start", required = true)
     QQuest quest;
 
     @Override
@@ -39,9 +39,9 @@ public class QuestAction extends QBaseAction {
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        quest = plugin.getQuestManager().getByName(cfg.getString("id"));
+        quest = plugin.getQuestManager().getByName(cfg.getString("quest"));
         if (quest == null) {
-            throw new RuntimeException("Quest " + cfg.getString("id") + " does not exist.");
+            throw new RuntimeException("Quest " + cfg.getString("quest") + " does not exist.");
         }
     }
 

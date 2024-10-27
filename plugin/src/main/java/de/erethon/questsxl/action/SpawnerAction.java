@@ -13,10 +13,10 @@ import org.bukkit.configuration.ConfigurationSection;
 @QLoadableDoc(
         value = "spawner",
         description = "Currently only triggers a spawner. Spawners can be set-up in Aether. \nThis will be expanded in the future.",
-        shortExample = "- 'spawner: id=example_spawner'",
+        shortExample = "- 'spawner: spawner=example_spawner'",
         longExample = {
                 "spawner:",
-                "  id: example_spawner"
+                "  spawner: example_spawner"
         }
 )
 public class SpawnerAction extends QBaseAction {
@@ -24,7 +24,7 @@ public class SpawnerAction extends QBaseAction {
     private final Aether aether = plugin.getAether();
     private final SpawnerManager spawnerManager = aether.getSpawnerManager();
 
-    @QParamDoc(name = "id", description = "The ID of the spawner to trigger", required = true)
+    @QParamDoc(name = "spawner", description = "The ID of the spawner to trigger", required = true)
     private String spawnerID;
 
     @Override
@@ -42,6 +42,6 @@ public class SpawnerAction extends QBaseAction {
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        spawnerID = cfg.getString("id");
+        spawnerID = cfg.getString("spawner");
     }
 }

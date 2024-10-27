@@ -22,7 +22,7 @@ enum EPermissionAction {
 @QLoadableDoc(
         value = "permission",
         description = "Adds or removes a permission or group from a player.",
-        shortExample = "- 'permission: permission=example_permission; action=ADD'",
+        shortExample = "permission: permission=example_permission; action=ADD",
         longExample = {
                 "permission:",
                 "  permission: example_group # Yes, its called permission, but it can also be a group",

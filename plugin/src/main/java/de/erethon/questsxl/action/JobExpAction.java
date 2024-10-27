@@ -20,7 +20,7 @@ import java.util.Random;
 @QLoadableDoc(
         value = "job_exp",
         description = "Gives the player job experience.",
-        shortExample = "- 'job_exp: min=1; max=10; chance=0.5'",
+        shortExample = "job_exp: min=1; max=10; chance=0.5",
         longExample = {
                 "job_exp:",
                 "  min: 1",

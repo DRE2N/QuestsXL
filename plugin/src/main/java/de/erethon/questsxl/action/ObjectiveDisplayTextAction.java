@@ -13,7 +13,7 @@ import org.bukkit.configuration.ConfigurationSection;
 @QLoadableDoc(
         value = "objective_display",
         description = "Sets the display text of an objective for a player. Shown in the sidebar (right side of the screen).",
-        shortExample = "- 'objective_display: id=example_quest; text=Hello!'",
+        shortExample = "objective_display: id=example_quest; text=Hello!",
         longExample = {
                 "objective_display:",
                 "  id: example_quest",

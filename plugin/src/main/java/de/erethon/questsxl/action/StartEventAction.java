@@ -12,10 +12,10 @@ import org.bukkit.configuration.ConfigurationSection;
 @QLoadableDoc(
         value = "start_event",
         description = "Starts an event.",
-        shortExample = "- 'start_event: id=example_event'",
+        shortExample = "- 'start_event: event=example_event'",
         longExample = {
                 "start_event:",
-                "  id: example_event",
+                "  event: example_event",
                 "  skipConditions: true"
         }
 )
@@ -23,7 +23,7 @@ public class StartEventAction extends QBaseAction {
 
     QuestsXL plugin = QuestsXL.getInstance();
 
-    @QParamDoc(name = "id", description = "The ID of the event to start", required = true)
+    @QParamDoc(name = "event", description = "The ID of the event to start", required = true)
     QEvent event;
     @QParamDoc(name = "skipConditions", description = "Whether to skip the event's conditions", def = "false")
     boolean skipConditions = false;
@@ -44,9 +44,9 @@ public class StartEventAction extends QBaseAction {
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        event = plugin.getEventManager().getByID(cfg.getString("id"));
+        event = plugin.getEventManager().getByID(cfg.getString("event"));
         if (event == null) {
-            throw new RuntimeException("Event " + cfg.getString("id") + " does not exist.");
+            throw new RuntimeException("Event " + cfg.getString("event") + " does not exist.");
         }
         skipConditions = cfg.getBoolean("skipConditions", false);
     }

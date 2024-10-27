@@ -18,16 +18,16 @@ import org.bukkit.event.entity.EntityDeathEvent;
 @QLoadableDoc(
         value = "kill_mob",
         description = "This objective is completed when a player kills a specific mob, optionally within a certain radius around an event.",
-        shortExample = "kill_mob: id=evil_mob",
+        shortExample = "kill_mob: mob=evil_mob",
         longExample = {
                 "kill_mob:",
-                "  id: 'evil_mob'",
+                "  mob: 'evil_mob'",
                 "  radius: 10"
         }
 )
 public class KillMobObjective extends QBaseObjective {
 
-    @QParamDoc(name = "id", description = "The ID of the mob", required = true)
+    @QParamDoc(name = "mob", description = "The ID of the mob", required = true)
     private String mob;
     @QParamDoc(name = "radius", description = "The radius around the event in which the mob has to be killed. Useful for events", def = "-1")
     private int radius;
@@ -69,7 +69,10 @@ public class KillMobObjective extends QBaseObjective {
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        mob = cfg.getString("id");
+        mob = cfg.getString("mob");
+        if (mob == null) { // Legacy
+            mob = cfg.getString("id");
+        }
         radius = cfg.getInt("radius", -1);
     }
 }

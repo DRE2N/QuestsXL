@@ -15,10 +15,10 @@ import java.util.Locale;
 @QLoadableDoc(
         value = "event_state",
         description = "Checks if the specified event is in the specified state.",
-        shortExample = "'event_state: id=example_event; state=active'",
+        shortExample = "'event_state: event=example_event; state=active'",
         longExample = {
                 "event_state:",
-                "  id: example_event",
+                "  event: example_event",
                 "  state: active",
         }
 )
@@ -26,7 +26,7 @@ public class EventStateCondition extends QBaseCondition {
 
     QuestsXL plugin = QuestsXL.getInstance();
 
-    @QParamDoc(name = "id", description = "The ID of the event.", required = true)
+    @QParamDoc(name = "event", description = "The ID of the event.", required = true)
     QEvent event;
     @QParamDoc(name = "state", description = "The state the event should be in. One of `active`, `inactive`, `completed` or `disabled`", def = "active")
     EventState state;
@@ -50,7 +50,7 @@ public class EventStateCondition extends QBaseCondition {
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        event = plugin.getEventManager().getByID(cfg.getString("id"));
+        event = plugin.getEventManager().getByID(cfg.getString("event"));
         state = EventState.valueOf(cfg.getString("state", "active").toUpperCase(Locale.ROOT));
     }
 

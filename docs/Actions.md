@@ -21,25 +21,6 @@ delay:
     - 'message: message=Hello world'
 ```
 
-## dialogue
-Starts playing a dialogue. The dialogue needs to be defined in a separate file in. 
-If the dialogue is not found, the action will fail on load.
-
-#### Parameters:
-
-| Parameter | Description | Default | Required |
-|-----------|-------------|---------|----------|
-| `id` | The ID of the dialogue to play |  | true |
-
-```yaml
-- 'dialogue: id=example_dialogue'
-```
-
-```yaml
-dialogue:
-  id: example_dialogue
-```
-
 ## display_marker
 **Currently not implemented**
 
@@ -65,7 +46,7 @@ This action does nothing. It is used for testing and debugging.
 |-----------|-------------|---------|----------|
 
 ```yaml
-- 'dummy:'
+dummy:
 ```
 
 ```yaml
@@ -83,7 +64,7 @@ Add participation to an event. Always executed as a player
 | `id` | The ID of the event to participate in |  | true |
 
 ```yaml
-- 'event_participation: id=example_event; amount=1'
+event_participation: id=example_event; amount=1
 ```
 
 ```yaml
@@ -101,15 +82,15 @@ Give an item to the player. The item needs to be defined in the Hephaestus item 
 |-----------|-------------|---------|----------|
 | `amount` | The amount of items to give | 1 | false |
 | `chance` | The chance of the item being given. 100 is 100% chance, 0 is 0% chance | 100 | false |
-| `id` | The ID of the item to give |  | true |
+| `item` | The ID of the item to give |  | true |
 
 ```yaml
-- 'give_item: id=minecraft:stone; amount=420; chance=69'
+give_item: item=minecraft:stone; amount=420; chance=69
 ```
 
 ```yaml
 give_item:
-  id: 'minecraft:stone' # The ID needs to be quoted due to the colon
+  item: 'minecraft:stone' # The ID needs to be quoted due to the colon
   amount: 420
   chance: 69
 ```
@@ -124,7 +105,7 @@ Hides an InstancedBlockCollection from a player.
 | `id` | The ID of the IBC to hide |  | true |
 
 ```yaml
-- 'hide_ibc: id=example_collection'
+hide_ibc: id=example_collection
 ```
 
 ```yaml
@@ -144,7 +125,7 @@ Gives the player job experience.
 | `min` | The minimum amount of experience to give |  | true |
 
 ```yaml
-- 'job_exp: min=1; max=10; chance=0.5'
+job_exp: min=1; max=10; chance=0.5
 ```
 
 ```yaml
@@ -183,7 +164,7 @@ Sets the display text of an objective for a player. Shown in the sidebar (right 
 | `text` | The text to display, empty to clear |   | false |
 
 ```yaml
-- 'objective_display: id=example_quest; text=Hello!'
+objective_display: id=example_quest; text=Hello!
 ```
 
 ```yaml
@@ -204,7 +185,7 @@ Pastes a schematic at a location and undoes it after a certain amount of time, o
 | `time` | The time in ticks after which the schematic will be undone | 60 | false |
 
 ```yaml
-- 'paste_schematic: x=~5; y=~0; z=0; schematic=example.schematic; time=60'
+paste_schematic: x=~5; y=~0; z=0; schematic=example.schematic; time=60
 ```
 
 ```yaml
@@ -228,7 +209,7 @@ Adds or removes a permission or group from a player.
 | `permission` | The permission or group to add or remove |  | true |
 
 ```yaml
-- 'permission: permission=example_permission; action=ADD'
+permission: permission=example_permission; action=ADD
 ```
 
 ```yaml
@@ -260,33 +241,34 @@ Plays a cutscene. The cutscene needs to be created first.
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
-| `id` | The ID of the cutscene to play |  | true |
+| `cutscene` | The ID of the cutscene to play |  | true |
 
 ```yaml
-- 'play_cutscene: id=example_cutscene'
+play_cutscene: cutscene=example_cutscene
 ```
 
 ```yaml
 play_cutscene:
-  id: example_cutscene
+  cutscene: example_cutscene
 ```
 
-## quest
-Starts a quest for the player. If the player already has the quest, the action will be skipped.
+## play_dialogue
+Starts playing a dialogue. The dialogue needs to be defined in a separate file in. 
+If the dialogue is not found, the action will fail on load.
 
 #### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
-| `id` | The ID of the quest to start |  | true |
+| `dialogue` | The ID of the dialogue to play |  | true |
 
 ```yaml
-- 'quest: id=example_quest'
+play_dialogue: dialogue=example_dialogue
 ```
 
 ```yaml
-quest:
-  id: example_quest
+dialogue:
+  id: example_dialogue
 ```
 
 ## remove_mob
@@ -297,16 +279,16 @@ Removes one or multiple mobs from the world.
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
 | `doDamage` | Whether the mob should take damage and die, or just be removed | false | false |
-| `id` | The ID of the mob to remove |  | true |
+| `mob` | The ID of the mob to remove |  | true |
 | `radius` | The radius in which to remove the mob | 32 | false |
 
 ```yaml
-- 'remove_mob: id=example_mob; radius=32'
+- 'remove_mob: mob=example_mob; radius=32'
 ```
 
 ```yaml
 remove_mob:
-  id: example_mob
+  mob: example_mob
   radius: 32
   doDamage: true
 ```
@@ -341,15 +323,15 @@ Resets an InstancedBlockCollection for a player (restores real, shared world sta
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
-| `id` | The ID of the IBC to reset |  | true |
+| `ibc` | The ID of the IBC to reset |  | true |
 
 ```yaml
-- 'reset_ibc: id=example_collection'
+- 'reset_ibc: ibc=example_collection'
 ```
 
 ```yaml
 reset_ibc:
-  id: example_collection
+  ibc: example_collection
 ```
 
 ## run_as
@@ -430,15 +412,15 @@ Shows an Instanced Block Collection to the player.
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
-| `id` | The ID of the collection to show |  | true |
+| `ibc` | The ID of the collection to show |  | true |
 
 ```yaml
-- 'show_ibc: id=example_collection'
+- 'show_ibc: ibc=example_collection'
 ```
 
 ```yaml
 show_ibc:
-  id: example_collection
+  ibc: example_collection
 ```
 
 ## spawn_mob
@@ -448,16 +430,16 @@ Spawns a mob at a location.
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
-| `id` | The ID of the mob to spawn |  | true |
 | `location` | The location to spawn the mob at. QLocation |  | true |
+| `mob` | The ID of the mob to spawn |  | true |
 
 ```yaml
-- 'spawn_mob: id=example_mob; x=5; y=0; z=0;'
+- 'spawn_mob: mob=example_mob; x=5; y=0; z=0;'
 ```
 
 ```yaml
 spawn_mob:
-  id: example_mob
+  mob: example_mob
   location: 
     x: ~40
     y: ~0
@@ -472,15 +454,15 @@ This will be expanded in the future.
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
-| `id` | The ID of the spawner to trigger |  | true |
+| `spawner` | The ID of the spawner to trigger |  | true |
 
 ```yaml
-- 'spawner: id=example_spawner'
+- 'spawner: spawner=example_spawner'
 ```
 
 ```yaml
 spawner:
-  id: example_spawner
+  spawner: example_spawner
 ```
 
 ## stage
@@ -511,17 +493,35 @@ Starts an event.
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
-| `id` | The ID of the event to start |  | true |
+| `event` | The ID of the event to start |  | true |
 | `skipConditions` | Whether to skip the event's conditions | false | false |
 
 ```yaml
-- 'start_event: id=example_event'
+- 'start_event: event=example_event'
 ```
 
 ```yaml
 start_event:
-  id: example_event
+  event: example_event
   skipConditions: true
+```
+
+## start_quest
+Starts a quest for the player. If the player already has the quest, the action will be skipped.
+
+#### Parameters:
+
+| Parameter | Description | Default | Required |
+|-----------|-------------|---------|----------|
+| `quest` | The ID of the quest to start |  | true |
+
+```yaml
+- 'start_quest: quest=example_quest'
+```
+
+```yaml
+start_quest:
+  quest: example_quest
 ```
 
 ## teleport

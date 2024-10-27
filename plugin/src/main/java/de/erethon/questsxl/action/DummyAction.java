@@ -10,7 +10,7 @@ import org.bukkit.configuration.ConfigurationSection;
 @QLoadableDoc(
         value = "dummy",
         description = "This action does nothing. It is used for testing and debugging.",
-        shortExample = "- 'dummy:'"
+        shortExample = "dummy:"
 )
 public class DummyAction extends QBaseAction {
     @Override

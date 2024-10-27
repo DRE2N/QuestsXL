@@ -11,7 +11,7 @@ import de.erethon.questsxl.player.QPlayerCache;
 @QLoadableDoc(
         value = "event_participation",
         description = "Add participation to an event. Always executed as a player",
-        shortExample = "- 'event_participation: id=example_event; amount=1'",
+        shortExample = "event_participation: id=example_event; amount=1",
         longExample = {
                 "event_participation:",
                 "  id: example_event",
