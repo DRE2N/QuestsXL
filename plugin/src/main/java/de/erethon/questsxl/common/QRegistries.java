@@ -116,15 +116,16 @@ public class QRegistries {
         }
         if (qxl.isJXLEnabled()) {
             MessageUtil.log("Found JobsXL, enabling JobsXL objectives.");
-            OBJECTIVES.register("craft", CraftObjective::new);
+            OBJECTIVES.register("craft", ItemCraftObjective::new);
+            OBJECTIVES.register("job_exp", JobExpObjective::new);
         }
         if (qxl.isHephaestusEnabled()) {
             MessageUtil.log("Found Hephaestus, enabling Hephaestus objectives.");
             OBJECTIVES.register("consume_item", ConsumeItemObjective::new);
             OBJECTIVES.register("drop_item", DropItemObjective::new);
-            OBJECTIVES.register("item_pickup", ItemPickupObjective::new);
-            OBJECTIVES.register("place_item", PlaceItemInContainerObjective::new);
-            OBJECTIVES.register("use_item", UseItemObjective::new);
+            OBJECTIVES.register("pickup_item", ItemPickupObjective::new);
+            OBJECTIVES.register("place_item", ItemPlaceInContainerObjective::new);
+            OBJECTIVES.register("use_item", ItemUseObjective::new);
         }
     }
 }

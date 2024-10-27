@@ -4,18 +4,30 @@ import de.erethon.hephaestus.items.HItem;
 import de.erethon.hephaestus.items.HItemLibrary;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
-import de.erethon.questsxl.common.QLineConfig;
+import de.erethon.questsxl.common.QLoadableDoc;
+import de.erethon.questsxl.common.QParamDoc;
 import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 
+@QLoadableDoc(
+        value = "pickup_item",
+        description = "This objective is completed when the player picks up a specific item. Can optionally cancel the pickup event, preventing the item from being picked up.",
+        shortExample = "pickup_item: item=erethon:fancy_sword",
+        longExample = {
+                "pickup_item:",
+                "  item: 'erethon:fancy_sword' # Needs to be quoted due to the colon.",
+                "  cancel: true"
+        }
+)
 public class ItemPickupObjective extends QBaseObjective {
 
     private final HItemLibrary itemLibrary = QuestsXL.getInstance().getItemLibrary();
 
+    @QParamDoc(name = "item", description = "The key of the item that needs to be picked up. Same as in /give", required = true)
     private NamespacedKey itemID;
+    @QParamDoc(name = "cancel", description = "Whether the pickup event should be cancelled.", def = "false")
     private boolean cancel;
 
     @Override

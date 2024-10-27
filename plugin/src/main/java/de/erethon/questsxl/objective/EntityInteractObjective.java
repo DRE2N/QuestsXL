@@ -1,9 +1,6 @@
 package de.erethon.questsxl.objective;
 
-import de.erethon.aether.creature.ActiveNPC;
 import de.erethon.questsxl.common.QConfig;
-import de.erethon.questsxl.common.QLineConfig;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;

@@ -7,15 +7,29 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.common.ObjectiveHolder;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
+import de.erethon.questsxl.common.QLoadableDoc;
+import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.livingworld.QEvent;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDeathEvent;
 
+@QLoadableDoc(
+        value = "kill_mob",
+        description = "This objective is completed when a player kills a specific mob, optionally within a certain radius around an event.",
+        shortExample = "kill_mob: id=evil_mob",
+        longExample = {
+                "kill_mob:",
+                "  id: 'evil_mob'",
+                "  radius: 10"
+        }
+)
 public class KillMobObjective extends QBaseObjective {
 
+    @QParamDoc(name = "id", description = "The ID of the mob", required = true)
     private String mob;
+    @QParamDoc(name = "radius", description = "The radius around the event in which the mob has to be killed. Useful for events", def = "-1")
     private int radius;
 
     @Override
