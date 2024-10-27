@@ -281,9 +281,6 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
         ConfigurationSection locationSection = cfg.getConfigurationSection("startLocation");
         cooldown = cfg.getInt("cooldown", 0);
         range = cfg.getInt("range", 32);
-        MessageUtil.log(locationSection.getKeys(false).toString());
-        MessageUtil.log("World: " + locationSection.getString("world"));
-        Bukkit.getWorlds().forEach(world -> MessageUtil.log(world.getName()));
         String worldName = locationSection.getString("world", "Erethon");
         double x = locationSection.getDouble("x");
         double y = locationSection.getDouble("y");
@@ -351,7 +348,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
         timeLastCompleted = cfg.getInt("state.timeLastCompleted", 0);
 
         isValid = true;
-        MessageUtil.log("Loaded event " + id + " with " + stages.size() + " at " + centerLocation.getWorld().getName() + " / " + centerLocation.getX() + " / " + centerLocation.getY() + " / " + centerLocation.getZ());
+        MessageUtil.log("Loaded event " + id + " with " + stages.size() + " stages at " + centerLocation.getWorld().getName() + " / " + centerLocation.getX() + " / " + centerLocation.getY() + " / " + centerLocation.getZ());
     }
 
     public void save() {
