@@ -6,7 +6,10 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.livingworld.EventState;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -62,12 +65,22 @@ public class EventCommand extends ECommand {
         if (args.length > 2 && args[2].equalsIgnoreCase("info")) {
             try {
                 MessageUtil.sendMessage(commandSender, "&8&m               &r &a" + event.getName() + " &8&m               &r");
-                MessageUtil.sendMessage(commandSender, "&7Location&8: &a" + event.getLocation());
+                MessageUtil.sendMessage(commandSender, "&7Location&8: &a" + event.getLocation().getX() + " &8/&a " + event.getLocation().getY() + " &8/&a " + event.getLocation().getZ());
                 MessageUtil.sendMessage(commandSender, "&7Range&8: &a" + event.getRange());
                 MessageUtil.sendMessage(commandSender, "&7State&8: &a" + event.getState());
-                MessageUtil.sendMessage(commandSender, "&7Stage&8: &a" + event.getCurrentStage().getId());
+                if (event.getCurrentStage() == null) {
+                    MessageUtil.sendMessage(commandSender, "&7Stage&8: &aNone");
+                } else {
+                    MessageUtil.sendMessage(commandSender, "&7Stage&8: &a" + event.getCurrentStage().getId());
+                }
+                Component players = getPlayerHover(event);
+                MessageUtil.sendMessage(commandSender, players);
                 MessageUtil.sendMessage(commandSender, "&7Players&8: &a" + event.getPlayersInRange().size());
-                MessageUtil.sendMessage(commandSender, "&7Top Player&8: &a" + event.getTopPlayer());
+                if (event.getTopPlayer() == null) {
+                    MessageUtil.sendMessage(commandSender, "&7Top Player&8: &aNone");
+                } else {
+                    MessageUtil.sendMessage(commandSender, "&7Top Player&8: &a" + event.getTopPlayer());
+                }
             }
             catch (Exception e) {
                 MessageUtil.sendMessage(commandSender, QuestsXL.ERROR + "Ein Fehler ist aufgetreten: " + e.getMessage());
@@ -75,6 +88,16 @@ public class EventCommand extends ECommand {
             return;
         }
         MessageUtil.sendMessage(commandSender, QuestsXL.ERROR + "Bitte gebe eine gültige Aktion an: active, complete, disable, inactive, info");
+    }
+
+    private static @NotNull Component getPlayerHover(QEvent event) {
+        Component players = Component.text("Players", NamedTextColor.GREEN).append(Component.text(":", NamedTextColor.DARK_GRAY));
+        Component playerHover = Component.empty();
+        for (QPlayer player : event.getPlayersInRange()) {
+            playerHover = playerHover.append(Component.text(player.getName(), NamedTextColor.GREEN)).appendNewline();
+        }
+        players = players.append(Component.text(" " + event.getPlayersInRange().size(), NamedTextColor.GREEN).hoverEvent(playerHover));
+        return players;
     }
 
     @Override
