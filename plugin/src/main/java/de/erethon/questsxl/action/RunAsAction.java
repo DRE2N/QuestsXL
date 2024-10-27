@@ -36,7 +36,7 @@ public class RunAsAction extends QBaseAction {
 
     @QParamDoc(name = "mode", description = "The mode in which the action should be run. One of `event_in_range`, `event_participants` or `online`", def = "`online`")
     private RUN_MODE runMode = RUN_MODE.ONLINE;
-    @QParamDoc(name = "value", description = "The value to filter players by. For `event_participants`, this is the minimum participation count. For `event_in_range`, this is the range in blocks *added* to the event range.", def = "0")
+    @QParamDoc(name = "value", description = "The value to filter players by. For `event_participants`, this is the min. participation. For `event_in_range`, this is the range in blocks *added* to the event range.", def = "0")
     private int runValue;
     @QParamDoc(name = "actions", description = "The list of actions to execute", required = true)
     private Set<QAction> actions;

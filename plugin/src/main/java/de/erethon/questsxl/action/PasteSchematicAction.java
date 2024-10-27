@@ -28,7 +28,7 @@ import java.util.Arrays;
 @QLoadableDoc(
         value = "paste_schematic",
         description = "Pastes a schematic at a location and undoes it after a certain amount of time, optionally.",
-        shortExample = "- 'paste_schematic: location=~0,~0,~0; schematic=example.schematic; time=60'",
+        shortExample = "- 'paste_schematic: x=~5; y=~0; z=0; schematic=example.schematic; time=60'",
         longExample = {
                 "paste_schematic:",
                 "  location:",

@@ -23,7 +23,7 @@ import java.util.Arrays;
 @QLoadableDoc(
         value = "spawn_mob",
         description = "Spawns a mob at a location.",
-        shortExample = "- 'spawn_mob: id=example_mob; location: 0, 0, 0'",
+        shortExample = "- 'spawn_mob: id=example_mob; x=5; y=0; z=0;'",
         longExample = {
                 "spawn_mob:",
                 "  id: example_mob",

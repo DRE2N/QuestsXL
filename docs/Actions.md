@@ -154,7 +154,7 @@ job_exp:
 ```
 
 ## message
-Sends a message to the player all event participants.
+Sends a message to the player or all event participants.
 
 ### Parameters:
 
@@ -203,7 +203,7 @@ Pastes a schematic at a location and undoes it after a certain amount of time, o
 | `time` | The time in ticks after which the schematic will be undone | 60 | false |
 
 ```yaml
-- 'paste_schematic: location=~0,~0,~0; schematic=example.schematic; time=60'
+- 'paste_schematic: x=~5; y=~0; z=0; schematic=example.schematic; time=60'
 ```
 
 ```yaml
@@ -360,7 +360,7 @@ Runs a list of actions as a player. Useful for running actions on all players in
 |-----------|-------------|---------|----------|
 | `actions` | The list of actions to execute |  | true |
 | `mode` | The mode in which the action should be run. One of `event_in_range`, `event_participants` or `online` | `online` | false |
-| `value` | The value to filter players by. For `event_participants`, this is the minimum participation count. For `event_in_range`, this is the range in blocks *added* to the event range. | 0 | false |
+| `value` | The value to filter players by. For `event_participants`, this is the min. participation. For `event_in_range`, this is the range in blocks *added* to the event range. | 0 | false |
 
 ```yaml
 <no short example>
@@ -449,7 +449,7 @@ Spawns a mob at a location.
 | `location` | The location to spawn the mob at. QLocation |  | true |
 
 ```yaml
-- 'spawn_mob: id=example_mob; location: 0, 0, 0'
+- 'spawn_mob: id=example_mob; x=5; y=0; z=0;'
 ```
 
 ```yaml
@@ -529,7 +529,7 @@ Teleports the player to a location
 | `target` | The location to teleport the player to |  | true |
 
 ```yaml
-- 'teleport: target=~0, ~1, ~0' # Teleports the player one block up
+- 'teleport: x=~0; y=~1; z=~0;' # Teleports the player one block up
 ```
 
 ```yaml

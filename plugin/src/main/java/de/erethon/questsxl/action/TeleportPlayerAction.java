@@ -10,7 +10,7 @@ import org.bukkit.Material;
 @QLoadableDoc(
         value = "teleport",
         description = "Teleports the player to a location",
-        shortExample = "- 'teleport: target=~0, ~1, ~0' # Teleports the player one block up",
+        shortExample = "- 'teleport: x=~0; y=~1; z=~0;' # Teleports the player one block up",
         longExample = {
                 "teleport:",
                 "  target:",
