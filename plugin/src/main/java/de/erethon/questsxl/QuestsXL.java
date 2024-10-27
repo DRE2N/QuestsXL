@@ -325,6 +325,13 @@ public final class QuestsXL extends EPlugin {
         return errors;
     }
 
+    public void addRuntimeError(FriendlyError error) {
+        errors.add(error);
+        for (FriendlyError e : errors) {
+            MessageUtil.broadcastMessageIf(e.getMessage(), p -> p.hasPermission("qxl.admin.info"));
+        }
+    }
+
     public void setShowStacktraces(boolean showStacktraces) {
         this.showStacktraces = showStacktraces;
     }

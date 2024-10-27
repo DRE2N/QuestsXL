@@ -1,9 +1,11 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.ObjectiveHolder;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -45,7 +47,12 @@ public class RepeatAction extends QBaseAction {
             @Override
             public void run() {
                 for (QAction action : actions) {
-                    action.play(player);
+                    try {
+                        action.play(player);
+                    } catch (Exception e) {
+                        FriendlyError error = new FriendlyError(id,"Failed to execute repeat actions", e.getMessage(), "Player: " + player.getName()).addStacktrace(e.getStackTrace());
+                        plugin.addRuntimeError(error);
+                    }
                 }
                 if (current >= repetitions) {
                     onFinish(player);
@@ -65,7 +72,12 @@ public class RepeatAction extends QBaseAction {
             @Override
             public void run() {
                 for (QAction action : actions) {
-                    action.play(event);
+                    try {
+                        action.play(event);
+                    } catch (Exception e) {
+                        FriendlyError error = new FriendlyError(id,"Failed to execute repeat actions", e.getMessage(), "Event: " + event.getId()).addStacktrace(e.getStackTrace());
+                        plugin.getErrors().add(error);
+                    }
                 }
                 if (current >= repetitions) {
                     onFinish(event);
@@ -77,6 +89,7 @@ public class RepeatAction extends QBaseAction {
         task.runTaskTimer(plugin, delay, delay);
     }
 
+    @Override
     public void cancel() {
         if (task != null) {
             current = 0;
