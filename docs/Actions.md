@@ -11,7 +11,7 @@ Delays the execution of a list of actions by a certain amount of time.
 | `duration` | The duration in seconds | 0 | true |
 
 ```yaml
-<no short example>
+<no short syntax>
 ```
 
 ```yaml
@@ -323,7 +323,7 @@ Repeats a set of actions a specified amount of times with a delay between each r
 | `repetitions` | The amount of repetitions | 1 | false |
 
 ```yaml
-<no short example>
+<no short syntax>
 ```
 
 ```yaml

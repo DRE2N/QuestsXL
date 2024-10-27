@@ -1,16 +1,27 @@
 package de.erethon.questsxl.condition;
 
-import de.erethon.bedrock.misc.NumberUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
-import de.erethon.questsxl.common.QLineConfig;
+import de.erethon.questsxl.common.QLoadableDoc;
+import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
-import org.bukkit.configuration.ConfigurationSection;
 
-public class    GlobalScoreCondition extends QBaseCondition {
+@QLoadableDoc(
+        value = "global_score",
+        description = "Checks if a certain global score is larger or equal to a value. Global scores are server-wide.",
+        shortExample = "'global_score: score=example_score; value=5'",
+        longExample = {
+                "global_score:",
+                "  score: example_score",
+                "  value: 5",
+        }
+)
+public class GlobalScoreCondition extends QBaseCondition {
 
+    @QParamDoc(name = "score", description = "The name of the global score.", required = true)
     String score;
+    @QParamDoc(name = "value", description = "The value the score should be larger or equal to.", def = "1")
     int value;
 
     @Override

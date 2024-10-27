@@ -14,7 +14,7 @@ import java.util.Set;
 @QLoadableDoc(
         value = "delay",
         description = "Delays the execution of a list of actions by a certain amount of time.",
-        shortExample = "<no short example>",
+        shortExample = "<no short syntax>",
         longExample = {
                 "delay:",
                 "  duration: 10",

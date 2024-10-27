@@ -3,6 +3,8 @@ package de.erethon.questsxl.condition;
 import de.erethon.bedrock.misc.NumberUtil;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
+import de.erethon.questsxl.common.QLoadableDoc;
+import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -11,12 +13,30 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+@QLoadableDoc(
+        value = "time",
+        description = "Checks if the current time is between min and max time.",
+        shortExample = "'time: minHour=18; minMinute=0; maxHour=20; maxMinute=0' #18:00 - 20:00",
+        longExample = {
+                "time:",
+                "  minHour: 18",
+                "  minMinute: 0",
+                "  maxHour: 20",
+                "  maxMinute: 0",
+                "  timeZone: ECT"
+        }
+)
 public class TimeCondition extends QBaseCondition {
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("HH,mm");
+
+    @QParamDoc(name = "minHour", description = "The minimum hour.")
     int minHour;
+    @QParamDoc(name = "minMinute", description = "The minimum minute.")
     int minMinute;
+    @QParamDoc(name = "maxHour", description = "The maximum hour.")
     int maxHour;
+    @QParamDoc(name = "maxMinute", description = "The maximum minute.")
     int maxMinute;
 
     @Override

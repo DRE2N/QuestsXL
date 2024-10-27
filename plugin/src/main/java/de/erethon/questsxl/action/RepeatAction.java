@@ -13,7 +13,7 @@ import java.util.Set;
 @QLoadableDoc(
         value = "repeat",
         description = "Repeats a set of actions a specified amount of times with a delay between each repetition.",
-        shortExample = "<no short example>",
+        shortExample = "<no short syntax>",
         longExample = {
                 "repeat:",
                 "  delay: 10",
