@@ -56,7 +56,7 @@ public class QDocGenerator extends AbstractProcessor {
                 StringBuilder entryBuilder = new StringBuilder();
                 entryBuilder.append("## ").append(loadableDoc.value()).append("\n");
                 entryBuilder.append(loadableDoc.description()).append("\n\n");
-                entryBuilder.append("### Parameters:\n\n");
+                entryBuilder.append("#### Parameters:\n\n");
                 entryBuilder.append("| Parameter | Description | Default | Required |\n");
                 entryBuilder.append("|-----------|-------------|---------|----------|\n");
 

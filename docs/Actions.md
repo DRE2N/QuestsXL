@@ -3,7 +3,7 @@
 ## delay
 Delays the execution of a list of actions by a certain amount of time.
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -22,9 +22,10 @@ delay:
 ```
 
 ## dialogue
-Starts playing a dialogue. The dialogue needs to be defined in a separate file in. <br>If the dialogue is not found, the action will fail on load.
+Starts playing a dialogue. The dialogue needs to be defined in a separate file in. 
+If the dialogue is not found, the action will fail on load.
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -42,7 +43,7 @@ dialogue:
 ## display_marker
 **Currently not implemented**
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -58,7 +59,7 @@ dialogue:
 ## dummy
 This action does nothing. It is used for testing and debugging.
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -74,7 +75,7 @@ This action does nothing. It is used for testing and debugging.
 ## event_participation
 Add participation to an event. Always executed as a player
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -94,7 +95,7 @@ event_participation:
 ## give_item
 Give an item to the player. The item needs to be defined in the Hephaestus item library. <br>You can check if an item exists by using `/give` in Minecraft.
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -116,7 +117,7 @@ give_item:
 ## hide_ibc
 Hides an InstancedBlockCollection from a player.
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -134,7 +135,7 @@ hide_ibc:
 ## job_exp
 Gives the player job experience.
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -156,7 +157,7 @@ job_exp:
 ## message
 Sends a message to the player or all event participants.
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -174,7 +175,7 @@ message:
 ## objective_display
 Sets the display text of an objective for a player. Shown in the sidebar (right side of the screen).
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -194,7 +195,7 @@ objective_display:
 ## paste_schematic
 Pastes a schematic at a location and undoes it after a certain amount of time, optionally.
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -219,7 +220,7 @@ paste_schematic:
 ## permission
 Adds or removes a permission or group from a player.
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -239,7 +240,7 @@ permission:
 ## play_animation
 **Currently not implemented**
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -255,7 +256,7 @@ permission:
 ## play_cutscene
 Plays a cutscene. The cutscene needs to be created first.
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -273,7 +274,7 @@ play_cutscene:
 ## quest
 Starts a quest for the player. If the player already has the quest, the action will be skipped.
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -291,7 +292,7 @@ quest:
 ## remove_mob
 Removes one or multiple mobs from the world.
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -313,7 +314,7 @@ remove_mob:
 ## repeat
 Repeats a set of actions a specified amount of times with a delay between each repetition.
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -336,7 +337,7 @@ repeat:
 ## reset_ibc
 Resets an InstancedBlockCollection for a player (restores real, shared world state).
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -354,7 +355,7 @@ reset_ibc:
 ## run_as
 Runs a list of actions as a player. Useful for running actions on all players in an event. Optionally filters players by range or participation count.
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -377,7 +378,7 @@ run_as:
 ## run_command
 Runs a command, optionally with full permissions (op) or as console. By default, the command is run as the player.
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -397,9 +398,11 @@ run_command:
 ```
 
 ## score
-Modifies a score value. The score can be global, player-specific or event-specific. <br>Scores are a powerful tool to track player progress and can be used in conditions and actions.<br>For example, you could add 1 to a score called enemy_threat every time a player kills a mob during an event, and if the score reaches a certain value, you could spawn a boss.
+Modifies a score value. The score can be global, player-specific or event-specific. 
+Scores are a powerful tool to track player progress and can be used in conditions and actions.
+For example, you could add 1 to a score called enemy_threat every time a player kills a mob during an event, and if the score reaches a certain value, you could spawn a boss.
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -423,7 +426,7 @@ score:
 ## show_ibc
 Shows an Instanced Block Collection to the player.
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -441,7 +444,7 @@ show_ibc:
 ## spawn_mob
 Spawns a mob at a location.
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -462,9 +465,10 @@ spawn_mob:
 ```
 
 ## spawner
-Currently only triggers a spawner. Spawners can be set-up in Aether. <br>This will be expanded in the future.
+Currently only triggers a spawner. Spawners can be set-up in Aether. 
+This will be expanded in the future.
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -480,9 +484,10 @@ spawner:
 ```
 
 ## stage
-Changes the current stage of a quest or event. This is a powerful actin that can be used for branching quests or events. <br>For example, you could create a dialogue that gives the player a choice, and depending on the choice, you could set a different stage.
+Changes the current stage of a quest or event. This is a powerful actin that can be used for branching quests or events. 
+For example, you could create a dialogue that gives the player a choice, and depending on the choice, you could set a different stage.
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -502,7 +507,7 @@ stage:
 ## start_event
 Starts an event.
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -522,7 +527,7 @@ start_event:
 ## teleport
 Teleports the player to a location
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -543,7 +548,7 @@ teleport:
 ## title
 Sends a title to the player or all event participants, optionally with specified behaviour.
 
-### Parameters:
+#### Parameters:
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
