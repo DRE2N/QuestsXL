@@ -12,7 +12,7 @@ import org.bukkit.configuration.ConfigurationSection;
 @QLoadableDoc(
         value = "title",
         description = "Sends a title to the player or all event participants, optionally with specified behaviour.",
-        shortExample = "- 'title: title=Hello, world!'",
+        shortExample = "title: title=Hello, world!",
         longExample = {
                 "title:",
                 "  title: Hello, world!",

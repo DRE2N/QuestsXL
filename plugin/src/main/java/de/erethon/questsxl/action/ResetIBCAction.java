@@ -13,7 +13,7 @@ import org.bukkit.configuration.ConfigurationSection;
 @QLoadableDoc(
         value = "reset_ibc",
         description = "Resets an InstancedBlockCollection for a player (restores real, shared world state).",
-        shortExample = "- 'reset_ibc: ibc=example_collection'",
+        shortExample = "reset_ibc: ibc=example_collection",
         longExample = {
                 "reset_ibc:",
                 "  ibc: example_collection"

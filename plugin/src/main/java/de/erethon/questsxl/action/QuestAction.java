@@ -13,7 +13,7 @@ import org.bukkit.configuration.ConfigurationSection;
 @QLoadableDoc(
         value = "start_quest",
         description = "Starts a quest for the player. If the player already has the quest, the action will be skipped.",
-        shortExample = "- 'start_quest: quest=example_quest'",
+        shortExample = "start_quest: quest=example_quest",
         longExample = {
                 "start_quest:",
                 "  quest: example_quest",

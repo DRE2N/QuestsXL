@@ -13,7 +13,7 @@ import org.bukkit.configuration.ConfigurationSection;
 @QLoadableDoc(
         value = "show_ibc",
         description = "Shows an Instanced Block Collection to the player.",
-        shortExample = "- 'show_ibc: ibc=example_collection'",
+        shortExample = "show_ibc: ibc=example_collection",
         longExample = {
                 "show_ibc:",
                 "  ibc: example_collection"

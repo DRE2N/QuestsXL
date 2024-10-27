@@ -30,7 +30,7 @@ enum Operation {
                 Scores are a powerful tool to track player progress and can be used in conditions and actions.\
                 
                 For example, you could add 1 to a score called enemy_threat every time a player kills a mob during an event, and if the score reaches a certain value, you could spawn a boss.""",
-        shortExample = "- 'score: score=enemy_threat; value=1; operation=add scope=event'",
+        shortExample = "score: score=enemy_threat; value=1; operation=add scope=event",
         longExample = {
                 "score:",
                 "  score: enemy_threat",

@@ -9,7 +9,7 @@ import de.erethon.questsxl.player.QPlayer;
 @QLoadableDoc(
         value = "remove_mob",
         description = "Removes one or multiple mobs from the world.",
-        shortExample = "- 'remove_mob: mob=example_mob; radius=32'",
+        shortExample = "remove_mob: mob=example_mob; radius=32",
         longExample = {
                 "remove_mob:",
                 "  mob: example_mob",

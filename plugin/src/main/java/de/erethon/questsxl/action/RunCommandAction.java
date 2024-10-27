@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 @QLoadableDoc(
         value = "run_command",
         description = "Runs a command, optionally with full permissions (op) or as console. By default, the command is run as the player.",
-        shortExample = "- 'run_command: command=stop; console=true' # Shut down the server",
+        shortExample = "run_command: command=stop; console=true # Shut down the server",
         longExample = {
                 "run_command:",
                 "  command: example_command",

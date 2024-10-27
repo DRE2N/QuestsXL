@@ -12,7 +12,7 @@ import org.bukkit.configuration.ConfigurationSection;
 @QLoadableDoc(
         value = "start_event",
         description = "Starts an event.",
-        shortExample = "- 'start_event: event=example_event'",
+        shortExample = "start_event: event=example_event",
         longExample = {
                 "start_event:",
                 "  event: example_event",

@@ -13,7 +13,7 @@ import org.bukkit.configuration.ConfigurationSection;
 @QLoadableDoc(
         value = "spawner",
         description = "Currently only triggers a spawner. Spawners can be set-up in Aether. \nThis will be expanded in the future.",
-        shortExample = "- 'spawner: spawner=example_spawner'",
+        shortExample = "spawner: spawner=example_spawner",
         longExample = {
                 "spawner:",
                 "  spawner: example_spawner"

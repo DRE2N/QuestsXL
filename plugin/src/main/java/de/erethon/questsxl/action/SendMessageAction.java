@@ -12,7 +12,7 @@ import org.bukkit.configuration.ConfigurationSection;
 @QLoadableDoc(
         value = "message",
         description = "Sends a message to the player or all event participants.",
-        shortExample = "- 'message: message=Hello, world!'",
+        shortExample = "message: message=Hello, world!",
         longExample = {
                 "message:",
                 "  message: Hello, world!"
