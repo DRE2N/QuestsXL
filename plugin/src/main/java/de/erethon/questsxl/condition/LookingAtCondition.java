@@ -18,7 +18,7 @@ import org.bukkit.entity.Player;
 @QLoadableDoc(
         value = "looking_at",
         description = "Checks if the player is looking at a certain location or block.",
-        shortExample = "'looking_at: x=192; y=64; y=20; accuracy=1'",
+        shortExample = "looking_at: x=192; y=64; y=20; accuracy=1",
         longExample = {
                 "looking_at:",
                 "  block: DIAMOND_BLOCK",

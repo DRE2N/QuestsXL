@@ -10,7 +10,7 @@ Checks if the player has the specified quest active.
 | `quest` | The ID of the quest. |  | true |
 
 ```yaml
-'active_quest: quest=example_quest'
+active_quest: quest=example_quest
 ```
 
 ```yaml
@@ -25,9 +25,10 @@ Checks if the player has the specified quest completed.
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
+| `quest` | The name of the quest that the player must have completed. |  | true |
 
 ```yaml
-'completed_quest: quest=example_quest'
+completed_quest: quest=example_quest
 ```
 
 ```yaml
@@ -46,7 +47,7 @@ Checks if the specified event is in the specified state.
 | `state` | The state the event should be in. One of `active`, `inactive`, `completed` or `disabled` | active | false |
 
 ```yaml
-'event_state: event=example_event; state=active'
+event_state: event=example_event; state=active
 ```
 
 ```yaml
@@ -66,7 +67,7 @@ Checks if a certain global score is larger or equal to a value. Global scores ar
 | `value` | The value the score should be larger or equal to. | 1 | false |
 
 ```yaml
-'global_score: score=example_score; value=5'
+global_score: score=example_score; value=5
 ```
 
 ```yaml
@@ -86,7 +87,7 @@ Checks if the player's current group is between min and max group size. Requires
 | `min` | The minimum group size. | 1 | false |
 
 ```yaml
-'group_size: min=2; max=5'
+group_size: min=2; max=5
 ```
 
 ```yaml
@@ -107,7 +108,7 @@ Checks if the player has the specified item in their inventory. Supports both Ma
 | `material` | The material of the item. |  | false |
 
 ```yaml
-'inventory_contains: material=diamond_ore; amount=5'
+inventory_contains: material=diamond_ore; amount=5
 ```
 
 ```yaml
@@ -142,6 +143,8 @@ Checks if a player has a certain level in a job. Requires JobsXL to be installed
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
+| `job` | The name of the job that the player must have a certain level in. |  | true |
+| `level` | The level that the player must have in the specified job. |  | true |
 
 ```yaml
 job_level: job=Miner; level=5
@@ -164,7 +167,7 @@ Checks if the player is within a certain range of a location.
 | `range` | The radius the player has to be in. | 1 | false |
 
 ```yaml
-'location: x=192; y=64; y=20; radius=10'
+location: x=192; y=64; y=20; radius=10
 ```
 
 ```yaml
@@ -187,7 +190,7 @@ Checks if the player is looking at a certain location or block.
 | `location` | The location the player has to be looking at. QLocation |  | false |
 
 ```yaml
-'looking_at: x=192; y=64; y=20; accuracy=1'
+looking_at: x=192; y=64; y=20; accuracy=1
 ```
 
 ```yaml
@@ -205,7 +208,7 @@ Checks if the player has a certain permission.
 | `permission` | The permission the player has to have. |  | true |
 
 ```yaml
-'permission: permission=questsxl.test'
+permission: permission=questsxl.test
 ```
 
 ```yaml
@@ -243,7 +246,7 @@ Checks if the player is in a certain region. QXL-Region, not Faction-Region!
 | `region` | The ID of the region. |  | true |
 
 ```yaml
-'region: region=region_id'
+region: region=region_id
 ```
 
 ```yaml
@@ -264,7 +267,7 @@ Checks if the current time is between min and max time.
 | `minMinute` | The minimum minute. |  | false |
 
 ```yaml
-'time: minHour=18; minMinute=0; maxHour=20; maxMinute=0' #18:00 - 20:00
+time: minHour=18; minMinute=0; maxHour=20; maxMinute=0 #18:00 - 20:00
 ```
 
 ```yaml

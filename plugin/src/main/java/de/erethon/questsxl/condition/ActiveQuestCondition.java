@@ -14,7 +14,7 @@ import org.bukkit.configuration.ConfigurationSection;
 @QLoadableDoc(
         value = "active_quest",
         description = "Checks if the player has the specified quest active.",
-        shortExample = "'active_quest: quest=example_quest'",
+        shortExample = "active_quest: quest=example_quest",
         longExample = {
                 "active_quest:",
                 "  quest: example_quest",

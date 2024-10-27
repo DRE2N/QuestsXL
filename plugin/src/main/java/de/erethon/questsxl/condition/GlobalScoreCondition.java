@@ -10,7 +10,7 @@ import de.erethon.questsxl.player.QPlayer;
 @QLoadableDoc(
         value = "global_score",
         description = "Checks if a certain global score is larger or equal to a value. Global scores are server-wide.",
-        shortExample = "'global_score: score=example_score; value=5'",
+        shortExample = "global_score: score=example_score; value=5",
         longExample = {
                 "global_score:",
                 "  score: example_score",

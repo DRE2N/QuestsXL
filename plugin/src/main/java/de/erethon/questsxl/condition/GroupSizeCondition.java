@@ -14,7 +14,7 @@ import org.bukkit.configuration.ConfigurationSection;
 @QLoadableDoc(
         value = "group_size",
         description = "Checks if the player's current group is between min and max group size. Requires Aergia to be installed.",
-        shortExample = "'group_size: min=2; max=5'",
+        shortExample = "group_size: min=2; max=5",
         longExample = {
                 "group_size:",
                 "  min: 2",

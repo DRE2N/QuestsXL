@@ -14,7 +14,7 @@ import java.util.Arrays;
 @QLoadableDoc(
         value = "location",
         description = "Checks if the player is within a certain range of a location.",
-        shortExample = "'location: x=192; y=64; y=20; radius=10'",
+        shortExample = "location: x=192; y=64; y=20; radius=10",
         longExample = {
                 "location:",
                 "  x: 192",

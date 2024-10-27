@@ -15,7 +15,7 @@ import java.util.Locale;
 @QLoadableDoc(
         value = "event_state",
         description = "Checks if the specified event is in the specified state.",
-        shortExample = "'event_state: event=example_event; state=active'",
+        shortExample = "event_state: event=example_event; state=active",
         longExample = {
                 "event_state:",
                 "  event: example_event",

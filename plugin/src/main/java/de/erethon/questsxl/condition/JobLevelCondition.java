@@ -6,6 +6,7 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
+import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import de.fyreum.jobsxl.JobsXL;
@@ -29,7 +30,10 @@ import org.bukkit.configuration.ConfigurationSection;
 public class JobLevelCondition extends QBaseCondition {
 
     JobsXL jobsXL = QuestsXL.getInstance().getJobsXL();
+
+    @QParamDoc(name = "job", description = "The name of the job that the player must have a certain level in.", required = true)
     String job;
+    @QParamDoc(name = "level", description = "The level that the player must have in the specified job.", required = true)
     int level;
 
     @Override

@@ -16,7 +16,7 @@ import java.util.TimeZone;
 @QLoadableDoc(
         value = "time",
         description = "Checks if the current time is between min and max time.",
-        shortExample = "'time: minHour=18; minMinute=0; maxHour=20; maxMinute=0' #18:00 - 20:00",
+        shortExample = "time: minHour=18; minMinute=0; maxHour=20; maxMinute=0 #18:00 - 20:00",
         longExample = {
                 "time:",
                 "  minHour: 18",

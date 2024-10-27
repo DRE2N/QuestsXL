@@ -11,7 +11,7 @@ import org.bukkit.configuration.ConfigurationSection;
 @QLoadableDoc(
         value = "permission",
         description = "Checks if the player has a certain permission.",
-        shortExample = "'permission: permission=questsxl.test'",
+        shortExample = "permission: permission=questsxl.test",
         longExample = {
                 "permission:",
                 "  permission: questsxl.test",

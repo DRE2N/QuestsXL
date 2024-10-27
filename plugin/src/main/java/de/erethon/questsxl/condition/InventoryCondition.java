@@ -19,7 +19,7 @@ import java.util.Locale;
 @QLoadableDoc(
         value = "inventory_contains",
         description = "Checks if the player has the specified item in their inventory. Supports both Materials and Hephaestus items.",
-        shortExample = "'inventory_contains: material=diamond_ore; amount=5'",
+        shortExample = "inventory_contains: material=diamond_ore; amount=5",
         longExample = {
                 "inventory_contains:",
                 "  item: 'erethon:hoe' # Needs to be quoted due to the colon",

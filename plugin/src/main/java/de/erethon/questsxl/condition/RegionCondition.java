@@ -13,7 +13,7 @@ import org.bukkit.configuration.ConfigurationSection;
 @QLoadableDoc(
         value = "region",
         description = "Checks if the player is in a certain region. QXL-Region, not Faction-Region!",
-        shortExample = "'region: region=region_id'",
+        shortExample = "region: region=region_id",
         longExample = {
                 "region:",
                 "  region: region_id",
