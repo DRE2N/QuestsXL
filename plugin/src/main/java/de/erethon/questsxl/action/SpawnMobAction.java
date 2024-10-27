@@ -11,6 +11,7 @@ import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Bukkit;
@@ -48,9 +49,15 @@ public class SpawnMobAction extends QBaseAction {
     public void play(QPlayer player) {
         if (!conditions(player)) return;
         Location pLocation = player.getLocation();
-        AetherBaseMob mob = npcData.spawn(location.get(pLocation));
-        mob.setPos(location.getX(pLocation), location.getY(pLocation), location.getZ(pLocation));
-        mob.addToWorld();
+        try {
+            AetherBaseMob mob = npcData.spawn(location.get(pLocation));
+            mob.setPos(location.getX(pLocation), location.getY(pLocation), location.getZ(pLocation));
+            mob.addToWorld();
+        }
+        catch (Exception e) {
+            FriendlyError error = new FriendlyError(id,"Failed to spawn mob", e.getMessage(), "Mob ID: " + npcData.getID()).addStacktrace(e.getStackTrace());
+            plugin.addRuntimeError(error);
+        }
         onFinish(player);
     }
 
@@ -58,9 +65,15 @@ public class SpawnMobAction extends QBaseAction {
     public void play(QEvent event) {
         if (!conditions(event)) return;
         Location loc = event.getLocation();
-        AetherBaseMob mob = npcData.spawn(location.get(loc));
-        mob.setPos(location.getX(loc), location.getY(loc), location.getZ(loc));
-        mob.addToWorld();
+        try {
+            AetherBaseMob mob = npcData.spawn(location.get(loc));
+            mob.setPos(location.getX(loc), location.getY(loc), location.getZ(loc));
+            mob.addToWorld();
+        }
+        catch (Exception e) {
+            FriendlyError error = new FriendlyError(id,"Failed to spawn mob", e.getMessage(), "Mob ID: " + npcData.getID()).addStacktrace(e.getStackTrace());
+            plugin.addRuntimeError(error);
+        }
         MessageUtil.log("Spawned " + npcData.getID() + " at " + location.get(event.getLocation()));
         onFinish(event);
     }
