@@ -4,6 +4,7 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.event.QRegionEnterEvent;
 import de.erethon.questsxl.event.QRegionLeaveEvent;
+import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.objective.ActiveObjective;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.region.QRegion;
@@ -24,6 +25,7 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListener extends AbstractListener {
 
@@ -37,6 +39,14 @@ public class PlayerListener extends AbstractListener {
         QPacketListener packetHandler = new QPacketListener(plugin, serverPlayer);
         ChannelPipeline pipeline = serverPlayer.connection.connection.channel.pipeline();
         pipeline.addAfter("packet_handler", "qxl_handler", packetHandler); // Server -> QXL -> Client
+    }
+
+    @EventHandler
+    public void onDisconnect(PlayerQuitEvent event) {
+        QPlayer player = cache.getByPlayer(event.getPlayer());
+        for (QEvent qEvent : plugin.getEventManager().getEvents()) {
+            qEvent.removePlayerOnDisconnect(player);
+        }
     }
 
     @EventHandler

@@ -222,8 +222,10 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
         MessageUtil.log("Event " + getName() + " finished.");
         reward();
         state = EventState.COMPLETED;
-        clearObjectives();
         timeLastCompleted = System.currentTimeMillis();
+        clearObjectives();
+        playersInRange.clear();
+        eventParticipation.clear();
     }
 
     public void setCurrentStage(int id) {
@@ -280,6 +282,10 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
 
     public Map<QPlayer, Integer> getParticipants() {
         return eventParticipation;
+    }
+
+    public void removePlayerOnDisconnect(QPlayer player) {
+        playersInRange.remove(player); // Sometimes this seems necessary
     }
 
     @Override
