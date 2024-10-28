@@ -13,6 +13,7 @@ import de.erethon.hephaestus.items.HItemLibrary;
 import de.erethon.questsxl.animation.AnimationManager;
 import de.erethon.questsxl.command.QCommandCache;
 import de.erethon.questsxl.common.QRegistries;
+import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.dialogue.QDialogueManager;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.global.GlobalObjectives;
@@ -28,6 +29,10 @@ import de.erethon.questsxl.respawn.RespawnPointManager;
 //import de.erethon.questsxl.scoreboard.QuestScoreboardLines;
 import de.erethon.questsxl.tool.GitSync;
 import de.fyreum.jobsxl.JobsXL;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.translation.GlobalTranslator;
+import net.kyori.adventure.translation.TranslationRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.HandlerList;
@@ -40,11 +45,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public final class QuestsXL extends EPlugin {
@@ -81,6 +90,10 @@ public final class QuestsXL extends EPlugin {
     private final Map<String, Integer> scores = new HashMap<>();
     private final List<FriendlyError> errors = new ArrayList<>();
     private boolean showStacktraces = true;
+
+    private Set<QTranslatable> translatables = new HashSet<>();
+    GlobalTranslator globalTranslator = GlobalTranslator.translator();
+    TranslationRegistry translationRegistry = TranslationRegistry.create(Key.key("qxl"));
 
     private File gitConfig = new File(Bukkit.getPluginsFolder().getParent(), "gitConfig.yml");
     private List<String> folders;
@@ -370,6 +383,23 @@ public final class QuestsXL extends EPlugin {
     public void debug(String msg) {
          // check for debug mode here
         MessageUtil.log(msg);
+    }
+
+    public void registerTranslation(QTranslatable translatable) {
+        String key = translatable.getKey();
+        if (translationRegistry.contains(key))  {
+            return;
+        }
+        for (Map.Entry<String, String> entry : translatable.getTranslations().entrySet()) {
+            Locale locale;
+            if (key.contains("de")) {
+                locale = Locale.GERMANY;
+            } else {
+                locale = Locale.US;
+            }
+            translationRegistry.register(key, locale, new MessageFormat(entry.getValue()));
+        }
+
     }
 
     @Contract("_ -> new")

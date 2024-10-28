@@ -97,6 +97,9 @@ public class PlayerListener extends AbstractListener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
+        if (!Bukkit.getOnlinePlayers().contains(event.getPlayer())) {
+            return;
+        }
         checkObjectives(event.getPlayer(), event);
         Player killer = event.getPlayer().getKiller();
         if (killer != null) {

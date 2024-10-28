@@ -1,8 +1,10 @@
 package de.erethon.questsxl.common;
 
 import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.condition.QCondition;
+import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.objective.ActiveObjective;
 import de.erethon.questsxl.objective.QObjective;
@@ -46,15 +48,23 @@ public class QStage {
             MessageUtil.log("Added objective " + objective.getClass().getName());
             holder.addObjective(new ActiveObjective(holder, getQuest(), this, objective));
         }
-        if (holder instanceof QPlayer player) {
-            for (QAction action : startActions) {
-                action.play(player);
+        try {
+            if (holder instanceof QPlayer player) {
+                for (QAction action : startActions) {
+                    action.play(player);
+                }
+            }
+            if (holder instanceof QEvent event) {
+                for (QAction action : startActions) {
+                    action.play(event);
+                }
             }
         }
-        if (holder instanceof QEvent event) {
-            for (QAction action : startActions) {
-                action.play(event);
-            }
+        catch (Exception e) {
+            FriendlyError error = new FriendlyError(holder.getName() + ".stages." + id, "Failed to start stage " + id, e.getMessage(), "" + id).addStacktrace(e.getStackTrace());
+            QuestsXL.getInstance().addRuntimeError(error);
+            MessageUtil.log("Failed to start stage " + id + " for " + holder.getName());
+            e.printStackTrace();
         }
     }
 

@@ -2,6 +2,7 @@ package de.erethon.questsxl.livingworld;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.error.FriendlyError;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
@@ -26,7 +27,17 @@ public class QEventManager {
     public void load(File file)  {
         events.clear();
         for (File file1 : file.listFiles()) {
-            QEvent event = new QEvent(file1);
+            QEvent event = null;
+            try {
+                event = new QEvent(file1);
+            }
+            catch (Throwable e) {
+                MessageUtil.log("Failed to load event from " + file1.getName());
+                e.printStackTrace();
+                FriendlyError error = new FriendlyError(file1.getName(), "Failed to load event "+ file1.getName(), e.getMessage(),"").addStacktrace(e.getStackTrace());
+                QuestsXL.getInstance().addRuntimeError(error);
+                continue;
+            }
             if (event.isValid()) {
                 events.add(event);
                 event.loadProgress(event.getCfg());

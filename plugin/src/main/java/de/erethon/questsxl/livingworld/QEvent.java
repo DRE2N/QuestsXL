@@ -143,6 +143,9 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
             case ACTIVE -> {
                 playersInRange.clear();
                 for (Player player : centerLocation.getNearbyPlayers(range)) {
+                    if (!Bukkit.getOnlinePlayers().contains(player)) {
+                        continue;
+                    }
                     playersInRange.add(playerCache.getByPlayer(player));
                 }
                 for (QAction action : updateActions) {
@@ -269,6 +272,9 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
     }
 
     public int getEventParticipation(@NotNull QPlayer player) {
+        if (!eventParticipation.containsKey(player)) {
+            return 0;
+        }
         return eventParticipation.get(player);
     }
 
@@ -287,7 +293,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
         double z = locationSection.getDouble("z");
         World world = Bukkit.getWorld(worldName);
         if (world == null) {
-            throw new RuntimeException("The startLocation contains the world " + id + ", which does not exist.");
+            throw new RuntimeException("The startLocation contains the world " + worldName + ", which does not exist.");
         }
         centerLocation = new Location(world, x, y, z);
         if (cfg.contains("startConditions")) {

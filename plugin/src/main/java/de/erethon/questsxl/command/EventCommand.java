@@ -75,11 +75,10 @@ public class EventCommand extends ECommand {
                 }
                 Component players = getPlayerHover(event);
                 MessageUtil.sendMessage(commandSender, players);
-                MessageUtil.sendMessage(commandSender, "&7Players&8: &a" + event.getPlayersInRange().size());
                 if (event.getTopPlayer() == null) {
                     MessageUtil.sendMessage(commandSender, "&7Top Player&8: &aNone");
                 } else {
-                    MessageUtil.sendMessage(commandSender, "&7Top Player&8: &a" + event.getTopPlayer());
+                    MessageUtil.sendMessage(commandSender, "&7Top Player&8: &a" + event.getTopPlayer().getName());
                 }
             }
             catch (Exception e) {
@@ -91,10 +90,13 @@ public class EventCommand extends ECommand {
     }
 
     private static @NotNull Component getPlayerHover(QEvent event) {
-        Component players = Component.text("Players", NamedTextColor.GREEN).append(Component.text(":", NamedTextColor.DARK_GRAY));
+        Component players = Component.text("Players", NamedTextColor.GRAY).append(Component.text(":", NamedTextColor.DARK_GRAY));
         Component playerHover = Component.empty();
         for (QPlayer player : event.getPlayersInRange()) {
-            playerHover = playerHover.append(Component.text(player.getName(), NamedTextColor.GREEN)).appendNewline();
+            int participation =  event.getEventParticipation(player);
+            playerHover = playerHover.append(Component.text(player.getName(), NamedTextColor.GREEN))
+                    .append(Component.text(": ", NamedTextColor.DARK_GRAY)
+                    .append(Component.text(participation, NamedTextColor.GREEN)));
         }
         players = players.append(Component.text(" " + event.getPlayersInRange().size(), NamedTextColor.GREEN).hoverEvent(playerHover));
         return players;

@@ -5,6 +5,7 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -21,12 +22,12 @@ import org.bukkit.configuration.ConfigurationSection;
 public class SendMessageAction extends QBaseAction {
 
     @QParamDoc(name = "message", description = "The message to send", required = true)
-    private String message;
+    private QTranslatable message;
 
     @Override
     public void play(QPlayer player) {
         if (!conditions(player)) return;
-        MessageUtil.sendMessage(player.getPlayer(), message);
+        MessageUtil.sendMessage(player.getPlayer(), message.get());
         onFinish(player);
     }
 
@@ -34,7 +35,7 @@ public class SendMessageAction extends QBaseAction {
     public void play(QEvent player) {
         if (!conditions(player)) return;
         for (QPlayer qPlayer : player.getPlayersInRange()) {
-            MessageUtil.sendMessage(qPlayer.getPlayer(), message);
+            MessageUtil.sendMessage(qPlayer.getPlayer(), message.get());
         }
         onFinish(player);
     }
@@ -42,6 +43,6 @@ public class SendMessageAction extends QBaseAction {
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        message = cfg.getString("message", "MESSAGE_NOT_FOUND");
+        message = QTranslatable.fromString(cfg.getString("message"));
     }
 }
