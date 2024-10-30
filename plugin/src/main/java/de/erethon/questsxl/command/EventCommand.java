@@ -73,7 +73,7 @@ public class EventCommand extends ECommand {
                 } else {
                     MessageUtil.sendMessage(commandSender, "&7Stage&8: &a" + event.getCurrentStage().getId());
                 }
-                Component players = getPlayerHover(event);
+                Component players = getPlayerHoverParticipation(event);
                 MessageUtil.sendMessage(commandSender, players);
                 if (event.getTopPlayer() == null) {
                     MessageUtil.sendMessage(commandSender, "&7Top Player&8: &aNone");
@@ -89,8 +89,8 @@ public class EventCommand extends ECommand {
         MessageUtil.sendMessage(commandSender, QuestsXL.ERROR + "Bitte gebe eine gültige Aktion an: active, complete, disable, inactive, info");
     }
 
-    private static @NotNull Component getPlayerHover(QEvent event) {
-        Component players = Component.text("Players", NamedTextColor.GRAY).append(Component.text(":", NamedTextColor.DARK_GRAY));
+    private static @NotNull Component getPlayerHoverParticipation(QEvent event) {
+        Component players = Component.text("Players in Range", NamedTextColor.GRAY).append(Component.text(":", NamedTextColor.DARK_GRAY));
         Component playerHover = Component.empty();
         for (QPlayer player : event.getPlayersInRange()) {
             int participation =  event.getEventParticipation(player);

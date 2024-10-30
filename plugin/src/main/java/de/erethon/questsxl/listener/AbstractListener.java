@@ -23,6 +23,10 @@ public abstract class AbstractListener implements Listener {
             objective.check(event);
         }
         for (QEvent qEvent : eventManager.getActiveEvents()) {
+            // Only check objectives for events that are in range
+            if (qEvent.getCenterLocation().distance(player.getLocation()) > qEvent.getRange()) {
+                continue;
+            }
             for (ActiveObjective objective : qEvent.getCurrentObjectives()) {
                 objective.check(event);
             }

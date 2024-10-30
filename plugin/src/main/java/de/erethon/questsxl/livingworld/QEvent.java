@@ -33,7 +33,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
 
     private final QPlayerCache playerCache = QuestsXL.getInstance().getPlayerCache();
 
-    private File file;
+    private final File file;
     private final YamlConfiguration cfg;
     private boolean isValid;
 
@@ -53,6 +53,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
     private int cooldown;
 
     private int range;
+    private int canActivateRange;
 
     private EventState state;
 
@@ -73,7 +74,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
         this.file = file;
         id = fileName.replace(".yml", "");
         cfg = YamlConfiguration.loadConfiguration(file);
-        if (cfg.getKeys(false).size() == 0) {
+        if (cfg.getKeys(false).isEmpty()) {
             QuestsXL.getInstance().getErrors().add(new FriendlyError("Event: " + this.getName(), "Datei ungültig.", "Datei " + file.getName() + " ist ungültig.", "Wahrscheinlich falsche Einrückung."));
             isValid = false;
             return;
@@ -129,16 +130,12 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
         return id;
     }
 
-    public void complete() {
-        state = EventState.COMPLETED;
-        timeLastCompleted = System.currentTimeMillis();
-    }
-
     public void setState(EventState state) {
         this.state = state;
     }
 
     public void update() {
+        long currentTime = System.currentTimeMillis();
         switch (state) {
             case ACTIVE -> {
                 playersInRange.clear();
@@ -153,19 +150,22 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
                 }
             }
             case NOT_STARTED -> {
+                if (getCenterLocation().getNearbyPlayers(canActivateRange).isEmpty()) {
+                    return; // No players in range
+                }
                 for (QCondition condition : startConditions) {
                     if (!condition.check(this)) {
-                        return;
+                        return; // Conditions aren't met
                     }
                 }
-                if (timeLastCompleted > 0 && System.currentTimeMillis() - timeLastCompleted < cooldown * 1000L) {
-                    return;
+                if (timeLastCompleted > 0 && currentTime - timeLastCompleted < cooldown * 1000L) {
+                    return; // Cooldown not over yet
                 }
                 startEvent();
                 MessageUtil.log("Event " + getName() + " started with stage " + currentStage.getId() + " with " + getCurrentObjectives().size() + " objectives.");
             }
             case COMPLETED -> {
-                if (System.currentTimeMillis() - timeLastCompleted > cooldown * 1000L) {
+                if (currentTime - timeLastCompleted > cooldown * 1000L) {
                     state = EventState.NOT_STARTED;
                 }
             }
@@ -293,6 +293,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
         ConfigurationSection locationSection = cfg.getConfigurationSection("startLocation");
         cooldown = cfg.getInt("cooldown", 0);
         range = cfg.getInt("range", 32);
+        canActivateRange = cfg.getInt("canActivateRange", range);
         String worldName = locationSection.getString("world", "Erethon");
         double x = locationSection.getDouble("x");
         double y = locationSection.getDouble("y");
@@ -370,7 +371,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
         } else {
             cfg.set("state.currentStage", 0);
         }
-        cfg.set("state.timeLastCompleted", timeLastCompleted);
+        cfg.set("state.timeLastCompleted", (long) timeLastCompleted);
         saveProgress(cfg);
         try {
             cfg.save(file);
