@@ -32,9 +32,11 @@ public class GitSync {
     Git git;
     QuestsXL plugin = QuestsXL.getInstance();
 
+    private boolean isSyncOnly;
+
     private static final List<String> EXCLUSIONS = List.of("players", "playerdata", "inventories", "backups", "factions", "users", "ips", "debug.txt");
 
-    public GitSync(List<String> names) throws IOException, GitAPIException, InterruptedException {
+    public GitSync(List<String> names, boolean syncOnly) throws IOException, GitAPIException, InterruptedException {
         foldersToSync = new HashSet<>(names);
         for (String name : foldersToSync) {
             File file = new File(Bukkit.getPluginsFolder() + "/" + name);
@@ -52,9 +54,9 @@ public class GitSync {
             return;
         }
         cache.mkdir();
+        this.isSyncOnly = syncOnly;
         setupRepo();
     }
-
 
     public void setupRepo() throws GitAPIException {
         if (!plugin.isGitSync()) {
@@ -75,9 +77,11 @@ public class GitSync {
         if (!plugin.isGitSync()) {
             return;
         }
-        copyFromPlugins();
-        commit();
-        push();
+        if (!isSyncOnly) {
+            copyFromPlugins();
+            commit();
+            push();
+        }
         PullResult pullResult = git.pull()
                 .setCredentialsProvider(new UsernamePasswordCredentialsProvider(plugin.getGitToken(), ""))
                 .setRemoteBranchName(plugin.getGitBranch())

@@ -100,6 +100,7 @@ public final class QuestsXL extends EPlugin {
 
     private String gitToken;
     private String gitBranch;
+    private boolean gitIsPassive = false;
 
     boolean gitSync = true;
 
@@ -126,6 +127,7 @@ public final class QuestsXL extends EPlugin {
         gitToken = gitConfig.getString("token");
         gitBranch = gitConfig.getString("branch");
         folders = gitConfig.getStringList("folders");
+        gitIsPassive = gitConfig.getBoolean("passive");
         // Check for dependencies
         if (getServer().getPluginManager().getPlugin("Aergia") != null) {
             aergia = (Aergia) getServer().getPluginManager().getPlugin("Aergia");
@@ -305,6 +307,7 @@ public final class QuestsXL extends EPlugin {
     }
 
     public void reload() {
+        getPlayerCache().saveAll();
         errors.clear();
         onDisable();
         loadCore();
@@ -360,7 +363,7 @@ public final class QuestsXL extends EPlugin {
                 try {
                     MessageUtil.log("Syncing...");
                     MessageUtil.log("Included folders: " + Arrays.toString(folders.toArray()));
-                    GitSync sync = new GitSync(folders);
+                    GitSync sync = new GitSync(folders, isPassiveSync());
                     sync.update();
                 } catch (IOException | InterruptedException | GitAPIException e) {
                     MessageUtil.broadcastMessageIf("&cGithub-Sync-Error: " + e.getMessage(), p -> p.hasPermission("qxl.admin.sync"));
@@ -417,5 +420,9 @@ public final class QuestsXL extends EPlugin {
 
     public boolean isGitSync() {
         return gitSync;
+    }
+
+    public boolean isPassiveSync() {
+        return gitIsPassive;
     }
 }
