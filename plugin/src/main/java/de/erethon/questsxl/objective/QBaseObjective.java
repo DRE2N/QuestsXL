@@ -5,17 +5,11 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.common.ObjectiveHolder;
 import de.erethon.questsxl.common.QConfig;
-import de.erethon.questsxl.common.QConfigLoader;
-import de.erethon.questsxl.common.QLineConfig;
-import de.erethon.questsxl.common.QRegistries;
 import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -75,7 +69,6 @@ public abstract class QBaseObjective implements QObjective {
     protected void complete(ObjectiveHolder holder, QObjective obj) {
         MessageUtil.log("Checking for completion for " + holder.getName());
         Iterator<ActiveObjective> iterator = holder.getCurrentObjectives().iterator();
-        HashSet<ActiveObjective> toRemove = new HashSet<>();
         while (iterator.hasNext()) {
             ActiveObjective activeObjective = iterator.next();
             MessageUtil.log("Active: Objective: " + activeObjective.getObjective().getClass().getName() + " Holder: " + activeObjective.getHolder().getName() + " | Objective: " + obj.getClass().getName() + " Holder: " + holder.getName());
@@ -86,11 +79,10 @@ public abstract class QBaseObjective implements QObjective {
                     activeObjective.getStage().checkCompleted(holder);
                 }
                 if (!persistent) {
-                    toRemove.add(activeObjective);
+                    iterator.remove();
                 }
             }
         }
-        holder.getCurrentObjectives().removeAll(toRemove);
         if (holder instanceof QPlayer qPlayer) {
             for (QAction action : successActions) {
                 action.play(qPlayer);
