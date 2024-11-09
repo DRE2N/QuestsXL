@@ -2,6 +2,7 @@ package de.erethon.questsxl;
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import de.erethon.aergia.Aergia;
+import de.erethon.aergia.scoreboard.EScoreboard;
 import de.erethon.aether.Aether;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.compatibility.Internals;
@@ -27,6 +28,7 @@ import de.erethon.questsxl.quest.QuestManager;
 import de.erethon.questsxl.region.QRegionManager;
 import de.erethon.questsxl.respawn.RespawnPointManager;
 //import de.erethon.questsxl.scoreboard.QuestScoreboardLines;
+import de.erethon.questsxl.scoreboard.QuestScoreboardLines;
 import de.erethon.questsxl.tool.GitSync;
 import de.fyreum.jobsxl.JobsXL;
 import net.kyori.adventure.key.Key;
@@ -169,6 +171,7 @@ public final class QuestsXL extends EPlugin {
             MessageUtil.log("Environment: " + gitBranch);
             sync();
         }
+
         MessageUtil.log(" ");
         MessageUtil.log(" ");
     }
@@ -236,6 +239,14 @@ public final class QuestsXL extends EPlugin {
         animationManager.save();
         eventManager.save();
         HandlerList.unregisterAll((Plugin) this);
+    }
+
+    public void addAergiaScoreboardIntegration() {
+        if (!isAergiaEnabled()) {
+            return;
+        }
+        EScoreboard eScoreboard = aergia.getEScoreboard();
+        eScoreboard.addScores(new QuestScoreboardLines());
     }
 
     public void addScore(String score, int amount) {
