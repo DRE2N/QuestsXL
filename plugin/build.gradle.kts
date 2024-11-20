@@ -16,7 +16,7 @@ dependencies {
     paperweight.devBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true }
 
     implementation("de.erethon:bedrock:1.4.0") { isTransitive = false }
-    compileOnly("de.erethon.aether:Aether:1.0.0-SNAPSHOT")
+    compileOnly("de.erethon.aether:Aether:1.0.1-SNAPSHOT")
     compileOnly("de.erethon.aergia:Aergia:1.0.1") { isTransitive = false }
     compileOnly("de.fyreum:JobsXL:1.0-SNAPSHOT") { isTransitive = false }
     compileOnly("de.erethon.hephaestus:Hephaestus:1.0-SNAPSHOT")
@@ -45,7 +45,7 @@ tasks {
             project.buildDir.mkdir()
         }
         val f = File(project.buildDir, "server.jar")
-        uri("https://github.com/DRE2N/Papyrus/releases/download/latest/papyrus-paperclip-1.21.1-R0.1-SNAPSHOT-mojmap.jar").toURL().openStream().use { it.copyTo(f.outputStream()) }
+        //uri("https://github.com/DRE2N/Papyrus/releases/download/latest/papyrus-paperclip-1.21.1-R0.1-SNAPSHOT-mojmap.jar").toURL().openStream().use { it.copyTo(f.outputStream()) }
         serverJar(f)
     }
 

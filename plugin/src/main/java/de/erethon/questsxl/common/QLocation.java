@@ -9,7 +9,7 @@ import org.bukkit.configuration.ConfigurationSection;
 
 /**
  * @author Malfrador
- * Utility class for relative & DXL-Dungeon locations
+ * Utility class for relative and DXL-Dungeon locations
  */
 public class QLocation {
 

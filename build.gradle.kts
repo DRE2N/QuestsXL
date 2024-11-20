@@ -6,6 +6,7 @@ plugins {
 repositories {
     mavenLocal()
     maven("https://erethon.de/repo")
+    maven("https://reposilite.fyreum.de/snapshots/")
     maven("https://jitpack.io")
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
     maven("https://repo.dmulloy2.net/repository/public/")
@@ -20,6 +21,7 @@ allprojects {
     repositories {
         mavenLocal()
         maven("https://erethon.de/repo")
+        maven("https://reposilite.fyreum.de/snapshots/")
         maven("https://jitpack.io")
         maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
         maven("https://repo.dmulloy2.net/repository/public/")
@@ -88,6 +90,23 @@ tasks.register<JavaCompile>("runAnnotationProcessor") {
     options.release.set(21)
 }
 
+tasks.register<Javadoc>("generatePluginJavadocs") {
+    source = fileTree("plugin/src/main/java")
+    classpath = files(
+        project(":plugin").sourceSets["main"].runtimeClasspath,
+        project(":plugin").sourceSets["main"].output,
+        project(":plugin").configurations["compileClasspath"]
+    )
+    setDestinationDir(file("plugin/build/docs/javadoc"))
+    options.encoding = "UTF-8"
+}
+
+tasks.register<Jar>("javadocJar") {
+    dependsOn("generatePluginJavadocs")
+    archiveClassifier.set("javadoc")
+    from(tasks.named<Javadoc>("generatePluginJavadocs").get().destinationDir)
+}
+
 subprojects {
     apply(plugin = "java-library")
 
@@ -97,9 +116,24 @@ subprojects {
 }
 
 publishing {
+    repositories {
+        maven {
+            name = "erethon"
+            url = uri("https://reposilite.fyreum.de/snapshots/")
+            credentials(PasswordCredentials::class)
+            authentication {
+                create<BasicAuthentication>("basic")
+            }
+        }
+    }
     publications {
         create<MavenPublication>("maven") {
+            groupId = "${project.group}"
+            artifactId = "QuestsXL"
+            version = "${project.version}"
+
             from(components["java"])
+            artifact(tasks["javadocJar"])
         }
     }
 }
