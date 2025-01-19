@@ -10,7 +10,7 @@ repositories {
     maven("https://jitpack.io")
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
     maven("https://repo.dmulloy2.net/repository/public/")
-    maven("https://papermc.io/repo/repository/maven-public/")
+    maven("https://repo.papermc.io/repository/maven-public/")
     mavenCentral()
 }
 
@@ -25,7 +25,7 @@ allprojects {
         maven("https://jitpack.io")
         maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
         maven("https://repo.dmulloy2.net/repository/public/")
-        maven("https://papermc.io/repo/repository/maven-public/")
+        maven("https://repo.papermc.io/repository/maven-public/")
         mavenCentral()
     }
 
@@ -115,25 +115,25 @@ subprojects {
     }
 }
 
-publishing {
-    repositories {
-        maven {
-            name = "erethon"
-            url = uri("https://reposilite.fyreum.de/snapshots/")
-            credentials(PasswordCredentials::class)
-            authentication {
-                create<BasicAuthentication>("basic")
+    publishing {
+        repositories {
+            maven {
+                name = "erethon"
+                url = uri("https://reposilite.fyreum.de/snapshots/")
+                credentials(PasswordCredentials::class)
+                authentication {
+                    create<BasicAuthentication>("basic")
+                }
+            }
+        }
+        publications {
+            create<MavenPublication>("maven") {
+                groupId = "${project.group}"
+                artifactId = "QuestsXL"
+                version = "${project.version}"
+
+                from(components["java"])
+                artifact(tasks["javadocJar"])
             }
         }
     }
-    publications {
-        create<MavenPublication>("maven") {
-            groupId = "${project.group}"
-            artifactId = "QuestsXL"
-            version = "${project.version}"
-
-            from(components["java"])
-            artifact(tasks["javadocJar"])
-        }
-    }
-}
