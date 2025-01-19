@@ -72,6 +72,7 @@ public class QRegistries {
         CONDITIONS.register("active_quest", ActiveQuestCondition::new);
         CONDITIONS.register("completed_quest", CompletedQuestCondition::new);
         CONDITIONS.register("event_state", EventStateCondition::new);
+        CONDITIONS.register("event_players", PlayersInRangeCondition::new);
         CONDITIONS.register("global_score", GlobalScoreCondition::new);
         CONDITIONS.register("inventory_contains", InventoryCondition::new);
         CONDITIONS.register("inverted", InvertedCondition::new);
