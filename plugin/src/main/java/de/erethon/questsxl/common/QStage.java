@@ -96,9 +96,9 @@ public class QStage {
                         failed.add(condition);
                     }
                 } catch (Exception e) {
-                    FriendlyError error = new FriendlyError(player.getName() + ".stages." + id, "Failed to check condition " + condition.getClass().getName(), e.getMessage(), "" + id).addStacktrace(e.getStackTrace());
+                    FriendlyError error = new FriendlyError(holder.getName() + ".stages." + id, "Failed to check condition " + condition.getClass().getName(), e.getMessage(), "" + id).addStacktrace(e.getStackTrace());
                     QuestsXL.getInstance().addRuntimeError(error);
-                    MessageUtil.log("Failed to check condition " + condition.getClass().getName() + " for " + player.getName());
+                    MessageUtil.log("Failed to check condition " + condition.getClass().getName() + " for " + holder.getName());
                 }
             }
             return canStart;

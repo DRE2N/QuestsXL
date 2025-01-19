@@ -56,6 +56,14 @@ public abstract class QBaseObjective implements QObjective {
         return true;
     }
 
+    public boolean conditions(Player player) {
+        QPlayer qPlayer = plugin.getPlayerCache().getByPlayer(player);
+        if (qPlayer == null) {
+            return false;
+        }
+        return conditions(qPlayer);
+    }
+
     protected void checkCompletion(ActiveObjective active, QObjective objective, ObjectiveHolder instigator) {
         active.addProgress(1);
         progress(active.getHolder(), instigator);
