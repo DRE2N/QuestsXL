@@ -13,6 +13,7 @@ public interface QAction extends QLoadable {
     void onFinish(QEvent event);
 
     boolean conditions(QPlayer player);
+    boolean conditions(QEvent event);
 
     void delayedEnd(int seconds);
 

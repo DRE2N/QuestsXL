@@ -26,7 +26,7 @@ public class EventStateCondition extends QBaseCondition {
 
     QuestsXL plugin = QuestsXL.getInstance();
 
-    @QParamDoc(name = "event", description = "The ID of the event.", required = true)
+    @QParamDoc(name = "event", description = "The ID of the event.")
     QEvent event;
     @QParamDoc(name = "state", description = "The state the event should be in. One of `active`, `inactive`, `completed` or `disabled`", def = "active")
     EventState state;
@@ -40,17 +40,20 @@ public class EventStateCondition extends QBaseCondition {
     }
 
     @Override
-    public boolean check(QEvent conditionEvent) {
-        if (event.getState() == state) {
-            return success(conditionEvent);
+    public boolean check(QEvent e) {
+        QEvent conditionEvent = event != null ? event : e;
+        if (conditionEvent.getState() == state) {
+            return success(e);
         }
-        return fail(conditionEvent);
+        return fail(e);
     }
 
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        event = plugin.getEventManager().getByID(cfg.getString("event"));
+        if (cfg.contains("event")) {
+            event = plugin.getEventManager().getByID(cfg.getString("event"));
+        }
         state = EventState.valueOf(cfg.getString("state", "active").toUpperCase(Locale.ROOT));
     }
 

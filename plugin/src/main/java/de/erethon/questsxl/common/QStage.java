@@ -82,21 +82,43 @@ public class QStage {
 
     /**
      * @deprecated Currently unused.
-     * @param player the player to check
-     * @return true if the player can start this stage, false otherwise.
+     * @return true if the loadable can start this stage, false otherwise.
      */
     @Deprecated
-    public boolean canStart(QPlayer player) {
+    public boolean canStart(ObjectiveHolder holder) {
         Set<QCondition> failed = new HashSet<>();
         boolean canStart = true;
-        for (QCondition condition : conditions) {
-            if (!condition.check(player)) {
-                canStart = false;
-                failed.add(condition);
+        if (holder instanceof QPlayer qPlayer) {
+            for (QCondition condition : conditions) {
+                try {
+                    if (!condition.check(qPlayer)) {
+                        canStart = false;
+                        failed.add(condition);
+                    }
+                } catch (Exception e) {
+                    FriendlyError error = new FriendlyError(player.getName() + ".stages." + id, "Failed to check condition " + condition.getClass().getName(), e.getMessage(), "" + id).addStacktrace(e.getStackTrace());
+                    QuestsXL.getInstance().addRuntimeError(error);
+                    MessageUtil.log("Failed to check condition " + condition.getClass().getName() + " for " + player.getName());
+                }
             }
+            return canStart;
         }
-        player.send(failed.toString());
-        return canStart;
+        if (holder instanceof QEvent qEvent) {
+            for (QCondition condition : conditions) {
+                try {
+                    if (!condition.check(qEvent)) {
+                        canStart = false;
+                        failed.add(condition);
+                    }
+                } catch (Exception e) {
+                    FriendlyError error = new FriendlyError(qEvent.getName() + ".stages." + id, "Failed to check condition " + condition.getClass().getName(), e.getMessage(), "" + id).addStacktrace(e.getStackTrace());
+                    QuestsXL.getInstance().addRuntimeError(error);
+                    MessageUtil.log("Failed to check condition " + condition.getClass().getName() + " for " + qEvent.getName());
+                }
+            }
+            return canStart;
+        }
+        return false;
     }
 
     /** Checks if all objectives are completed for this stage.

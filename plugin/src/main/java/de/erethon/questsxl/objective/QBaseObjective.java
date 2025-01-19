@@ -32,19 +32,25 @@ public abstract class QBaseObjective implements QObjective {
 
     /**
      * Checks for the conditions of this objective. If all conditions are met, the objective can be completed.
-     * For QEvents, conditions are checked per player, but the {@link ObjectiveHolder} is a QEvent.
-     * @param player the player to check the conditions for
+     *
+     * @param holder the ObjectiveHolder to check the conditions for
      * @return true if the conditions are met
      */
-    public boolean conditions(Player player) {
+    public boolean conditions(ObjectiveHolder holder) {
         if (conditions == null || conditions.isEmpty()) {
             return true;
         }
-        QPlayer qPlayer = plugin.getPlayerCache().getByPlayer(player);
         for (QCondition condition : conditions) {
-            if (!condition.check(qPlayer)) {
-                condFail(qPlayer);
-                return false;
+            if (holder instanceof QPlayer qPlayer) {
+                if (!condition.check(qPlayer)) {
+                    condFail(qPlayer);
+                    return false;
+                }
+            } else if (holder instanceof QEvent event) {
+                if (!condition.check(event)) {
+                    condFail(event);
+                    return false;
+                }
             }
         }
         return true;
@@ -114,9 +120,13 @@ public abstract class QBaseObjective implements QObjective {
         }
     }
 
-    private void condFail(QPlayer player) {
+    private void condFail(ObjectiveHolder holder) {
         for (QAction action : conditionFailActions) {
-            action.play(player);
+            if (holder instanceof QPlayer qPlayer) {
+                action.play(qPlayer);
+            } else if (holder instanceof QEvent event) {
+                action.play(event);
+            }
         }
     }
 

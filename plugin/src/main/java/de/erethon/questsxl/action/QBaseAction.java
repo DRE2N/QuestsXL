@@ -41,6 +41,7 @@ public abstract class QBaseAction implements QAction {
         return true;
     }
 
+    @Override
     public boolean conditions(QEvent event) {
         for (QCondition condition : conditions) {
             if (!condition.check(event)) {
