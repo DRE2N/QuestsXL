@@ -43,7 +43,7 @@ Checks if the specified event is in the specified state.
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
-| `event` | The ID of the event. |  | true |
+| `event` | The ID of the event. |  | false |
 | `state` | The state the event should be in. One of `active`, `inactive`, `completed` or `disabled` | active | false |
 
 ```yaml
@@ -234,6 +234,31 @@ player_score: score=score_name; value=5
 player_score:
   score: score_name
   value: 5
+```
+
+## players_in_range
+Checks if the specified event or player has a certain amount of players in range.
+
+#### Parameters:
+
+| Parameter | Description | Default | Required |
+|-----------|-------------|---------|----------|
+| `event` | The ID of the event. |  | false |
+| `max_players` | The maximum amount of players required. | 0 | true |
+| `min_players` | The minimum amount of players required. | 0 | true |
+| `mode` | The mode to check for. Can be `in_range_even`, `in_range_player` or `participating` | `in_range_event` | false |
+| `range` | The range to check for players when mode `in_range_player` is used. | 32 | false |
+
+```yaml
+players_in_range: event=example_event; min_players=1; max_players=5; mode=in_range_event
+```
+
+```yaml
+players_in_range:
+  min_players: 1
+  max_players: 5
+  mode: in_range_player
+  range: 16
 ```
 
 ## region

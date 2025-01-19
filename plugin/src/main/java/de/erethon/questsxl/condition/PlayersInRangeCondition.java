@@ -15,7 +15,7 @@ enum Mode {
 
 @QLoadableDoc(
         value = "players_in_range",
-        description = "Checks if the specified event has the specified amount of players.",
+        description = "Checks if the specified event or player has a certain amount of players in range.",
         shortExample = "players_in_range: event=example_event; min_players=1; max_players=5; mode=in_range_event",
         longExample = {
                 "players_in_range:",
