@@ -5,8 +5,7 @@ plugins {
 
 repositories {
     mavenLocal()
-    maven("https://erethon.de/repo")
-    maven("https://reposilite.fyreum.de/snapshots/")
+    maven("https://repo.erethon.de/snapshots")
     maven("https://jitpack.io")
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
     maven("https://repo.dmulloy2.net/repository/public/")
@@ -20,8 +19,7 @@ allprojects {
 
     repositories {
         mavenLocal()
-        maven("https://erethon.de/repo")
-        maven("https://reposilite.fyreum.de/snapshots/")
+        maven("https://repo.erethon.de/snapshots")
         maven("https://jitpack.io")
         maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
         maven("https://repo.dmulloy2.net/repository/public/")
@@ -50,11 +48,11 @@ allprojects {
     }
 }
 
-val papyrusVersion = "1.21.1-R0.1-SNAPSHOT"
+val papyrusVersion = "1.21.4-R0.1-SNAPSHOT"
 
 
 dependencies {
-    annotationProcessor("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
+    annotationProcessor("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
     annotationProcessor("de.erethon:bedrock:1.4.0") { isTransitive = false }
     annotationProcessor("de.erethon.aether:Aether:1.0.0-SNAPSHOT")
     annotationProcessor("de.erethon.aergia:Aergia:1.0.0-SNAPSHOT") { isTransitive = false }
@@ -68,6 +66,7 @@ dependencies {
 
 tasks.register<JavaCompile>("runAnnotationProcessor") {
     dependsOn(":doc-gen:classes", ":plugin:classes")
+    group = "QuestsXL"
     source = fileTree("plugin/src/main/java")
     classpath = files(
         sourceSets["main"].runtimeClasspath,
@@ -102,6 +101,7 @@ tasks.register<Javadoc>("generatePluginJavadocs") {
 }
 
 tasks.register<Jar>("javadocJar") {
+    group = "QuestsXL"
     dependsOn("generatePluginJavadocs")
     archiveClassifier.set("javadoc")
     from(tasks.named<Javadoc>("generatePluginJavadocs").get().destinationDir)
@@ -119,7 +119,7 @@ subprojects {
         repositories {
             maven {
                 name = "erethon"
-                url = uri("https://reposilite.fyreum.de/snapshots/")
+                url = uri("https://repo.erethon.de/snapshots")
                 credentials(PasswordCredentials::class)
                 authentication {
                     create<BasicAuthentication>("basic")
