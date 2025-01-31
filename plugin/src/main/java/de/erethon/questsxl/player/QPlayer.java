@@ -80,6 +80,8 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
 
     private ActiveQuest trackedQuest;
     private QEvent trackedEvent;
+    private int currentTrackedQuestPriority = 0;
+    private int currentTrackedEventPriority = 0;
 
     public QPlayer(@NotNull Player player) {
         super(QuestsXL.getPlayerFile(player.getUniqueId()), CONFIG_VERSION);
@@ -390,8 +392,17 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
         return trackedQuest;
     }
 
-    public void setTrackedQuest(ActiveQuest trackedQuest) {
-        this.trackedQuest = trackedQuest;
+    public void setTrackedQuest(QQuest trackedQuest, int priority) {
+        if (priority < currentTrackedQuestPriority) {
+            return;
+        }
+        for (ActiveQuest activeQuest : activeQuests.keySet()) {
+            if (activeQuest.getQuest() == trackedQuest) {
+                this.trackedQuest = activeQuest;
+                currentTrackedQuestPriority = priority;
+                return;
+            }
+        }
     }
 
     public @NotNull List<Component> getChatQueue() {
@@ -413,7 +424,11 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
         return trackedEvent;
     }
 
-    public void setTrackedEvent(QEvent trackedEvent) {
+    public void setTrackedEvent(QEvent trackedEvent, int priority) {
+        if (priority < currentTrackedEventPriority) {
+            return;
+        }
         this.trackedEvent = trackedEvent;
+        currentTrackedEventPriority = priority;
     }
 }

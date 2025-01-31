@@ -7,6 +7,7 @@ import de.erethon.questsxl.action.*;
 import de.erethon.questsxl.condition.ActiveQuestCondition;
 import de.erethon.questsxl.condition.*;
 import de.erethon.questsxl.objective.*;
+import org.checkerframework.checker.units.qual.A;
 
 public class QRegistries {
 
@@ -46,6 +47,8 @@ public class QRegistries {
         ACTIONS.register("score", ScoreAction::new);
         ACTIONS.register("message", SendMessageAction::new);
         ACTIONS.register("title", SendTitleAction::new);
+        ACTIONS.register("set_tracked_event", SetTrackedEventAction::new);
+        ACTIONS.register("set_tracked_quest", SetTrackedQuestAction::new);
         ACTIONS.register("show_ibc", ShowIBCAction::new);
         ACTIONS.register("stage", StageAction::new);
         ACTIONS.register("start_event", StartEventAction::new);
