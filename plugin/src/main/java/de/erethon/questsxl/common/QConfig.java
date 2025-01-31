@@ -2,7 +2,9 @@ package de.erethon.questsxl.common;
 
 import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.condition.QCondition;
+import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.objective.QObjective;
+import de.erethon.questsxl.quest.QQuest;
 
 import java.util.Set;
 
@@ -27,4 +29,7 @@ public interface QConfig {
     Set<QAction> getActions(String path);
     Set<QCondition> getConditions(String path);
     Set<QObjective> getObjectives(String path);
+
+    QEvent getQEvent(String event);
+    QQuest getQuest(String quest);
 }

@@ -1,8 +1,11 @@
 package de.erethon.questsxl.common;
 
+import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.condition.QCondition;
+import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.objective.QObjective;
+import de.erethon.questsxl.quest.QQuest;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
@@ -49,6 +52,16 @@ public class QLineConfig implements QConfig {
     @Override
     public Set<QObjective> getObjectives(String path) {
         return Set.of();
+    }
+
+    @Override
+    public QEvent getQEvent(String event) {
+        return QuestsXL.getInstance().getEventManager().getByID(event);
+    }
+
+    @Override
+    public QQuest getQuest(String quest) {
+        return QuestsXL.getInstance().getQuestManager().getByName(quest);
     }
 
     public String getString(String key) {

@@ -1,8 +1,11 @@
 package de.erethon.questsxl.common;
 
+import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.condition.QCondition;
+import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.objective.QObjective;
+import de.erethon.questsxl.quest.QQuest;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -52,5 +55,15 @@ public class QConfigurationSection extends YamlConfiguration implements QConfig 
     @Override
     public Set<QObjective> getObjectives(String path) {
         return (Set<QObjective>) QConfigLoader.load(path, this, QRegistries.OBJECTIVES);
+    }
+
+    @Override
+    public QEvent getQEvent(String event) {
+        return QuestsXL.getInstance().getEventManager().getByID(event);
+    }
+
+    @Override
+    public QQuest getQuest(String quest) {
+        return QuestsXL.getInstance().getQuestManager().getByName(quest);
     }
 }
