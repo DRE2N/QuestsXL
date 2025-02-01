@@ -3,6 +3,7 @@ package de.erethon.questsxl.objective;
 import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.common.QComponent;
 import de.erethon.questsxl.common.ObjectiveHolder;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.condition.QCondition;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;

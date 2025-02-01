@@ -15,6 +15,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+enum ActionScope {
+    PLAYER,
+    EVENT
+}
+
 public abstract class QBaseObjective implements QObjective {
 
     protected final QuestsXL plugin = QuestsXL.getInstance();
@@ -24,6 +29,7 @@ public abstract class QBaseObjective implements QObjective {
     private final Set<QCondition> conditions = new HashSet<>();
     private final Set<QAction> conditionFailActions = new HashSet<>();
     private final Set<QAction> failActions = new HashSet<>();
+    private ActionScope actionScope = ActionScope.PLAYER;
     private boolean failed = false;
     private boolean optional = false;
     private boolean persistent = false;
@@ -39,19 +45,19 @@ public abstract class QBaseObjective implements QObjective {
      * @param holder the ObjectiveHolder to check the conditions for
      * @return true if the conditions are met
      */
-    public boolean conditions(ObjectiveHolder holder) {
-        if (conditions == null || conditions.isEmpty()) {
+    public boolean conditions(ObjectiveHolder holder, ObjectiveHolder instigator) {
+        if (conditions.isEmpty()) {
             return true;
         }
         for (QCondition condition : conditions) {
             if (holder instanceof QPlayer qPlayer) {
                 if (!condition.check(qPlayer)) {
-                    condFail(qPlayer);
+                    condFail(qPlayer, instigator);
                     return false;
                 }
             } else if (holder instanceof QEvent event) {
                 if (!condition.check(event)) {
-                    condFail(event);
+                    condFail(event, instigator);
                     return false;
                 }
             }
@@ -61,18 +67,23 @@ public abstract class QBaseObjective implements QObjective {
 
     public boolean conditions(Player player) {
         QPlayer qPlayer = plugin.getPlayerCache().getByPlayer(player);
-        if (qPlayer == null) {
-            return false;
-        }
-        return conditions(qPlayer);
+        return conditions(qPlayer, qPlayer);
     }
 
+    /**
+     * Checks if the objective is completed. If the objective is completed, the objective is removed from the current
+     * stage and the next stage is progressed to.
+     *
+     * @param active the ActiveObjective to check
+     * @param objective the QObjective to check
+     * @param instigator the ObjectiveHolder that instigated the completion, e.g., the player that completed the objective
+     */
     protected void checkCompletion(ActiveObjective active, QObjective objective, ObjectiveHolder instigator) {
         active.addProgress(1);
         progress(active.getHolder(), instigator);
         MessageUtil.log("Progress: " + active.getProgress() + " Goal: " + progressGoal);
         if (active.getProgress() >= progressGoal) {
-            complete(active.getHolder(), objective);
+            complete(active.getHolder(), objective, instigator);
         }
     }
 
@@ -83,7 +94,7 @@ public abstract class QBaseObjective implements QObjective {
      * @param holder the holder that completed the objective
      * @param obj the objective that was completed.
      */
-    protected void complete(ObjectiveHolder holder, QObjective obj) {
+    protected void complete(ObjectiveHolder holder, QObjective obj, ObjectiveHolder instigator) {
         MessageUtil.log("Checking for completion for " + holder.getName());
         Iterator<ActiveObjective> iterator = holder.getCurrentObjectives().iterator();
         while (iterator.hasNext()) {
@@ -100,44 +111,30 @@ public abstract class QBaseObjective implements QObjective {
                 }
             }
         }
-        if (holder instanceof QPlayer qPlayer) {
-            for (QAction action : successActions) {
-                action.play(qPlayer);
-            }
-        } else if (holder instanceof QEvent event) {
-            for (QAction action : successActions) {
-                action.play(event);
-            }
+        if (actionScope == ActionScope.PLAYER) {
+            runActions(successActions, instigator);
+        }
+        else if (actionScope == ActionScope.EVENT) {
+            runActions(successActions, holder);
         }
     }
 
     public void progress(ObjectiveHolder holder, ObjectiveHolder instigator) {
-        for (QAction action : progressActions) {
-            if (instigator instanceof QPlayer player) {
-                action.play(player);
-            } else if (instigator instanceof QEvent event) {
-                action.play(event);
-            }
+        if (actionScope == ActionScope.PLAYER) {
+            runActions(progressActions, instigator);
+        }
+        else if (actionScope == ActionScope.EVENT) {
+            runActions(progressActions, holder);
         }
     }
 
-    public void progress(ObjectiveHolder holder, Player player) {
-        for (QAction action : progressActions) {
-            if (holder instanceof QPlayer qPlayer) {
-                action.play(qPlayer);
-            } else if (holder instanceof QEvent event) {
-                action.play(event);
-            }
-        }
-    }
 
-    private void condFail(ObjectiveHolder holder) {
-        for (QAction action : conditionFailActions) {
-            if (holder instanceof QPlayer qPlayer) {
-                action.play(qPlayer);
-            } else if (holder instanceof QEvent event) {
-                action.play(event);
-            }
+    private void condFail(ObjectiveHolder holder, ObjectiveHolder instigator) {
+        if (actionScope == ActionScope.PLAYER) {
+            runActions(conditionFailActions, instigator);
+        }
+        else if (actionScope == ActionScope.EVENT) {
+            runActions(conditionFailActions, holder);
         }
     }
 
@@ -145,7 +142,7 @@ public abstract class QBaseObjective implements QObjective {
      * @param holder the ObjectiveHolder to run the actions for
      * @param obj the QObjective that failed
      */
-    public void fail(ObjectiveHolder holder, QObjective obj) {
+    public void fail(ObjectiveHolder holder, QObjective obj, ObjectiveHolder instigator) {
         for (ActiveObjective objective : holder.getCurrentObjectives()) {
             if (objective.getObjective().equals(obj) && objective.getHolder().equals(holder)) {
                 if (!persistent) {
@@ -153,10 +150,20 @@ public abstract class QBaseObjective implements QObjective {
                 }
             }
         }
-        for (QAction action : failActions) {
-            if (holder instanceof QPlayer qPlayer) {
-                action.play(qPlayer);
-            } else if (holder instanceof QEvent event) {
+        if (actionScope == ActionScope.PLAYER) {
+            runActions(failActions, instigator);
+        }
+        else if (actionScope == ActionScope.EVENT) {
+            runActions(failActions, holder);
+        }
+    }
+
+    private void runActions(Set<QAction> actions, ObjectiveHolder instigator) {
+        for (QAction action : actions) {
+            if (instigator instanceof QPlayer player) {
+                action.play(player);
+            }
+            else if (instigator instanceof QEvent event) {
                 action.play(event);
             }
         }
@@ -263,6 +270,12 @@ public abstract class QBaseObjective implements QObjective {
         }
         if (cfg.contains("conditions")) {
             conditions.addAll(cfg.getConditions(this, "conditions"));
+        }
+        if (cfg.contains("scope")) {
+            actionScope = ActionScope.valueOf(cfg.getString("scope").toUpperCase());
+        }
+        if (cfg.contains("onSuccess")) {
+            successActions.addAll(cfg.getActions(this, "onSuccess"));
         }
         if (cfg.contains("onProgress")) {
             progressActions.addAll(cfg.getActions(this, "onProgress"));
