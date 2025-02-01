@@ -18,6 +18,7 @@ public class DeathObjective extends QBaseObjective {
     public void check(ActiveObjective active, Event event) {
         if (event instanceof PlayerDeathEvent e) {
             if (conditions(e.getEntity())) {
+                if (shouldCancelEvent) e.setCancelled(true);
                 checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(e.getEntity()));
             }
         }

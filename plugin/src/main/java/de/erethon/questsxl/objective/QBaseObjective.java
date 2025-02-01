@@ -37,6 +37,7 @@ public abstract class QBaseObjective implements QObjective {
     private boolean optional = false;
     private boolean persistent = false;
     private boolean isGlobal = false;
+    protected boolean shouldCancelEvent = false;
 
     private QComponent parent;
 
@@ -271,8 +272,8 @@ public abstract class QBaseObjective implements QObjective {
         if (cfg.contains("display")) {
             displayText = cfg.getString("display");
         }
-        if (cfg.contains("conditions")) {
-            conditions.addAll(cfg.getConditions(this, "conditions"));
+        if (cfg.contains("cancel")) {
+            shouldCancelEvent = cfg.getBoolean("cancel");
         }
         if (cfg.contains("scope_success")) {
             completeScope = ActionScope.valueOf(cfg.getString("scope").toUpperCase());

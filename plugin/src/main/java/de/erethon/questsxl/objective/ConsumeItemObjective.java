@@ -32,6 +32,7 @@ public class ConsumeItemObjective extends QBaseObjective {
         HItem item = itemLibrary.get(e.getItem()).getItem();
         if (item == null) return;
         if (item.getKey().equals(itemID)) {
+            if (shouldCancelEvent) e.setCancelled(true);
             checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(e.getPlayer()));
         }
     }

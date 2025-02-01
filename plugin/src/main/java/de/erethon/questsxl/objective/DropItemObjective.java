@@ -26,8 +26,6 @@ public class DropItemObjective extends QBaseObjective {
 
     @QParamDoc(name = "item", description = "The key of the item that needs to be dropped. Same as in /give", required = true)
     private NamespacedKey itemID;
-    @QParamDoc(name = "cancel", description = "Whether the drop event should be cancelled.", def = "false")
-    private boolean cancel;
 
     @Override
     public void check(ActiveObjective active, Event event) {
@@ -36,10 +34,9 @@ public class DropItemObjective extends QBaseObjective {
         HItem item = itemLibrary.get(e.getItemDrop().getItemStack()).getItem();
         if (item == null) return;
         if (item.getKey().equals(itemID)) {
+            if (shouldCancelEvent) e.setCancelled(true);
             complete(active.getHolder(), this, plugin.getPlayerCache().getByPlayer(player));
-            if (cancel) {
-                e.setCancelled(true);
-            }
+
         }
     }
 
@@ -47,6 +44,5 @@ public class DropItemObjective extends QBaseObjective {
     public void load(QConfig cfg) {
         super.load(cfg);
         itemID = NamespacedKey.fromString(cfg.getString("item"));
-        cancel = cfg.getBoolean("cancel", false);
     }
 }

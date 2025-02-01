@@ -27,8 +27,6 @@ public class ItemPickupObjective extends QBaseObjective {
 
     @QParamDoc(name = "item", description = "The key of the item that needs to be picked up. Same as in /give", required = true)
     private NamespacedKey itemID;
-    @QParamDoc(name = "cancel", description = "Whether the pickup event should be cancelled.", def = "false")
-    private boolean cancel;
 
     @Override
     public void check(ActiveObjective active, Event event) {
@@ -37,10 +35,8 @@ public class ItemPickupObjective extends QBaseObjective {
         HItem item = itemLibrary.get(e.getItem().getItemStack()).getItem();
         if (item == null) return;
         if (item.getKey().equals(itemID)) {
+            if (shouldCancelEvent) e.setCancelled(true);
             checkCompletion(active, this, plugin.getPlayerCache().getByPlayer((Player) e.getEntity()));
-            if (cancel) {
-                e.setCancelled(true);
-            }
         }
     }
 
@@ -48,6 +44,5 @@ public class ItemPickupObjective extends QBaseObjective {
     public void load(QConfig cfg) {
         super.load(cfg);
         itemID = NamespacedKey.fromString(cfg.getString("item"));
-        cancel = cfg.getBoolean("cancel", false);
     }
 }
