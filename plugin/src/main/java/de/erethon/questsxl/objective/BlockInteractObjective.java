@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 @QLoadableDoc(
         value = "block_interact",
-        description = "This objective is completed when a player interacts with a block at the specified location.",
+        description = "This objective is completed when a player interacts with a block at the specified location. Can be cancelled.",
         shortExample = "block_interact: x=64; y=64; z=64; world=world",
         longExample = {
                 "block_interact:",

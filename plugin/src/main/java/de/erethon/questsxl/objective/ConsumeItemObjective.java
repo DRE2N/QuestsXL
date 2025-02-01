@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 
 @QLoadableDoc(
         value = "consume_item",
-        description = "An item needs to be consumed to complete this objective. Hephaestus item keys are used.",
+        description = "An item needs to be consumed to complete this objective. Hephaestus item keys are used. Can be cancelled.",
         shortExample = "consume_item: item=minecraft:apple",
         longExample = {
                 "consume_item:",

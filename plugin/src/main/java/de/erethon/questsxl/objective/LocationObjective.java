@@ -13,7 +13,7 @@ import java.util.Arrays;
 
 @QLoadableDoc(
         value = "location",
-        description = "This objective is completed when a player reaches a specific location.",
+        description = "This objective is completed when a player reaches a specific location. Can be cancelled, preventing the player from moving closer",
         shortExample = "location: x=64; y=64; z=64; range=5",
         longExample = {
                 "location: # This is completed when the player moves five blocks up from their current location.",
@@ -45,6 +45,7 @@ public class LocationObjective extends AbstractLocationBasedObjective {
             return;
         }
         if (event.getTo().distance(location.get(event.getTo())) <= distance) {
+            if (shouldCancelEvent) event.setCancelled(true);
             checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(event.getPlayer()));
         }
     }

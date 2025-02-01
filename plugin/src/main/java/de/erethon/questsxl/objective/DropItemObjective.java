@@ -13,12 +13,11 @@ import org.bukkit.event.entity.EntityDropItemEvent;
 
 @QLoadableDoc(
         value = "drop_item",
-        description = "Drop an item to complete this objective. Can optionally cancel the drop event, preventing the item from being dropped.",
+        description = "Drop an item to complete this objective. Can be cancelled.",
         shortExample = "drop_item: item=erethon:fancy_sword",
         longExample = {
                 "drop_item:",
                 "  item: 'erethon:fancy_sword' # Needs to be quoted due to the colon.",
-                "  cancel: true"
         }
 )
 public class DropItemObjective extends QBaseObjective {

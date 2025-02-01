@@ -13,7 +13,7 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 
 @QLoadableDoc(
         value = "pickup_item",
-        description = "This objective is completed when the player picks up a specific item. Can optionally cancel the pickup event, preventing the item from being picked up.",
+        description = "This objective is completed when the player picks up a specific item. Can be cancelled, preventing the item from being picked up.",
         shortExample = "pickup_item: item=erethon:fancy_sword",
         longExample = {
                 "pickup_item:",
