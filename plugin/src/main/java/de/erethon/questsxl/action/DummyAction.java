@@ -3,6 +3,7 @@ package de.erethon.questsxl.action;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -13,12 +14,9 @@ import org.bukkit.configuration.ConfigurationSection;
         shortExample = "dummy:"
 )
 public class DummyAction extends QBaseAction {
-    @Override
-    public void play(QPlayer player) {
-    }
 
     @Override
-    public void play(QEvent event) {
+    public void play(Quester quester) {
     }
 
     @Override

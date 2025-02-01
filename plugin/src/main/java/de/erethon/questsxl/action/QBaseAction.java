@@ -1,7 +1,9 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QComponent;
 import de.erethon.questsxl.common.QConfig;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public abstract class QBaseAction implements QAction {
 
@@ -20,10 +23,16 @@ public abstract class QBaseAction implements QAction {
     List<QCondition> conditions = new ArrayList<>();
     Set<QAction> runAfter = new HashSet<>();
 
+    private QComponent parent;
+
     String id;
 
     @Override
     public void play(QPlayer player) {
+    }
+
+    @Override
+    public void play(Quester quester) {
     }
 
     @Override
@@ -51,6 +60,11 @@ public abstract class QBaseAction implements QAction {
         return true;
     }
 
+    @Override
+    public boolean conditions(Quester player) {
+        return false;
+    }
+
     public void onFinish(QPlayer player) {
         for (QAction action : runAfter) {
             action.play(player);
@@ -60,6 +74,22 @@ public abstract class QBaseAction implements QAction {
     public void onFinish(QEvent event) {
         for (QAction action : runAfter) {
             action.play(event);
+        }
+    }
+
+    public void onFinish(Quester quester) {
+        for (QAction action : runAfter) {
+            action.play(quester);
+        }
+    }
+
+    protected void execute(Quester quester, Consumer<QPlayer> action) {
+        if (quester instanceof QPlayer player) {
+            action.accept(player);
+        } else if (quester instanceof QEvent event) {
+            for (QPlayer player : event.getPlayersInRange()) {
+                action.accept(player);
+            }
         }
     }
 
@@ -83,15 +113,24 @@ public abstract class QBaseAction implements QAction {
         return id;
     }
 
+    @Override
+    public QComponent getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(QComponent parent) {
+        this.parent = parent;
+    }
 
     @Override
     public void load(QConfig cfg) {
         id = cfg.getName();
         if (cfg.contains("runAfter")) {
-            runAfter.addAll(cfg.getActions("runAfter"));
+            runAfter.addAll(cfg.getActions(this, "runAfter"));
         }
         if (cfg.contains("conditions")) {
-            conditions.addAll(cfg.getConditions("conditions"));
+            conditions.addAll(cfg.getConditions(this, "conditions"));
         }
     }
 

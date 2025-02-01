@@ -4,6 +4,7 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.player.QPlayer;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Material;
@@ -51,17 +52,21 @@ public class PermissionAction extends QBaseAction {
     }
 
     @Override
-    public void play(QPlayer qplayer) {
-        if (!conditions(qplayer)) return;
+    public void play(Quester quester) {
+        if (!conditions(quester)) return;
+        execute(quester, this::changePermissions);
+        onFinish(quester);
+    }
+
+    private void changePermissions(QPlayer qP) {
+        Player player = qP.getPlayer();
         Permission provider = rsp.getProvider();
-        Player player = qplayer.getPlayer();
         switch (action) {
             case ADD -> provider.playerAdd(player, permission);
             case REMOVE -> provider.playerRemove(player, permission);
             case ADD_GROUP -> provider.playerAddGroup(player, permission);
             case REMOVE_GROUP -> provider.playerRemoveGroup(player, permission);
         }
-        onFinish(qplayer);
     }
 
     @Override

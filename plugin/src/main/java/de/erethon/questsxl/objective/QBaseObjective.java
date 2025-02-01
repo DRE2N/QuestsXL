@@ -4,6 +4,7 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.common.ObjectiveHolder;
+import de.erethon.questsxl.common.QComponent;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.livingworld.QEvent;
@@ -27,6 +28,8 @@ public abstract class QBaseObjective implements QObjective {
     private boolean optional = false;
     private boolean persistent = false;
     private boolean isGlobal = false;
+
+    private QComponent parent;
 
     protected int progressGoal = 1;
 
@@ -244,24 +247,34 @@ public abstract class QBaseObjective implements QObjective {
     }
 
     @Override
+    public QComponent getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(QComponent parent) {
+        this.parent = parent;
+    }
+
+    @Override
     public void load(QConfig cfg) {
         if (cfg.contains("display")) {
             displayText = cfg.getString("display");
         }
         if (cfg.contains("conditions")) {
-            conditions.addAll(cfg.getConditions("conditions"));
+            conditions.addAll(cfg.getConditions(this, "conditions"));
         }
         if (cfg.contains("onProgress")) {
-            progressActions.addAll(cfg.getActions("onProgress"));
+            progressActions.addAll(cfg.getActions(this, "onProgress"));
         }
         if (cfg.contains("onConditionFail")) {
-            conditionFailActions.addAll(cfg.getActions("onConditionFail"));
+            conditionFailActions.addAll(cfg.getActions(this, "onConditionFail"));
         }
         if (cfg.contains("onComplete")) {
-            successActions.addAll(cfg.getActions("onComplete"));
+            successActions.addAll(cfg.getActions(this, "onComplete"));
         }
         if (cfg.contains("onFail")) {
-            failActions.addAll(cfg.getActions("onFail"));
+            failActions.addAll(cfg.getActions(this, "onFail"));
         }
         if (cfg.contains("optional")) {
             optional = cfg.getBoolean("optional");

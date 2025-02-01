@@ -1,6 +1,7 @@
 package de.erethon.questsxl.condition;
 
 import de.erethon.questsxl.action.QAction;
+import de.erethon.questsxl.common.QComponent;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QConfigLoader;
 import de.erethon.questsxl.common.QLineConfig;
@@ -18,6 +19,8 @@ public abstract class QBaseCondition implements QCondition {
     String display = "";
     private final Set<QAction> failActions = new HashSet<>();
     private final Set<QAction> successActions = new HashSet<>();
+
+    private QComponent parent;
 
     @Override
     public boolean fail(QPlayer player) {
@@ -57,6 +60,16 @@ public abstract class QBaseCondition implements QCondition {
     }
 
     @Override
+    public QComponent getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(QComponent parent) {
+        this.parent = parent;
+    }
+
+    @Override
     public void load(QConfig cfg) {
         if (cfg.getString("displayText") == null || cfg.getString("displayText").equals("none")) {
             display = null;
@@ -64,10 +77,10 @@ public abstract class QBaseCondition implements QCondition {
         }
         display = cfg.getString("displayText");
         if (cfg.contains("onFail")) {
-            failActions.addAll(cfg.getActions("onFail"));
+            failActions.addAll(cfg.getActions(this, "onFail"));
         }
         if (cfg.contains("onSuccess")) {
-            successActions.addAll(cfg.getActions("onSuccess"));
+            successActions.addAll(cfg.getActions(this, "onSuccess"));
         }
     }
 

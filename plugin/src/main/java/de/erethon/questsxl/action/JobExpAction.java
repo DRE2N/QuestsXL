@@ -6,6 +6,7 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import de.fyreum.jobsxl.job.ExperienceGainReason;
@@ -39,15 +40,17 @@ public class JobExpAction extends QBaseAction {
     private double chance;
 
     @Override
-    public void play(QPlayer player) {
+    public void play(Quester quester) {
+        if (!conditions(quester)) return;
         if (chance != 1 && Math.random() > chance) {
             return;
         }
+        execute(quester, this::giveExp);
+        onFinish(quester);
+    }
+
+    private void giveExp(QPlayer player) {
         User user = plugin.getJobsXL().getUserCache().getByPlayer(player.getPlayer());
-        if (user == null) {
-            MessageUtil.log("Job exp actions doesn't work while JobsXL is not on the server");
-            return;
-        }
         int exp = min == max ? min : random.nextInt(max - min + 1) + min;
         user.addExp(exp, ExperienceGainReason.QUEST);
     }

@@ -2,6 +2,7 @@ package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QLoadableDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.tool.BeamTool;
 import org.bukkit.Location;
@@ -41,8 +42,8 @@ public class DisplayLocationMarkerAction extends QBaseAction {
         }
     }
     @Override
-    public void play(QPlayer player)  {
-        if (!conditions(player)) return;
+    public void play(Quester quester)  {
+        if (!conditions(quester)) return;
         switch (action) {
             case SHOW -> {
                 beam.show();

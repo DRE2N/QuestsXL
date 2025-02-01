@@ -6,6 +6,7 @@ import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.QTranslatable;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -25,19 +26,10 @@ public class SendMessageAction extends QBaseAction {
     private QTranslatable message;
 
     @Override
-    public void play(QPlayer player) {
-        if (!conditions(player)) return;
-        MessageUtil.sendMessage(player.getPlayer(), message.get());
-        onFinish(player);
-    }
-
-    @Override
-    public void play(QEvent player) {
-        if (!conditions(player)) return;
-        for (QPlayer qPlayer : player.getPlayersInRange()) {
-            MessageUtil.sendMessage(qPlayer.getPlayer(), message.get());
-        }
-        onFinish(player);
+    public void play(Quester quester) {
+        if (!conditions(quester)) return;
+        execute(quester, (QPlayer player) -> MessageUtil.sendMessage(player.getPlayer(), message.get()));
+        onFinish(quester);
     }
 
     @Override

@@ -4,6 +4,7 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
@@ -27,15 +28,10 @@ public class SetTrackedEventAction extends QBaseAction {
 
 
     @Override
-    public void play(QPlayer qPlayer) {
-        qPlayer.setTrackedEvent(event, priority);
-    }
-
-    @Override
-    public void play(QEvent event) {
-        for (QPlayer qPlayer : event.getPlayersInRange()) {
-            qPlayer.setTrackedEvent(event, priority);
-        }
+    public void play(Quester quester) {
+        if (!conditions(quester)) return;
+        execute(quester, (QPlayer player) -> player.setTrackedEvent(event, priority));
+        onFinish(quester);
     }
 
     @Override

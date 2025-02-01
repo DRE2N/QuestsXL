@@ -26,9 +26,9 @@ public interface QConfig {
     QLocation getQLocation(String path);
     QLocation getQLocation(String path, QLocation def);
     boolean contains(String path);
-    Set<QAction> getActions(String path);
-    Set<QCondition> getConditions(String path);
-    Set<QObjective> getObjectives(String path);
+    Set<QAction> getActions(QComponent component, String path);
+    Set<QCondition> getConditions(QComponent component, String path);
+    Set<QObjective> getObjectives(QComponent component, String path);
 
     QEvent getQEvent(String event);
     QQuest getQuest(String quest);

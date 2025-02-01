@@ -5,6 +5,7 @@ import de.erethon.questsxl.common.ObjectiveHolder;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
@@ -40,47 +41,22 @@ public class RepeatAction extends QBaseAction {
     BukkitRunnable task;
 
     @Override
-    public void play(QPlayer player) {
-        if (!conditions(player)) return;
+    public void play(Quester quester) {
+        if (!conditions(quester)) return;
         cancel();
         task = new BukkitRunnable() {
             @Override
             public void run() {
                 for (QAction action : actions) {
                     try {
-                        action.play(player);
+                        action.play(quester);
                     } catch (Exception e) {
-                        FriendlyError error = new FriendlyError(id,"Failed to execute repeat actions", e.getMessage(), "Player: " + player.getName()).addStacktrace(e.getStackTrace());
+                        FriendlyError error = new FriendlyError(id,"Failed to execute repeat actions", e.getMessage(), "Player: " + quester.getName()).addStacktrace(e.getStackTrace());
                         plugin.addRuntimeError(error);
                     }
                 }
                 if (current >= repetitions) {
-                    onFinish(player);
-                    cancel();
-                }
-                current++;
-            }
-        };
-        task.runTaskTimer(plugin, delay, delay);
-    }
-
-    @Override
-    public void play(QEvent event) {
-        if (!conditions(event)) return;
-        cancel();
-        task = new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (QAction action : actions) {
-                    try {
-                        action.play(event);
-                    } catch (Exception e) {
-                        FriendlyError error = new FriendlyError(id,"Failed to execute repeat actions", e.getMessage(), "Event: " + event.getId()).addStacktrace(e.getStackTrace());
-                        plugin.getErrors().add(error);
-                    }
-                }
-                if (current >= repetitions) {
-                    onFinish(event);
+                    onFinish(quester);
                     cancel();
                 }
                 current++;
@@ -99,7 +75,7 @@ public class RepeatAction extends QBaseAction {
 
     @Override
     public void load(QConfig cfg) {
-        actions = cfg.getActions("actions");
+        actions = cfg.getActions(this, "actions");
         delay = cfg.getLong("delay", 0);
         repetitions = cfg.getInt("repetitions", 1);
     }

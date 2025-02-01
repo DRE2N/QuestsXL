@@ -5,6 +5,7 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.player.QPlayerCache;
 import de.erethon.questsxl.quest.QQuest;
@@ -28,8 +29,13 @@ public class QuestAction extends QBaseAction {
     QQuest quest;
 
     @Override
-    public void play(QPlayer player) {
-        if (!conditions(player)) return;
+    public void play(Quester quester) {
+        if (!conditions(quester)) return;
+        execute(quester, this::startQuest);
+        onFinish(quester);
+    }
+
+    private void startQuest(QPlayer player) {
         if (player.hasQuest(quest)) {
             return;
         }

@@ -40,17 +40,17 @@ public class QLineConfig implements QConfig {
 
     // Unused - No actions, conditions, or objectives in line configs
     @Override
-    public Set<QAction> getActions(String path) {
+    public Set<QAction> getActions(QComponent component, String path) {
         return Set.of();
     }
 
     @Override
-    public Set<QCondition> getConditions(String path) {
+    public Set<QCondition> getConditions(QComponent component, String path) {
         return Set.of();
     }
 
     @Override
-    public Set<QObjective> getObjectives(String path) {
+    public Set<QObjective> getObjectives(QComponent component, String path) {
         return Set.of();
     }
 

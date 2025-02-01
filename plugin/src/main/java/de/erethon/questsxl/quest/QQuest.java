@@ -4,6 +4,7 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.common.Completable;
+import de.erethon.questsxl.common.QComponent;
 import de.erethon.questsxl.common.QConfigLoader;
 import de.erethon.questsxl.common.QRegistries;
 import de.erethon.questsxl.common.QStage;
@@ -20,7 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class QQuest implements Completable {
+public class QQuest implements Completable, QComponent {
 
     File file;
     YamlConfiguration cfg;
@@ -110,15 +111,15 @@ public class QQuest implements Completable {
         description = cfg.getString("description", "<no description>");
         // Conditions
         if (cfg.contains("conditions")) {
-            conditions.addAll((Collection<? extends QCondition>) QConfigLoader.load("conditions", cfg, QRegistries.CONDITIONS));
+            conditions.addAll((Collection<? extends QCondition>) QConfigLoader.load(this, "conditions", cfg, QRegistries.CONDITIONS));
         }
         // Start actions
         if (cfg.contains("onStart")) {
-            startActions.addAll((Collection<? extends QAction>) QConfigLoader.load("onStart", cfg, QRegistries.ACTIONS));
+            startActions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onStart", cfg, QRegistries.ACTIONS));
         }
         // Reward actions
         if (cfg.contains("onFinish")) {
-            rewards.addAll((Collection<? extends QAction>) QConfigLoader.load("onFinish", cfg, QRegistries.ACTIONS));
+            rewards.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onFinish", cfg, QRegistries.ACTIONS));
         }
         // Stages
         ConfigurationSection stageSection = cfg.getConfigurationSection("stages");
@@ -128,10 +129,14 @@ public class QQuest implements Completable {
         }
         for (String key : stageSection.getKeys(false)) {
             ConfigurationSection stageS = stageSection.getConfigurationSection(key);
+            if (stageS == null) {
+                QuestsXL.getInstance().getErrors().add(new FriendlyError("Quest: " + this.getName(), "Stage '" + key + "' konnte nicht geladen werden", "stage section is null", "Wahrscheinlich falsche Einrückung."));
+                continue;
+            }
             int id = Integer.parseInt(key);
             QStage stage = new QStage(this, id);
             try {
-                stage.load(stageS);
+                stage.load(this, stageS);
             } catch (Exception e) {
                 QuestsXL.getInstance().getErrors().add(new FriendlyError("Quest: " + this.getName(), "Stage " + id + " konnte nicht geladen werden.", e.getMessage(), "..."));
                 e.printStackTrace();

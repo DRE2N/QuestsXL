@@ -4,6 +4,7 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Material;
 
@@ -24,10 +25,10 @@ public class TeleportPlayerAction extends QBaseAction{
     @QParamDoc(name = "target", description = "The location to teleport the player to", required = true)
     QLocation target;
 
-    public void play(QPlayer player) {
-        if (!conditions(player)) return;
-        player.getPlayer().teleport(target.get(player.getPlayer().getLocation()));
-        onFinish(player);
+    public void play(Quester quester) {
+        if (!conditions(quester)) return;
+        execute(quester, (QPlayer player) -> player.getPlayer().teleport(target.get(player.getPlayer().getLocation())));
+        onFinish(quester);
     }
 
     public Material getIcon() {

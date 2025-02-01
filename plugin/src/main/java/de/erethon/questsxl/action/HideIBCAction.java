@@ -5,6 +5,7 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.instancing.BlockCollectionManager;
 import de.erethon.questsxl.instancing.InstancedBlockCollection;
 import de.erethon.questsxl.livingworld.QEvent;
@@ -27,13 +28,10 @@ public class HideIBCAction extends QBaseAction {
     InstancedBlockCollection collection = null;
 
     @Override
-    public void play(QPlayer player) {
-        collection.hide(player.getPlayer());
-    }
-
-    @Override
-    public void play(QEvent event) {
-
+    public void play(Quester quester) {
+        if (!conditions(quester)) return;
+        execute(quester,(QPlayer player) -> collection.hide(player.getPlayer()));
+        onFinish(quester);
     }
 
     @Override

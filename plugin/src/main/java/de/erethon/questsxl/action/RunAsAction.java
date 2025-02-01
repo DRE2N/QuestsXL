@@ -83,7 +83,7 @@ public class RunAsAction extends QBaseAction {
         runMode = RUN_MODE.valueOf(cfg.getString("mode", "online").toUpperCase());
         runValue = cfg.getInt("value", 0);
         try {
-            actions = cfg.getActions("actions");
+            actions = cfg.getActions(this, "actions");
             if (actions.isEmpty()) {
                 throw new RuntimeException("Action list is empty.");
             }

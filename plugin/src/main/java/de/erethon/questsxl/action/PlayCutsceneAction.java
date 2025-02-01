@@ -7,6 +7,7 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -27,13 +28,10 @@ public class PlayCutsceneAction extends QBaseAction {
     QCutscene cutscene;
 
     @Override
-    public void play(QPlayer player) {
-        cutscene.play(player.getPlayer(), this);
-    }
-
-    @Override
-    public void onFinish(QPlayer player) {
-        super.onFinish(player);
+    public void play(Quester quester) {
+        if (!conditions(quester)) return;
+        execute(quester, (QPlayer player) -> cutscene.play(player.getPlayer(), this));
+        onFinish(quester);
     }
 
     @Override

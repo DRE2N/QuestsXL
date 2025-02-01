@@ -5,6 +5,7 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -24,8 +25,6 @@ import org.bukkit.entity.Player;
 )
 public class RunCommandAction extends QBaseAction {
 
-    private transient final QuestsXL plugin = QuestsXL.getInstance();
-
     @QParamDoc(name = "command", description = "The command to run, without the /", required = true)
     private String command;
     @QParamDoc(name = "op", description = "Whether to run the command as an op", def = "false")
@@ -34,20 +33,26 @@ public class RunCommandAction extends QBaseAction {
     private boolean console = false;
 
     @Override
-    public void play(QPlayer qPlayer) {
-        if (!conditions(qPlayer)) return;
-        Player player = qPlayer.getPlayer();
-        command = command.replace("%player%", player.getName());
+    public void play(Quester quester) {
+        if (!conditions(quester)) return;
+        execute(quester, this::runCommand);
+        onFinish(quester);
+    }
+
+    private void runCommand(QPlayer player) {
+        Player p = player.getPlayer();
         if (console) {
-            plugin.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
-        } else if (op) {
-            player.setOp(true);
-            player.performCommand(command);
-            player.setOp(false);
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
         } else {
-            player.performCommand(command);
+            if (op) {
+                boolean isOp = p.isOp();
+                p.setOp(true);
+                p.performCommand(command);
+                p.setOp(isOp);
+            } else {
+                p.performCommand(command);
+            }
         }
-        onFinish(qPlayer);
     }
 
     @Override

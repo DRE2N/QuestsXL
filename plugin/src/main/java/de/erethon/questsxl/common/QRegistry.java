@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public class QRegistry<T extends QLoadable> {
+public class QRegistry<T extends QComponent> {
 
     private final Map<String, Supplier<T>> entries = new HashMap<>();
     private final Map<Class<? extends T>, String> reverseLookup = new HashMap<>();

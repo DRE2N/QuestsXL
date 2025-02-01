@@ -2,6 +2,7 @@ package de.erethon.questsxl.global;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.common.Completable;
+import de.erethon.questsxl.common.QComponent;
 import de.erethon.questsxl.common.QConfigLoader;
 import de.erethon.questsxl.common.QRegistries;
 import de.erethon.questsxl.common.QStage;
@@ -17,7 +18,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-public class GlobalObjectives implements Completable {
+public class GlobalObjectives implements Completable, QComponent {
 
     List<QObjective> objectives = new ArrayList<>();
 
@@ -37,7 +38,7 @@ public class GlobalObjectives implements Completable {
             if (section == null) {
                 continue;
             }
-            objectives.addAll((Collection<? extends QObjective>) QConfigLoader.load("objectives", section, QRegistries.OBJECTIVES));
+            objectives.addAll((Collection<? extends QObjective>) QConfigLoader.load(this, "objectives", section, QRegistries.OBJECTIVES));
         }
         for (QObjective objective : objectives) {
             objective.setGlobal(true);

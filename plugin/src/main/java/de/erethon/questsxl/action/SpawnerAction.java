@@ -6,6 +6,7 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -28,15 +29,10 @@ public class SpawnerAction extends QBaseAction {
     private String spawnerID;
 
     @Override
-    public void play(QPlayer player) {
-        super.play(player);
+    public void play(Quester quester) {
+        if (!conditions(quester)) return;
         spawnerManager.triggerSpawner(spawnerID);
-    }
-
-    @Override
-    public void play(QEvent event) {
-        super.play(event);
-        spawnerManager.triggerSpawner(spawnerID);
+        onFinish(quester);
     }
 
     @Override

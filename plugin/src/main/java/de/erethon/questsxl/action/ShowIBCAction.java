@@ -5,6 +5,7 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.instancing.BlockCollectionManager;
 import de.erethon.questsxl.instancing.InstancedBlockCollection;
 import de.erethon.questsxl.player.QPlayer;
@@ -27,8 +28,10 @@ public class ShowIBCAction extends QBaseAction {
     InstancedBlockCollection collection = null;
 
     @Override
-    public void play(QPlayer player) {
-        collection.show(player.getPlayer());
+    public void play(Quester quester) {
+        if (!conditions(quester)) return;
+        execute(quester,  (QPlayer player) -> collection.show(player.getPlayer()));
+        onFinish(quester);
     }
 
     @Override

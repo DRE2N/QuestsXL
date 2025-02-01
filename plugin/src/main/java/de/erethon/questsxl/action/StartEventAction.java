@@ -5,6 +5,7 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -29,17 +30,11 @@ public class StartEventAction extends QBaseAction {
     boolean skipConditions = false;
 
     @Override
-    public void play(QPlayer player) {
-        if (!conditions(player)) return;
+    public void play(Quester quester) {
+        if (!conditions(quester)) return;
         event.startFromAction(skipConditions);
+        onFinish(quester);
     }
-
-    @Override
-    public void play(QEvent event) {
-        if (!conditions(event)) return;
-        event.startFromAction(skipConditions);
-    }
-
 
     @Override
     public void load(QConfig cfg) {

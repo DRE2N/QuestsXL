@@ -4,6 +4,7 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -32,16 +33,16 @@ public class DelayAction extends QBaseAction {
     private Set<QAction> actions;
 
     @Override
-    public void play(QPlayer player) {
-        if (!conditions(player)) return;
+    public void play(Quester quester) {
+        if (!conditions(quester)) return;
         List<QAction> tmp = new ArrayList<>(actions);
         BukkitRunnable runnable = new BukkitRunnable() {
             @Override
             public void run() {
                 for (QAction action : tmp) {
-                    action.play(player);
+                    action.play(quester);
                 }
-                onFinish(player);
+                onFinish(quester);
             }
         };
         runnable.runTaskLater(plugin, delay * 20);
@@ -50,7 +51,7 @@ public class DelayAction extends QBaseAction {
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        actions =  cfg.getActions("actions");
+        actions =  cfg.getActions(this, "actions");
         delay = cfg.getLong("duration");
         if (actions.isEmpty()) {
             throw new RuntimeException("Action list is empty.");

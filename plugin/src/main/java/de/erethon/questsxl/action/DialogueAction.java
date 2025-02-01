@@ -6,6 +6,7 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.dialogue.QDialogue;
 import de.erethon.questsxl.dialogue.QDialogueManager;
 import de.erethon.questsxl.livingworld.QEvent;
@@ -29,10 +30,10 @@ public class DialogueAction extends QBaseAction {
     QDialogue dialogue;
 
     @Override
-    public void play(QPlayer player) {
-        super.play(player);
-        if (!conditions(player)) return;
-        dialogue.start(player);
+    public void play(Quester quester) {
+        super.play(quester);
+        if (!conditions(quester)) return;
+        dialogue.start(quester);
     }
 
     @Override

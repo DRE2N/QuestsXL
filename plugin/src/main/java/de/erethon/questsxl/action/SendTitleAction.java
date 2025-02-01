@@ -5,6 +5,7 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.player.QPlayer;
 import net.kyori.adventure.title.Title;
 import org.bukkit.configuration.ConfigurationSection;
@@ -36,10 +37,10 @@ public class SendTitleAction extends QBaseAction {
     int fadeOut;
 
     @Override
-    public void play(QPlayer player) {
-        if (!conditions(player)) return;
-        player.getPlayer().showTitle(Title.title(MessageUtil.parse(msg), MessageUtil.parse(subtitle)));
-        onFinish(player);
+    public void play(Quester quester) {
+        if (!conditions(quester)) return;
+        execute(quester, (QPlayer player) -> player.getPlayer().showTitle(Title.title(MessageUtil.parse(msg), MessageUtil.parse(subtitle))));
+        onFinish(quester);
     }
 
     @Override

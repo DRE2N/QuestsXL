@@ -6,6 +6,7 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.NamespacedKey;
@@ -34,7 +35,8 @@ public class GiveItemAction extends QBaseAction {
     private int chance = 100;
 
     @Override
-    public void play(QPlayer player) {
+    public void play(Quester quester) {
+        if (!conditions(quester)) return;
         Random random = new Random();
         if (random.nextInt(100) > chance) {
             return;
@@ -45,26 +47,8 @@ public class GiveItemAction extends QBaseAction {
             return;
         }
         HItemStack stack = item.rollRandomStack();
-        stack.getVanillaStack().setCount(amount);
-        player.getPlayer().getInventory().addItem(stack.getBukkitStack());
-    }
-
-    @Override
-    public void play(QEvent event) {
-        Random random = new Random();
-        if (random.nextInt(100) > chance) {
-            return;
-        }
-        NamespacedKey key = NamespacedKey.fromString(itemID);
-        HItem item = plugin.getItemLibrary().get(key);
-        if (item == null) {
-            return;
-        }
-        HItemStack stack = item.rollRandomStack();
-        stack.getVanillaStack().setCount(amount);
-        for (QPlayer player : event.getPlayersInRange()) {
-            player.getPlayer().getInventory().addItem(stack.getBukkitStack());
-        }
+        execute(quester, (QPlayer player) -> player.getPlayer().getInventory().addItem(stack.getBukkitStack()));
+        onFinish(quester);
     }
 
     @Override

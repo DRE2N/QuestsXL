@@ -52,7 +52,7 @@ public class InvertedCondition extends QBaseCondition {
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        conditions = cfg.getConditions("conditions");
+        conditions = cfg.getConditions(this, "conditions");
     }
 
 }

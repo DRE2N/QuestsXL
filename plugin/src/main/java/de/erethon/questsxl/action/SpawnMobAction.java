@@ -11,6 +11,7 @@ import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
@@ -46,9 +47,9 @@ public class SpawnMobAction extends QBaseAction {
 
 
     @Override
-    public void play(QPlayer player) {
-        if (!conditions(player)) return;
-        Location pLocation = player.getLocation();
+    public void play(Quester quester) {
+        if (!conditions(quester)) return;
+        Location pLocation = quester.getLocation();
         try {
             AetherBaseMob mob = npcData.spawn(location.get(pLocation));
             mob.setPos(location.getX(pLocation), location.getY(pLocation), location.getZ(pLocation));
@@ -58,25 +59,9 @@ public class SpawnMobAction extends QBaseAction {
             FriendlyError error = new FriendlyError(id,"Failed to spawn mob", e.getMessage(), "Mob ID: " + npcData.getID()).addStacktrace(e.getStackTrace());
             plugin.addRuntimeError(error);
         }
-        onFinish(player);
+        onFinish(quester);
     }
 
-    @Override
-    public void play(QEvent event) {
-        if (!conditions(event)) return;
-        Location loc = event.getLocation();
-        try {
-            AetherBaseMob mob = npcData.spawn(location.get(loc));
-            mob.setPos(location.getX(loc), location.getY(loc), location.getZ(loc));
-            mob.addToWorld();
-        }
-        catch (Exception e) {
-            FriendlyError error = new FriendlyError(id,"Failed to spawn mob", e.getMessage(), "Mob ID: " + npcData.getID()).addStacktrace(e.getStackTrace());
-            plugin.addRuntimeError(error);
-        }
-        MessageUtil.log("Spawned " + npcData.getID() + " at " + location.get(event.getLocation()));
-        onFinish(event);
-    }
 
     @Override
     public void load(QConfig cfg) {

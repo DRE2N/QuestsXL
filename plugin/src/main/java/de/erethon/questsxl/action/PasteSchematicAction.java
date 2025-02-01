@@ -16,6 +16,7 @@ import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Location;
@@ -49,13 +50,10 @@ public class PasteSchematicAction extends QBaseAction {
     private int time;
 
     @Override
-    public void play(QPlayer player) {
-        paste(player);
-    }
-
-    @Override
-    public void play(QEvent event)  {
-        paste(event); // Only paste it once, not per player, lol.
+    public void play(Quester quester) {
+        if (!conditions(quester)) return;
+        execute(quester, this::paste);
+        onFinish(quester);
     }
 
     private void paste(ObjectiveHolder holder) {

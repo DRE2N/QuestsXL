@@ -8,6 +8,7 @@ import de.erethon.bedrock.user.LoadableUser;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.Completable;
 import de.erethon.questsxl.common.ObjectiveHolder;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.common.Scorable;
 import de.erethon.questsxl.dialogue.ActiveDialogue;
 import de.erethon.questsxl.global.GlobalObjectives;
@@ -51,7 +52,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class QPlayer extends StorageDataContainer implements LoadableUser, ObjectiveHolder, Scorable {
+public class QPlayer extends StorageDataContainer implements LoadableUser, ObjectiveHolder, Scorable, Quester {
 
     public static final int CONFIG_VERSION = 1;
 

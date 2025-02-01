@@ -16,7 +16,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class QStage {
+public class QStage implements QComponent {
 
     private final Completable owner;
     private final Set<QObjective> goals = new HashSet<>();
@@ -27,6 +27,8 @@ public class QStage {
     private String startMessage = "";
     private String description = "";
     private String completeMessage = "";
+
+    private QComponent parent;
 
     /**
      * A stage is a collection of objectives that are completed in order to progress to the next stage. Stages can
@@ -187,21 +189,32 @@ public class QStage {
         return description;
     }
 
-    public void load(ConfigurationSection section) {
+    @Override
+    public QComponent getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(QComponent parent) {
+        this.parent = parent;
+    }
+
+    public void load(QComponent component, ConfigurationSection section) {
+        setParent(component);
         startMessage = section.getString("startMessage", "");
         completeMessage = section.getString("completeMessage", "");
         description = section.getString("description", "");
         if (section.contains("conditions")) {
-            conditions.addAll((Collection<? extends QCondition>) QConfigLoader.load("conditions", section, QRegistries.CONDITIONS));
+            conditions.addAll((Collection<? extends QCondition>) QConfigLoader.load(this, "conditions", section, QRegistries.CONDITIONS));
         }
         if (section.contains("objectives")) {
-            goals.addAll((Collection<? extends QObjective>) QConfigLoader.load("objectives", section, QRegistries.OBJECTIVES));
+            goals.addAll((Collection<? extends QObjective>) QConfigLoader.load(this, "objectives", section, QRegistries.OBJECTIVES));
         }
         if (section.contains("onStart")) {
-            startActions.addAll((Collection<? extends QAction>) QConfigLoader.load("onStart", section, QRegistries.ACTIONS));
+            startActions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onStart", section, QRegistries.ACTIONS));
         }
         if (section.contains("onFinish")) {
-            completeActions.addAll((Collection<? extends QAction>) QConfigLoader.load("onFinish", section, QRegistries.ACTIONS));
+            completeActions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onFinish", section, QRegistries.ACTIONS));
         }
     }
 }

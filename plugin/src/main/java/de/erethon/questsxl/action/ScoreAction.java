@@ -5,6 +5,7 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.player.QPlayerCache;
@@ -54,8 +55,8 @@ public class ScoreAction extends QBaseAction {
     private Operation operation;
 
     @Override
-    public void play(QPlayer player) {
-        if (!conditions(player)) return;
+    public void play(Quester quester) {
+        if (!conditions(quester)) return;
         switch (scope) {
             case GLOBAL -> {
                 switch (operation) {
@@ -66,39 +67,19 @@ public class ScoreAction extends QBaseAction {
                 }
             }
             case PLAYER -> {
-                switch (operation) {
-                    case ADD -> player.addScore(score, amount);
-                    case REMOVE -> player.removeScore(score, amount);
-                    case SET -> player.setScore(score, amount);
-                    case RESET -> player.setScore(score, 0);
-                }
+                execute(quester, this::modifyScore);
             }
         }
-        onFinish(player);
+        onFinish(quester);
     }
 
-    @Override
-    public void play(QEvent event) {
-        if (!conditions(event)) return;
-        switch (scope) {
-            case GLOBAL -> {
-                switch (operation) {
-                    case ADD -> plugin.addScore(score, amount);
-                    case REMOVE -> plugin.removeScore(score, amount);
-                    case SET -> plugin.setScore(score, amount);
-                    case RESET -> plugin.setScore(score, 0);
-                }
-            }
-            case EVENT -> {
-                switch (operation) {
-                    case ADD -> event.addScore(score, amount);
-                    case REMOVE -> event.removeScore(score, amount);
-                    case SET -> event.setScore(score, amount);
-                    case RESET -> event.setScore(score, 0);
-                }
-            }
+    private void modifyScore(QPlayer player) {
+        switch (operation) {
+            case ADD -> player.addScore(score, amount);
+            case REMOVE -> player.removeScore(score, amount);
+            case SET -> player.setScore(score, amount);
+            case RESET -> player.setScore(score, 0);
         }
-        onFinish(event);
     }
 
     @Override

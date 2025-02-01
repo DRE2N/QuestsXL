@@ -4,6 +4,7 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.QAction;
+import de.erethon.questsxl.common.QComponent;
 import de.erethon.questsxl.common.QConfigLoader;
 import de.erethon.questsxl.common.QRegistries;
 import de.erethon.questsxl.error.FriendlyError;
@@ -17,7 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class RunCommand extends ECommand {
+public class RunCommand extends ECommand implements QComponent {
 
     List<FriendlyError> errors = new ArrayList<>();
 
@@ -38,7 +39,7 @@ public class RunCommand extends ECommand {
         errors.clear();
         Set<QAction> qActions = new HashSet<>();
         try {
-            qActions = (Set<QAction>) QConfigLoader.load("input", configuration, QRegistries.ACTIONS);
+            qActions = (Set<QAction>) QConfigLoader.load(this, "input", configuration, QRegistries.ACTIONS);
         } catch (Exception exception) {
             errors.add(new FriendlyError("Command", "Failed to parse action", exception.getMessage(), "").addStacktrace(exception.getStackTrace()));
         }

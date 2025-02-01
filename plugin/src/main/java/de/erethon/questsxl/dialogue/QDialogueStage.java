@@ -3,6 +3,7 @@ package de.erethon.questsxl.dialogue;
 import de.erethon.bedrock.misc.NumberUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.QAction;
+import de.erethon.questsxl.common.QComponent;
 import de.erethon.questsxl.common.QConfigLoader;
 import de.erethon.questsxl.common.QRegistries;
 import de.erethon.questsxl.condition.QCondition;
@@ -22,12 +23,12 @@ import java.util.Map;
 /**
  * @author Fyreum
  */
-public class QDialogueStage {
+public class QDialogueStage implements QComponent {
 
-    protected final LinkedList<Map.Entry<String, Integer>> messages;
+    protected LinkedList<Map.Entry<String, Integer>> messages;
     protected int maxMessageCount;
-    protected final List<QCondition> conditions;
-    protected final List<QAction> postActions;
+    protected List<QCondition> conditions;
+    protected List<QAction> postActions;
 
     public QDialogueStage(@NotNull LinkedList<Map.Entry<String, Integer>> messages, @NotNull List<QCondition> conditions,
                           @NotNull List<QAction> postActions) {
@@ -41,6 +42,10 @@ public class QDialogueStage {
     @Contract(pure = true)
     protected QDialogueStage(@NotNull QDialogueStage stage) {
         this(new LinkedList<>(stage.messages), new ArrayList<>(stage.conditions), new ArrayList<>(stage.postActions));
+    }
+
+    public QDialogueStage(String id, ConfigurationSection section) {
+        loadFromConfig(id, section);
     }
 
     public boolean canStart(@NotNull QPlayer player) {
@@ -57,7 +62,7 @@ public class QDialogueStage {
         return new QActiveDialogueStage(player, this);
     }
 
-    public static QDialogueStage loadFromConfig(String id, ConfigurationSection section) {
+    public QDialogueStage loadFromConfig(String id, ConfigurationSection section) {
         List<String> stringList = section.getStringList("messages");
         if (stringList.isEmpty()) {
             QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Nachrichten konnten nicht geladen werden.", "message list is empty", "Wahrscheinlich falsche Einrückung."));
@@ -85,14 +90,14 @@ public class QDialogueStage {
         List<QCondition> conditions = new ArrayList<>();
         if (section.contains("conditions"))
             try {
-                conditions.addAll((Collection<? extends QCondition>) QConfigLoader.load("conditions", section, QRegistries.CONDITIONS));
+                conditions.addAll((Collection<? extends QCondition>) QConfigLoader.load(this, "conditions", section, QRegistries.CONDITIONS));
             } catch (Exception e) {
                 QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Bedingungen konnten nicht geladen werden.", e.getMessage(), "Wahrscheinlich falsche Einrückung."));
             }
         List<QAction> postActions = new ArrayList<>();
         if (section.contains("onFinish")) {
             try {
-                postActions.addAll((Collection<? extends QAction>) QConfigLoader.load("onFinish", section, QRegistries.ACTIONS));
+                postActions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onFinish", section, QRegistries.ACTIONS));
             } catch (Exception e) {
                 QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "End-Actions konnten nicht geladen werden.", e.getMessage(), "Wahrscheinlich falsche Einrückung."));
             }

@@ -12,31 +12,32 @@ import java.util.Set;
 
 public class QConfigLoader {
 
-    public static @Nullable Set<? extends QLoadable> load(String id, ConfigurationSection parentSection, QRegistry<?> registry) {
+    public static @Nullable Set<? extends QComponent> load(QComponent component, String id, ConfigurationSection parentSection, QRegistry<?> registry) {
         if (parentSection.isConfigurationSection(id)) {
             ConfigurationSection section = parentSection.getConfigurationSection(id);
             if (section == null) {
                 return null;
             }
-            return loadSection(id, section, registry);
+            return loadSection(component, id, section, registry);
         }
         else if (parentSection.isList(id)) {
             List<String> strings = parentSection.getStringList(id);
-            return loadList(id, strings, registry);
+            return loadList(component, id, strings, registry);
         }
         return null;
     }
 
-    private static Set<? extends QLoadable> loadSection(String id, ConfigurationSection section, QRegistry<?> registry) {
-        Set<QLoadable> loadables = new HashSet<>();
+    private static Set<? extends QComponent> loadSection(QComponent component, String id, ConfigurationSection section, QRegistry<?> registry) {
+        Set<QComponent> loadables = new HashSet<>();
         for (String key : section.getKeys(false)) {
-            QLoadable loadable;
+            QComponent loadable;
             String type = null;
             // Format: <type>: <QLineConfig>
             if (registry.isValid(key) && section.isString(key)) {
                 try {
                     loadable = registry.get(key).getClass().getDeclaredConstructor().newInstance();
                     loadable.load(new QLineConfig(section.getString(key)));
+                    loadable.setParent(component);
                     loadables.add(loadable);
                 } catch (Exception e) {
                     QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Failed to load " + key, e.getMessage(), "Path:\n" + section.getCurrentPath() + "." + key).addStacktrace(e.getStackTrace()));
@@ -67,6 +68,7 @@ public class QConfigLoader {
                     try {
                         loadable = registry.get(type).getClass().getDeclaredConstructor().newInstance();
                         loadable.load(qConfigurationSection);
+                        loadable.setParent(component);
                         loadables.add(loadable);
                     } catch (Exception e) {
                         QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Failed to load " + type + " " + key, e.getMessage(), "Path:\n" + section.getCurrentPath() + "." + key).addStacktrace(e.getStackTrace()));
@@ -87,17 +89,18 @@ public class QConfigLoader {
     //   - <type>: <QLineConfig>
     //   - <type>: <QLineConfig>
     //  ...
-    private static Set<? extends QLoadable> loadList(String id, List<String> strings, QRegistry<?> registry) {
-        Set<QLoadable> loadables = new HashSet<>();
+    private static Set<? extends QComponent> loadList(QComponent component, String id, List<String> strings, QRegistry<?> registry) {
+        Set<QComponent> loadables = new HashSet<>();
         for (String s : strings) {
             String type = s.split(":")[0];
-            QLoadable loadable;
+            QComponent loadable;
             if (registry.isValid(type)) {
                 MessageUtil.log("Loading " + type + " from " + s);
                 try {
                     loadable = registry.get(type).getClass().getDeclaredConstructor().newInstance();
                     loadable.load(new QLineConfig(s.replace(type + ":", "")));
                     MessageUtil.log("Loadable: " + loadable);
+                    loadable.setParent(component);
                     loadables.add(loadable);
                 } catch (Exception e) {
                     QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Failed to load " + type, e.getMessage(), "Pfad:\n" + s).addStacktrace(e.getStackTrace()));

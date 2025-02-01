@@ -3,9 +3,10 @@ package de.erethon.questsxl.livingworld;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.QAction;
-import de.erethon.questsxl.common.QLoadable;
+import de.erethon.questsxl.common.QComponent;
 import de.erethon.questsxl.common.QConfigLoader;
 import de.erethon.questsxl.common.QRegistries;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.common.Scorable;
 import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.error.FriendlyError;
@@ -23,13 +24,12 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class QEvent implements Completable, ObjectiveHolder, Scorable {
+public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponent, Quester {
 
     private final QPlayerCache playerCache = QuestsXL.getInstance().getPlayerCache();
 
@@ -304,15 +304,15 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
         }
         centerLocation = new Location(world, x, y, z);
         if (cfg.contains("startConditions")) {
-            startConditions.addAll((Collection<? extends QCondition>) QConfigLoader.load("startConditions", cfg, QRegistries.CONDITIONS));
+            startConditions.addAll((Collection<? extends QCondition>) QConfigLoader.load(this, "startConditions", cfg, QRegistries.CONDITIONS));
         }
 
         if (cfg.contains("onUpdate")) {
-            updateActions.addAll((Collection<? extends QAction>) QConfigLoader.load("onUpdate", cfg, QRegistries.ACTIONS));
+            updateActions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onUpdate", cfg, QRegistries.ACTIONS));
         }
 
         if (cfg.contains("onStart")) {
-            startActions.addAll((Collection<? extends QAction>) QConfigLoader.load("onStart", cfg, QRegistries.ACTIONS));
+            startActions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onStart", cfg, QRegistries.ACTIONS));
         }
 
         if (cfg.contains("rewards")) {
@@ -320,12 +320,12 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
             for (String key : rewardSection.getKeys(false)) {
                 ConfigurationSection rewardEntry = rewardSection.getConfigurationSection(key);
                 int id = Integer.parseInt(key);
-                Set<QLoadable> rewardSet = (Set<QLoadable>) QConfigLoader.load(key, rewardSection, QRegistries.ACTIONS);
+                Set<QComponent> rewardSet = (Set<QComponent>) QConfigLoader.load(this, key, rewardSection, QRegistries.ACTIONS);
                 if (rewardSet == null) {
                     continue;
                 }
                 Set<QAction> actionSet = new HashSet<>();
-                for (QLoadable loadable : rewardSet) {
+                for (QComponent loadable : rewardSet) {
                     if (loadable instanceof QAction action) {
                         actionSet.add(action);
                     }
@@ -342,10 +342,13 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
         }
         for (String key : stageSection.getKeys(false)) {
             ConfigurationSection stageS = stageSection.getConfigurationSection(key);
+            if (stageS == null) {
+                continue;
+            }
             int id = Integer.parseInt(key);
             QStage stage = new QStage(this, id);
             try {
-                stage.load(stageS);
+                stage.load(this, stageS);
             } catch (Exception e) {
                 QuestsXL.getInstance().getErrors().add(new FriendlyError("Event: " + this.getName(), "Stage " + id + " konnte nicht geladen werden.", e.getMessage(), "...").addStacktrace(e.getStackTrace()));
             }
@@ -450,4 +453,5 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable {
     public YamlConfiguration getCfg() {
         return cfg;
     }
+
 }

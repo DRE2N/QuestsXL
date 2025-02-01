@@ -6,6 +6,7 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.player.QPlayerCache;
@@ -27,35 +28,34 @@ import org.bukkit.configuration.ConfigurationSection;
 public class StageAction extends QBaseAction {
 
     QuestsXL plugin = QuestsXL.getInstance();
-    QPlayerCache playerCache = plugin.getPlayerCache();
-
-    @QParamDoc(name = "id", description = "The quest or event to change the stage of", required = true)
-    int stageID;
-    @QParamDoc(name = "stage", description = "The stage to set", required = true)
+    @QParamDoc(name = "id", description = "The quest or event to change the stage of. Not required when run from event")
     String questID;
+    @QParamDoc(name = "stage", description = "The stage to set", required = true)
+    int stageID;
 
     @Override
-    public void play(QPlayer player) {
-        if (!conditions(player)) return;
-        QQuest quest = plugin.getQuestManager().getByName(questID);
-        if (!player.hasQuest(quest)) {
-            return;
+    public void play(Quester quester) {
+        if (!conditions(quester)) return;
+        if (quester instanceof QPlayer player) {
+            QQuest quest = plugin.getQuestManager().getByName(questID);
+            if (!player.hasQuest(quest)) {
+                return;
+            }
+            ActiveQuest active = player.getActive(quest.getName());
+            if (active == null) {
+                return;
+            }
+            active.setCurrentStage(quest.getStages().get(stageID));
         }
-        ActiveQuest active = player.getActive(quest.getName());
-        if (active == null) {
-            return;
+        if (quester instanceof QEvent event) {
+            QEvent event1 = plugin.getEventManager().getByID(questID);
+            if (event1 == null) { // If no event is provided, use self
+                event.setCurrentStage(stageID);
+                return;
+            }
+            event1.setCurrentStage(stageID);
         }
-        active.setCurrentStage(quest.getStages().get(stageID));
-        MessageUtil.log("Forced stage " + stageID + " for " + player.getPlayer().getName() + " in " + quest.getName());
-        onFinish(player);
-    }
-
-    @Override
-    public void play(QEvent event) {
-        if (!conditions(event)) return;
-        event.setCurrentStage(stageID);
-        MessageUtil.log("Forced stage " + stageID + " for " + event.getName());
-        onFinish(event);
+        onFinish(quester);
     }
 
     @Override
