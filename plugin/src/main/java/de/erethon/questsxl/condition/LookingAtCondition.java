@@ -6,6 +6,7 @@ import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Bukkit;
@@ -34,7 +35,10 @@ public class LookingAtCondition extends QBaseCondition {
     Material block;
 
     @Override
-    public boolean check(QPlayer qp) {
+    public boolean check(Quester quester) {
+        if (!(quester instanceof QPlayer qp)) {
+            return fail(quester);
+        }
         Player player = qp.getPlayer();
         Block target = player.getTargetBlockExact(32);
         if (target == null) {
@@ -52,10 +56,6 @@ public class LookingAtCondition extends QBaseCondition {
         return fail(qp);
     }
 
-    @Override
-    public boolean check(QEvent event) {
-        return fail(event);
-    }
 
     @Override
     public void load(QConfig cfg) {

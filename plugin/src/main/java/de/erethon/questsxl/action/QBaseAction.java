@@ -28,53 +28,17 @@ public abstract class QBaseAction implements QAction {
     String id;
 
     @Override
-    public void play(QPlayer player) {
-    }
-
-    @Override
     public void play(Quester quester) {
     }
 
     @Override
-    public void play(QEvent event) {
-        event.getPlayersInRange().forEach(this::play);
-    }
-
-    @Override
-    public boolean conditions(QPlayer player) {
+    public boolean conditions(Quester player) {
         for (QCondition condition : conditions) {
             if (!condition.check(player)) {
                 return false;
             }
         }
         return true;
-    }
-
-    @Override
-    public boolean conditions(QEvent event) {
-        for (QCondition condition : conditions) {
-            if (!condition.check(event)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public boolean conditions(Quester player) {
-        return false;
-    }
-
-    public void onFinish(QPlayer player) {
-        for (QAction action : runAfter) {
-            action.play(player);
-        }
-    }
-
-    public void onFinish(QEvent event) {
-        for (QAction action : runAfter) {
-            action.play(event);
-        }
     }
 
     public void onFinish(Quester quester) {

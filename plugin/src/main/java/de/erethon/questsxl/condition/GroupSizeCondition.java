@@ -7,6 +7,7 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -29,18 +30,17 @@ public class GroupSizeCondition extends QBaseCondition {
     int max;
 
     @Override
-    public boolean check(QPlayer player) {
+    public boolean check(Quester quester) {
+        if (!(quester instanceof QPlayer player)) {
+            return fail(quester);
+        }
         Group group = Aergia.inst().getGroupManager().getGroup(player.getPlayer());
         if (group != null && group.getSize() >= min && group.getSize() <= max) {
-            return success(player);
+            return success(quester);
         }
-        return fail(player);
+        return fail(quester);
     }
 
-    @Override
-    public boolean check(QEvent event) {
-        return fail(event);
-    }
 
     @Override
     public void load(QConfig cfg) {

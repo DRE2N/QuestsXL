@@ -6,6 +6,7 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QConfigLoader;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QRegistries;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -23,35 +24,19 @@ public abstract class QBaseCondition implements QCondition {
     private QComponent parent;
 
     @Override
-    public boolean fail(QPlayer player) {
+    public boolean fail(Quester quester) {
         for (QAction action : failActions) {
-            action.play(player);
+            action.play(quester);
         }
         return false;
     }
 
     @Override
-    public boolean success(QPlayer player) {
+    public boolean success(Quester quester) {
         for (QAction action : successActions) {
-            action.play(player);
-        }
-        return true;
-    }
-
-    @Override
-    public boolean fail(QEvent event) {
-        for (QAction action : failActions) {
-            action.play(event);
+            action.play(quester);
         }
         return false;
-    }
-
-    @Override
-    public boolean success(QEvent event) {
-        for (QAction action : successActions) {
-            action.play(event);
-        }
-        return true;
     }
 
     @Override

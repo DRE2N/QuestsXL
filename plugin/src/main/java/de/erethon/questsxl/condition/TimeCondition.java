@@ -5,6 +5,7 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -40,37 +41,20 @@ public class TimeCondition extends QBaseCondition {
     int maxMinute;
 
     @Override
-    public boolean check(QPlayer player) {
+    public boolean check(Quester quester) {
         String[] formatted = dateFormat.format(new Date()).split(",");
         int hour = NumberUtil.parseInt(formatted[0]);
         int minute = NumberUtil.parseInt(formatted[1]);
         if (hour > maxHour || hour < minHour) {
-            return fail(player);
+            return fail(quester);
         }
         if (hour == minHour && minute < minMinute) {
-            return fail(player);
+            return fail(quester);
         }
         if (hour == maxHour && minute > maxMinute) {
-            return fail(player);
+            return fail(quester);
         }
-        return success(player);
-    }
-
-    @Override
-    public boolean check(QEvent event) {
-        String[] formatted = dateFormat.format(new Date()).split(",");
-        int hour = NumberUtil.parseInt(formatted[0]);
-        int minute = NumberUtil.parseInt(formatted[1]);
-        if (hour > maxHour || hour < minHour) {
-            return fail(event);
-        }
-        if (hour == minHour && minute < minMinute) {
-            return fail(event);
-        }
-        if (hour == maxHour && minute > maxMinute) {
-            return fail(event);
-        }
-        return success(event);
+        return success(quester);
     }
 
     @Override

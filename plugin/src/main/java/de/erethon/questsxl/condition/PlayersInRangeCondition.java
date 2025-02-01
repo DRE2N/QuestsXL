@@ -4,6 +4,7 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 
@@ -45,33 +46,34 @@ public class PlayersInRangeCondition extends QBaseCondition {
     private int range;
 
     @Override
-    public boolean check(QPlayer player) {
+    public boolean check(Quester quester) {
         if (event == null && mode == Mode.PARTICIPATING) {
             throw new RuntimeException("EventPlayersCondition has no event set but is called from a player.");
         }
         if (mode == Mode.PARTICIPATING || mode == Mode.IN_RANGE_EVENT) {
-            return checkInRange(event);
+            checkInRange(event, quester);
         }
-        if (mode == Mode.IN_RANGE_PLAYER) {
+        if (mode == Mode.IN_RANGE_PLAYER && quester instanceof QPlayer player) {
             int players = player.getPlayer().getLocation().getNearbyPlayers(range).size();
-            return players >= minPlayers && players <= maxPlayers;
+            if (players >= minPlayers && players <= maxPlayers) {
+                return success(quester);
+            }
         }
-        return false;
+        return fail(quester);
     }
 
-    @Override
-    public boolean check(QEvent e) {
-        return checkInRange(e);
-    }
-
-    private boolean checkInRange(QEvent e) {
+    private void checkInRange(QEvent e, Quester quester) {
         QEvent conditionEvent = event != null ? event : e;
         if (mode == Mode.IN_RANGE_EVENT) {
-            return conditionEvent.getPlayersInRange().size() >= minPlayers && conditionEvent.getPlayersInRange().size() <= maxPlayers;
+            if (conditionEvent.getPlayersInRange().size() >= minPlayers && conditionEvent.getPlayersInRange().size() <= maxPlayers) {
+                success(quester);
+            }
         } else if (mode == Mode.PARTICIPATING) {
-            return conditionEvent.getParticipants().keySet().size() >= minPlayers && conditionEvent.getParticipants().keySet().size() <= maxPlayers;
+            if (conditionEvent.getParticipants().keySet().size() >= minPlayers && conditionEvent.getParticipants().keySet().size() <= maxPlayers) {
+                success(quester);
+            }
         }
-        return false;
+        fail(quester);
     }
 
     @Override

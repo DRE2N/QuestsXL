@@ -5,6 +5,7 @@ import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -31,19 +32,11 @@ public class LocationCondition extends QBaseCondition {
     private double radius;
 
     @Override
-    public boolean check(QPlayer player) {
-        if (player.getPlayer().getLocation().distance(location.get(player.getLocation())) <= radius) {
-            return success(player);
+    public boolean check(Quester quester) {
+        if (quester.getLocation().distance(location.get(quester.getLocation())) <= radius) {
+            return success(quester);
         }
-        return fail(player);
-    }
-
-    @Override
-    public boolean check(QEvent event) {
-        if (event.getCenterLocation().distance(location.get(event.getCenterLocation())) <= radius) {
-            return success(event);
-        }
-        return fail(event);
+        return fail(quester);
     }
 
     @Override

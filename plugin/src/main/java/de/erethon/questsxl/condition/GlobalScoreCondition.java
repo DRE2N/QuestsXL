@@ -4,6 +4,7 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 
@@ -25,19 +26,11 @@ public class GlobalScoreCondition extends QBaseCondition {
     int value;
 
     @Override
-    public boolean check(QPlayer player) {
+    public boolean check(Quester quester) {
         if (QuestsXL.getInstance().getScore(score) >= value) {
-            return success(player);
+            return success(quester);
         }
-        return fail(player);
-    }
-
-    @Override
-    public boolean check(QEvent event) {
-        if (QuestsXL.getInstance().getScore(score) >= value) {
-            return success(event);
-        }
-        return fail(event);
+        return fail(quester);
     }
 
     @Override

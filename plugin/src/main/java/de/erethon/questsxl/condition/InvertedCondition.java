@@ -7,6 +7,7 @@ import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.QRegistries;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -30,23 +31,13 @@ public class InvertedCondition extends QBaseCondition {
     Set<QCondition> conditions = new HashSet<>();
 
     @Override
-    public boolean check(QPlayer player) {
+    public boolean check(Quester quester) {
         for (QCondition condition : conditions) {
-            if (!condition.check(player)) {
-                return success(player);
+            if (!condition.check(quester)) {
+                return success(quester);
             }
         }
-        return fail(player);
-    }
-
-    @Override
-    public boolean check(QEvent event) {
-        for (QCondition condition : conditions) {
-            if (!condition.check(event)) {
-                return success(event);
-            }
-        }
-        return fail(event);
+        return fail(quester);
     }
 
     @Override

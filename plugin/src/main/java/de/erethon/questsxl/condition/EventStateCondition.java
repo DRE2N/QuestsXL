@@ -5,6 +5,7 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.livingworld.EventState;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
@@ -32,21 +33,21 @@ public class EventStateCondition extends QBaseCondition {
     EventState state;
 
     @Override
-    public boolean check(QPlayer player) {
-        if (event.getState() == state) {
-            return success(player);
+    public boolean check(Quester quester) {
+        if (quester instanceof QEvent e) {
+            QEvent conditionEvent = event != null ? event : e;
+            if (conditionEvent.getState() == state) {
+                return success(e);
+            }
         }
-        return fail(player);
+        if (quester instanceof QPlayer p) {
+            if (event.getState() == state) {
+                return success(p);
+            }
+        }
+        return fail(quester);
     }
 
-    @Override
-    public boolean check(QEvent e) {
-        QEvent conditionEvent = event != null ? event : e;
-        if (conditionEvent.getState() == state) {
-            return success(e);
-        }
-        return fail(e);
-    }
 
     @Override
     public void load(QConfig cfg) {

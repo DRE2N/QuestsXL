@@ -7,6 +7,7 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Material;
@@ -36,7 +37,10 @@ public class InventoryCondition extends QBaseCondition {
     private HItem item;
 
     @Override
-    public boolean check(QPlayer player) {
+    public boolean check(Quester quester) {
+        if (!(quester instanceof QPlayer player)) {
+            return fail(quester);
+        }
         if (material != null) {
             if (player.getPlayer().getInventory().contains(material, amount)) {
                 return success(player);
@@ -47,11 +51,6 @@ public class InventoryCondition extends QBaseCondition {
             }
         }
         return fail(player);
-    }
-
-    @Override
-    public boolean check(QEvent event) {
-        return fail(event);
     }
 
     @Override

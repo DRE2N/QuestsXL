@@ -5,6 +5,7 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -27,19 +28,14 @@ public class PlayerScoreCondition extends QBaseCondition {
     int value;
 
     @Override
-    public boolean check(QPlayer player) {
+    public boolean check(Quester quester) {
+        if (!(quester instanceof QPlayer player)) {
+            return check(quester);
+        }
         if (player.getScore(score) >= value) {
             return success(player);
         }
         return fail(player);
-    }
-
-    @Override
-    public boolean check(QEvent event) {
-        if (event.getScore(score) >= value) {
-            return success(event);
-        }
-        return fail(event);
     }
 
     @Override
