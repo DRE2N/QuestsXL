@@ -17,7 +17,7 @@ public interface QObjective extends Listener, QComponent {
     boolean isOptional();
     boolean isFailed();
     boolean isPersistent();
-    Set<QAction> getSuccessActions();
+    Set<QAction> getCompleteActions();
     Set<QAction> getFailActions();
     Set<QAction> getConditionFailActions();
     Set<QCondition> getConditions();

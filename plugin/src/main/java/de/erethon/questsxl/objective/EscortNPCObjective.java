@@ -17,7 +17,7 @@ public class EscortNPCObjective extends QBaseObjective {
     public void check(ActiveObjective active, Event e) {
         if (e instanceof InstancedCreatureDeathEvent event) {
             for (Player player : event.getNpc().getViewers()) {
-                fail(active.getHolder(), this);
+                fail(active.getHolder(), this, plugin.getPlayerCache().getByPlayer(player));
             }
         }
         if (e instanceof InstancedCreatureArriveAtPointEvent event) {

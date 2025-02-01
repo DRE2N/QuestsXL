@@ -109,7 +109,6 @@ public class QRegistries {
         OBJECTIVES.register("kill_player", KillPlayerObjective::new);
         OBJECTIVES.register("leave_region", LeaveRegionObjective::new);
         OBJECTIVES.register("location", LocationObjective::new);
-        OBJECTIVES.register("mythic_mob", MythicMobObjective::new);
         OBJECTIVES.register("server_command", ServerCommandObjective::new);
         OBJECTIVES.register("take_damage", TakeDamageObjective::new);
         OBJECTIVES.register("wait", WaitObjective::new);

@@ -37,11 +37,6 @@ public class AddEventParticipationAction extends QBaseAction {
     }
 
     @Override
-    public void onFinish(QEvent event) {
-
-    }
-
-    @Override
     public void load(QConfig cfg) {
         super.load(cfg);
         id = cfg.getString("id");

@@ -19,14 +19,6 @@ public class DummyAction extends QBaseAction {
     public void play(Quester quester) {
     }
 
-    @Override
-    public boolean conditions(QPlayer player) {
-        return true;
-    }
-
-    @Override
-    public void onFinish(QPlayer player) {
-    }
 
     @Override
     public void delayedEnd(int seconds) {

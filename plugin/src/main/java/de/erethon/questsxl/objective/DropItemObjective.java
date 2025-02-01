@@ -32,11 +32,11 @@ public class DropItemObjective extends QBaseObjective {
     @Override
     public void check(ActiveObjective active, Event event) {
         if (!(event instanceof EntityDropItemEvent e)) return;
-        if (!(e.getEntity() instanceof Player)) return;
+        if (!(e.getEntity() instanceof Player player)) return;
         HItem item = itemLibrary.get(e.getItemDrop().getItemStack()).getItem();
         if (item == null) return;
         if (item.getKey().equals(itemID)) {
-            complete(active.getHolder(), this);
+            complete(active.getHolder(), this, plugin.getPlayerCache().getByPlayer(player));
             if (cancel) {
                 e.setCancelled(true);
             }

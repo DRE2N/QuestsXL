@@ -24,12 +24,15 @@ public abstract class QBaseObjective implements QObjective {
 
     protected final QuestsXL plugin = QuestsXL.getInstance();
     private String displayText;
-    private final Set<QAction> successActions = new HashSet<>();
+    private final Set<QAction> completeActions = new HashSet<>();
     private final Set<QAction> progressActions = new HashSet<>();
     private final Set<QCondition> conditions = new HashSet<>();
     private final Set<QAction> conditionFailActions = new HashSet<>();
     private final Set<QAction> failActions = new HashSet<>();
-    private ActionScope actionScope = ActionScope.PLAYER;
+    private ActionScope completeScope = ActionScope.PLAYER;
+    private ActionScope progressScope = ActionScope.PLAYER;
+    private ActionScope conditionFailScope = ActionScope.PLAYER;
+    private ActionScope failScope = ActionScope.PLAYER;
     private boolean failed = false;
     private boolean optional = false;
     private boolean persistent = false;
@@ -111,29 +114,29 @@ public abstract class QBaseObjective implements QObjective {
                 }
             }
         }
-        if (actionScope == ActionScope.PLAYER) {
-            runActions(successActions, instigator);
+        if (completeScope == ActionScope.PLAYER) {
+            runActions(completeActions, instigator);
         }
-        else if (actionScope == ActionScope.EVENT) {
-            runActions(successActions, holder);
+        else if (completeScope == ActionScope.EVENT) {
+            runActions(completeActions, holder);
         }
     }
 
     public void progress(ObjectiveHolder holder, ObjectiveHolder instigator) {
-        if (actionScope == ActionScope.PLAYER) {
+        if (progressScope == ActionScope.PLAYER) {
             runActions(progressActions, instigator);
         }
-        else if (actionScope == ActionScope.EVENT) {
+        else if (progressScope == ActionScope.EVENT) {
             runActions(progressActions, holder);
         }
     }
 
 
     private void condFail(ObjectiveHolder holder, ObjectiveHolder instigator) {
-        if (actionScope == ActionScope.PLAYER) {
+        if (conditionFailScope == ActionScope.PLAYER) {
             runActions(conditionFailActions, instigator);
         }
-        else if (actionScope == ActionScope.EVENT) {
+        else if (conditionFailScope == ActionScope.EVENT) {
             runActions(conditionFailActions, holder);
         }
     }
@@ -150,10 +153,10 @@ public abstract class QBaseObjective implements QObjective {
                 }
             }
         }
-        if (actionScope == ActionScope.PLAYER) {
+        if (failScope == ActionScope.PLAYER) {
             runActions(failActions, instigator);
         }
-        else if (actionScope == ActionScope.EVENT) {
+        else if (failScope == ActionScope.EVENT) {
             runActions(failActions, holder);
         }
     }
@@ -197,8 +200,8 @@ public abstract class QBaseObjective implements QObjective {
      * @return a set of actions that are run when the objective is completed.
      */
     @Override
-    public Set<QAction> getSuccessActions() {
-        return successActions;
+    public Set<QAction> getCompleteActions() {
+        return completeActions;
     }
 
     /**
@@ -271,23 +274,35 @@ public abstract class QBaseObjective implements QObjective {
         if (cfg.contains("conditions")) {
             conditions.addAll(cfg.getConditions(this, "conditions"));
         }
-        if (cfg.contains("scope")) {
-            actionScope = ActionScope.valueOf(cfg.getString("scope").toUpperCase());
+        if (cfg.contains("scope_success")) {
+            completeScope = ActionScope.valueOf(cfg.getString("scope").toUpperCase());
         }
         if (cfg.contains("onSuccess")) {
-            successActions.addAll(cfg.getActions(this, "onSuccess"));
+            completeActions.addAll(cfg.getActions(this, "onSuccess"));
+        }
+        if (cfg.contains("scope_progress")) {
+            progressScope = ActionScope.valueOf(cfg.getString("scope_progress").toUpperCase());
         }
         if (cfg.contains("onProgress")) {
             progressActions.addAll(cfg.getActions(this, "onProgress"));
         }
+        if (cfg.contains("scope_conditionFail")) {
+            conditionFailScope = ActionScope.valueOf(cfg.getString("scope_conditionFail").toUpperCase());
+        }
         if (cfg.contains("onConditionFail")) {
             conditionFailActions.addAll(cfg.getActions(this, "onConditionFail"));
         }
-        if (cfg.contains("onComplete")) {
-            successActions.addAll(cfg.getActions(this, "onComplete"));
+        if (cfg.contains("scope_fail")) {
+            failScope = ActionScope.valueOf(cfg.getString("scope_fail").toUpperCase());
         }
         if (cfg.contains("onFail")) {
             failActions.addAll(cfg.getActions(this, "onFail"));
+        }
+        if (cfg.contains("scope_Complete")) {
+            completeScope = ActionScope.valueOf(cfg.getString("scope_fail").toUpperCase());
+        }
+        if (cfg.contains("onComplete")) {
+            completeActions.addAll(cfg.getActions(this, "onComplete"));
         }
         if (cfg.contains("optional")) {
             optional = cfg.getBoolean("optional");

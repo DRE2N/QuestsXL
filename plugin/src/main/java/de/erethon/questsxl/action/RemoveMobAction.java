@@ -3,6 +3,7 @@ package de.erethon.questsxl.action;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 
@@ -27,13 +28,7 @@ public class RemoveMobAction extends QBaseAction {
     private boolean doDamage;
 
     @Override
-    public void play(QPlayer player) {
-        super.play(player);
-    }
-
-    @Override
-    public void play(QEvent event) {
-        super.play(event);
+    public void play(Quester quester) {
     }
 
     @Override

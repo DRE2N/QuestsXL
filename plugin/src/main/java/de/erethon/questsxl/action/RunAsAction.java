@@ -6,8 +6,10 @@ import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.QRegistries;
+import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
+import de.erethon.questsxl.quest.QQuest;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -42,14 +44,18 @@ public class RunAsAction extends QBaseAction {
     private Set<QAction> actions;
 
     @Override
-    public void play(QPlayer player) {
-        if (!conditions(player)) return;
-        run(player); // This is useless but whatever
-        onFinish(player);
+    public void play(Quester quester) {
+        if (!conditions(quester)) return;
+        if (quester instanceof QPlayer player) {
+            run(player); // This is useless but whatever
+        }
+        if (quester instanceof QEvent event) {
+            run(event);
+        }
+        onFinish(quester);
     }
 
-    @Override
-    public void play(QEvent event) {
+    private void run(QEvent event) {
         if (!conditions(event)) return;
         switch (runMode) {
             case EVENT_IN_RANGE:

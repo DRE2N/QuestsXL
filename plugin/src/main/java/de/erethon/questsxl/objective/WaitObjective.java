@@ -23,24 +23,24 @@ import org.bukkit.event.Event;
 )
 public class WaitObjective extends QBaseObjective {
 
-    @QParamDoc(name = "duration", description = "The time in seconds that the player has to wait.", required = true)
+    @QParamDoc(name = "duration", description = "The time in seconds that the objective holder has to wait.", required = true)
     long duration;
     // optional
-    @QParamDoc(name = "location", description = "The location that the player must be in to complete the objective.")
+    @QParamDoc(name = "location", description = "The location that the objective holder must be in to complete the objective.")
     QLocation location;
-    @QParamDoc(name = "range", description = "How close the player has to get to the location", def = "1")
+    @QParamDoc(name = "range", description = "How close the objective holder has to get to the location", def = "1")
     int distance;
     int durationWaited = 0;
 
     @Override
     public void onStart(ObjectiveHolder holder) {
         if (location == null) {
-            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> complete(holder, this), duration);
+            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> complete(holder, this, holder), duration);
         } else {
             Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
                 if (holder.getLocation().distance(location.get(holder.getLocation())) <= distance) {
                     if (++durationWaited >= duration) {
-                        complete(holder, this);
+                        complete(holder, this, holder);
                     }
                 } else {
                     durationWaited = 0;
