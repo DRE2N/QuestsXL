@@ -2,12 +2,9 @@ package de.erethon.questsxl.scoreboard;
 
 import de.erethon.aergia.player.EPlayer;
 import de.erethon.aergia.scoreboard.ScoreboardLines;
-import de.erethon.aergia.util.DynamicString;
-import de.erethon.aergia.util.ScoreboardComponent;
+import de.erethon.aergia.scoreboard.ScoreboardComponent;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.common.QStage;
-import de.erethon.questsxl.objective.QObjective;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.ActiveQuest;
 import net.kyori.adventure.text.Component;
@@ -29,18 +26,34 @@ public class QuestScoreboardLines implements ScoreboardLines {
         QPlayer player = plugin.getPlayerCache().getByPlayer(ePlayer.getPlayer());
         ActiveQuest trackedQuest = player.getTrackedQuest();
 
-        if (trackedQuest == null) {
+        if (trackedQuest == null && player.getTrackedEvent() == null) {
             return List.of();
         }
-        QStage currentStage = trackedQuest.getCurrentStage();
         List<ScoreboardComponent> lines = new ArrayList<>();
 
-        Component header = MessageUtil.parse("<green>" + trackedQuest.getQuest().getDisplayName() + "</green>");
-        lines.add(ScoreboardComponent.of((unused) -> header, false));
+        if (player.getTrackedEvent() != null) {
+            Component header = MessageUtil.parse("<green>" + player.getTrackedEvent().getName() + "</green>");
 
-        for (QObjective objective : currentStage.getGoals()) {
-            Component description = MessageUtil.parse("<gray>" + objective.getDisplayText() + "</gray>");
-            lines.add(ScoreboardComponent.of((unused) -> description, false));
+            lines.add(ScoreboardComponent.of((p) -> header));
+
+            if (player.getTrackedEvent().getObjectiveDisplayText() != null) {
+                for (String line : player.getTrackedEvent().getObjectiveDisplayText().split("<br>", 3)) {
+                    lines.add(ScoreboardComponent.of((p) -> MessageUtil.parse("<gray>" + line + "<gray>")));
+                }
+            }
+            lines.add(ScoreboardComponent.EMPTY);
+        }
+
+        if (trackedQuest != null) {
+            Component header = MessageUtil.parse("<green>" + trackedQuest.getQuest().getDisplayName() + "</green>");
+
+            lines.add(ScoreboardComponent.of((p) -> header));
+
+            if (trackedQuest.getObjectiveDisplayText() != null) {
+                for (String line : trackedQuest.getObjectiveDisplayText().split("<br>", 3)) {
+                    lines.add(ScoreboardComponent.of((p) -> MessageUtil.parse("<gray>" + line + "<gray>")));
+                }
+            }
         }
 
         return lines;
