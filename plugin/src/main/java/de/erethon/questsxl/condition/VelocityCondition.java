@@ -20,11 +20,11 @@ import org.bukkit.entity.Player;
 )
 public class VelocityCondition extends QBaseCondition {
 
-    @QParamDoc(description = "The minimum velocity in the x direction.", def = "0")
+    @QParamDoc(name = "x", description = "The minimum velocity in the x direction.", def = "0")
     private double x;
-    @QParamDoc(description = "The minimum velocity in the y direction.", def = "0")
+    @QParamDoc(name = "y", description = "The minimum velocity in the y direction.", def = "0")
     private double y;
-    @QParamDoc(description = "The minimum velocity in the z direction.", def = "0")
+    @QParamDoc(name = "z", description = "The minimum velocity in the z direction.", def = "0")
     private double z;
 
     @Override

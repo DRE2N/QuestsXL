@@ -23,7 +23,7 @@ import java.util.Locale;
 )
 public class MountedCondition extends QBaseCondition {
 
-    @QParamDoc(description = "The type of entity the player is mounted on.")
+    @QParamDoc(name = "entity_type", description = "The type of entity the player is mounted on.")
     private EntityType entityType;
 
     @Override

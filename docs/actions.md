@@ -1,4 +1,7 @@
-# Actions
+---
+title: Actions
+sidebar_position: 3
+---
 
 ## delay
 Delays the execution of a list of actions by a certain amount of time.
@@ -54,7 +57,7 @@ dummy:
 ```
 
 ## event_participation
-Add participation to an event. Always executed as a player
+Add participation to an event.
 
 #### Parameters:
 
@@ -151,6 +154,28 @@ message: message=Hello, world!
 ```yaml
 message:
   message: Hello, world!
+```
+
+## modify_attribute
+This action modifies a player's attribute.
+
+#### Parameters:
+
+| Parameter | Description | Default | Required |
+|-----------|-------------|---------|----------|
+| `amount` | The amount to modify the attribute by. | 0 | false |
+| `duration` | The duration in ticks the attribute should be modified for | 0 | false |
+| `id` | The ID of the attribute to modify. |  | true |
+
+```yaml
+modify_attribute: id=max_health; amount=200; duration=20
+```
+
+```yaml
+modify_attribute:
+  id: max_health
+  amount: 2
+  duration: 20
 ```
 
 ## objective_display
@@ -405,6 +430,46 @@ score:
   scope: event
 ```
 
+## set_tracked_event
+Sets the event that the player is currently tracking (e.g. shown in the sidebar). Priority is used to determine which event is shown if multiple actions are active.
+
+#### Parameters:
+
+| Parameter | Description | Default | Required |
+|-----------|-------------|---------|----------|
+| `event` | ID of the event to set as the tracked event. |  | true |
+| `priority` | Priority. Higher values equal a higher priority | 1 | false |
+
+```yaml
+set_tracked_event: event=example_event
+```
+
+```yaml
+set_tracked_event:
+  event: example_event
+  priority: 7
+```
+
+## set_tracked_quest
+Sets the quest that the player is currently tracking (e.g. shown in the sidebar). Priority is used to determine which event is shown if multiple actions are active. Quest has to be active.
+
+#### Parameters:
+
+| Parameter | Description | Default | Required |
+|-----------|-------------|---------|----------|
+| `priority` | Priority. Higher values equal a higher priority | 1 | false |
+| `quest` | ID of the quest to set as the tracked quest. |  | true |
+
+```yaml
+set_tracked_event: event=example_event
+```
+
+```yaml
+set_tracked_quest:
+  quest: example_event
+  priority: 7
+```
+
 ## show_ibc
 Shows an Instanced Block Collection to the player.
 
@@ -473,7 +538,7 @@ For example, you could create a dialogue that gives the player a choice, and dep
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
-| `id` | The quest or event to change the stage of |  | true |
+| `id` | The quest or event to change the stage of. Not required when run from event |  | false |
 | `stage` | The stage to set |  | true |
 
 ```yaml
@@ -569,5 +634,27 @@ title:
   fadeIn: 1
   stay: 5
   fadeOut: 1
+```
+
+## velocity
+Adds velocity to a player
+
+#### Parameters:
+
+| Parameter | Description | Default | Required |
+|-----------|-------------|---------|----------|
+| `x` | The x velocity | 0 | false |
+| `y` | The y velocity | 0 | false |
+| `z` | The z velocity | 0 | false |
+
+```yaml
+add_velocity: x=1; y=1.5; z=1
+```
+
+```yaml
+add_velocity:
+  x: 1
+  y: 2
+  z: 3
 ```
 

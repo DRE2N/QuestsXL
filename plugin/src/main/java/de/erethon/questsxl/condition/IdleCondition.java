@@ -9,15 +9,15 @@ import de.erethon.questsxl.player.QPlayer;
 @QLoadableDoc(
         value = "idle",
         description = "This condition is successful if the player has been idle for a certain amount of time.",
-        shortExample = "idle: idle_duration=10",
+        shortExample = "idle: duration=10",
         longExample = {
                 "idle:",
-                "  idle_duration: 10"
+                "  duration: 10"
         }
 )
 public class IdleCondition extends QBaseCondition {
 
-    @QParamDoc(description = "The duration in seconds the player has to be idle for, in second", required = true)
+    @QParamDoc(name ="duration", description = "The duration in seconds the player has to be idle for, in second", required = true)
     private long idleDuration = 0;
 
     @Override
@@ -33,6 +33,6 @@ public class IdleCondition extends QBaseCondition {
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        idleDuration = cfg.getLong("idle_duration", 0);
+        idleDuration = cfg.getLong("duration", 0);
     }
 }

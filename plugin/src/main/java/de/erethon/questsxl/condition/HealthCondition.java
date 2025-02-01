@@ -19,9 +19,9 @@ import org.bukkit.entity.Player;
 )
 public class HealthCondition extends QBaseCondition {
 
-    @QParamDoc(description = "The minimum health value.", def = "0")
+    @QParamDoc(name = "min", description = "The minimum health value.", def = "0")
     private int minValue;
-    @QParamDoc(description = "The maximum health value.", def = "4096")
+    @QParamDoc(name = "max", description = "The maximum health value.", def = "4096")
     private int maxValue;
 
     @Override

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,9 +32,9 @@ public class QDocGenerator extends AbstractProcessor {
     private boolean processed = false; // Gradle seems to call it twice, but I don't care enough to fix it
 
     public QDocGenerator() {
-        docBuilders.put("Actions", new StringBuilder("# Actions\n\n"));
-        docBuilders.put("Objectives", new StringBuilder("# Objectives\n\n"));
-        docBuilders.put("Conditions", new StringBuilder("# Conditions\n\n"));
+        docBuilders.put("Actions", new StringBuilder());
+        docBuilders.put("Objectives", new StringBuilder());
+        docBuilders.put("Conditions", new StringBuilder());
         entriesMap.put("Actions", new ArrayList<>());
         entriesMap.put("Objectives", new ArrayList<>());
         entriesMap.put("Conditions", new ArrayList<>());
@@ -65,7 +66,8 @@ public class QDocGenerator extends AbstractProcessor {
                 for (Element enclosedElement : ElementFilter.fieldsIn(enclosedElements)) {
                     QParamDoc paramDoc = enclosedElement.getAnnotation(QParamDoc.class);
                     if (paramDoc != null) {
-                        paramEntries.add("| `" + paramDoc.name() + "` | " + paramDoc.description() + " | " + paramDoc.def() + " | " + paramDoc.required() + " |\n");
+                        String paramName = paramDoc.name().isEmpty() ? enclosedElement.getSimpleName().toString() : paramDoc.name();
+                        paramEntries.add("| `" + paramName + "` | " + paramDoc.description() + " | " + paramDoc.def() + " | " + paramDoc.required() + " |\n");
                     }
                 }
 
@@ -123,11 +125,12 @@ public class QDocGenerator extends AbstractProcessor {
 
         docBuilders.forEach((category, content) -> {
             try {
-                String outputPath = outputDir.resolve(category + ".md").toString();
+                String outputPath = outputDir.resolve(category.toLowerCase() + ".md").toString();
                 if (!Files.exists(outputDir)) {
                     Files.createDirectories(outputDir);
                 }
                 try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get(outputPath)))) {
+                    writer.write(getHeader(category));
                     writer.write(content.toString());
                     System.err.println("Wrote " + category + ".md (Path: " + Paths.get(outputPath).toAbsolutePath() + ")");
                 }
@@ -135,5 +138,18 @@ public class QDocGenerator extends AbstractProcessor {
                 e.printStackTrace();
             }
         });
+    }
+
+    private String getHeader(String category) {
+        int sidebarPosition = switch (category) {
+            case "Actions" -> 3;
+            case "Conditions" -> 4;
+            case "Objectives" -> 5;
+            default -> 0;
+        };
+        return "---\n" +
+                "title: " + category + "\n" +
+                "sidebar_position: " + sidebarPosition + "\n" +
+                "---\n\n";
     }
 }

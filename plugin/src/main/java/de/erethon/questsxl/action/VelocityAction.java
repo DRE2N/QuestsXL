@@ -20,11 +20,11 @@ import org.bukkit.util.Vector;
 )
 public class VelocityAction extends QBaseAction {
 
-    @QParamDoc(description = "The x velocity", def = "0")
+    @QParamDoc(name = "x", description = "The x velocity", def = "0")
     private double x;
-    @QParamDoc(description = "The y velocity", def = "0")
+    @QParamDoc(name = "y", description = "The y velocity", def = "0")
     private double y;
-    @QParamDoc(description = "The z velocity", def = "0")
+    @QParamDoc(name = "z", description = "The z velocity", def = "0")
     private double z;
 
     @Override

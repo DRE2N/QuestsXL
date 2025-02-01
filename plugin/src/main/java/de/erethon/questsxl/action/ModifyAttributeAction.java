@@ -29,11 +29,11 @@ import java.util.UUID;
 )
 public class ModifyAttributeAction extends QBaseAction {
 
-    @QParamDoc(description = "The ID of the attribute to modify.", required = true)
+    @QParamDoc(name = "id", description = "The ID of the attribute to modify.", required = true)
     private Attribute attribute;
-    @QParamDoc(description = "The amount to modify the attribute by.", def = "0")
+    @QParamDoc(name = "amount", description = "The amount to modify the attribute by.", def = "0")
     private double amount;
-    @QParamDoc(description = "The duration in ticks the attribute should be modified for", def = "0")
+    @QParamDoc(name = "duration", description = "The duration in ticks the attribute should be modified for", def = "0")
     private int duration;
 
     @Override
