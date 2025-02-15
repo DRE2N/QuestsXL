@@ -12,6 +12,7 @@ import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.common.Scorable;
 import de.erethon.questsxl.dialogue.ActiveDialogue;
 import de.erethon.questsxl.global.GlobalObjectives;
+import de.erethon.questsxl.livingworld.PlayerExplorer;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.objective.ActiveObjective;
 import de.erethon.questsxl.objective.QObjective;
@@ -84,12 +85,15 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
     private int currentTrackedQuestPriority = 0;
     private int currentTrackedEventPriority = 0;
 
+    private PlayerExplorer explorer;
+
     public QPlayer(@NotNull Player player) {
         super(QuestsXL.getPlayerFile(player.getUniqueId()), CONFIG_VERSION);
         this.uuid = player.getUniqueId();
         this.player = player;
         CraftPlayer craftPlayer = (CraftPlayer) player;
         serverPlayer = craftPlayer.getHandle();
+        explorer = new PlayerExplorer(this);
         GlobalObjectives globalObjectives = QuestsXL.getInstance().getGlobalObjectives();
         if (globalObjectives != null) {
             for (QObjective objective : globalObjectives.getObjectives()) {
@@ -421,8 +425,16 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
         }
     }
 
+    public void sendMessage(Component component) {
+        player.sendMessage(component);
+    }
+
     public QEvent getTrackedEvent() {
         return trackedEvent;
+    }
+
+    public PlayerExplorer getExplorer() {
+        return explorer;
     }
 
     public void setTrackedEvent(QEvent trackedEvent, int priority) {

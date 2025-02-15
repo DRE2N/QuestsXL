@@ -8,19 +8,35 @@ import de.erethon.questsxl.objective.QObjective;
 import de.erethon.questsxl.quest.QQuest;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Represents a configuration that is a single line of text.
+ * Can optionally be parsed and read into/from a bukkit configuration section (not-nested).
+ */
 public class QLineConfig implements QConfig {
 
     private final Map<String, String> result = new HashMap<>();
     private final String input;
 
+    public QLineConfig() {
+        input = "";
+    }
+
     public QLineConfig(String string) {
         input = string;
         parse();
+    }
+
+    public QLineConfig(ConfigurationSection section) {
+        input = section.getName();
+        for (String key : section.getKeys(false)) {
+            result.put(key, section.getString(key));
+        }
     }
 
     private void parse() {
@@ -134,6 +150,34 @@ public class QLineConfig implements QConfig {
         return def;
     }
 
+    public void set(String key, String value) {
+        result.put(key, value);
+    }
+
+    public void set(String key, int value) {
+        result.put(key, String.valueOf(value));
+    }
+
+    public void set(String key, double value) {
+        result.put(key, String.valueOf(value));
+    }
+
+    public void set(String key, long value) {
+        result.put(key, String.valueOf(value));
+    }
+
+    public void set(String key, boolean value) {
+        result.put(key, String.valueOf(value));
+    }
+
+    public void set(String key, String[] value) {
+        StringBuilder builder = new StringBuilder();
+        for (String s : value) {
+            builder.append(s).append(",");
+        }
+        result.put(key, builder.toString());
+    }
+
     public World getWorld(String key) {
         return Bukkit.getWorld(result.get(key));
     }
@@ -142,10 +186,16 @@ public class QLineConfig implements QConfig {
         return Bukkit.getWorld(result.getOrDefault(key, def.getName()));
     }
 
-
-
     @Override
     public String toString() {
         return input;
+    }
+
+    public ConfigurationSection toConfigSection(ConfigurationSection parent) {
+        ConfigurationSection section = parent.createSection(input);
+        for (Map.Entry<String, String> entry : result.entrySet()) {
+            section.set(entry.getKey(), entry.getValue());
+        }
+        return section;
     }
 }
