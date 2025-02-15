@@ -5,11 +5,13 @@ import de.erethon.questsxl.objective.QObjective;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
+/**
+ * Represents an object that can hold objectives.
+ */
 public interface ObjectiveHolder {
     void addObjective(@NotNull ActiveObjective objective);
     boolean hasObjective(@NotNull QObjective objective);
