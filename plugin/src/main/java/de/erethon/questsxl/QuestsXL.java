@@ -13,6 +13,8 @@ import de.erethon.hephaestus.blocks.HBlockLibrary;
 import de.erethon.hephaestus.items.HItemLibrary;
 import de.erethon.questsxl.animation.AnimationManager;
 import de.erethon.questsxl.command.QCommandCache;
+import de.erethon.questsxl.common.CommonMessages;
+import de.erethon.questsxl.common.QMessageHandler;
 import de.erethon.questsxl.common.QRegistries;
 import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.dialogue.QDialogueManager;
@@ -22,6 +24,7 @@ import de.erethon.questsxl.instancing.BlockCollectionManager;
 import de.erethon.questsxl.listener.AetherListener;
 import de.erethon.questsxl.listener.PlayerJobListener;
 import de.erethon.questsxl.listener.PlayerListener;
+import de.erethon.questsxl.livingworld.Exploration;
 import de.erethon.questsxl.livingworld.QEventManager;
 import de.erethon.questsxl.player.QPlayerCache;
 import de.erethon.questsxl.quest.QuestManager;
@@ -33,12 +36,12 @@ import de.erethon.questsxl.tool.GitSync;
 import de.fyreum.jobsxl.JobsXL;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -75,6 +78,8 @@ public final class QuestsXL extends EPlugin {
     public static File DIALOGUES;
     public long lastSync = 0;
 
+    private final QMessageHandler messageHandler = new QMessageHandler();
+
     private QPlayerCache qPlayerCache;
     private RespawnPointManager respawnPointManager;
     private QuestManager questManager;
@@ -88,14 +93,11 @@ public final class QuestsXL extends EPlugin {
     private PlayerListener playerListener;
     private PlayerJobListener playerJobListener;
     private AetherListener aetherListener;
+    private Exploration exploration;
 
     private final Map<String, Integer> scores = new HashMap<>();
     private final List<FriendlyError> errors = new ArrayList<>();
     private boolean showStacktraces = true;
-
-    private Set<QTranslatable> translatables = new HashSet<>();
-    GlobalTranslator globalTranslator = GlobalTranslator.translator();
-    TranslationRegistry translationRegistry = TranslationRegistry.create(Key.key("qxl"));
 
     private File gitConfig = new File(Bukkit.getPluginsFolder().getParent(), "gitConfig.yml");
     private List<String> folders;
@@ -143,6 +145,8 @@ public final class QuestsXL extends EPlugin {
         if (getServer().getPluginManager().getPlugin("Hephaestus") != null) {
             hephaestus = (Hephaestus) getServer().getPluginManager().getPlugin("Hephaestus");
         }
+        // Register the common messages. All other translations come from QComponents themselves
+        new CommonMessages();
         // Initialize QRegistries
         QRegistries.init();
 
@@ -160,6 +164,7 @@ public final class QuestsXL extends EPlugin {
         initFile(RESPAWNS = new File(getDataFolder(), "respawnPoints.yml"));
         initFile(GLOBAL_OBJ = new File(getDataFolder(), "globalObjectives.yml"));
         qPlayerCache = new QPlayerCache(this);
+        exploration = new Exploration();
         MessageUtil.log(" ");
         MessageUtil.log(" ");
         MessageUtil.log(" --- Sync ---");
@@ -317,6 +322,10 @@ public final class QuestsXL extends EPlugin {
         return globalObjectives;
     }
 
+    public Exploration getExploration() {
+        return exploration;
+    }
+
     public void reload() {
         getPlayerCache().saveAll();
         errors.clear();
@@ -400,20 +409,7 @@ public final class QuestsXL extends EPlugin {
     }
 
     public void registerTranslation(QTranslatable translatable) {
-        String key = translatable.getKey();
-        if (translationRegistry.contains(key))  {
-            return;
-        }
-        for (Map.Entry<String, String> entry : translatable.getTranslations().entrySet()) {
-            Locale locale;
-            if (key.contains("de")) {
-                locale = Locale.GERMANY;
-            } else {
-                locale = Locale.US;
-            }
-            translationRegistry.register(key, locale, new MessageFormat(entry.getValue()));
-        }
-
+        messageHandler.registerTranslation(translatable);
     }
 
     @Contract("_ -> new")
