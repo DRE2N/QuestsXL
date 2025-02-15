@@ -2,7 +2,7 @@ package de.erethon.questsxl.scoreboard;
 
 import de.erethon.aergia.player.EPlayer;
 import de.erethon.aergia.scoreboard.ScoreboardLines;
-import de.erethon.aergia.scoreboard.ScoreboardComponent;
+import de.erethon.aergia.util.ScoreboardComponent;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.player.QPlayer;
@@ -23,7 +23,8 @@ public class QuestScoreboardLines implements ScoreboardLines {
     @NotNull
     @Override
     public List<ScoreboardComponent> getLines(@NotNull EPlayer ePlayer) {
-        QPlayer player = plugin.getPlayerCache().getByPlayer(ePlayer.getPlayer());
+        return List.of();
+        /*QPlayer player = plugin.getPlayerCache().getByPlayer(ePlayer.getPlayer());
         ActiveQuest trackedQuest = player.getTrackedQuest();
 
         if (trackedQuest == null && player.getTrackedEvent() == null) {
@@ -56,7 +57,7 @@ public class QuestScoreboardLines implements ScoreboardLines {
             }
         }
 
-        return lines;
+        return lines;*/
     }
 
     @Override
