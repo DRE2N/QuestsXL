@@ -40,6 +40,16 @@ tasks {
         }
     }
 
+    shadowJar {
+        archiveBaseName.set("QuestsXL")
+        dependencies {
+            include(dependency("de.erethon:bedrock:1.4.0"))
+            include(dependency("org.eclipse.jgit:org.eclipse.jgit:6.4.0.202211300538-r"))
+        }
+        relocate("de.erethon.bedrock", "de.erethon.questsxl.bedrock")
+        relocate("org.eclipse.jgit", "de.erethon.questsxl.jgit")
+    }
+
     runServer {
         if (!project.buildDir.exists()) {
             project.buildDir.mkdir()
@@ -47,6 +57,7 @@ tasks {
         val f = File(project.buildDir, "server.jar")
         uri("https://github.com/DRE2N/Papyrus/releases/download/latest/papyrus-paperclip-$papyrusVersion-mojmap.jar").toURL().openStream().use { it.copyTo(f.outputStream()) }
         serverJar(f)
+        runDirectory.set(file("C:\\Dev\\Erethon"))
     }
 
     compileJava {
@@ -60,15 +71,6 @@ tasks {
         filteringCharset = Charsets.UTF_8.name()
     }
 
-    shadowJar {
-        archiveBaseName.set("QuestsXL")
-        dependencies {
-            include(dependency("de.erethon:bedrock:1.4.0"))
-            include(dependency("org.eclipse.jgit:org.eclipse.jgit:6.4.0.202211300538-r"))
-        }
-        relocate("de.erethon.bedrock", "de.erethon.questsxl.bedrock")
-        relocate("org.eclipse.jgit", "de.erethon.questsxl.jgit")
-    }
     bukkit {
         load = BukkitPluginDescription.PluginLoadOrder.POSTWORLD
         main = "de.erethon.questsxl.QuestsXL"

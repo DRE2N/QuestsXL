@@ -49,6 +49,7 @@ allprojects {
 }
 
 val papyrusVersion = "1.21.4-R0.1-SNAPSHOT"
+val pluginVersion = "1.0.0-SNAPSHOT"
 
 
 dependencies {
@@ -112,6 +113,14 @@ subprojects {
 
     tasks.withType<JavaCompile> {
         options.annotationProcessorPath = configurations["annotationProcessor"]
+    }
+    tasks.register<Copy>("deployToSharedServer") {
+        group = "Erethon"
+        description = "Used for deploying the plugin to the shared server. runServer will do this automatically." +
+                "This task is only for manual deployment when running runServer from another plugin."
+        dependsOn(":plugin:shadowJar")
+        from(project(":plugin").layout.buildDirectory.file("libs/QuestsXL-$pluginVersion-all.jar"))
+        into("C:\\Dev\\Erethon\\plugins")
     }
 }
 
