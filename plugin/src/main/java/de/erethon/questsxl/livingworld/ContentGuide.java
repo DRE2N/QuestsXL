@@ -6,9 +6,24 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 public class ContentGuide {
+
+    char LEFT = '←';
+    char FORWARD_RIGHT = '⬈';
+    char RIGHT = '→';
+    char FORWARD_LEFT = '⬉';
+    char BACKWARD = '↓';
+    char BACKWARD_RIGHT = '⬊';
+    char FORWARD = '↑';
+    char BACKWARD_LEFT = '⬋';
+    char UNKNOWN = '-';
+    char UP = '▲';
+    char DOWN = '▼';
+    char SAME = '◆';
 
     private final QPlayer player;
     private final PlayerExplorer explorer;
@@ -39,7 +54,7 @@ public class ContentGuide {
         if (closest == null) {
             return;
         }
-        Component hint = Component.text(getDirectionalArrow(closest.location()) + " ", NamedTextColor.DARK_PURPLE);
+        Component hint = Component.text(getDirectionalMarker(closest.location()) + " ", NamedTextColor.DARK_PURPLE);
         hint = hint.append(Component.translatable("qxl.explorable.undiscovered"));
         player.setContentGuideText(hint);
     }
@@ -54,34 +69,61 @@ public class ContentGuide {
         return closest;
     }
 
-    private char getDirectionalArrow(Location location) {
-        Location playerLoc = player.getPlayer().getLocation();
-        double angle = Math.toDegrees(Math.atan2(location.getZ() - playerLoc.getZ(), location.getX() - playerLoc.getX()));
-        angle -= playerLoc.getYaw();
-        if (angle < 0) {
-            angle += 360;
+    public char getDirectionalMarker(Location toLoc) {
+        Location fromLoc = player.getLocation().clone();
+        if (toLoc.getWorld() != fromLoc.getWorld()) {
+            return UNKNOWN;
         }
-        if (angle >= 337.5 || angle < 22.5) {
-            return '↑';
+        Vector toVector = toLoc.clone().subtract(fromLoc).toVector().normalize();
+        Vector fromVector = fromLoc.getDirection();
+        double x1 = toVector.getX();
+        double z1 = toVector.getZ();
+        double x2 = fromVector.getX();
+        double z2 = fromVector.getZ();
+        double angle = Math.atan2(x1*z2-z1*x2, x1*x2+z1*z2) * 180 / Math.PI;
+
+        if (angle >= -22.5 && angle <= 22.5) {
+            return FORWARD;
         }
-        if (angle < 67.5) {
-            return '↗';
+        if (angle >= 22.5 && angle <= 67.5) {
+            // Looking forward right, target is more on the left
+            return FORWARD_LEFT;
         }
-        if (angle < 112.5) {
-            return '→';
+        if (angle <= -22.5 && angle >= -67.5) {
+            // Looking forward left
+            return FORWARD_RIGHT;
         }
-        if (angle < 157.5) {
-            return '↘';
+        if (angle >= 67.5 && angle <= 112.5) {
+            // Looking right
+            return LEFT;
         }
-        if (angle < 202.5) {
-            return '↓';
+        if (angle <= -67.5 && angle >= -112.5) {
+            // Looking left
+            return RIGHT;
         }
-        if (angle < 247.5) {
-            return '↙';
+        if (angle <= -112.5 && angle >= -157.5) {
+            return BACKWARD_RIGHT;
         }
-        if (angle < 292.5) {
-            return '←';
+        if (angle >= 112.5 && angle <= 157.5) {
+            return BACKWARD_LEFT;
         }
-        return '↖';
+        if (angle >= 157.5 || angle <= -157.5) {
+            return BACKWARD;
+        }
+        return UNKNOWN;
+    }
+
+    public char getVerticalMarker(Location toLoc) {
+        Location fromLoc = player.getLocation().clone();
+        int fromY = fromLoc.getBlockY();
+        int toY = toLoc.getBlockY();
+        if (fromY < toY) {
+            return UP;
+        }
+        // toY + 1 because of jumping
+        if (fromY > toY + 1) {
+            return DOWN;
+        }
+        return SAME;
     }
 }
