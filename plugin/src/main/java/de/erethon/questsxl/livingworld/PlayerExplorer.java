@@ -24,9 +24,11 @@ public class PlayerExplorer {
     private QPlayer qPlayer;
     private Map<ExplorationSet, Set<CompletedExplorable>> completedExplorables = new HashMap<>();
     private ExplorationSet currentClosestSet;
+    private ContentGuide contentGuide;
 
     public PlayerExplorer(QPlayer qPlayer) {
         this.qPlayer = qPlayer;
+        contentGuide = new ContentGuide(qPlayer, this);
     }
 
     /**
@@ -91,6 +93,10 @@ public class PlayerExplorer {
         return completedExplorables;
     }
 
+    public boolean hasCompletedSet(ExplorationSet set) {
+        return completedExplorables.containsKey(set);
+    }
+
     /**
      * Updates the closest set to the player's location.
      * Caution: This method is expensive and should not be called too often.
@@ -99,6 +105,13 @@ public class PlayerExplorer {
         currentClosestSet = exploration.getClosestSet(qPlayer.getPlayer().getLocation());
     }
 
+    public ExplorationSet getCurrentClosestSet() {
+        return currentClosestSet;
+    }
+
+    public ContentGuide getContentGuide() {
+        return contentGuide;
+    }
 
     /*
     JSON Serialization

@@ -65,6 +65,7 @@ public final class QuestsXL extends EPlugin {
 
     static QuestsXL instance;
     public static String ERROR = "<dark_gray>[<red><bold>!<!bold><dark_gray>]<gray> ";
+    public static String EXPLORATION = "<dark_gray>[<yellow>\uD83E\uDDED<dark_gray>]<gray> ";
 
     public static File ANIMATIONS;
     public static File QUESTS;
@@ -229,7 +230,7 @@ public final class QuestsXL extends EPlugin {
             getServer().getPluginManager().registerEvents(playerJobListener, this);
         }
         if (isAergiaEnabled()) {
-            //aergia.getEScoreboard().addScores(new QuestScoreboardLines());
+            aergia.getEScoreboard().addScores(new QuestScoreboardLines());
         }
         if (isAetherEnabled()) {
             aetherListener = new AetherListener();

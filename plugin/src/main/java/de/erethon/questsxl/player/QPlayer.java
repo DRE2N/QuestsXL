@@ -86,6 +86,7 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
     private int currentTrackedEventPriority = 0;
 
     private PlayerExplorer explorer;
+    private Component explorerContentGuide;
 
     public QPlayer(@NotNull Player player) {
         super(QuestsXL.getPlayerFile(player.getUniqueId()), CONFIG_VERSION);
@@ -443,5 +444,13 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
         }
         this.trackedEvent = trackedEvent;
         currentTrackedEventPriority = priority;
+    }
+
+    public void setContentGuideText(Component component) {
+        explorerContentGuide = component;
+    }
+
+    public Component getContentGuideText() {
+        return explorerContentGuide;
     }
 }

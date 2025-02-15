@@ -3,6 +3,7 @@ package de.erethon.questsxl.scoreboard;
 import de.erethon.aergia.player.EPlayer;
 import de.erethon.aergia.scoreboard.ScoreboardComponent;
 import de.erethon.aergia.scoreboard.ScoreboardLines;
+import de.erethon.aergia.util.DynamicComponent;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.player.QPlayer;
@@ -26,10 +27,20 @@ public class QuestScoreboardLines implements ScoreboardLines {
         QPlayer player = plugin.getPlayerCache().getByPlayer(ePlayer.getPlayer());
         ActiveQuest trackedQuest = player.getTrackedQuest();
 
-        if (trackedQuest == null && player.getTrackedEvent() == null) {
+        if (trackedQuest == null && player.getTrackedEvent() == null && player.getContentGuideText() == null) {
             return List.of();
         }
         List<ScoreboardComponent> lines = new ArrayList<>();
+
+        if (player.getContentGuideText() != null) {
+            lines.add(ScoreboardComponent.of(new DynamicComponent() { // Is there a better way to do this?
+                @Override
+                public @NotNull Component get(EPlayer ePlayer) {
+                    return player.getContentGuideText();
+                }
+            }));
+            lines.add(ScoreboardComponent.EMPTY);
+        }
 
         if (player.getTrackedEvent() != null) {
             Component header = MessageUtil.parse("<green>" + player.getTrackedEvent().getName() + "</green>");
@@ -61,6 +72,6 @@ public class QuestScoreboardLines implements ScoreboardLines {
 
     @Override
     public int getPriority() {
-        return 5;
+        return Integer.MAX_VALUE;
     }
 }

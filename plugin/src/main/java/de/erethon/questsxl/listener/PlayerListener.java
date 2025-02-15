@@ -38,7 +38,7 @@ public class PlayerListener extends AbstractListener {
         ServerPlayer serverPlayer = bukkitPlayer.getHandle();
         QPacketListener packetHandler = new QPacketListener(plugin, serverPlayer);
         ChannelPipeline pipeline = serverPlayer.connection.connection.channel.pipeline();
-        pipeline.addAfter("packet_handler", "qxl_handler", packetHandler); // Server -> QXL -> Client
+        //pipeline.addAfter("packet_handler", "qxl_handler", packetHandler); // Server -> QXL -> Client
     }
 
     @EventHandler
