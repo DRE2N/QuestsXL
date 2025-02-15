@@ -23,7 +23,6 @@ import java.util.Set;
 
 public class QQuest implements Completable, QComponent {
 
-    File file;
     YamlConfiguration cfg;
     String name;
     String displayName;
@@ -55,7 +54,14 @@ public class QQuest implements Completable, QComponent {
     @Override
     public void reward(QPlayer player) {
         for (QAction action : rewards) {
-            action.play(player);
+            try {
+                action.play(player);
+            } catch (Exception e) {
+                FriendlyError error = new FriendlyError("Quest: " + this.getName(), "Failed to reward player", e.getMessage(), "Action: " + action.getClass().getSimpleName());
+                error.addPlayer(player);
+                error.addStacktrace(e.getStackTrace());
+                QuestsXL.getInstance().getErrors().add(error);
+            }
         }
     }
 
@@ -68,8 +74,16 @@ public class QQuest implements Completable, QComponent {
 
     public boolean canStartQuest(QPlayer qPlayer) {
         for (QCondition condition : conditions) {
-            if (!condition.check(qPlayer)) {
-                qPlayer.send(condition.getDisplayText());
+            try {
+                if (!condition.check(qPlayer)) {
+                    qPlayer.send(condition.getDisplayText());
+                    return false;
+                }
+            } catch (Exception e) {
+                FriendlyError error = new FriendlyError("Quest: " + this.getName(), "Failed to check condition", e.getMessage(), "Condition: " + condition.getClass().getSimpleName());
+                error.addPlayer(qPlayer);
+                error.addStacktrace(e.getStackTrace());
+                QuestsXL.getInstance().getErrors().add(error);
                 return false;
             }
         }

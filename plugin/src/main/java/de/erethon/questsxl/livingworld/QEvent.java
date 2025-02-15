@@ -103,7 +103,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
                 for (Map.Entry<Integer, Set<QAction>> reward : rewards.entrySet()) {
                     if (reward.getKey() <= playerEntry.getValue()) {
                         for (QAction action : reward.getValue()) {
-                            action.play(playerEntry.getKey());
+                            runRewardAction(playerEntry, action);
                         }
                     }
                 }
@@ -115,9 +115,20 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
                     .orElse(-1);
             if (highestRewardKey != -1) {
                 for (QAction action : rewards.get(highestRewardKey)) {
-                    action.play(playerEntry.getKey());
+                    runRewardAction(playerEntry, action);
                 }
             }
+        }
+    }
+
+    private void runRewardAction(Map.Entry<QPlayer, Integer> playerEntry, QAction action) {
+        try {
+            action.play(playerEntry.getKey());
+        } catch (Exception e) {
+            FriendlyError error = new FriendlyError("Event: " + id, "Failed to execute reward action", e.getMessage(), "Action: " + action.getClass().getSimpleName());
+            error.addPlayer(playerEntry.getKey());
+            error.addStacktrace(e.getStackTrace());
+            QuestsXL.getInstance().getErrors().add(error);
         }
     }
 

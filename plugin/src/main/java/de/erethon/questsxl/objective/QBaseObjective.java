@@ -7,6 +7,7 @@ import de.erethon.questsxl.common.ObjectiveHolder;
 import de.erethon.questsxl.common.QComponent;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.condition.QCondition;
+import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.entity.Player;
@@ -55,8 +56,15 @@ public abstract class QBaseObjective implements QObjective {
         }
         for (QCondition condition : conditions) {
             if (holder instanceof QPlayer qPlayer) {
-                if (!condition.check(qPlayer)) {
-                    condFail(qPlayer, instigator);
+                try {
+                    if (!condition.check(qPlayer)) {
+                        condFail(qPlayer, instigator);
+                        return false;
+                    }
+                } catch (Exception e) {
+                    FriendlyError error = new FriendlyError("Condition check failed", "Condition check failed for " + qPlayer.getName(), e.getMessage(), "Condition: " + condition.getClass().getName());
+                    error.addPlayer(qPlayer);
+                    error.addStacktrace(e.getStackTrace());
                     return false;
                 }
             } else if (holder instanceof QEvent event) {
@@ -165,10 +173,23 @@ public abstract class QBaseObjective implements QObjective {
     private void runActions(Set<QAction> actions, ObjectiveHolder instigator) {
         for (QAction action : actions) {
             if (instigator instanceof QPlayer player) {
-                action.play(player);
+                try {
+                    action.play(player);
+                } catch (Exception e) {
+                    FriendlyError error = new FriendlyError(instigator.getName(), "Failed to run action for " + player.getName(), e.getMessage(), "Action: " + action.getClass().getName());
+                    error.addPlayer(player);
+                    error.addStacktrace(e.getStackTrace());
+                    QuestsXL.getInstance().getErrors().add(error);
+                }
             }
             else if (instigator instanceof QEvent event) {
-                action.play(event);
+                try {
+                    action.play(event);
+                } catch (Exception e) {
+                    FriendlyError error = new FriendlyError(instigator.getName(), "Failed to run action for " + event.getName(), e.getMessage(), "Action: " + action.getClass().getName());
+                    error.addStacktrace(e.getStackTrace());
+                    QuestsXL.getInstance().getErrors().add(error);
+                }
             }
         }
     }
