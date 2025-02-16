@@ -88,3 +88,27 @@ tasks {
         softDepend = listOf("Aether", "Aergia")
     }
 }
+
+publishing {
+    repositories {
+        maven {
+            name = "erethon"
+            url = uri("https://repo.erethon.de/snapshots")
+            credentials(PasswordCredentials::class)
+            authentication {
+                create<BasicAuthentication>("basic")
+            }
+        }
+    }
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "${project.group}"
+            artifactId = "QuestsXL"
+            version = "${project.version}"
+
+            artifact(tasks.named("shadowJar").get()) {
+                classifier = ""
+            }
+        }
+    }
+}

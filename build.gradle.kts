@@ -90,24 +90,6 @@ tasks.register<JavaCompile>("runAnnotationProcessor") {
     options.release.set(21)
 }
 
-tasks.register<Javadoc>("generatePluginJavadocs") {
-    source = fileTree("plugin/src/main/java")
-    classpath = files(
-        project(":plugin").sourceSets["main"].runtimeClasspath,
-        project(":plugin").sourceSets["main"].output,
-        project(":plugin").configurations["compileClasspath"]
-    )
-    setDestinationDir(file("plugin/build/docs/javadoc"))
-    options.encoding = "UTF-8"
-}
-
-tasks.register<Jar>("javadocJar") {
-    group = "QuestsXL"
-    dependsOn("generatePluginJavadocs")
-    archiveClassifier.set("javadoc")
-    from(tasks.named<Javadoc>("generatePluginJavadocs").get().destinationDir)
-}
-
 subprojects {
     apply(plugin = "java-library")
 
@@ -123,26 +105,3 @@ subprojects {
         into("C:\\Dev\\Erethon\\plugins")
     }
 }
-
-    publishing {
-        repositories {
-            maven {
-                name = "erethon"
-                url = uri("https://repo.erethon.de/snapshots")
-                credentials(PasswordCredentials::class)
-                authentication {
-                    create<BasicAuthentication>("basic")
-                }
-            }
-        }
-        publications {
-            create<MavenPublication>("maven") {
-                groupId = "${project.group}"
-                artifactId = "QuestsXL"
-                version = "${project.version}"
-
-                from(components["java"])
-                artifact(tasks["javadocJar"])
-            }
-        }
-    }

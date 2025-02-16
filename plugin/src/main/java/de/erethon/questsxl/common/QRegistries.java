@@ -60,13 +60,7 @@ public class QRegistries {
             MessageUtil.log("Found WorldEdit, enabling WorldEdit actions.");
             ACTIONS.register("paste_schematic", PasteSchematicAction::new);
         }
-        if (qxl.isAetherEnabled()) {
-            MessageUtil.log("Found Aether, enabling Aether actions.");
-            ACTIONS.register("spawn_mob", SpawnMobAction::new);
-            ACTIONS.register("mob_follow", MobFollowPlayerAction::new);
-            ACTIONS.register("spawner", SpawnerAction::new);
-        }
-        if (qxl.isAetherEnabled()) {
+        if (qxl.isJXLEnabled()) {
             MessageUtil.log("Found JobsXL, enabling JobsXL actions.");
             ACTIONS.register("job_exp", JobExpAction::new);
         }
@@ -132,11 +126,6 @@ public class QRegistries {
         OBJECTIVES.register("sneak", SneakObjective::new);
         OBJECTIVES.register("take_damage", TakeDamageObjective::new);
         OBJECTIVES.register("wait", WaitObjective::new);
-        if (qxl.isAetherEnabled()) {
-            MessageUtil.log("Found Aether, enabling Aether objectives.");
-            OBJECTIVES.register("escort_mob", EscortNPCObjective::new);
-            OBJECTIVES.register("kill_mob", KillMobObjective::new);
-        }
         if (qxl.isJXLEnabled()) {
             MessageUtil.log("Found JobsXL, enabling JobsXL objectives.");
             OBJECTIVES.register("craft", ItemCraftObjective::new);
