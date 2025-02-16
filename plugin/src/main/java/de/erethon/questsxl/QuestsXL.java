@@ -3,7 +3,6 @@ package de.erethon.questsxl;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import de.erethon.aergia.Aergia;
 import de.erethon.aergia.scoreboard.EScoreboard;
-import de.erethon.aether.Aether;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.compatibility.Internals;
 import de.erethon.bedrock.plugin.EPlugin;
@@ -16,12 +15,12 @@ import de.erethon.questsxl.command.QCommandCache;
 import de.erethon.questsxl.common.CommonMessages;
 import de.erethon.questsxl.common.QMessageHandler;
 import de.erethon.questsxl.common.QRegistries;
+import de.erethon.questsxl.common.QRegistry;
 import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.dialogue.QDialogueManager;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.global.GlobalObjectives;
 import de.erethon.questsxl.instancing.BlockCollectionManager;
-import de.erethon.questsxl.listener.AetherListener;
 import de.erethon.questsxl.listener.PlayerJobListener;
 import de.erethon.questsxl.listener.PlayerListener;
 import de.erethon.questsxl.livingworld.Exploration;
@@ -34,14 +33,12 @@ import de.erethon.questsxl.respawn.RespawnPointManager;
 import de.erethon.questsxl.scoreboard.QuestScoreboardLines;
 import de.erethon.questsxl.tool.GitSync;
 import de.fyreum.jobsxl.JobsXL;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.translation.GlobalTranslator;
-import net.kyori.adventure.translation.TranslationRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.server.ServerLoadEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -50,18 +47,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
+import java.util.function.Supplier;
 
-public final class QuestsXL extends EPlugin {
+public final class QuestsXL extends EPlugin implements Listener {
 
     static QuestsXL instance;
     public static String ERROR = "<dark_gray>[<red><bold>!<!bold><dark_gray>]<gray> ";
@@ -93,7 +87,6 @@ public final class QuestsXL extends EPlugin {
     private GlobalObjectives globalObjectives;
     private PlayerListener playerListener;
     private PlayerJobListener playerJobListener;
-    private AetherListener aetherListener;
     private Exploration exploration;
 
     private final Map<String, Integer> scores = new HashMap<>();
@@ -110,7 +103,6 @@ public final class QuestsXL extends EPlugin {
     boolean gitSync = true;
 
     private Aergia aergia;
-    private Aether aether;
     private JobsXL jobsXL;
 
     //DungeonsAPI dungeonsAPI;
@@ -128,6 +120,7 @@ public final class QuestsXL extends EPlugin {
     public void onEnable() {
         super.onEnable();
         instance = this;
+        Bukkit.getPluginManager().registerEvents(this, this);
         YamlConfiguration gitConfig = YamlConfiguration.loadConfiguration(this.gitConfig);
         gitToken = gitConfig.getString("token");
         gitBranch = gitConfig.getString("branch");
@@ -136,9 +129,6 @@ public final class QuestsXL extends EPlugin {
         // Check for dependencies
         if (getServer().getPluginManager().getPlugin("Aergia") != null) {
             aergia = (Aergia) getServer().getPluginManager().getPlugin("Aergia");
-        }
-        if (getServer().getPluginManager().getPlugin("Aether") != null) {
-            aether = (Aether) getServer().getPluginManager().getPlugin("Aether");
         }
         if (getServer().getPluginManager().getPlugin("JobsXL") != null) {
             jobsXL = (JobsXL) getServer().getPluginManager().getPlugin("JobsXL");
@@ -198,17 +188,24 @@ public final class QuestsXL extends EPlugin {
         }
     }
 
+    /**
+     * Registers a component to a registry
+     * @param registry
+     * @param id
+     * @param supplier
+     */
+    public void registerComponent(QRegistry<?> registry, String id, Supplier supplier) {
+        registry.register(id, supplier);
+    }
+
     public void loadCore() {
         respawnPointManager = new RespawnPointManager(RESPAWNS);
         regionManager = new QRegionManager(REGIONS);
         blockCollectionManager = new BlockCollectionManager(IBCS);
         animationManager = new AnimationManager(ANIMATIONS);
         questManager = new QuestManager(); // Load after sync
-        questManager.load();
         eventManager = new QEventManager();
-        eventManager.load(EVENTS);
         dialogueManager = new QDialogueManager(DIALOGUES);
-        dialogueManager.load();
         try {
             MessageUtil.log("Loading global objectives...");
             globalObjectives = new GlobalObjectives(GLOBAL_OBJ);
@@ -232,10 +229,17 @@ public final class QuestsXL extends EPlugin {
         if (isAergiaEnabled()) {
             aergia.getEScoreboard().addScores(new QuestScoreboardLines());
         }
-        if (isAetherEnabled()) {
-            aetherListener = new AetherListener();
-            getServer().getPluginManager().registerEvents(aetherListener, this);
+    }
+
+    @EventHandler
+    private void onServerLoad(ServerLoadEvent event) {
+        if (event.getType() != ServerLoadEvent.LoadType.STARTUP) {
+            return;
         }
+        MessageUtil.log("Loading QComponents...");
+        questManager.load();
+        eventManager.load(EVENTS);
+        dialogueManager.load();
     }
 
     @Override
@@ -287,10 +291,6 @@ public final class QuestsXL extends EPlugin {
         return instance;
     }
 
-    public Aether getAether() {
-        return aether;
-    }
-
     public JobsXL getJobsXL() {
         return jobsXL;
     }
@@ -332,6 +332,10 @@ public final class QuestsXL extends EPlugin {
         errors.clear();
         onDisable();
         loadCore();
+        MessageUtil.log("Loading QComponents...");
+        questManager.load();
+        eventManager.load(EVENTS);
+        dialogueManager.load();
     }
 
     public boolean isWEEnabled() {
@@ -340,10 +344,6 @@ public final class QuestsXL extends EPlugin {
 
     public boolean isAergiaEnabled() {
         return aergia != null && aergia.isEnabled();
-    }
-
-    public boolean isAetherEnabled() {
-        return aether != null && aether.isEnabled();
     }
 
     public boolean isJXLEnabled() {
