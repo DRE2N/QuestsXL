@@ -9,6 +9,7 @@ import de.erethon.questsxl.player.QPlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -62,6 +63,12 @@ public class EventCommand extends ECommand {
             MessageUtil.sendMessage(commandSender, "&7Das Event &a" + event.getName() + " &7ist nun inaktiv.");
             return;
         }
+        if (args.length > 2 && (args[2].equalsIgnoreCase("teleport") || args[2].equalsIgnoreCase("tp"))) {
+            Player player = (Player) commandSender;
+            player.teleport(event.getLocation());
+            MessageUtil.sendMessage(commandSender, "&7Du wurdest zum Event &a" + event.getName() + " &7teleportiert.");
+            return;
+        }
         if (args.length > 2 && args[2].equalsIgnoreCase("info")) {
             try {
                 MessageUtil.sendMessage(commandSender, "&8&m               &r &a" + event.getName() + " &8&m               &r");
@@ -110,7 +117,7 @@ public class EventCommand extends ECommand {
             return ids;
         }
         if (args.length == 3) {
-            List<String> completes = new java.util.ArrayList<>(List.of("active", "complete", "disable", "inactive", "info"));
+            List<String> completes = new java.util.ArrayList<>(List.of("active", "complete", "disable", "inactive", "info", "teleport"));
             completes.removeIf(id -> !id.startsWith(args[2]));
             return completes;
         }
