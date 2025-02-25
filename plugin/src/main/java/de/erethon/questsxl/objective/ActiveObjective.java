@@ -92,6 +92,10 @@ public class ActiveObjective {
     public static ActiveObjective load(ObjectiveHolder holder, ConfigurationSection section) {
         String objectiveId = section.getString("objective");
         QObjective objective = QRegistries.OBJECTIVES.get(objectiveId);
+        if (objective == null) {
+            QuestsXL.getInstance().getLogger().warning("Failed to load objective with id " + objectiveId + " Missing dependency?");
+            return null;
+        }
         boolean completed = section.getBoolean("completed");
         int progress = section.getInt("progress");
         Completable completable = null;

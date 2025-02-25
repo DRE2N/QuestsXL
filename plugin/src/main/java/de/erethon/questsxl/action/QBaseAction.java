@@ -25,7 +25,7 @@ public abstract class QBaseAction implements QAction {
 
     private QComponent parent;
 
-    String id;
+    public String id;
 
     @Override
     public void play(Quester quester) {

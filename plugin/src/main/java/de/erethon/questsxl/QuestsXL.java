@@ -23,13 +23,13 @@ import de.erethon.questsxl.global.GlobalObjectives;
 import de.erethon.questsxl.instancing.BlockCollectionManager;
 import de.erethon.questsxl.listener.PlayerJobListener;
 import de.erethon.questsxl.listener.PlayerListener;
+import de.erethon.questsxl.listener.PluginListener;
 import de.erethon.questsxl.livingworld.Exploration;
 import de.erethon.questsxl.livingworld.QEventManager;
 import de.erethon.questsxl.player.QPlayerCache;
 import de.erethon.questsxl.quest.QuestManager;
 import de.erethon.questsxl.region.QRegionManager;
 import de.erethon.questsxl.respawn.RespawnPointManager;
-//import de.erethon.questsxl.scoreboard.QuestScoreboardLines;
 import de.erethon.questsxl.scoreboard.QuestScoreboardLines;
 import de.erethon.questsxl.tool.GitSync;
 import de.fyreum.jobsxl.JobsXL;
@@ -55,7 +55,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public final class QuestsXL extends EPlugin implements Listener {
+public final class QuestsXL extends EPlugin {
 
     static QuestsXL instance;
     public static String ERROR = "<dark_gray>[<red><bold>!<!bold><dark_gray>]<gray> ";
@@ -105,7 +105,6 @@ public final class QuestsXL extends EPlugin implements Listener {
     private Aergia aergia;
     private JobsXL jobsXL;
 
-    //DungeonsAPI dungeonsAPI;
     private WorldEditPlugin worldEditPlugin;
     private Hephaestus hephaestus;
 
@@ -119,8 +118,8 @@ public final class QuestsXL extends EPlugin implements Listener {
     @Override
     public void onEnable() {
         super.onEnable();
+        getServer().getPluginManager().registerEvents(new PluginListener(), this);
         instance = this;
-        Bukkit.getPluginManager().registerEvents(this, this);
         YamlConfiguration gitConfig = YamlConfiguration.loadConfiguration(this.gitConfig);
         gitToken = gitConfig.getString("token");
         gitBranch = gitConfig.getString("branch");
@@ -162,7 +161,6 @@ public final class QuestsXL extends EPlugin implements Listener {
         if (gitToken == null || gitBranch == null) {
             MessageUtil.log("Environment: OFFLINE");
             gitSync = false;
-            loadCore();
         } else {
             MessageUtil.log("Environment: " + gitBranch);
             sync();
@@ -195,6 +193,7 @@ public final class QuestsXL extends EPlugin implements Listener {
      * @param supplier
      */
     public void registerComponent(QRegistry<?> registry, String id, Supplier supplier) {
+        MessageUtil.log("Registering " + id + " with " + supplier.get().getClass().getSimpleName());
         registry.register(id, supplier);
     }
 
@@ -228,13 +227,6 @@ public final class QuestsXL extends EPlugin implements Listener {
         }
         if (isAergiaEnabled()) {
             aergia.getEScoreboard().addScores(new QuestScoreboardLines());
-        }
-    }
-
-    @EventHandler
-    private void onServerLoad(ServerLoadEvent event) {
-        if (event.getType() != ServerLoadEvent.LoadType.STARTUP) {
-            return;
         }
         MessageUtil.log("Loading QComponents...");
         questManager.load();
@@ -393,7 +385,6 @@ public final class QuestsXL extends EPlugin implements Listener {
                 BukkitRunnable waitForCopy = new BukkitRunnable() {
                     @Override
                     public void run() {
-                        loadCore();
                         MessageUtil.broadcastMessageIf("&aGitHub-Sync abgeschlossen!", p -> p.hasPermission("qxl.admin.sync"));
                     }
                 };

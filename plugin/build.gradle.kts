@@ -16,7 +16,6 @@ dependencies {
     paperweight.devBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true }
 
     implementation("de.erethon:bedrock:1.4.0") { isTransitive = false }
-    compileOnly("de.erethon.aether:Aether:1.0.1-SNAPSHOT")
     compileOnly("de.erethon.aergia:Aergia:1.0.1") { isTransitive = false }
     compileOnly("de.fyreum:JobsXL:1.0-SNAPSHOT") { isTransitive = false }
     compileOnly("de.erethon.hephaestus:Hephaestus:1.0-SNAPSHOT")
@@ -85,7 +84,7 @@ tasks {
                 usage = "/qxl help"
             }
         }
-        softDepend = listOf("Aether", "Aergia")
+        softDepend = listOf("Aergia")
     }
 }
 
