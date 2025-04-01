@@ -296,32 +296,32 @@ public abstract class QBaseObjective implements QObjective {
         if (cfg.contains("cancel")) {
             shouldCancelEvent = cfg.getBoolean("cancel");
         }
-        if (cfg.contains("scope_success")) {
-            completeScope = ActionScope.valueOf(cfg.getString("scope").toUpperCase());
+        if (cfg.contains("scopeSuccess")) {
+            completeScope = ActionScope.valueOf(cfg.getString("scopeSuccess").toUpperCase());
         }
         if (cfg.contains("onSuccess")) {
             completeActions.addAll(cfg.getActions(this, "onSuccess"));
         }
-        if (cfg.contains("scope_progress")) {
-            progressScope = ActionScope.valueOf(cfg.getString("scope_progress").toUpperCase());
+        if (cfg.contains("scopeProgress")) {
+            progressScope = ActionScope.valueOf(cfg.getString("scopeProgress").toUpperCase());
         }
         if (cfg.contains("onProgress")) {
             progressActions.addAll(cfg.getActions(this, "onProgress"));
         }
-        if (cfg.contains("scope_conditionFail")) {
-            conditionFailScope = ActionScope.valueOf(cfg.getString("scope_conditionFail").toUpperCase());
+        if (cfg.contains("scopeConditionFail")) {
+            conditionFailScope = ActionScope.valueOf(cfg.getString("scopeConditionFail").toUpperCase());
         }
         if (cfg.contains("onConditionFail")) {
             conditionFailActions.addAll(cfg.getActions(this, "onConditionFail"));
         }
-        if (cfg.contains("scope_fail")) {
-            failScope = ActionScope.valueOf(cfg.getString("scope_fail").toUpperCase());
+        if (cfg.contains("scopeFail")) {
+            failScope = ActionScope.valueOf(cfg.getString("scopeFail").toUpperCase());
         }
         if (cfg.contains("onFail")) {
             failActions.addAll(cfg.getActions(this, "onFail"));
         }
-        if (cfg.contains("scope_Complete")) {
-            completeScope = ActionScope.valueOf(cfg.getString("scope_fail").toUpperCase());
+        if (cfg.contains("scopeComplete")) {
+            completeScope = ActionScope.valueOf(cfg.getString("scopeComplete").toUpperCase());
         }
         if (cfg.contains("onComplete")) {
             completeActions.addAll(cfg.getActions(this, "onComplete"));
