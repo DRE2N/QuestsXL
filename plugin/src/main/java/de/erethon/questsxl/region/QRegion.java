@@ -4,7 +4,7 @@ package de.erethon.questsxl.region;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.quest.QQuest;
 import de.erethon.questsxl.quest.QuestManager;
-import org.apache.commons.lang.math.IntRange;
+import de.erethon.questsxl.tool.IntRange;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;

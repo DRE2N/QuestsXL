@@ -3,7 +3,7 @@ package de.erethon.questsxl.old.recorder;
 import com.destroystokyo.paper.event.block.BlockDestroyEvent;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
-import org.apache.commons.lang.math.IntRange;
+import de.erethon.questsxl.tool.IntRange;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;

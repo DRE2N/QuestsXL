@@ -1,6 +1,5 @@
 package de.erethon.questsxl.tool;
 
-import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -76,7 +75,6 @@ public class BeamTool {
 
 
     public void stop() {
-        Validate.isTrue(run != null, "Task not started");
         run.cancel();
     }
 
@@ -319,7 +317,6 @@ public class BeamTool {
         }
 
         private static void setField(Object instance, String name, Object value) throws ReflectiveOperationException {
-            Validate.notNull(instance);
             Field field = instance.getClass().getDeclaredField(name);
             field.setAccessible(true);
             field.set(instance, value);
