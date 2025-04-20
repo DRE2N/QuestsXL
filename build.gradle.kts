@@ -48,12 +48,12 @@ allprojects {
     }
 }
 
-val papyrusVersion = "1.21.4-R0.1-SNAPSHOT"
+val papyrusVersion = "1.21.5-R0.1-SNAPSHOT"
 val pluginVersion = "1.0.0-SNAPSHOT"
 
 
 dependencies {
-    annotationProcessor("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
+    annotationProcessor("io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT")
     annotationProcessor("de.erethon:bedrock:1.4.0") { isTransitive = false }
     annotationProcessor("de.erethon.aether:Aether:1.0.0-SNAPSHOT")
     annotationProcessor("de.erethon.aergia:Aergia:1.0.0-SNAPSHOT") { isTransitive = false }
