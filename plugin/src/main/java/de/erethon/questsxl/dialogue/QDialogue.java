@@ -9,6 +9,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -22,7 +23,7 @@ public class QDialogue {
     private final String name;
     private String senderName;
     private String npcId;
-    private List<QDialogueStage> stages;
+    private HashMap<Integer, QDialogueStage> stages;
 
     public QDialogue(File file) {
         this.name = file.getName().replace(".yml", "");
@@ -32,7 +33,7 @@ public class QDialogue {
             QuestsXL.getInstance().getErrors().add(new FriendlyError("Dialog: " + name, "Datei ungültig.", "Datei " + file.getName() + " ist ungültig.", "Wahrscheinlich falsche Einrückung."));
             return;
         }
-        this.stages = new ArrayList<>();
+        this.stages = new HashMap<>();
         load();
     }
 
@@ -51,13 +52,18 @@ public class QDialogue {
                 QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Stage '" + key + "' konnte nicht geladen werden", "stage section is null", "Wahrscheinlich falsche Einrückung."));
                 continue;
             }
-            QDialogueStage stage = new QDialogueStage(id + ", stage: " + key, stageSection);
-            stages.add(stage);
+            try {
+                int index = Integer.parseInt(key);
+                QDialogueStage stage = new QDialogueStage(this, stageSection, index);
+                stages.put(index, stage);
+            } catch (Exception e) {
+                QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Stage '" + key + "' konnte nicht geladen werden", e.getMessage(), "Wahrscheinlich falsche Einrückung."));
+            }
         }
     }
 
     public boolean canStart(QPlayer player) {
-        return stages.getFirst().canStart(player);
+        return stages.get(0) != null && stages.get(0).canStart(player);
     }
 
     public ActiveDialogue start(Quester quester) {
@@ -81,7 +87,11 @@ public class QDialogue {
         return npcId;
     }
 
-    public List<QDialogueStage> getStages() {
+    public HashMap<Integer, QDialogueStage> getStages() {
         return stages;
+    }
+
+    public QDialogueStage getStageAtIndex(int index) {
+        return stages.get(index);
     }
 }

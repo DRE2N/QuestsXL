@@ -49,13 +49,15 @@ public class ActiveDialogue extends BukkitRunnable {
             messageDelay = activeStage.sendMessage(dialogue.getSenderName());
         } catch (NoSuchElementException e) {
             activeStage.onFinish();
-            try {
-                activeStage = nextStage();
-                if (!activeStage.canStart(qPlayer)) {
-                    cancel();
+            if (activeStage.autoNext) {
+                try {
+                    activeStage = nextStage();
+                    if (!activeStage.canStart(qPlayer)) {
+                        cancel();
+                    }
+                } catch (IndexOutOfBoundsException e2) {
+                    finish();
                 }
-            } catch (IndexOutOfBoundsException e2) {
-                finish();
             }
         }
     }

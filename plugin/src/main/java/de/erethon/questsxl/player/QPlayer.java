@@ -453,4 +453,8 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
     public Component getContentGuideText() {
         return explorerContentGuide;
     }
+
+    public static QPlayer get(Player player) {
+        return QuestsXL.getInstance().getPlayerCache().getByPlayer(player);
+    }
 }
