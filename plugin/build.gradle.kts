@@ -3,19 +3,19 @@ import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 plugins {
     `java-library`
     `maven-publish`
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.16"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.17"
     id("xyz.jpenilla.run-paper") version "1.0.6"
     id("io.github.goooler.shadow") version "8.1.5"
     id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
 }
 
-val papyrusVersion = "1.21.5-R0.1-SNAPSHOT"
+val papyrusVersion = "1.21.7-R0.1-SNAPSHOT"
 paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
 
 dependencies {
     paperweight.devBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true }
 
-    implementation("de.erethon:bedrock:1.4.0") { isTransitive = false }
+    implementation("de.erethon:bedrock:1.5.7")
     compileOnly("de.erethon.aergia:Aergia:1.0.1") { isTransitive = false }
     compileOnly("de.fyreum:JobsXL:1.0-SNAPSHOT") { isTransitive = false }
     compileOnly("de.erethon.hephaestus:Hephaestus:1.0-SNAPSHOT")
@@ -42,7 +42,7 @@ tasks {
     shadowJar {
         archiveBaseName.set("QuestsXL")
         dependencies {
-            include(dependency("de.erethon:bedrock:1.4.0"))
+            include(dependency("de.erethon:bedrock:1.5.7"))
             include(dependency("org.eclipse.jgit:org.eclipse.jgit:6.4.0.202211300538-r"))
         }
         relocate("de.erethon.bedrock", "de.erethon.questsxl.bedrock")
