@@ -4,7 +4,6 @@ import de.erethon.hephaestus.items.HItemStack;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
-import de.fyreum.jobsxl.user.event.UserCraftItemEvent;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -21,8 +20,6 @@ import org.bukkit.event.inventory.CraftItemEvent;
 )
 public class ItemCraftObjective extends QBaseObjective {
 
-    @QParamDoc(name = "jxl_item", description = "The id of the job item that needs to be crafted.")
-    private String jxlID;
     @QParamDoc(name = "item", description = "The key of the item that needs to be crafted. Hephaestus. Same as in /give")
     private NamespacedKey id;
 
@@ -35,18 +32,11 @@ public class ItemCraftObjective extends QBaseObjective {
                 checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(player));
             }
         }
-        if (e instanceof UserCraftItemEvent event && jxlID != null) { // job crafting
-            Player player = event.getUser().getPlayer();
-            if (conditions(player) && event.getResult().getId().equalsIgnoreCase(jxlID)) {
-                checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(player));
-            }
-        }
     }
 
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        jxlID = cfg.getString("jxl_item");
         id = NamespacedKey.fromString(cfg.getString("item"));
     }
 }

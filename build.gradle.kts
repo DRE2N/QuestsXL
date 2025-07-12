@@ -15,7 +15,7 @@ repositories {
 
 allprojects {
     group = "de.erethon.questsxl"
-    version = "1.0.0-SNAPSHOT"
+    version = "1.0.1-SNAPSHOT"
 
     repositories {
         mavenLocal()
@@ -49,53 +49,11 @@ allprojects {
 }
 
 val papyrusVersion = "1.21.7-R0.1-SNAPSHOT"
-val pluginVersion = "1.0.0-SNAPSHOT"
-
-
-dependencies {
-    annotationProcessor("io.papermc.paper:paper-api:1.21.7-R0.1-SNAPSHOT")
-    annotationProcessor("de.erethon:bedrock:1.4.0") { isTransitive = false }
-    annotationProcessor("de.erethon.aether:Aether:1.0.0-SNAPSHOT")
-    annotationProcessor("de.erethon.aergia:Aergia:1.0.0-SNAPSHOT") { isTransitive = false }
-    annotationProcessor("de.fyreum:JobsXL:1.0-SNAPSHOT") { isTransitive = false }
-    annotationProcessor("de.erethon.hephaestus:Hephaestus:1.0-SNAPSHOT")
-    annotationProcessor("org.eclipse.jgit:org.eclipse.jgit:6.4.0.202211300538-r")
-    annotationProcessor("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.3.0") { isTransitive = false }
-    annotationProcessor("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.3.0") { isTransitive = false }
-    annotationProcessor("com.github.MilkBowl:VaultAPI:1.7") { isTransitive = false }
-}
-
-tasks.register<JavaCompile>("runAnnotationProcessor") {
-    dependsOn(":doc-gen:classes", ":plugin:classes")
-    group = "QuestsXL"
-    source = fileTree("plugin/src/main/java")
-    classpath = files(
-        sourceSets["main"].runtimeClasspath,
-        project(":doc-gen").sourceSets["main"].output,
-        project(":plugin").sourceSets["main"].output,
-        configurations.runtimeClasspath,
-        project(":plugin").configurations["compileClasspath"],
-        project(":plugin").configurations["runtimeClasspath"]
-    )
-    destinationDirectory.set(file("plugin/build/classes/java/main"))
-    options.annotationProcessorPath = files(
-        project(":doc-gen").sourceSets["main"].output,
-        configurations["annotationProcessor"],
-        project(":plugin").sourceSets["main"].output
-    )
-    options.compilerArgs.add("-processor")
-    options.compilerArgs.add("de.erethon.questsxl.QDocGenerator")
-    options.compilerArgs.add("-AdocOutputDir=${project.rootDir}/docs")
-    options.encoding = "UTF-8"
-    options.release.set(21)
-}
+val pluginVersion = "1.0.1-SNAPSHOT"
 
 subprojects {
     apply(plugin = "java-library")
 
-    tasks.withType<JavaCompile> {
-        options.annotationProcessorPath = configurations["annotationProcessor"]
-    }
     tasks.register<Copy>("deployToSharedServer") {
         doNotTrackState("")
         group = "Erethon"

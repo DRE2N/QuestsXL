@@ -41,4 +41,8 @@ public class QRegistry<T extends QComponent> {
     public String getId(Class<? extends T> clazz) {
         return reverseLookup.get(clazz);
     }
+
+    public Map<String, Supplier<T>> getEntries() {
+        return entries;
+    }
 }

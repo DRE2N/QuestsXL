@@ -60,10 +60,6 @@ public class QRegistries {
             MessageUtil.log("Found WorldEdit, enabling WorldEdit actions.");
             ACTIONS.register("paste_schematic", PasteSchematicAction::new);
         }
-        if (qxl.isJXLEnabled()) {
-            MessageUtil.log("Found JobsXL, enabling JobsXL actions.");
-            ACTIONS.register("job_exp", JobExpAction::new);
-        }
     }
 
     private static void initConditions() {
@@ -98,10 +94,6 @@ public class QRegistries {
             MessageUtil.log("Found Aergia, enabling Aergia conditions.");
             CONDITIONS.register("group_size", GroupSizeCondition::new);
         }
-        if (qxl.isJXLEnabled()) {
-            MessageUtil.log("Found JobsXL, enabling JobsXL conditions.");
-            CONDITIONS.register("job_level", JobLevelCondition::new);
-        }
     }
 
     private static void initObjectives() {
@@ -126,11 +118,6 @@ public class QRegistries {
         OBJECTIVES.register("sneak", SneakObjective::new);
         OBJECTIVES.register("take_damage", TakeDamageObjective::new);
         OBJECTIVES.register("wait", WaitObjective::new);
-        if (qxl.isJXLEnabled()) {
-            MessageUtil.log("Found JobsXL, enabling JobsXL objectives.");
-            OBJECTIVES.register("craft", ItemCraftObjective::new);
-            OBJECTIVES.register("job_exp", JobExpObjective::new);
-        }
         if (qxl.isHephaestusEnabled()) {
             MessageUtil.log("Found Hephaestus, enabling Hephaestus objectives.");
             OBJECTIVES.register("consume_item", ConsumeItemObjective::new);
