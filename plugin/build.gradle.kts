@@ -14,8 +14,6 @@ paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArt
 
 dependencies {
     paperweight.devBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true }
-
-    implementation("de.erethon:bedrock:1.5.7")
     compileOnly("de.erethon.aergia:Aergia:1.0.1") { isTransitive = false }
     compileOnly("de.erethon.hephaestus:Hephaestus:1.0-SNAPSHOT")
     implementation("org.eclipse.jgit:org.eclipse.jgit:6.4.0.202211300538-r")
@@ -41,10 +39,8 @@ tasks {
     shadowJar {
         archiveBaseName.set("QuestsXL")
         dependencies {
-            include(dependency("de.erethon:bedrock:1.5.7"))
             include(dependency("org.eclipse.jgit:org.eclipse.jgit:6.4.0.202211300538-r"))
         }
-        relocate("de.erethon.bedrock", "de.erethon.questsxl.bedrock")
         relocate("org.eclipse.jgit", "de.erethon.questsxl.jgit")
     }
 
