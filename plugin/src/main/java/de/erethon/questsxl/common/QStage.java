@@ -210,15 +210,27 @@ public class QStage implements QComponent {
         description = section.getString("description", "");
         if (section.contains("conditions")) {
             conditions.addAll((Collection<? extends QCondition>) QConfigLoader.load(this, "conditions", section, QRegistries.CONDITIONS));
+            for (QCondition condition : conditions) {
+                condition.setParent(this);
+            }
         }
         if (section.contains("objectives")) {
             goals.addAll((Collection<? extends QObjective>) QConfigLoader.load(this, "objectives", section, QRegistries.OBJECTIVES));
+            for (QObjective objective : goals) {
+                objective.setParent(this);
+            }
         }
         if (section.contains("onStart")) {
             startActions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onStart", section, QRegistries.ACTIONS));
+            for (QAction action : startActions) {
+                action.setParent(this);
+            }
         }
         if (section.contains("onFinish")) {
             completeActions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onFinish", section, QRegistries.ACTIONS));
+            for (QAction action : completeActions) {
+                action.setParent(this);
+            }
         }
     }
 }

@@ -39,6 +39,9 @@ public class GlobalObjectives implements Completable, QComponent {
                 continue;
             }
             objectives.addAll((Collection<? extends QObjective>) QConfigLoader.load(this, "objectives", section, QRegistries.OBJECTIVES));
+            for (QObjective objective : objectives) {
+                objective.setParent(this);
+            }
         }
         for (QObjective objective : objectives) {
             objective.setGlobal(true);
@@ -71,5 +74,15 @@ public class GlobalObjectives implements Completable, QComponent {
     @Override
     public List<QStage> getStages() {
         return List.of(stage);
+    }
+
+    @Override
+    public QComponent getParent() {
+        return null;
+    }
+
+    @Override
+    public void setParent(QComponent parent) {
+        // We are the top-level component, so we don't need to set a parent.
     }
 }

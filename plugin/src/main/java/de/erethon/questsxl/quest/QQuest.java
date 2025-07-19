@@ -117,6 +117,16 @@ public class QQuest implements Completable, QComponent {
         }
         return description;
     }
+    @Override
+    public QComponent getParent() {
+        return null;
+    }
+
+    @Override
+    public void setParent(QComponent parent) {
+        // We are the top-level component, so we don't need to set a parent.
+    }
+
 
     @Override
     public void load() {
@@ -126,14 +136,23 @@ public class QQuest implements Completable, QComponent {
         // Conditions
         if (cfg.contains("conditions")) {
             conditions.addAll((Collection<? extends QCondition>) QConfigLoader.load(this, "conditions", cfg, QRegistries.CONDITIONS));
+            for (QCondition condition : conditions) {
+                condition.setParent(this);
+            }
         }
         // Start actions
         if (cfg.contains("onStart")) {
             startActions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onStart", cfg, QRegistries.ACTIONS));
+            for (QAction action : startActions) {
+                action.setParent(this);
+            }
         }
         // Reward actions
         if (cfg.contains("onFinish")) {
             rewards.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onFinish", cfg, QRegistries.ACTIONS));
+            for (QAction action : rewards) {
+                action.setParent(this);
+            }
         }
         // Stages
         ConfigurationSection stageSection = cfg.getConfigurationSection("stages");

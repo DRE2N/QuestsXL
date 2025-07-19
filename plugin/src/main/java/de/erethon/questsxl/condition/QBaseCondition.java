@@ -63,9 +63,15 @@ public abstract class QBaseCondition implements QCondition {
         display = cfg.getString("displayText");
         if (cfg.contains("onFail")) {
             failActions.addAll(cfg.getActions(this, "onFail"));
+            for (QAction action : failActions) {
+                action.setParent(this);
+            }
         }
         if (cfg.contains("onSuccess")) {
             successActions.addAll(cfg.getActions(this, "onSuccess"));
+            for (QAction action : successActions) {
+                action.setParent(this);
+            }
         }
     }
 

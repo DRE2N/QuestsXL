@@ -27,6 +27,7 @@ import java.util.Map;
  */
 public class QDialogueStage implements QComponent {
 
+    private QComponent parent;
     protected QDialogue dialogue;
     protected LinkedList<Map.Entry<String, Integer>> messages;
     protected int maxMessageCount;
@@ -64,6 +65,16 @@ public class QDialogueStage implements QComponent {
 
     public QActiveDialogueStage start(@NotNull QPlayer player) {
         return new QActiveDialogueStage(player, this);
+    }
+
+    @Override
+    public QComponent getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(QComponent parent) {
+        this.parent = parent;
     }
 
     public void load(ConfigurationSection cfg) {

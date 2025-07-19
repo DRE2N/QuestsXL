@@ -8,25 +8,21 @@ public interface ContextAware {
     /**
      * @return the parent of this object. This can be any QComponent, such as a quest, objective, or action
      */
-    default QComponent getParent() {
-        return findTopParent();
-    }
+    QComponent getParent();
 
-    default void setParent(QComponent parent) {
-
-    }
+    void setParent(QComponent parent);
 
     /**
      * @return the top parent of this object. In most cases, this will be the quest or event that contains this object.
      */
     default QComponent findTopParent() {
-        QComponent parent = getParent();
-        if (parent == null) {
-            return null;
+        QComponent current = (QComponent) this;
+        if (current.getParent() == null) {
+            return current;
         }
-        while (parent.getParent() != null) {
-            parent = parent.getParent();
+        while (current.getParent() != null) {
+            current = current.getParent();
         }
-        return parent;
+        return current;
     }
 }

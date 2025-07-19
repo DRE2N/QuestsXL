@@ -121,4 +121,14 @@ public class PointOfInterest implements QComponent, Explorable {
         }
         return cfg;
     }
+
+    @Override
+    public QComponent getParent() {
+        return null;
+    }
+
+    @Override
+    public void setParent(QComponent parent) {
+        // We are the top-level component, so we don't need to set a parent.
+    }
 }

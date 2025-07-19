@@ -306,30 +306,45 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
         }
         if (cfg.contains("onSuccess")) {
             completeActions.addAll(cfg.getActions(this, "onSuccess"));
+            for (QAction action : completeActions) {
+                action.setParent(this);
+            }
         }
         if (cfg.contains("scopeProgress")) {
             progressScope = ActionScope.valueOf(cfg.getString("scopeProgress").toUpperCase());
         }
         if (cfg.contains("onProgress")) {
             progressActions.addAll(cfg.getActions(this, "onProgress"));
+            for (QAction action : progressActions) {
+                action.setParent(this);
+            }
         }
         if (cfg.contains("scopeConditionFail")) {
             conditionFailScope = ActionScope.valueOf(cfg.getString("scopeConditionFail").toUpperCase());
         }
         if (cfg.contains("onConditionFail")) {
             conditionFailActions.addAll(cfg.getActions(this, "onConditionFail"));
+            for (QAction action : conditionFailActions) {
+                action.setParent(this);
+            }
         }
         if (cfg.contains("scopeFail")) {
             failScope = ActionScope.valueOf(cfg.getString("scopeFail").toUpperCase());
         }
         if (cfg.contains("onFail")) {
             failActions.addAll(cfg.getActions(this, "onFail"));
+            for (QAction action : failActions) {
+                action.setParent(this);
+            }
         }
         if (cfg.contains("scopeComplete")) {
             completeScope = ActionScope.valueOf(cfg.getString("scopeComplete").toUpperCase());
         }
         if (cfg.contains("onComplete")) {
             completeActions.addAll(cfg.getActions(this, "onComplete"));
+            for (QAction action : completeActions) {
+                action.setParent(this);
+            }
         }
         if (cfg.contains("optional")) {
             optional = cfg.getBoolean("optional");

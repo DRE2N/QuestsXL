@@ -24,7 +24,7 @@ import org.bukkit.configuration.ConfigurationSection;
 )
 public class ObjectiveDisplayTextAction extends QBaseAction {
 
-    @QParamDoc(name = "id", description = "The ID of the quest or event to set the objective for", required = true)
+    @QParamDoc(name = "id", description = "The ID of the quest or event to set the objective for. Defaults to the top parent if not specified.")
     private Completable completable;
     @QParamDoc(name = "text", description = "The text to display, empty to clear", def = " ")
     private String text;
@@ -33,6 +33,9 @@ public class ObjectiveDisplayTextAction extends QBaseAction {
     @Override
     public void play(Quester quester) {
         if (!conditions(quester)) return;
+        if (completable == null && findTopParent() instanceof Completable c) {
+            completable = c;
+        }
         execute(quester, (QPlayer player) -> {
             if (completable instanceof QQuest quest) {
                 player.getActiveQuest(quest).setObjectiveDisplayText(text);

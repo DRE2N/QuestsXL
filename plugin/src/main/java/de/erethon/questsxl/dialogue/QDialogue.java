@@ -1,6 +1,7 @@
 package de.erethon.questsxl.dialogue;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QComponent;
 import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.player.QPlayer;
@@ -15,7 +16,7 @@ import java.util.List;
 /**
  * @author Fyreum
  */
-public class QDialogue {
+public class QDialogue implements QComponent {
 
     File file;
     YamlConfiguration cfg;
@@ -55,6 +56,7 @@ public class QDialogue {
             try {
                 int index = Integer.parseInt(key);
                 QDialogueStage stage = new QDialogueStage(this, stageSection, index);
+                stage.setParent(this);
                 stages.put(index, stage);
             } catch (Exception e) {
                 QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Stage '" + key + "' konnte nicht geladen werden", e.getMessage(), "Wahrscheinlich falsche Einrückung."));
@@ -93,5 +95,15 @@ public class QDialogue {
 
     public QDialogueStage getStageAtIndex(int index) {
         return stages.get(index);
+    }
+
+    @Override
+    public QComponent getParent() {
+        return null;
+    }
+
+    @Override
+    public void setParent(QComponent parent) {
+        // We are the top-level component, so we don't need to set a parent.
     }
 }

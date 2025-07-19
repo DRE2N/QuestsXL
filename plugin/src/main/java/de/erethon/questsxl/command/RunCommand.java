@@ -40,6 +40,9 @@ public class RunCommand extends ECommand implements QComponent {
         Set<QAction> qActions = new HashSet<>();
         try {
             qActions = (Set<QAction>) QConfigLoader.load(this, "input", configuration, QRegistries.ACTIONS);
+            for (QAction action : qActions) {
+                action.setParent(this);
+            }
         } catch (Exception exception) {
             errors.add(new FriendlyError("Command", "Failed to parse action", exception.getMessage(), "").addStacktrace(exception.getStackTrace()));
         }
@@ -70,5 +73,15 @@ public class RunCommand extends ECommand implements QComponent {
             }
         };
         later.runTaskLater(QuestsXL.getInstance(), 0);
+    }
+
+    @Override
+    public QComponent getParent() {
+        return null;
+    }
+
+    @Override
+    public void setParent(QComponent parent) {
+        // We are the top-level component, so we don't need to set a parent.
     }
 }

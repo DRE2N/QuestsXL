@@ -22,8 +22,8 @@ import de.erethon.questsxl.quest.QQuest;
 )
 public class SetTrackedQuestAction extends QBaseAction {
 
-    @QParamDoc(name = "quest", description = "ID of the quest to set as the tracked quest.", required = true)
-    private QQuest quest;
+    @QParamDoc(name = "quest", description = "ID of the quest to set as the tracked quest.")
+    private QQuest quest = null;
     @QParamDoc(name = "priority", description = "Priority. Higher values equal a higher priority", def = "1")
     private int priority = 0;
 
@@ -31,6 +31,9 @@ public class SetTrackedQuestAction extends QBaseAction {
     @Override
     public void play(Quester quester) {
         if (!conditions(quester)) return;
+        if (quest == null && findTopParent() instanceof QQuest q) {
+            this.quest = q;
+        }
         execute(quester, (QPlayer player) -> player.setTrackedQuest(quest, priority));
         onFinish(quester);
     }
@@ -40,9 +43,6 @@ public class SetTrackedQuestAction extends QBaseAction {
     public void load(QConfig cfg) {
         super.load(cfg);
         quest = cfg.getQuest("event");
-        if (quest == null) {
-            QuestsXL.getInstance().addRuntimeError(new FriendlyError(cfg.getName(), "Quest not found", "The quest specified in the action could not be found.", "Check the quest name in the action configuration."));
-        }
         priority = cfg.getInt("priority", 1);
     }
 }

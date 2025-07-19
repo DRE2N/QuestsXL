@@ -52,6 +52,9 @@ public class DelayAction extends QBaseAction {
     public void load(QConfig cfg) {
         super.load(cfg);
         actions =  cfg.getActions(this, "actions");
+        for (QAction action : actions) {
+            action.setParent(this);
+        }
         delay = cfg.getLong("duration");
         if (actions.isEmpty()) {
             throw new RuntimeException("Action list is empty.");

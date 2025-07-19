@@ -90,6 +90,9 @@ public class RunAsAction extends QBaseAction {
         runValue = cfg.getInt("value", 0);
         try {
             actions = cfg.getActions(this, "actions");
+            for (QAction action : actions) {
+                action.setParent(this);
+            }
             if (actions.isEmpty()) {
                 throw new RuntimeException("Action list is empty.");
             }

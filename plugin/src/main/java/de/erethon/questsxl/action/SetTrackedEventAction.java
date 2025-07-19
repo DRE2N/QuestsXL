@@ -21,8 +21,8 @@ import de.erethon.questsxl.player.QPlayer;
 )
 public class SetTrackedEventAction extends QBaseAction {
 
-    @QParamDoc(name = "event", description = "ID of the event to set as the tracked event.", required = true)
-    private QEvent event;
+    @QParamDoc(name = "event", description = "ID of the event to set as the tracked event.")
+    private QEvent event = null;
     @QParamDoc(name = "priority", description = "Priority. Higher values equal a higher priority", def = "1")
     private int priority = 0;
 
@@ -30,6 +30,9 @@ public class SetTrackedEventAction extends QBaseAction {
     @Override
     public void play(Quester quester) {
         if (!conditions(quester)) return;
+        if (event == null && findTopParent() instanceof QEvent e) {
+            this.event = e;
+        }
         execute(quester, (QPlayer player) -> player.setTrackedEvent(event, priority));
         onFinish(quester);
     }
@@ -38,9 +41,6 @@ public class SetTrackedEventAction extends QBaseAction {
     public void load(QConfig cfg) {
         super.load(cfg);
         event = cfg.getQEvent("event");
-        if (event == null) {
-            QuestsXL.getInstance().addRuntimeError(new FriendlyError(cfg.getName(), "Event not found", "The event specified in the action could not be found.", "Check the event name in the action configuration."));
-        }
         priority = cfg.getInt("priority", 1);
     }
 }

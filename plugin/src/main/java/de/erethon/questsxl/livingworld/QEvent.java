@@ -37,6 +37,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
     private final File file;
     private final YamlConfiguration cfg;
     private boolean isValid;
+    private QComponent parent;
 
     private final String id;
     private final List<QStage> stages = new ArrayList<>();
@@ -306,6 +307,16 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
     }
 
     @Override
+    public QComponent getParent() {
+        return null;
+    }
+
+    @Override
+    public void setParent(QComponent parent) {
+        // We are the top-level component, so we don't need to set a parent.
+    }
+
+    @Override
     public void load() {
         ConfigurationSection locationSection = cfg.getConfigurationSection("startLocation");
         cooldown = cfg.getInt("cooldown", 0);
@@ -322,14 +333,23 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
         centerLocation = new Location(world, x, y, z);
         if (cfg.contains("startConditions")) {
             startConditions.addAll((Collection<? extends QCondition>) QConfigLoader.load(this, "startConditions", cfg, QRegistries.CONDITIONS));
+            for (QCondition condition : startConditions) {
+                condition.setParent(this);
+            }
         }
 
         if (cfg.contains("onUpdate")) {
             updateActions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onUpdate", cfg, QRegistries.ACTIONS));
+            for (QAction action : updateActions) {
+                action.setParent(this);
+            }
         }
 
         if (cfg.contains("onStart")) {
             startActions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onStart", cfg, QRegistries.ACTIONS));
+            for (QAction action : startActions) {
+                action.setParent(this);
+            }
         }
 
         if (cfg.contains("rewards")) {
@@ -345,6 +365,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
                 for (QComponent loadable : rewardSet) {
                     if (loadable instanceof QAction action) {
                         actionSet.add(action);
+                        action.setParent(this);
                     }
                 }
                 rewards.put(id, actionSet);
@@ -364,6 +385,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
             }
             int id = Integer.parseInt(key);
             QStage stage = new QStage(this, id);
+            stage.setParent(this);
             try {
                 stage.load(this, stageS);
             } catch (Exception e) {
@@ -378,7 +400,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
         if (currentStageID != 0) {
             currentStage = stages.stream().filter(s -> s.getId() == currentStageID).findFirst().orElse(null);
         }
-        timeLastCompleted = cfg.getInt("state.timeLastCompleted", 0);
+        timeLastCompleted = cfg.getLong("state.timeLastCompleted", 0);
 
         isValid = true;
         MessageUtil.log("Loaded event " + id + " with " + stages.size() + " stages at " + centerLocation.getWorld().getName() + " / " + centerLocation.getX() + " / " + centerLocation.getY() + " / " + centerLocation.getZ());
