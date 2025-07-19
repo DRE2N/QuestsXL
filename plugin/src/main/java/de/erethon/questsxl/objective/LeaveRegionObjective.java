@@ -19,17 +19,16 @@ import org.bukkit.event.Event;
                 "  region: 'region_id'"
         }
 )
-public class LeaveRegionObjective extends QBaseObjective {
+public class LeaveRegionObjective extends QBaseObjective<QRegionLeaveEvent> {
 
     @QParamDoc(name = "region", description = "The ID of the region that the player must leave.", required = true)
     private QRegion region;
 
     @Override
-    public void check(ActiveObjective active, Event e) {
-        if (!(e instanceof QRegionLeaveEvent event)) return;
-        if (!conditions(event.getPlayer())) return;
-        if (event.getRegion() == region) {
-            checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(event.getPlayer()));
+    public void check(ActiveObjective active, QRegionLeaveEvent e) {
+        if (!conditions(e.getPlayer())) return;
+        if (e.getRegion() == region) {
+            checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(e.getPlayer()));
         }
     }
 
@@ -37,5 +36,10 @@ public class LeaveRegionObjective extends QBaseObjective {
     public void load(QConfig cfg) {
         super.load(cfg);
         region = QuestsXL.getInstance().getRegionManager().getByID(cfg.getString("region"));
+    }
+
+    @Override
+    public Class<QRegionLeaveEvent> getEventType() {
+        return QRegionLeaveEvent.class;
     }
 }

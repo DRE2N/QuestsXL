@@ -26,6 +26,7 @@ import de.erethon.questsxl.listener.PlayerListener;
 import de.erethon.questsxl.listener.PluginListener;
 import de.erethon.questsxl.livingworld.Exploration;
 import de.erethon.questsxl.livingworld.QEventManager;
+import de.erethon.questsxl.objective.event.ObjectiveEventManager;
 import de.erethon.questsxl.player.QPlayerCache;
 import de.erethon.questsxl.quest.QuestManager;
 import de.erethon.questsxl.region.QRegionManager;
@@ -84,6 +85,7 @@ public final class QuestsXL extends EPlugin {
     private GlobalObjectives globalObjectives;
     private PlayerListener playerListener;
     private Exploration exploration;
+    private ObjectiveEventManager objectiveEventManager;
 
     private final Map<String, Integer> scores = new HashMap<>();
     private final List<FriendlyError> errors = new ArrayList<>();
@@ -197,6 +199,7 @@ public final class QuestsXL extends EPlugin {
         questManager = new QuestManager(); // Load after sync
         eventManager = new QEventManager();
         dialogueManager = new QDialogueManager(DIALOGUES);
+        objectiveEventManager = new ObjectiveEventManager(this);
         try {
             MessageUtil.log("Loading global objectives...");
             globalObjectives = new GlobalObjectives(GLOBAL_OBJ);
@@ -313,6 +316,10 @@ public final class QuestsXL extends EPlugin {
 
     public Exploration getExploration() {
         return exploration;
+    }
+
+    public ObjectiveEventManager getObjectiveEventManager() {
+        return objectiveEventManager;
     }
 
     public void reload() {

@@ -17,7 +17,7 @@ import org.bukkit.event.Event;
                 "  exactMatch: true"
         }
 )
-public class ChatObjective extends QBaseObjective {
+public class ChatObjective extends QBaseObjective<AsyncChatEvent> {
 
     @QParamDoc(description = "The message that the player has to send.")
     private String message;
@@ -25,8 +25,7 @@ public class ChatObjective extends QBaseObjective {
     private boolean exactMatch = false;
 
     @Override
-    public void check(ActiveObjective active, Event event) {
-        if (!(event instanceof AsyncChatEvent e)) return;
+    public void check(ActiveObjective active, AsyncChatEvent e) {
         if (!conditions(e.getPlayer())) return;
         if (message != null && exactMatch && !PlainTextComponentSerializer.plainText().serialize(e.message()).equals(message)) return;
         if (message != null && !exactMatch && !PlainTextComponentSerializer.plainText().serialize(e.message()).contains(message)) return;
@@ -39,5 +38,10 @@ public class ChatObjective extends QBaseObjective {
         super.load(cfg);
         message = cfg.getString("message");
         exactMatch = cfg.getBoolean("exactMatch", false);
+    }
+
+    @Override
+    public Class<AsyncChatEvent> getEventType() {
+        return AsyncChatEvent.class;
     }
 }

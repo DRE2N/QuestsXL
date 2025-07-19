@@ -12,16 +12,18 @@ import org.bukkit.event.entity.PlayerDeathEvent;
                 "death:",
         }
 )
-public class DeathObjective extends QBaseObjective {
+public class DeathObjective extends QBaseObjective<PlayerDeathEvent> {
 
     @Override
-    public void check(ActiveObjective active, Event event) {
-        if (event instanceof PlayerDeathEvent e) {
-            if (conditions(e.getEntity())) {
-                if (shouldCancelEvent) e.setCancelled(true);
-                checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(e.getEntity()));
-            }
+    public void check(ActiveObjective active, PlayerDeathEvent e) {
+        if (conditions(e.getEntity())) {
+            if (shouldCancelEvent) e.setCancelled(true);
+            checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(e.getEntity()));
         }
     }
 
+    @Override
+    public Class<PlayerDeathEvent> getEventType() {
+        return PlayerDeathEvent.class;
+    }
 }

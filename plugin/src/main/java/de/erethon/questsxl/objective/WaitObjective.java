@@ -67,4 +67,9 @@ public class WaitObjective extends QBaseObjective {
             throw new RuntimeException("The wait objective in " + cfg.getName() + " contains a negative range.");
         }
     }
+
+    @Override
+    public Class<?> getEventType() {
+        return null;
+    }
 }

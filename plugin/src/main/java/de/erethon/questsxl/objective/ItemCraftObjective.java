@@ -6,7 +6,6 @@ import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.inventory.CraftItemEvent;
 
 @QLoadableDoc(
@@ -18,25 +17,29 @@ import org.bukkit.event.inventory.CraftItemEvent;
                 "  item: 'erethon:fancy_sword' # Needs to be quoted due to the colon."
         }
 )
-public class ItemCraftObjective extends QBaseObjective {
+public class ItemCraftObjective extends QBaseObjective<CraftItemEvent> {
 
     @QParamDoc(name = "item", description = "The key of the item that needs to be crafted. Hephaestus. Same as in /give")
     private NamespacedKey id;
 
     @Override
-    public void check(ActiveObjective active, Event e) {
-        if (e instanceof CraftItemEvent event && id != null) { // default crafting
-            Player player = (Player) event.getWhoClicked();
-            HItemStack item = plugin.getItemLibrary().get(event.getRecipe().getResult());
-            if (conditions(player) && item.getItem().getKey().equals(id)) {
-                checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(player));
-            }
+    public void check(ActiveObjective active, CraftItemEvent e) {
+        Player player = (Player) e.getWhoClicked();
+        HItemStack item = plugin.getItemLibrary().get(e.getRecipe().getResult());
+        if (conditions(player) && item.getItem().getKey().equals(id)) {
+            checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(player));
         }
+
     }
 
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
         id = NamespacedKey.fromString(cfg.getString("item"));
+    }
+
+    @Override
+    public Class<CraftItemEvent> getEventType() {
+        return CraftItemEvent.class;
     }
 }

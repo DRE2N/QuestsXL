@@ -12,12 +12,16 @@ import org.bukkit.event.Event;
                 "jump:",
         }
 )
-public class JumpObjective extends QBaseObjective {
+public class JumpObjective extends QBaseObjective<PlayerJumpEvent> {
 
     @Override
-    public void check(ActiveObjective active, Event event) {
-        if (!(event instanceof PlayerJumpEvent e)) return;
+    public void check(ActiveObjective active, PlayerJumpEvent e) {
         if (!conditions(e.getPlayer())) return;
         checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(e.getPlayer()));
+    }
+
+    @Override
+    public Class<PlayerJumpEvent> getEventType() {
+        return PlayerJumpEvent.class;
     }
 }

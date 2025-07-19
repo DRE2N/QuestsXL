@@ -11,6 +11,7 @@ import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -21,7 +22,7 @@ enum ActionScope {
     EVENT
 }
 
-public abstract class QBaseObjective implements QObjective {
+public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
 
     protected final QuestsXL plugin = QuestsXL.getInstance();
     private String displayText;
@@ -34,7 +35,7 @@ public abstract class QBaseObjective implements QObjective {
     private ActionScope progressScope = ActionScope.PLAYER;
     private ActionScope conditionFailScope = ActionScope.PLAYER;
     private ActionScope failScope = ActionScope.PLAYER;
-    private boolean failed = false;
+    private final boolean failed = false;
     private boolean optional = false;
     private boolean persistent = false;
     private boolean isGlobal = false;
@@ -90,7 +91,7 @@ public abstract class QBaseObjective implements QObjective {
      * @param objective the QObjective to check
      * @param instigator the ObjectiveHolder that instigated the completion, e.g., the player that completed the objective
      */
-    protected void checkCompletion(ActiveObjective active, QObjective objective, ObjectiveHolder instigator) {
+    protected void checkCompletion(ActiveObjective active, QObjective<T> objective, ObjectiveHolder instigator) {
         active.addProgress(1);
         progress(active.getHolder(), instigator);
         MessageUtil.log("Progress: " + active.getProgress() + " Goal: " + progressGoal);
@@ -106,11 +107,11 @@ public abstract class QBaseObjective implements QObjective {
      * @param holder the holder that completed the objective
      * @param obj the objective that was completed.
      */
-    protected void complete(ObjectiveHolder holder, QObjective obj, ObjectiveHolder instigator) {
+    protected void complete(ObjectiveHolder holder, QObjective<T> obj, ObjectiveHolder instigator) {
         MessageUtil.log("Checking for completion for " + holder.getName());
-        Iterator<ActiveObjective> iterator = holder.getCurrentObjectives().iterator();
-        while (iterator.hasNext()) {
-            ActiveObjective activeObjective = iterator.next();
+        Set<ActiveObjective> activeObjectives = holder.getCurrentObjectives();
+        Set<ActiveObjective> toRemove = new HashSet<>();
+        for (ActiveObjective activeObjective : activeObjectives) {
             MessageUtil.log("Active: Objective: " + activeObjective.getObjective().getClass().getName() + " Holder: " + activeObjective.getHolder().getName() + " | Objective: " + obj.getClass().getName() + " Holder: " + holder.getName());
             if (activeObjective.getObjective() == obj && activeObjective.getHolder() == holder) {
                 activeObjective.setCompleted(true);
@@ -119,9 +120,13 @@ public abstract class QBaseObjective implements QObjective {
                     activeObjective.getStage().checkCompleted(holder);
                 }
                 if (!persistent) {
-                    iterator.remove();
+                    toRemove.add(activeObjective);
                 }
             }
+        }
+        for (ActiveObjective activeObjective : toRemove) {
+            activeObjectives.remove(activeObjective);
+            plugin.getObjectiveEventManager().unregister(activeObjective);
         }
         if (completeScope == ActionScope.PLAYER) {
             runActions(completeActions, instigator);
@@ -154,7 +159,7 @@ public abstract class QBaseObjective implements QObjective {
      * @param holder the ObjectiveHolder to run the actions for
      * @param obj the QObjective that failed
      */
-    public void fail(ObjectiveHolder holder, QObjective obj, ObjectiveHolder instigator) {
+    public void fail(ObjectiveHolder holder, QObjective<T> obj, ObjectiveHolder instigator) {
         for (ActiveObjective objective : holder.getCurrentObjectives()) {
             if (objective.getObjective().equals(obj) && objective.getHolder().equals(holder)) {
                 if (!persistent) {

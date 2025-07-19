@@ -22,6 +22,7 @@ public interface ObjectiveHolder {
     void progress(@NotNull Completable completable);
     Location getLocation();
     String getName();
+    String getUniqueId();
     default void loadProgress(FileConfiguration cfg) {
         ConfigurationSection section = cfg.getConfigurationSection("objectives");
         if (section != null) {

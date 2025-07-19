@@ -19,7 +19,7 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
                 "  item: 'minecraft:apple' # Needs to be quoted due to the colon."
         }
 )
-public class ConsumeItemObjective extends QBaseObjective {
+public class ConsumeItemObjective extends QBaseObjective<PlayerItemConsumeEvent> {
 
     private final HItemLibrary itemLibrary = QuestsXL.getInstance().getItemLibrary();
 
@@ -27,8 +27,7 @@ public class ConsumeItemObjective extends QBaseObjective {
     private NamespacedKey itemID;
 
     @Override
-    public void check(ActiveObjective active, Event event) {
-        if (!(event instanceof PlayerItemConsumeEvent e)) return;
+    public void check(ActiveObjective active, PlayerItemConsumeEvent e) {
         HItem item = itemLibrary.get(e.getItem()).getItem();
         if (item == null) return;
         if (item.getKey().equals(itemID)) {
@@ -42,6 +41,10 @@ public class ConsumeItemObjective extends QBaseObjective {
     public void load(QConfig cfg) {
         super.load(cfg);
         itemID = NamespacedKey.fromString(cfg.getString("item"));
+    }
 
+    @Override
+    public Class<PlayerItemConsumeEvent> getEventType() {
+        return PlayerItemConsumeEvent.class;
     }
 }

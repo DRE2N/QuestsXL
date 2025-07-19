@@ -12,12 +12,16 @@ import org.bukkit.event.player.PlayerJoinEvent;
                 "login:",
         }
 )
-public class LoginObjective extends QBaseObjective {
+public class LoginObjective extends QBaseObjective<PlayerJoinEvent> {
 
     @Override
-    public void check(ActiveObjective active, Event event) {
-        if (!(event instanceof PlayerJoinEvent e)) return;
-        if (!conditions(e.getPlayer())) return;
-        checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(e.getPlayer()));
+    public Class<PlayerJoinEvent> getEventType() {
+        return PlayerJoinEvent.class;
+    }
+
+    @Override
+    public void check(ActiveObjective active, PlayerJoinEvent event) {
+        if (!conditions(event.getPlayer())) return;
+        checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(event.getPlayer()));
     }
 }

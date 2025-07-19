@@ -20,14 +20,13 @@ import java.util.Locale;
                 "  entity_type: cow"
         }
 )
-public class BreedObjective extends QBaseObjective {
+public class BreedObjective extends QBaseObjective<EntityBreedEvent> {
 
     @QParamDoc(description = "The entity type that has to be bred", required = true)
     private EntityType entityType;
 
     @Override
-    public void check(ActiveObjective active, Event event) {
-        if (!(event instanceof EntityBreedEvent e)) return;
+    public void check(ActiveObjective active, EntityBreedEvent e) {
         if (!(e.getBreeder() instanceof Player player)) return;
         if (entityType != null && e.getMother().getType() != entityType) return;
         if (!conditions(player)) return;
@@ -42,5 +41,10 @@ public class BreedObjective extends QBaseObjective {
         if (entityType == null) {
             plugin.addRuntimeError(new FriendlyError(cfg.getName(), "Invalid entity type: " + cfg.getString("entity"), "Null entity type", "Make sure the entity type is spelled correctly."));
         }
+    }
+
+    @Override
+    public Class<EntityBreedEvent> getEventType() {
+        return EntityBreedEvent.class;
     }
 }

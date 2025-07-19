@@ -22,41 +22,41 @@ import java.util.Arrays;
                 "  z: ~0"
         }
 )
-public class LocationObjective extends AbstractLocationBasedObjective {
+public class LocationObjective extends QBaseObjective<PlayerMoveEvent> {
 
     @QParamDoc(name = "location", description = "The location that the player must reach. QLocation", required = true)
-    private QLocation loc; // Is in parent class, we only need this for the documentation
+    private QLocation loc;
     @QParamDoc(name = "range", description = "How close the player has to get to the location", def = "1")
-    private int range; // Is in parent class, we only need this for the documentation
+    private int range;
 
     public QLocation getLocation() {
-        return location;
-    }
-
-    public int getDistance() {
-        return distance;
+        return loc;
     }
 
     @Override
-    public void check(ActiveObjective active, Event e) {
-        if (!(e instanceof PlayerMoveEvent event)) return;
-        if (!conditions(event.getPlayer())) return;
-        if (location == null || !location.sameWorld(event.getTo())) {
+    public void check(ActiveObjective active, PlayerMoveEvent e) {
+        if (!conditions(e.getPlayer())) return;
+        if (loc == null || !loc.sameWorld(e.getTo())) {
             return;
         }
-        if (event.getTo().distance(location.get(event.getTo())) <= distance) {
-            if (shouldCancelEvent) event.setCancelled(true);
-            checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(event.getPlayer()));
+        if (e.getTo().distance(loc.get(e.getTo())) <= range) {
+            if (shouldCancelEvent) e.setCancelled(true);
+            checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(e.getPlayer()));
         }
     }
 
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        location = cfg.getQLocation("location");
-        distance = cfg.getInt("range", 1);
-        if (distance <= 0) {
+        loc = cfg.getQLocation("location");
+        range = cfg.getInt("range", 1);
+        if (range <= 0) {
             throw new RuntimeException("The location objective in " + cfg.getName() + " contains a negative range.");
         }
+    }
+
+    @Override
+    public Class<PlayerMoveEvent> getEventType() {
+        return PlayerMoveEvent.class;
     }
 }

@@ -7,26 +7,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-public class KillPlayerObjective extends QBaseObjective {
-    String player;
+public class KillPlayerObjective extends QBaseObjective<PlayerDeathEvent> {
 
     @Override
-    public void check(ActiveObjective active, Event e) {
-        if (!(e instanceof PlayerDeathEvent event)) {
-            return;
-        }
-        Player killer = event.getEntity().getKiller();
-        if (killer == null || !killer.getName().equalsIgnoreCase(player) || !conditions(killer)) {
+    public void check(ActiveObjective active, PlayerDeathEvent e) {
+        Player killer = e.getEntity().getKiller();
+        if (killer == null|| !conditions(killer)) {
             return;
         }
 
-        checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(event.getPlayer()));
+        checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(e.getPlayer()));
 
     }
 
     @Override
-    public void load(QConfig cfg) {
-        super.load(cfg);
-        player = cfg.getString("player");
+    public Class<PlayerDeathEvent> getEventType() {
+        return PlayerDeathEvent.class;
     }
 }

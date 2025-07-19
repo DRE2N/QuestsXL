@@ -17,4 +17,9 @@ public class ImpossibleObjective extends QBaseObjective {
     public void check(ActiveObjective active, Event event) {
 
     }
+
+    @Override
+    public Class<?> getEventType() {
+        return null;
+    }
 }

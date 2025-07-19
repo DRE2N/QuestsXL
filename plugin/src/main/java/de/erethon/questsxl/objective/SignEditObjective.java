@@ -12,13 +12,17 @@ import org.bukkit.event.Event;
                 "sign_edit:",
         }
 )
-public class SignEditObjective extends QBaseObjective {
+public class SignEditObjective extends QBaseObjective<PlayerOpenSignEvent> {
 
     @Override
-    public void check(ActiveObjective active, Event event) {
-        if (!(event instanceof PlayerOpenSignEvent e)) return;
+    public void check(ActiveObjective active, PlayerOpenSignEvent e) {
         if (!conditions(e.getPlayer())) return;
         if (shouldCancelEvent) e.setCancelled(true);
         checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(e.getPlayer()));
+    }
+
+    @Override
+    public Class<PlayerOpenSignEvent> getEventType() {
+        return PlayerOpenSignEvent.class;
     }
 }

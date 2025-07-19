@@ -12,13 +12,17 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
                 "sneak:",
         }
 )
-public class SneakObjective extends QBaseObjective {
+public class SneakObjective extends QBaseObjective<PlayerToggleSneakEvent> {
 
     @Override
-    public void check(ActiveObjective active, Event event) {
-        if (!(event instanceof PlayerToggleSneakEvent e)) return;
+    public void check(ActiveObjective active, PlayerToggleSneakEvent e) {
         if (!conditions(e.getPlayer())) return;
         if (!e.isSneaking()) return;
         checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(e.getPlayer()));
+    }
+
+    @Override
+    public Class<PlayerToggleSneakEvent> getEventType() {
+        return PlayerToggleSneakEvent.class;
     }
 }

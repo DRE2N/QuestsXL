@@ -56,6 +56,7 @@ import java.util.regex.Pattern;
 public class QPlayer extends StorageDataContainer implements LoadableUser, ObjectiveHolder, Scorable, Quester {
 
     public static final int CONFIG_VERSION = 1;
+    private final QuestsXL plugin = QuestsXL.getInstance();
 
     UUID uuid;
     Player player;
@@ -98,7 +99,9 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
         GlobalObjectives globalObjectives = QuestsXL.getInstance().getGlobalObjectives();
         if (globalObjectives != null) {
             for (QObjective objective : globalObjectives.getObjectives()) {
-                currentObjectives.add(new ActiveObjective(this, globalObjectives, globalObjectives.getStages().getFirst(), objective));
+                ActiveObjective activeObjective = new ActiveObjective(this, globalObjectives, globalObjectives.getStages().getFirst(), objective);
+                currentObjectives.add(activeObjective);
+                plugin.getObjectiveEventManager().register(activeObjective);
             }
         }
         defaultLoadProcess();
@@ -130,6 +133,11 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
     @Override
     public String getName() {
         return player.getName();
+    }
+
+    @Override
+    public String getUniqueId() {
+        return player.getUniqueId().toString();
     }
 
     public void progressQuest(@NotNull QQuest quest) {
@@ -234,11 +242,15 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
 
     @Override
     public void clearObjectives() {
+        for (ActiveObjective objective : currentObjectives) {
+            plugin.getObjectiveEventManager().unregister(objective);
+        }
         currentObjectives.clear();
     }
 
     @Override
     public void removeObjective(@NotNull ActiveObjective objective) {
+        plugin.getObjectiveEventManager().unregister(objective);
         currentObjectives.remove(objective);
     }
 

@@ -11,23 +11,23 @@ import de.erethon.questsxl.quest.QQuest;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Event;
 
+import java.util.Objects;
+
 public class ActiveObjective {
 
     private final ObjectiveHolder holder;
-    private final QObjective objective;
+    private final QObjective<?> objective;
     private final QStage stage;
+    private final Completable completable;
     private boolean completed = false;
     private int progress = 0;
 
-    public ActiveObjective(ObjectiveHolder holder, Completable completable, QStage stage, QObjective objective) {
+    public ActiveObjective(ObjectiveHolder holder, Completable completable, QStage stage, QObjective<?> objective) {
         this.holder = holder;
         this.objective = objective;
         this.stage = stage;
+        this.completable = completable;
         objective.onStart(holder);
-    }
-
-    public void check(Event event) {
-        objective.check(this, event);
     }
 
     public void setCompleted(boolean completed) {
@@ -42,7 +42,7 @@ public class ActiveObjective {
         return objective.getDisplayText();
     }
 
-    public QObjective getObjective() {
+    public QObjective<?> getObjective() {
         return objective;
     }
 
@@ -52,6 +52,10 @@ public class ActiveObjective {
 
     public QStage getStage() {
         return stage;
+    }
+
+    public Completable getCompletable() {
+        return completable;
     }
 
     public void addProgress(int progress) {
@@ -114,6 +118,19 @@ public class ActiveObjective {
         activeObjective.setCompleted(completed);
         activeObjective.setProgress(progress);
         return activeObjective;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ActiveObjective that = (ActiveObjective) o;
+        return getHolder().getUniqueId().equals(that.getHolder().getUniqueId()) && objective.equals(that.objective);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getHolder().getUniqueId(), objective);
     }
 
 }

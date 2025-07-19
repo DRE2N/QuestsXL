@@ -21,7 +21,7 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
                 "  cancel: true"
         }
 )
-public class ItemPickupObjective extends QBaseObjective {
+public class ItemPickupObjective extends QBaseObjective<EntityPickupItemEvent> {
 
     private final HItemLibrary itemLibrary = QuestsXL.getInstance().getItemLibrary();
 
@@ -29,8 +29,7 @@ public class ItemPickupObjective extends QBaseObjective {
     private NamespacedKey itemID;
 
     @Override
-    public void check(ActiveObjective active, Event event) {
-        if (!(event instanceof EntityPickupItemEvent e)) return;
+    public void check(ActiveObjective active, EntityPickupItemEvent e) {
         if (!(e.getEntity() instanceof Player)) return;
         HItem item = itemLibrary.get(e.getItem().getItemStack()).getItem();
         if (item == null) return;
@@ -44,5 +43,10 @@ public class ItemPickupObjective extends QBaseObjective {
     public void load(QConfig cfg) {
         super.load(cfg);
         itemID = NamespacedKey.fromString(cfg.getString("item"));
+    }
+
+    @Override
+    public Class<EntityPickupItemEvent> getEventType() {
+        return EntityPickupItemEvent.class;
     }
 }

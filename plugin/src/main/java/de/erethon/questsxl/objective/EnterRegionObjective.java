@@ -20,19 +20,18 @@ import org.bukkit.event.Event;
                 "  region: region_id"
         }
 )
-public class EnterRegionObjective extends QBaseObjective {
+public class EnterRegionObjective extends QBaseObjective<QRegionEnterEvent> {
 
     @QParamDoc(name = "region", description = "The ID of the region that the player must enter.", required = true)
     private QRegion region;
 
     @Override
-    public void check(ActiveObjective active, Event e) {
-        if (!(e instanceof QRegionEnterEvent event)) return;
-        if (!conditions(event.getPlayer())) {
+    public void check(ActiveObjective active, QRegionEnterEvent e) {
+        if (!conditions(e.getPlayer())) {
             return;
         }
-        if (event.getRegion() == region) {
-            checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(event.getPlayer()));
+        if (e.getRegion() == region) {
+            checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(e.getPlayer()));
         }
     }
 
@@ -40,5 +39,10 @@ public class EnterRegionObjective extends QBaseObjective {
     public void load(QConfig cfg) {
         super.load(cfg);
         region = QuestsXL.getInstance().getRegionManager().getByID(cfg.getString("region"));
+    }
+
+    @Override
+    public Class<QRegionEnterEvent> getEventType() {
+        return QRegionEnterEvent.class;
     }
 }

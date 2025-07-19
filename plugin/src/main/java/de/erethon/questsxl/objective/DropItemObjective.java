@@ -20,15 +20,14 @@ import org.bukkit.event.entity.EntityDropItemEvent;
                 "  item: 'erethon:fancy_sword' # Needs to be quoted due to the colon.",
         }
 )
-public class DropItemObjective extends QBaseObjective {
+public class DropItemObjective extends QBaseObjective<EntityDropItemEvent> {
     private final HItemLibrary itemLibrary = QuestsXL.getInstance().getItemLibrary();
 
     @QParamDoc(name = "item", description = "The key of the item that needs to be dropped. Same as in /give", required = true)
     private NamespacedKey itemID;
 
     @Override
-    public void check(ActiveObjective active, Event event) {
-        if (!(event instanceof EntityDropItemEvent e)) return;
+    public void check(ActiveObjective active, EntityDropItemEvent e) {
         if (!(e.getEntity() instanceof Player player)) return;
         HItem item = itemLibrary.get(e.getItemDrop().getItemStack()).getItem();
         if (item == null) return;
@@ -43,5 +42,10 @@ public class DropItemObjective extends QBaseObjective {
     public void load(QConfig cfg) {
         super.load(cfg);
         itemID = NamespacedKey.fromString(cfg.getString("item"));
+    }
+
+    @Override
+    public Class<EntityDropItemEvent> getEventType() {
+        return EntityDropItemEvent.class;
     }
 }

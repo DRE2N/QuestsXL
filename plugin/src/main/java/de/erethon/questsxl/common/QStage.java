@@ -18,6 +18,8 @@ import java.util.Set;
 
 public class QStage implements QComponent {
 
+    private final QuestsXL plugin = QuestsXL.getInstance();
+
     private final Completable owner;
     private final Set<QObjective> goals = new HashSet<>();
     private final Set<QCondition> conditions = new HashSet<>();
@@ -48,7 +50,9 @@ public class QStage implements QComponent {
         MessageUtil.log("Starting stage " + id);
         for (QObjective objective : goals) {
             MessageUtil.log("Added objective " + objective.getClass().getName());
-            holder.addObjective(new ActiveObjective(holder, getQuest(), this, objective));
+            ActiveObjective activeObjective = new ActiveObjective(holder, getQuest(), this, objective);
+            holder.addObjective(activeObjective);
+            plugin.getObjectiveEventManager().register(activeObjective);
         }
         try {
             if (holder instanceof QPlayer player) {

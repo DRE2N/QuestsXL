@@ -17,17 +17,16 @@ import org.bukkit.event.Event;
                 "  identifier: q trigger 3333"
         }
 )
-public class ServerCommandObjective extends QBaseObjective {
+public class ServerCommandObjective extends QBaseObjective<CommandTriggerEvent> {
 
     @QParamDoc(name = "identifier", description = "The command that has to be executed", required = true)
     String identifier;
 
     @Override
-    public void check(ActiveObjective objective, Event e) {
-        if (!(e instanceof CommandTriggerEvent event)) return;
-        if (!conditions(event.getPlayer())) return;
-        if (identifier.equals(event.getID())) {
-            checkCompletion(objective, this, plugin.getPlayerCache().getByPlayer(event.getPlayer()));
+    public void check(ActiveObjective objective, CommandTriggerEvent e) {
+        if (!conditions(e.getPlayer())) return;
+        if (identifier.equals(e.getID())) {
+            checkCompletion(objective, this, plugin.getPlayerCache().getByPlayer(e.getPlayer()));
         }
 
     }
@@ -36,5 +35,10 @@ public class ServerCommandObjective extends QBaseObjective {
     public void load(QConfig cfg) {
         super.load(cfg);
         identifier = cfg.getString("identifier");
+    }
+
+    @Override
+    public Class<CommandTriggerEvent> getEventType() {
+        return CommandTriggerEvent.class;
     }
 }

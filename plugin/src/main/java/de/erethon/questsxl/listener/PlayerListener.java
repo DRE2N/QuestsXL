@@ -61,9 +61,6 @@ public class PlayerListener extends AbstractListener {
             return;
         }
         // Objectives
-        for (ActiveObjective objective : qp.getCurrentObjectives()) {
-            objective.check(event);
-        }
         // Regions
         QRegion regionFrom = regionManager.getByLocation(event.getFrom());
         QRegion regionTo = regionManager.getByLocation(event.getTo());
@@ -78,51 +75,12 @@ public class PlayerListener extends AbstractListener {
     }
 
     @EventHandler
-    public void onInteractEntity(PlayerInteractEntityEvent event) {
-        checkObjectives(event.getPlayer(), event);
-    }
-
-    @EventHandler
     public void onChat(AsyncChatEvent event) {
         QPlayer player = cache.getByPlayer(event.getPlayer());
         if (player.isInConversation()) {
             MessageUtil.sendActionBarMessage(player.getPlayer(), QuestsXL.ERROR + "Du kannst den Chat jetzt nicht nutzen.");
             event.setCancelled(true); // TODO: Aergia seems to ignore this
         }
-    }
-
-    @EventHandler
-    public void onRegionEnter(QRegionEnterEvent event) {
-        checkObjectives(event.getPlayer(), event);
-    }
-    @EventHandler
-    public void onRegionLeave(QRegionLeaveEvent event) {
-        checkObjectives(event.getPlayer(), event);
-    }
-
-    @EventHandler
-    public void onCraft(CraftItemEvent event) {
-        checkObjectives((Player) event.getWhoClicked(), event);
-    }
-
-    @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent event) {
-        if (!Bukkit.getOnlinePlayers().contains(event.getPlayer())) {
-            return;
-        }
-        checkObjectives(event.getPlayer(), event);
-        Player killer = event.getPlayer().getKiller();
-        if (killer != null) {
-            checkObjectives(killer, event);
-        }
-    }
-
-    @EventHandler
-    public void onEntityDeath(EntityDeathEvent event) {
-        if (event.getEntity().getKiller() == null) {
-            return;
-        }
-        checkObjectives(event.getEntity().getKiller(), event);
     }
 
 

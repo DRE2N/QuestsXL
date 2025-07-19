@@ -6,6 +6,7 @@ import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.common.QParamDoc;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 @QLoadableDoc(
         value = "block_interact",
@@ -19,14 +20,13 @@ import org.bukkit.event.player.PlayerInteractEvent;
                 "  world: world"
         }
 )
-public class BlockInteractObjective extends QBaseObjective {
+public class BlockInteractObjective extends QBaseObjective<PlayerInteractEvent> {
 
     @QParamDoc(name = "location", description = "The location of the block that the player must interact with. QLocation", required = true)
     private QLocation location;
 
     @Override
-    public void check(ActiveObjective active, Event event) {
-        if (!(event instanceof PlayerInteractEvent e)) return;
+    public void check(ActiveObjective active, PlayerInteractEvent e) {
         if (!conditions(e.getPlayer())) return;
         if (e.getClickedBlock() == null) return;
         if (location.equals(e.getClickedBlock().getLocation())) {
@@ -39,5 +39,10 @@ public class BlockInteractObjective extends QBaseObjective {
     public void load(QConfig cfg) {
         super.load(cfg);
         location = cfg.getQLocation("location");
+    }
+
+    @Override
+    public Class<PlayerInteractEvent> getEventType() {
+        return PlayerInteractEvent.class;
     }
 }

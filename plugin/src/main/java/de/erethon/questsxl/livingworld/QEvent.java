@@ -32,6 +32,7 @@ import java.util.*;
 public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponent, Quester {
 
     private final QPlayerCache playerCache = QuestsXL.getInstance().getPlayerCache();
+    private final QuestsXL plugin = QuestsXL.getInstance();
 
     private final File file;
     private final YamlConfiguration cfg;
@@ -84,6 +85,11 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
 
     @Override
     public String getName() {
+        return id;
+    }
+
+    @Override
+    public String getUniqueId() {
         return id;
     }
 
@@ -415,12 +421,17 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
 
     @Override
     public void removeObjective(@NotNull ActiveObjective objective) {
+        plugin.getObjectiveEventManager().unregister(objective);
         currentObjectives.remove(objective);
     }
 
     @Override
     public void clearObjectives() {
+        for (ActiveObjective objective : currentObjectives) {
+            plugin.getObjectiveEventManager().unregister(objective);
+        }
         currentObjectives.clear();
+
     }
 
     @Override

@@ -12,13 +12,17 @@ import org.bukkit.event.player.PlayerBedEnterEvent;
                 "sleep:",
         }
 )
-public class SleepObjective extends QBaseObjective {
+public class SleepObjective extends QBaseObjective<PlayerBedEnterEvent> {
 
     @Override
-    public void check(ActiveObjective active, Event event) {
-        if (!(event instanceof PlayerBedEnterEvent e)) return;
+    public void check(ActiveObjective active, PlayerBedEnterEvent e) {
         if (!conditions(e.getPlayer())) return;
         if (shouldCancelEvent) e.setCancelled(true);
         checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(e.getPlayer()));
+    }
+
+    @Override
+    public Class<PlayerBedEnterEvent> getEventType() {
+        return PlayerBedEnterEvent.class;
     }
 }
