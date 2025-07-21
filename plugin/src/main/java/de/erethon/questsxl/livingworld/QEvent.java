@@ -8,6 +8,8 @@ import de.erethon.questsxl.common.QConfigLoader;
 import de.erethon.questsxl.common.QRegistries;
 import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.common.Scorable;
+import de.erethon.questsxl.common.SupportsConditions;
+import de.erethon.questsxl.common.SupportsObjectives;
 import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.objective.ActiveObjective;
@@ -29,17 +31,18 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponent, Quester {
+public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponent, Quester, SupportsObjectives, SupportsConditions {
 
     private final QPlayerCache playerCache = QuestsXL.getInstance().getPlayerCache();
     private final QuestsXL plugin = QuestsXL.getInstance();
 
-    private final File file;
-    private final YamlConfiguration cfg;
+    private File file;
+    private YamlConfiguration cfg;
     private boolean isValid;
     private QComponent parent;
 
     private final String id;
+    private String displayName;
     private final List<QStage> stages = new ArrayList<>();
     private final List<QAction> updateActions = new ArrayList<>();
     private final List<QAction> startActions = new ArrayList<>();
@@ -83,10 +86,19 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
         }
         load();
     }
+    public QEvent(String id) {
+        this.id = id;
+        this.displayName = id;
+        this.cooldown = 0;
+        this.range = 32;
+        this.canActivateRange = 32;
+        this.state = EventState.NOT_STARTED;
+    }
+
 
     @Override
     public String getName() {
-        return id;
+        return displayName;
     }
 
     @Override
@@ -161,7 +173,9 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
                     if (!Bukkit.getOnlinePlayers().contains(player)) {
                         continue;
                     }
-                    playersInRange.add(playerCache.getByPlayer(player));
+                    QPlayer qPlayer = playerCache.getByPlayer(player);
+                    playersInRange.add(qPlayer);
+                    qPlayer.setTrackedEvent(this, 1);
                 }
                 for (QAction action : updateActions) {
                     action.play(this);
@@ -186,6 +200,10 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
                 if (currentTime - timeLastCompleted > cooldown * 1000L) {
                     state = EventState.NOT_STARTED;
                 }
+                for (QPlayer player : playersInRange) {
+                    player.setTrackedEvent(null, 0);
+                }
+                playersInRange.clear();
             }
             case DISABLED -> {
                 // Nothing to see here.
@@ -286,6 +304,32 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
         this.centerLocation = centerLocation;
     }
 
+    public void setDisplayName(String displayName) { this.displayName = displayName; }
+    public void setGiveAllRewards(boolean giveAllRewards) { this.giveAllRewards = giveAllRewards; }
+    public void setCooldown(int cooldown) { this.cooldown = cooldown; }
+    public void setRange(int range) { this.range = range; }
+    public void setCanActivateRange(int canActivateRange) { this.canActivateRange = canActivateRange; }
+
+    public void addStartAction(QAction action) {
+        if (action != null) {
+            startActions.add(action);
+        } else {
+            MessageUtil.log("Tried to add a null action to the start actions of event " + getName());
+        }
+    }
+
+    public void addUpdateAction(QAction action) {
+        if (action != null) {
+            updateActions.add(action);
+        } else {
+            MessageUtil.log("Tried to add a null action to the update actions of event " + getName());
+        }
+    }
+
+    public Map<Integer, Set<QAction>> getRewards() {
+        return rewards;
+    }
+
     public void participate(@NotNull QPlayer player, int amount) {
         eventParticipation.put(player, eventParticipation.getOrDefault(player, 0) + amount);
         MessageUtil.log("Player " + player.getName() + " participated in event " + getName() + " with " + amount + " points. (Total: " + eventParticipation.get(player) + ")");
@@ -317,8 +361,24 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
     }
 
     @Override
+    public void addCondition(QCondition condition) {
+        this.startConditions.add(condition);
+    }
+
+    @Override
+    public void addObjective(QObjective<?> objective) {
+
+    }
+
+    @Override
+    public void removeObjective(QObjective<?> objective) {
+
+    }
+
+    @Override
     public void load() {
         ConfigurationSection locationSection = cfg.getConfigurationSection("startLocation");
+        displayName = cfg.getString("displayName", id);
         cooldown = cfg.getInt("cooldown", 0);
         range = cfg.getInt("range", 32);
         canActivateRange = cfg.getInt("canActivateRange", range);
@@ -333,23 +393,14 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
         centerLocation = new Location(world, x, y, z);
         if (cfg.contains("startConditions")) {
             startConditions.addAll((Collection<? extends QCondition>) QConfigLoader.load(this, "startConditions", cfg, QRegistries.CONDITIONS));
-            for (QCondition condition : startConditions) {
-                condition.setParent(this);
-            }
         }
 
         if (cfg.contains("onUpdate")) {
             updateActions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onUpdate", cfg, QRegistries.ACTIONS));
-            for (QAction action : updateActions) {
-                action.setParent(this);
-            }
         }
 
         if (cfg.contains("onStart")) {
             startActions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onStart", cfg, QRegistries.ACTIONS));
-            for (QAction action : startActions) {
-                action.setParent(this);
-            }
         }
 
         if (cfg.contains("rewards")) {
@@ -365,7 +416,6 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
                 for (QComponent loadable : rewardSet) {
                     if (loadable instanceof QAction action) {
                         actionSet.add(action);
-                        action.setParent(this);
                     }
                 }
                 rewards.put(id, actionSet);
@@ -407,6 +457,9 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
     }
 
     public void save() {
+        if (cfg == null) {
+            return; // Was a EScript, so no config to save.
+        }
         cfg.set("state.state", state.name());
         if (currentStage != null) {
             cfg.set("state.currentStage", currentStage.getId());

@@ -8,6 +8,7 @@ import de.erethon.questsxl.common.QComponent;
 import de.erethon.questsxl.common.QConfigLoader;
 import de.erethon.questsxl.common.QRegistries;
 import de.erethon.questsxl.common.QStage;
+import de.erethon.questsxl.common.SupportsConditions;
 import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.player.QPlayer;
@@ -21,7 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class QQuest implements Completable, QComponent {
+public class QQuest implements Completable, QComponent, SupportsConditions {
 
     YamlConfiguration cfg;
     String name;
@@ -30,7 +31,7 @@ public class QQuest implements Completable, QComponent {
     private final List<QStage> stages = new ArrayList<>();
     private final Set<QCondition> conditions = new HashSet<>();
     private final Set<QAction> startActions = new HashSet<>();
-    private final Set<QAction> rewards = new HashSet<>();
+    private final Set<QAction> finishActions = new HashSet<>();
 
     /** A quest is a collection of stages that are completed in order to progress. Quests can only belong to {@link QPlayer}s.
      * @param file the file that contains the quest data.
@@ -51,9 +52,16 @@ public class QQuest implements Completable, QComponent {
         }
     }
 
+    public QQuest(String name) {
+        this.name = name;
+        this.displayName = name;
+        this.description = "No description set.";
+    }
+
+
     @Override
     public void reward(QPlayer player) {
-        for (QAction action : rewards) {
+        for (QAction action : finishActions) {
             try {
                 action.play(player);
             } catch (Exception e) {
@@ -91,11 +99,6 @@ public class QQuest implements Completable, QComponent {
     }
 
     @Override
-    public List<QStage> getStages() {
-        return stages;
-    }
-
-    @Override
     public String getName() {
         return name;
     }
@@ -127,6 +130,25 @@ public class QQuest implements Completable, QComponent {
         // We are the top-level component, so we don't need to set a parent.
     }
 
+    public void addStage(QStage stage) {
+        if (stage == null) {
+            return;
+        }
+        stages.add(stage);
+    }
+
+    public List<QStage> getStages() { return stages; }
+    public Set<QCondition> getConditions() { return conditions; }
+    public Set<QAction> getStartActions() { return startActions; }
+    public Set<QAction> getFinishActions() { return finishActions; }
+
+    public void setDisplayName(String displayName) { this.displayName = displayName; }
+    public void setDescription(String description) { this.description = description; }
+
+    @Override
+    public void addCondition(QCondition condition) {
+        conditions.add(condition);
+    }
 
     @Override
     public void load() {
@@ -136,23 +158,14 @@ public class QQuest implements Completable, QComponent {
         // Conditions
         if (cfg.contains("conditions")) {
             conditions.addAll((Collection<? extends QCondition>) QConfigLoader.load(this, "conditions", cfg, QRegistries.CONDITIONS));
-            for (QCondition condition : conditions) {
-                condition.setParent(this);
-            }
         }
         // Start actions
         if (cfg.contains("onStart")) {
             startActions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onStart", cfg, QRegistries.ACTIONS));
-            for (QAction action : startActions) {
-                action.setParent(this);
-            }
         }
         // Reward actions
         if (cfg.contains("onFinish")) {
-            rewards.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onFinish", cfg, QRegistries.ACTIONS));
-            for (QAction action : rewards) {
-                action.setParent(this);
-            }
+            finishActions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onFinish", cfg, QRegistries.ACTIONS));
         }
         // Stages
         ConfigurationSection stageSection = cfg.getConfigurationSection("stages");

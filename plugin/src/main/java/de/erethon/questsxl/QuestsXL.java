@@ -7,6 +7,12 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.compatibility.Internals;
 import de.erethon.bedrock.plugin.EPlugin;
 import de.erethon.bedrock.plugin.EPluginSettings;
+import de.erethon.erethonscript.ast.ScriptNode;
+import de.erethon.erethonscript.execution.Executable;
+import de.erethon.erethonscript.execution.ExecutionContext;
+import de.erethon.erethonscript.execution.ScriptCompiler;
+import de.erethon.erethonscript.integration.NativeRegistry;
+import de.erethon.erethonscript.parser.ScriptBuilder;
 import de.erethon.hephaestus.Hephaestus;
 import de.erethon.hephaestus.blocks.HBlockLibrary;
 import de.erethon.hephaestus.items.HItemLibrary;
@@ -18,6 +24,13 @@ import de.erethon.questsxl.common.QRegistries;
 import de.erethon.questsxl.common.QRegistry;
 import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.common.RuntimeDocGenerator;
+import de.erethon.questsxl.common.script.ActionCompiler;
+import de.erethon.questsxl.common.script.ConditionCompiler;
+import de.erethon.questsxl.common.script.EventCompiler;
+import de.erethon.questsxl.common.script.ObjectiveCompiler;
+import de.erethon.questsxl.common.script.QuestCompiler;
+import de.erethon.questsxl.common.script.StageCompiler;
+import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.dialogue.QDialogueManager;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.global.GlobalObjectives;
@@ -26,6 +39,7 @@ import de.erethon.questsxl.listener.PlayerListener;
 import de.erethon.questsxl.listener.PluginListener;
 import de.erethon.questsxl.livingworld.Exploration;
 import de.erethon.questsxl.livingworld.QEventManager;
+import de.erethon.questsxl.objective.QObjective;
 import de.erethon.questsxl.objective.event.ObjectiveEventManager;
 import de.erethon.questsxl.player.QPlayerCache;
 import de.erethon.questsxl.quest.QuestManager;
@@ -44,6 +58,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -235,6 +251,33 @@ public final class QuestsXL extends EPlugin {
             errors.add(new FriendlyError("Docs", "Failed to generate runtime documentation", e.getMessage(), "Schaue im Stacktrace nach dem Fehler.").addStacktrace(e.getStackTrace()));
             MessageUtil.broadcastMessageIf("Errors: " + QuestsXL.getInstance().getErrors().size(), p -> p.hasPermission("qxl.admin.info"));
         }
+        MessageUtil.log("Script test...");
+        NativeRegistry registry = new NativeRegistry();
+        registerScriptComponents(registry);
+        // Test file
+        File testFile = new File(getDataFolder(), "testScript.es");
+        if (!testFile.exists()) {
+            try {
+                testFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            String fileContent = Files.readString(testFile.toPath());
+            // Parse
+            ScriptBuilder scriptBuilder = new ScriptBuilder();
+            ScriptNode parsed = scriptBuilder.build(fileContent);
+            // Compile
+            ScriptCompiler compiler = new ScriptCompiler(registry);
+            Executable compiled = compiler.compile(parsed);
+            // Execute
+            ExecutionContext context = new ExecutionContext();
+            compiled.execute(context);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override
@@ -244,6 +287,22 @@ public final class QuestsXL extends EPlugin {
         animationManager.save();
         eventManager.save();
         HandlerList.unregisterAll((Plugin) this);
+    }
+
+    public void registerScriptComponents(NativeRegistry registry) {
+
+        ActionCompiler actionCompiler = new ActionCompiler(QRegistries.ACTIONS);
+
+        registry.registerComponent("quest", new QuestCompiler(actionCompiler));
+        registry.registerComponent("event", new EventCompiler(actionCompiler));
+
+        registry.registerComponent("objective", new ObjectiveCompiler(QRegistries.OBJECTIVES, actionCompiler));
+        registry.registerComponent("condition", new ConditionCompiler(QRegistries.CONDITIONS));
+        registry.registerComponent("stage", new StageCompiler(actionCompiler));
+
+        registry.registerComponent("action", actionCompiler);
+        registry.registerComponent("completeAction", actionCompiler);
+        registry.registerComponent("failAction", actionCompiler);
     }
 
     public void addAergiaScoreboardIntegration() {

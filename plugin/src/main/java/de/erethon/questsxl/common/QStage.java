@@ -7,6 +7,7 @@ import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.objective.ActiveObjective;
+import de.erethon.questsxl.objective.QBaseObjective;
 import de.erethon.questsxl.objective.QObjective;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.QQuest;
@@ -16,7 +17,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class QStage implements QComponent {
+public class QStage implements QComponent, SupportsObjectives, SupportsActions, SupportsConditions {
 
     private final QuestsXL plugin = QuestsXL.getInstance();
 
@@ -203,6 +204,51 @@ public class QStage implements QComponent {
         this.parent = parent;
     }
 
+
+    @Override
+    public void addSuccessAction(QAction action) {
+
+    }
+
+    @Override
+    public void addProgressAction(QAction action) {
+
+    }
+
+    @Override
+    public void addRunAfterAction(QAction action) {
+
+    }
+
+    @Override
+    public void addConditionFailAction(QAction action) {
+
+    }
+
+    @Override
+    public void addCondition(QCondition condition) {
+        this.conditions.add(condition);
+    }
+
+    @Override
+    public void addCompleteAction(QAction action) {
+        this.completeActions.add(action);
+    }
+
+    @Override
+    public void addFailAction(QAction action) {
+
+    }
+
+    public Set<QAction> getStartActions() {
+        return startActions;
+    }
+
+    public Set<QAction> getCompleteActions() {
+        return completeActions;
+    }
+
+
     public void load(QComponent component, ConfigurationSection section) {
         setParent(component);
         startMessage = section.getString("startMessage", "");
@@ -210,27 +256,25 @@ public class QStage implements QComponent {
         description = section.getString("description", "");
         if (section.contains("conditions")) {
             conditions.addAll((Collection<? extends QCondition>) QConfigLoader.load(this, "conditions", section, QRegistries.CONDITIONS));
-            for (QCondition condition : conditions) {
-                condition.setParent(this);
-            }
         }
         if (section.contains("objectives")) {
             goals.addAll((Collection<? extends QObjective>) QConfigLoader.load(this, "objectives", section, QRegistries.OBJECTIVES));
-            for (QObjective objective : goals) {
-                objective.setParent(this);
-            }
         }
         if (section.contains("onStart")) {
             startActions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onStart", section, QRegistries.ACTIONS));
-            for (QAction action : startActions) {
-                action.setParent(this);
-            }
         }
         if (section.contains("onFinish")) {
             completeActions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onFinish", section, QRegistries.ACTIONS));
-            for (QAction action : completeActions) {
-                action.setParent(this);
-            }
         }
+    }
+
+    @Override
+    public void addObjective(QObjective<?> objective) {
+        goals.add(objective);
+    }
+
+    @Override
+    public void removeObjective(QObjective<?> objective) {
+        goals.remove(objective);
     }
 }

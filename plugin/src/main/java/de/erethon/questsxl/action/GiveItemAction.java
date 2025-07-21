@@ -55,8 +55,8 @@ public class GiveItemAction extends QBaseAction {
     public void load(QConfig cfg) {
         super.load(cfg);
         itemID = cfg.getString("item");
-        amount = cfg.getInt("amount", 1);
-        chance = cfg.getInt("chance", 100);
+        amount = (int) cfg.getDouble("amount", 1);
+        chance = (int) cfg.getDouble("chance", 100);
     }
 
 }

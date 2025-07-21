@@ -39,6 +39,18 @@ public class QLineConfig implements QConfig {
         }
     }
 
+    public QLineConfig(Map<String, Object> map) {
+        input = map.toString();
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            if (entry.getValue() instanceof String) {
+                result.put(entry.getKey(), (String) entry.getValue());
+            } else {
+                result.put(entry.getKey(), entry.getValue().toString());
+            }
+        }
+        parse();
+    }
+
     private void parse() {
         String cleanedInput = input.trim().replaceAll("\\s*=\\s*", "=").replaceAll(";\\s*", ";");// Remove spaces around = and after ;
         String[] pairs = cleanedInput.split(";");
@@ -94,11 +106,11 @@ public class QLineConfig implements QConfig {
     }
 
     public int getInt(String key) {
-        return Integer.parseInt(result.get(key));
+        return (int) Double.parseDouble(result.get(key));
     }
 
     public int getInt(String key, int def) {
-        return Integer.parseInt(result.getOrDefault(key, String.valueOf(def)));
+        return (int) Double.parseDouble(result.getOrDefault(key, String.valueOf(def)));
     }
 
     public double getDouble(String key) {
@@ -110,11 +122,11 @@ public class QLineConfig implements QConfig {
     }
 
     public long getLong(String key) {
-        return Long.parseLong(result.get(key));
+        return (long) Double.parseDouble(result.get(key));
     }
 
     public long getLong(String key, long def) {
-        return Long.parseLong(result.getOrDefault(key, String.valueOf(def)));
+        return (long) Double.parseDouble(result.getOrDefault(key, String.valueOf(def)));
     }
 
     public boolean getBoolean(String key) {

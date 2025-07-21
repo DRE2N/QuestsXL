@@ -3,12 +3,14 @@ package de.erethon.questsxl.objective;
 import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.common.QComponent;
 import de.erethon.questsxl.common.ObjectiveHolder;
+import de.erethon.questsxl.common.SupportsActions;
+import de.erethon.questsxl.common.SupportsConditions;
 import de.erethon.questsxl.condition.QCondition;
 import org.bukkit.event.Event;
 
 import java.util.Set;
 
-public interface QObjective<T extends Event> extends QComponent { // Assuming QComponent is a base interface
+public interface QObjective<T extends Event> extends QComponent, SupportsConditions, SupportsActions {
 
     /**
      * Returns the specific Event class that this objective needs to listen to.
@@ -35,6 +37,7 @@ public interface QObjective<T extends Event> extends QComponent { // Assuming QC
     Set<QAction> getCompleteActions();
     Set<QAction> getFailActions();
     Set<QAction> getConditionFailActions();
+    Set<QAction> getProgressActions();
     Set<QCondition> getConditions();
     int getProgressGoal();
 

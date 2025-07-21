@@ -17,6 +17,7 @@ dependencies {
     compileOnly("de.erethon.aergia:Aergia:1.0.1") { isTransitive = false }
     compileOnly("de.erethon.hephaestus:Hephaestus:1.0-SNAPSHOT")
     implementation("org.eclipse.jgit:org.eclipse.jgit:6.4.0.202211300538-r")
+    implementation("de.erethon:ErethonScript:1.0-SNAPSHOT")
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.3.0") { isTransitive = false }
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.3.0") { isTransitive = false }
     compileOnly("com.github.MilkBowl:VaultAPI:1.7") { isTransitive = false }
@@ -40,8 +41,10 @@ tasks {
         archiveBaseName.set("QuestsXL")
         dependencies {
             include(dependency("org.eclipse.jgit:org.eclipse.jgit:6.4.0.202211300538-r"))
+            include(dependency("de.erethon:ErethonScript:1.0-SNAPSHOT"))
         }
         relocate("org.eclipse.jgit", "de.erethon.questsxl.jgit")
+        relocate("de.erethon.erethonscript", "de.erethon.questsxl.script")
     }
 
     runServer {
