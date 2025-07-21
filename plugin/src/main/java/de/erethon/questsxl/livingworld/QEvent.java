@@ -6,6 +6,7 @@ import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.common.QComponent;
 import de.erethon.questsxl.common.QConfigLoader;
 import de.erethon.questsxl.common.QRegistries;
+import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.common.Scorable;
 import de.erethon.questsxl.condition.QCondition;
@@ -29,7 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponent, Quester {
+public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponent, Quester, Explorable {
 
     private final QPlayerCache playerCache = QuestsXL.getInstance().getPlayerCache();
     private final QuestsXL plugin = QuestsXL.getInstance();
@@ -498,4 +499,18 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
         return cfg;
     }
 
+    @Override
+    public String id() {
+        return id;
+    }
+
+    @Override
+    public QTranslatable displayName() {
+        return QTranslatable.fromString("TODO displayName"); // TODO: Implement translatable for events
+    }
+
+    @Override
+    public Location location() {
+        return getLocation();
+    }
 }

@@ -38,6 +38,14 @@ public class PointOfInterest implements QComponent, Explorable {
     private Map<Integer, List<QAction>> rewardActions = new HashMap<>();
     private Set<QCondition> conditions = new HashSet<>();
 
+    public PointOfInterest(String id, Location location, double radius) {
+        this.id = id;
+        this.location = location;
+        this.displayName = QTranslatable.fromString("<missing translation>");
+        this.flavourText = QTranslatable.fromString("<missing translation>");
+        this.radius = radius;
+    }
+
     /**
      * Attempts to discover the POI for the given player.
      * Checks if the player is close enough to the POI and if all conditions are met.
@@ -76,6 +84,10 @@ public class PointOfInterest implements QComponent, Explorable {
     @Override
     public Location location() {
         return location;
+    }
+
+    public void setSet(ExplorationSet set) {
+        this.set = set;
     }
 
     public static PointOfInterest fromQLineConfig(QLineConfig section) {

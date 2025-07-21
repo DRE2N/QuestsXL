@@ -97,6 +97,27 @@ public class PlayerExplorer {
         return completedExplorables.containsKey(set);
     }
 
+    public boolean hasExplored(Explorable explorable) {
+        for (Set<CompletedExplorable> explorableSet : completedExplorables.values()) {
+            if (explorableSet.stream().anyMatch(e -> e.explorable().equals(explorable))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Set<Explorable> getExploredInSet(ExplorationSet set) {
+        Set<CompletedExplorable> explorableSet = completedExplorables.get(set);
+        if (explorableSet == null) {
+            return new HashSet<>();
+        }
+        Set<Explorable> explored = new HashSet<>();
+        for (CompletedExplorable completed : explorableSet) {
+            explored.add(completed.explorable());
+        }
+        return explored;
+    }
+
     /**
      * Updates the closest set to the player's location.
      * Caution: This method is expensive and should not be called too often.

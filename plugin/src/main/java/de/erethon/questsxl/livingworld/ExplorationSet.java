@@ -11,6 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,13 +24,22 @@ import java.util.Set;
 public final class ExplorationSet {
 
     private final String id;
-    private final ExplorationSet parent;
+    private ExplorationSet parent;
+    private Set<ExplorationSet> children = new HashSet<>();
     private final QTranslatable displayName;
     private final QTranslatable description;
     private final List<Explorable> entries;
     private Location averageLocation;
 
-    private Map<Integer, List<QAction>> rewardActions = new HashMap<>();
+    private final Map<Integer, List<QAction>> rewardActions = new HashMap<>();
+
+    public ExplorationSet(String id) {
+        this.id = id;
+        this.parent = null;
+        this.displayName = new QTranslatable("qxl.explorationset." + id + ".name", new HashMap<>());
+        this.description = new QTranslatable("qxl.explorationset." + id + ".description", new HashMap<>());
+        this.entries = List.of();
+    }
 
     public ExplorationSet(String id, ExplorationSet parent, QTranslatable displayName, QTranslatable description, List<Explorable> entries) {
         this.id = id;
@@ -55,6 +65,12 @@ public final class ExplorationSet {
         return entries;
     }
 
+    public void setParent(ExplorationSet parent) {
+        this.parent = parent;
+        parent.children.add(this);
+        recalculateAverageLocation();
+    }
+
     public Location averageLocation() {
         return averageLocation;
     }
@@ -63,10 +79,31 @@ public final class ExplorationSet {
         return parent;
     }
 
+    public void addChild(ExplorationSet child) {
+        if (children == null) {
+            children = Set.of();
+        }
+        children.add(child);
+    }
+
     public Explorable getClosest(Location location) {
         Explorable closest = null;
         double distance = Double.MAX_VALUE;
         for (Explorable entry : entries) {
+            double d = entry.location().distanceSquared(location);
+            if (d < distance) {
+                distance = d;
+                closest = entry;
+            }
+        }
+        return closest;
+    }
+
+    public Explorable getClosestUnexplored(Location location, Set<Explorable> alreadyExplored) {
+        Explorable closest = null;
+        double distance = Double.MAX_VALUE;
+        for (Explorable entry : entries) {
+            if (alreadyExplored.contains(entry)) continue;
             double d = entry.location().distanceSquared(location);
             if (d < distance) {
                 distance = d;
@@ -89,6 +126,16 @@ public final class ExplorationSet {
 
     public Explorable getExplorable(String id) {
         return entries.stream().filter(e -> e.id().equals(id)).findFirst().orElse(null);
+    }
+
+    public void addExplorable(Explorable explorable) {
+        if (explorable == null) return;
+        entries.add(explorable);
+        recalculateAverageLocation();
+    }
+
+    public Set<Explorable> getExplorables() {
+        return Set.copyOf(entries);
     }
 
     /**

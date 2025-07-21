@@ -25,6 +25,8 @@ public class ContentGuide {
     char DOWN = '▼';
     char SAME = '◆';
 
+    public static final double MAX_DISTANCE_FOR_HINT = 64;
+
     private final QPlayer player;
     private final PlayerExplorer explorer;
     private BukkitRunnable task;
@@ -50,8 +52,11 @@ public class ContentGuide {
         if (explorer.getCurrentClosestSet() == null || explorer.hasCompletedSet(explorer.getCurrentClosestSet())) {
             return;
         }
-        Explorable closest = getClosestInSet(explorer.getCurrentClosestSet());
+        Explorable closest = getClosestUnexploredInSet(explorer.getCurrentClosestSet());
         if (closest == null) {
+            return;
+        }
+        if (distance > MAX_DISTANCE_FOR_HINT) {
             return;
         }
         Component hint = Component.text(getDirectionalMarker(closest.location()) + " ", NamedTextColor.DARK_PURPLE);
@@ -61,6 +66,16 @@ public class ContentGuide {
 
     private Explorable getClosestInSet(ExplorationSet set) {
         Explorable closest = set.getClosest(player.getPlayer().getLocation());
+        if (closest == null) {
+            distance = 0;
+            return null;
+        }
+        distance = Math.sqrt(closest.location().distanceSquared(player.getPlayer().getLocation()));
+        return closest;
+    }
+
+    private Explorable getClosestUnexploredInSet(ExplorationSet set) {
+        Explorable closest = set.getClosestUnexplored(player.getPlayer().getLocation(), explorer.getExploredInSet(set));
         if (closest == null) {
             distance = 0;
             return null;

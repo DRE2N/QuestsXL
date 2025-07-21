@@ -60,8 +60,6 @@ public class PlayerListener extends AbstractListener {
             event.setCancelled(true);
             return;
         }
-        // Objectives
-        // Regions
         QRegion regionFrom = regionManager.getByLocation(event.getFrom());
         QRegion regionTo = regionManager.getByLocation(event.getTo());
         if (regionFrom != null && regionTo == null) {
@@ -71,6 +69,9 @@ public class PlayerListener extends AbstractListener {
         if (regionFrom == null && regionTo != null) {
             Bukkit.getPluginManager().callEvent(new QRegionEnterEvent(player, regionTo));
             qp.getRegions().add(regionTo);
+        }
+        if (event.getFrom().getChunk() != event.getTo().getChunk()) {
+            qp.getExplorer().updateClosestSet();
         }
     }
 
