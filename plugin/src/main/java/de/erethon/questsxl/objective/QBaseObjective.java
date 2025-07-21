@@ -94,7 +94,7 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
     protected void checkCompletion(ActiveObjective active, QObjective<T> objective, ObjectiveHolder instigator) {
         active.addProgress(1);
         progress(active.getHolder(), instigator);
-        MessageUtil.log("Progress: " + active.getProgress() + " Goal: " + progressGoal);
+        MessageUtil.log("Progress: " + active.getProgress() + " Goal: " + progressGoal + " Scope: " + progressScope);
         if (active.getProgress() >= progressGoal) {
             complete(active.getHolder(), objective, instigator);
         }
@@ -303,48 +303,65 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
         }
         if (cfg.contains("scopeSuccess")) {
             completeScope = ActionScope.valueOf(cfg.getString("scopeSuccess").toUpperCase());
+        } else {
+            if (findTopParent() instanceof QEvent) {
+                completeScope = ActionScope.EVENT;
+            } else {
+                completeScope = ActionScope.PLAYER;
+            }
         }
         if (cfg.contains("onSuccess")) {
             completeActions.addAll(cfg.getActions(this, "onSuccess"));
-            for (QAction action : completeActions) {
-                action.setParent(this);
-            }
         }
         if (cfg.contains("scopeProgress")) {
             progressScope = ActionScope.valueOf(cfg.getString("scopeProgress").toUpperCase());
+        } else {
+            QComponent topParent = findTopParent();
+            if (topParent instanceof QEvent) {
+                progressScope = ActionScope.EVENT;
+            } else {
+                progressScope = ActionScope.PLAYER;
+            }
         }
         if (cfg.contains("onProgress")) {
             progressActions.addAll(cfg.getActions(this, "onProgress"));
-            for (QAction action : progressActions) {
-                action.setParent(this);
-            }
+            MessageUtil.log("Loaded progress actions for " + this.getClass().getSimpleName() + ": " + progressActions.size());
         }
         if (cfg.contains("scopeConditionFail")) {
             conditionFailScope = ActionScope.valueOf(cfg.getString("scopeConditionFail").toUpperCase());
+        } else {
+            if (findTopParent() instanceof QEvent) {
+                conditionFailScope = ActionScope.EVENT;
+            } else {
+                conditionFailScope = ActionScope.PLAYER;
+            }
         }
         if (cfg.contains("onConditionFail")) {
             conditionFailActions.addAll(cfg.getActions(this, "onConditionFail"));
-            for (QAction action : conditionFailActions) {
-                action.setParent(this);
-            }
         }
         if (cfg.contains("scopeFail")) {
             failScope = ActionScope.valueOf(cfg.getString("scopeFail").toUpperCase());
+        } else {
+            if (findTopParent() instanceof QEvent) {
+                failScope = ActionScope.EVENT;
+            } else {
+                failScope = ActionScope.PLAYER;
+            }
         }
         if (cfg.contains("onFail")) {
             failActions.addAll(cfg.getActions(this, "onFail"));
-            for (QAction action : failActions) {
-                action.setParent(this);
-            }
         }
         if (cfg.contains("scopeComplete")) {
             completeScope = ActionScope.valueOf(cfg.getString("scopeComplete").toUpperCase());
+        } else {
+            if (findTopParent() instanceof QEvent) {
+                completeScope = ActionScope.EVENT;
+            } else {
+                completeScope = ActionScope.PLAYER;
+            }
         }
         if (cfg.contains("onComplete")) {
             completeActions.addAll(cfg.getActions(this, "onComplete"));
-            for (QAction action : completeActions) {
-                action.setParent(this);
-            }
         }
         if (cfg.contains("optional")) {
             optional = cfg.getBoolean("optional");

@@ -54,4 +54,13 @@ public interface ObjectiveHolder {
             }
         }
     }
+
+    default ActiveObjective findObjective(QObjective objective) {
+        for (ActiveObjective activeObjective : getCurrentObjectives()) {
+            if (activeObjective.getObjective().equals(objective)) {
+                return activeObjective;
+            }
+        }
+        return null;
+    }
 }

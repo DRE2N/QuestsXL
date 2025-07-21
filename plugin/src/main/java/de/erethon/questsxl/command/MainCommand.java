@@ -3,6 +3,7 @@ package de.erethon.questsxl.command;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.player.QPlayer;
 import net.minecraft.server.MinecraftServer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -25,6 +26,7 @@ public class MainCommand extends ECommand {
     public void onExecute(String[] args, CommandSender commandSender) {
         QuestsXL plugin = QuestsXL.getInstance();
         Player player = (Player) commandSender;
+        QPlayer qPlayer = plugin.getPlayerCache().getByPlayer(player);
         if (player.hasPermission("qxl.admin.version")) {
             MessageUtil.sendMessage(player, "&8&m   &r &aQuests&2XL &6" + plugin.getDescription().getVersion() + " &7by Malfrador &8&m   &r");
             MessageUtil.sendMessage(player, "");
@@ -44,6 +46,17 @@ public class MainCommand extends ECommand {
                     + " &8- &7Animations: &6" + plugin.getAnimationManager().getAnimations().size());
             MessageUtil.sendMessage(player,"&7Events: &6" + plugin.getEventManager().getEvents().size()
                     + " &8- &7Aktiv: &6" + plugin.getEventManager().getActiveEvents().size());
+            if (qPlayer.getTrackedEvent() != null) {
+                String trackedEventObjective = qPlayer.getTrackedEvent().getObjectiveDisplayText();
+                if (trackedEventObjective != null) {
+                    MessageUtil.sendMessage(player, "&7Tracked Event: &6" + qPlayer.getTrackedEvent().getName()
+                            + " &8- &7Objective: &6" + trackedEventObjective);
+                } else {
+                    MessageUtil.sendMessage(player, "&7Tracked Event: &6" + qPlayer.getTrackedEvent().getName());
+                }
+            } else {
+                MessageUtil.sendMessage(player, "&7No tracked event.");
+            }
             return;
         }
         if (args.length >= 2) {

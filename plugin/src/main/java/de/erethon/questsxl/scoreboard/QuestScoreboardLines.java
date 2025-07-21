@@ -21,6 +21,10 @@ public class QuestScoreboardLines implements ScoreboardLines {
 
     final QuestsXL plugin = QuestsXL.getInstance();
 
+    private static final String QUEST_COLOR = "<dark_gray>[<#3fda52>♥<dark_gray>]<#3fda52> ";
+    private static final String EVENT_COLOR = "<dark_gray>[<#ec762c>\uD83D\uDDE1<dark_gray>]<#ec762c> ";
+    private static final String CONTENT_GUIDE_COLOR = "<dark_gray>[<#edcc4b>❄<dark_gray>]<#edcc4b> ";
+
     @NotNull
     @Override
     public List<ScoreboardComponent> getLines(@NotNull EPlayer ePlayer) {
@@ -36,14 +40,14 @@ public class QuestScoreboardLines implements ScoreboardLines {
             lines.add(ScoreboardComponent.of(new DynamicComponent() { // Is there a better way to do this?
                 @Override
                 public @NotNull Component get(EPlayer ePlayer) {
-                    return player.getContentGuideText();
+                    return MessageUtil.parse(CONTENT_GUIDE_COLOR + player.getContentGuideText());
                 }
             }));
             lines.add(ScoreboardComponent.EMPTY);
         }
 
         if (player.getTrackedEvent() != null) {
-            Component header = MessageUtil.parse("<green>" + player.getTrackedEvent().getName() + "</green>");
+            Component header = MessageUtil.parse(EVENT_COLOR + player.getTrackedEvent().getName());
 
             lines.add(ScoreboardComponent.of((p) -> header));
 
@@ -56,7 +60,7 @@ public class QuestScoreboardLines implements ScoreboardLines {
         }
 
         if (trackedQuest != null) {
-            Component header = MessageUtil.parse("<green>" + trackedQuest.getQuest().getDisplayName() + "</green>");
+            Component header = MessageUtil.parse(QUEST_COLOR + trackedQuest.getQuest().getDisplayName());
 
             lines.add(ScoreboardComponent.of((p) -> header));
 

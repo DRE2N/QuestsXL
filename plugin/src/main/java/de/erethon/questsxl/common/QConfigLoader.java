@@ -36,8 +36,8 @@ public class QConfigLoader {
             if (registry.isValid(key) && section.isString(key)) {
                 try {
                     loadable = registry.get(key).getClass().getDeclaredConstructor().newInstance();
-                    loadable.load(new QLineConfig(section.getString(key)));
                     loadable.setParent(component);
+                    loadable.load(new QLineConfig(section.getString(key)));
                     loadables.add(loadable);
                 } catch (Exception e) {
                     QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Failed to load " + key, e.getMessage(), "Path:\n" + section.getCurrentPath() + "." + key).addStacktrace(e.getStackTrace()));
@@ -67,8 +67,8 @@ public class QConfigLoader {
                 if (registry.isValid(type)) {
                     try {
                         loadable = registry.get(type).getClass().getDeclaredConstructor().newInstance();
-                        loadable.load(qConfigurationSection);
                         loadable.setParent(component);
+                        loadable.load(qConfigurationSection);
                         loadables.add(loadable);
                     } catch (Exception e) {
                         QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Failed to load " + type + " " + key, e.getMessage(), "Path:\n" + section.getCurrentPath() + "." + key).addStacktrace(e.getStackTrace()));
@@ -95,12 +95,10 @@ public class QConfigLoader {
             String type = s.split(":")[0];
             QComponent loadable;
             if (registry.isValid(type)) {
-                MessageUtil.log("Loading " + type + " from " + s);
                 try {
                     loadable = registry.get(type).getClass().getDeclaredConstructor().newInstance();
-                    loadable.load(new QLineConfig(s.replace(type + ":", "")));
-                    MessageUtil.log("Loadable: " + loadable);
                     loadable.setParent(component);
+                    loadable.load(new QLineConfig(s.replace(type + ":", "")));
                     loadables.add(loadable);
                 } catch (Exception e) {
                     QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Failed to load " + type, e.getMessage(), "Pfad:\n" + s).addStacktrace(e.getStackTrace()));

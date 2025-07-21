@@ -21,6 +21,9 @@ public class QEventManager {
     }
 
     public QEvent getByID(String id) {
+        if (id == null || id.isEmpty()) {
+            return null;
+        }
         return events.stream().filter(event -> id.equals(event.getId())).findFirst().orElse(null);
     }
 
@@ -66,6 +69,10 @@ public class QEventManager {
             ids.add(event.getId());
         }
         return ids;
+    }
+
+    public void addEvent(QEvent event) {
+        events.add(event);
     }
 
     public List<String> getActiveEventIDs() {

@@ -39,9 +39,6 @@ public class GlobalObjectives implements Completable, QComponent {
                 continue;
             }
             objectives.addAll((Collection<? extends QObjective>) QConfigLoader.load(this, "objectives", section, QRegistries.OBJECTIVES));
-            for (QObjective objective : objectives) {
-                objective.setParent(this);
-            }
         }
         for (QObjective objective : objectives) {
             objective.setGlobal(true);

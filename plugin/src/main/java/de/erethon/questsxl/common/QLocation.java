@@ -2,6 +2,7 @@ package de.erethon.questsxl.common;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.error.FriendlyError;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -79,6 +80,10 @@ public class QLocation {
         }
         randomXZ = section.getDouble("randomxz", 0);
         randomY = section.getDouble("randomy", 0);
+        if (section.getString("x") == null || section.getString("y") == null || section.getString("z") == null) {
+            plugin.getErrors().add(new FriendlyError("QLocation", "Invalid location configuration", "Missing x, y, or z in configuration section.", "Section: " + section.getName()));
+            return;
+        }
         if (section.getString("x").contains("~")) {
             isRelative = true;
             x = Double.parseDouble(section.getString("x").replace("~", ""));

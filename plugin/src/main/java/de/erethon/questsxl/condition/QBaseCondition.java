@@ -3,15 +3,8 @@ package de.erethon.questsxl.condition;
 import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.common.QComponent;
 import de.erethon.questsxl.common.QConfig;
-import de.erethon.questsxl.common.QConfigLoader;
-import de.erethon.questsxl.common.QLineConfig;
-import de.erethon.questsxl.common.QRegistries;
 import de.erethon.questsxl.common.Quester;
-import de.erethon.questsxl.livingworld.QEvent;
-import de.erethon.questsxl.player.QPlayer;
-import org.bukkit.configuration.ConfigurationSection;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -63,15 +56,9 @@ public abstract class QBaseCondition implements QCondition {
         display = cfg.getString("displayText");
         if (cfg.contains("onFail")) {
             failActions.addAll(cfg.getActions(this, "onFail"));
-            for (QAction action : failActions) {
-                action.setParent(this);
-            }
         }
         if (cfg.contains("onSuccess")) {
             successActions.addAll(cfg.getActions(this, "onSuccess"));
-            for (QAction action : successActions) {
-                action.setParent(this);
-            }
         }
     }
 

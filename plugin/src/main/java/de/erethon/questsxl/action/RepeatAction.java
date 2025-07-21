@@ -77,9 +77,6 @@ public class RepeatAction extends QBaseAction {
     public void load(QConfig cfg) {
         super.load(cfg);
         actions = cfg.getActions(this, "actions");
-        for (QAction action : actions) {
-           action.setParent(this);
-        }
         delay = cfg.getLong("delay", 0);
         repetitions = cfg.getInt("repetitions", 1);
     }
