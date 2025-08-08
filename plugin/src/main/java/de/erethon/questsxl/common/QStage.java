@@ -47,9 +47,9 @@ public class QStage implements QComponent {
      * @param holder the holder to start the stage.
      */
     public void start(ObjectiveHolder holder) {
-        MessageUtil.log("Starting stage " + id);
+        QuestsXL.log("Starting stage " + id);
         for (QObjective objective : goals) {
-            MessageUtil.log("Added objective " + objective.getClass().getName());
+            QuestsXL.log("Added objective " + objective.getClass().getName());
             ActiveObjective activeObjective = new ActiveObjective(holder, getQuest(), this, objective);
             holder.addObjective(activeObjective);
             plugin.getObjectiveEventManager().register(activeObjective);
@@ -69,7 +69,7 @@ public class QStage implements QComponent {
         catch (Exception e) {
             FriendlyError error = new FriendlyError(holder.getName() + ".stages." + id, "Failed to start stage " + id, e.getMessage(), "" + id).addStacktrace(e.getStackTrace());
             QuestsXL.get().addRuntimeError(error);
-            MessageUtil.log("Failed to start stage " + id + " for " + holder.getName());
+            QuestsXL.log("Failed to start stage " + id + " for " + holder.getName());
             e.printStackTrace();
         }
     }
@@ -79,11 +79,11 @@ public class QStage implements QComponent {
      */
     public void checkCompleted(ObjectiveHolder holder) {
        if (isCompleted(holder)) {
-           MessageUtil.log("Stage is completed!");
+           QuestsXL.log("Stage is completed!");
            holder.progress(owner);
            return;
        }
-       MessageUtil.log("Stage not completed");
+       QuestsXL.log("Stage not completed");
     }
 
     /**
@@ -104,7 +104,7 @@ public class QStage implements QComponent {
                 } catch (Exception e) {
                     FriendlyError error = new FriendlyError(holder.getName() + ".stages." + id, "Failed to check condition " + condition.getClass().getName(), e.getMessage(), "" + id).addStacktrace(e.getStackTrace());
                     QuestsXL.get().addRuntimeError(error);
-                    MessageUtil.log("Failed to check condition " + condition.getClass().getName() + " for " + holder.getName());
+                    QuestsXL.log("Failed to check condition " + condition.getClass().getName() + " for " + holder.getName());
                 }
             }
             return canStart;
@@ -119,7 +119,7 @@ public class QStage implements QComponent {
                 } catch (Exception e) {
                     FriendlyError error = new FriendlyError(qEvent.getName() + ".stages." + id, "Failed to check condition " + condition.getClass().getName(), e.getMessage(), "" + id).addStacktrace(e.getStackTrace());
                     QuestsXL.get().addRuntimeError(error);
-                    MessageUtil.log("Failed to check condition " + condition.getClass().getName() + " for " + qEvent.getName());
+                    QuestsXL.log("Failed to check condition " + condition.getClass().getName() + " for " + qEvent.getName());
                 }
             }
             return canStart;

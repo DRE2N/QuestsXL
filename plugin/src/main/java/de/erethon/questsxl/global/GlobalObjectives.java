@@ -1,6 +1,6 @@
 package de.erethon.questsxl.global;
 
-import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.Completable;
 import de.erethon.questsxl.common.QComponent;
 import de.erethon.questsxl.common.QConfigLoader;
@@ -43,7 +43,7 @@ public class GlobalObjectives implements Completable, QComponent {
         for (QObjective objective : objectives) {
             objective.setGlobal(true);
         }
-        MessageUtil.log("Loaded " + objectives.size() + " global objectives.");
+        QuestsXL.log("Loaded " + objectives.size() + " global objectives.");
 
     }
 

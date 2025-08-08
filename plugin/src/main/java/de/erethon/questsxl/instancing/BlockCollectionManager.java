@@ -38,7 +38,7 @@ public class BlockCollectionManager {
             collection.load(config);
             collections.add(collection);
         }
-        MessageUtil.log("Loaded " + collections.size() + " block collections.");
+        QuestsXL.log("Loaded " + collections.size() + " block collections.");
     }
 
     public void save() {

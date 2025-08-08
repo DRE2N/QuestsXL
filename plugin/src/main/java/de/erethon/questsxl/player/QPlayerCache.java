@@ -19,7 +19,7 @@ public class QPlayerCache extends UserCache<QPlayer> {
     protected QPlayer getNewInstance(@NotNull OfflinePlayer offlinePlayer) {
         Player player = offlinePlayer.getPlayer();
         if (player != null) {
-            MessageUtil.log("Loading player " + offlinePlayer.getUniqueId() + " (" + offlinePlayer.getName() + ")...");
+            QuestsXL.log("Loading player " + offlinePlayer.getUniqueId() + " (" + offlinePlayer.getName() + ")...");
             return new QPlayer(player);
         }
         return null;

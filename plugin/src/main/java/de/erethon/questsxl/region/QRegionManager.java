@@ -73,7 +73,7 @@ public class QRegionManager {
             region.load(configuration.getConfigurationSection(string));
             regions.add(region);
         }
-        MessageUtil.log("Loaded " + regions.size() + " regions.");
+        QuestsXL.log("Loaded " + regions.size() + " regions.");
     }
 
     public void save() {
@@ -85,10 +85,10 @@ public class QRegionManager {
         try {
             regionDataFile.save(regionData);
         } catch (IOException e) {
-            MessageUtil.log("There was an error saving the regions.yml file!");
+            QuestsXL.log("There was an error saving the regions.yml file!");
             e.printStackTrace();
         }
-        MessageUtil.log("Saved " + regions.size() + " regions.");
+        QuestsXL.log("Saved " + regions.size() + " regions.");
     }
 }
 

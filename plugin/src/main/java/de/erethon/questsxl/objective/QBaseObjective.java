@@ -93,7 +93,7 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
     protected void checkCompletion(ActiveObjective active, QObjective<T> objective, ObjectiveHolder instigator) {
         active.addProgress(1);
         progress(active.getHolder(), instigator);
-        MessageUtil.log("Progress: " + active.getProgress() + " Goal: " + progressGoal + " Scope: " + progressScope);
+        QuestsXL.log("Progress: " + active.getProgress() + " Goal: " + progressGoal + " Scope: " + progressScope);
         if (active.getProgress() >= progressGoal) {
             complete(active.getHolder(), objective, instigator);
         }
@@ -107,14 +107,14 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
      * @param obj the objective that was completed.
      */
     protected void complete(ObjectiveHolder holder, QObjective<T> obj, ObjectiveHolder instigator) {
-        MessageUtil.log("Checking for completion for " + holder.getName());
+        QuestsXL.log("Checking for completion for " + holder.getName());
         Set<ActiveObjective> activeObjectives = holder.getCurrentObjectives();
         Set<ActiveObjective> toRemove = new HashSet<>();
         for (ActiveObjective activeObjective : activeObjectives) {
-            MessageUtil.log("Active: Objective: " + activeObjective.getObjective().getClass().getName() + " Holder: " + activeObjective.getHolder().getName() + " | Objective: " + obj.getClass().getName() + " Holder: " + holder.getName());
+            QuestsXL.log("Active: Objective: " + activeObjective.getObjective().getClass().getName() + " Holder: " + activeObjective.getHolder().getName() + " | Objective: " + obj.getClass().getName() + " Holder: " + holder.getName());
             if (activeObjective.getObjective() == obj && activeObjective.getHolder() == holder) {
                 activeObjective.setCompleted(true);
-                MessageUtil.log("Completed " + obj.getClass().getName());
+                QuestsXL.log("Completed " + obj.getClass().getName());
                 if (activeObjective.getStage() != null) {
                     activeObjective.getStage().checkCompleted(holder);
                 }
@@ -324,7 +324,7 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
         }
         if (cfg.contains("onProgress")) {
             progressActions.addAll(cfg.getActions(this, "onProgress"));
-            MessageUtil.log("Loaded progress actions for " + this.getClass().getSimpleName() + ": " + progressActions.size());
+            QuestsXL.log("Loaded progress actions for " + this.getClass().getSimpleName() + ": " + progressActions.size());
         }
         if (cfg.contains("scopeConditionFail")) {
             conditionFailScope = ActionScope.valueOf(cfg.getString("scopeConditionFail").toUpperCase());

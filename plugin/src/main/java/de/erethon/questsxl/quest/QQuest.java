@@ -157,7 +157,7 @@ public class QQuest implements Completable, QComponent {
         // Stages
         ConfigurationSection stageSection = cfg.getConfigurationSection("stages");
         if (stageSection == null) {
-            MessageUtil.log("Quest " + name + " does not contain any stages!");
+            QuestsXL.log("Quest " + name + " does not contain any stages!");
             return;
         }
         for (String key : stageSection.getKeys(false)) {
@@ -176,6 +176,6 @@ public class QQuest implements Completable, QComponent {
             }
             stages.add(stage);
         }
-        MessageUtil.log("Loaded quest " + name + " with " + stages.size() + " stages.");
+        QuestsXL.log("Loaded quest " + name + " with " + stages.size() + " stages.");
     }
 }

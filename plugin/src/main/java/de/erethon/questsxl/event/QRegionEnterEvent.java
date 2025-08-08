@@ -1,6 +1,6 @@
 package de.erethon.questsxl.event;
 
-import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.region.QRegion;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -15,7 +15,7 @@ public class QRegionEnterEvent extends Event {
     public QRegionEnterEvent(Player player, QRegion region) {
         this.region = region;
         this.player = player;
-        MessageUtil.log(player.getName() + " entered region " + region.getId());
+        QuestsXL.log(player.getName() + " entered region " + region.getId());
     }
 
     public QRegion getRegion() {

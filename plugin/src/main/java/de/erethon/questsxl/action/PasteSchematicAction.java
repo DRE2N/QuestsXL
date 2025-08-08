@@ -58,7 +58,7 @@ public class PasteSchematicAction extends QBaseAction {
             try {
             clipboard = FaweAPI.load(schematic);
         } catch (Exception e) {
-            MessageUtil.log("Error loading schematic " + schematic.getName());
+            QuestsXL.log("Error loading schematic " + schematic.getName());
             e.printStackTrace();
         }
             if (clipboard == null || location == null) {
@@ -98,7 +98,7 @@ public class PasteSchematicAction extends QBaseAction {
         location = cfg.getQLocation("location");
 
         String schematicID = cfg.getString("schematic");
-        MessageUtil.log("Loading schematic " + schematicID);
+        QuestsXL.log("Loading schematic " + schematicID);
         for (File file : QuestsXL.SCHEMATICS.listFiles()) {
             if (file.getName().equals(schematicID)) {
                 schematic = file;

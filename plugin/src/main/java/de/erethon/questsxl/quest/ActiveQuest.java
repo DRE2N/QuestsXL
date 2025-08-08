@@ -21,18 +21,18 @@ public class ActiveQuest {
         QStage start = quest.getStages().get(0);
         this.currentStage = start;
         start.start(player);
-        MessageUtil.log("Created new activeQuest for " + player.getPlayer().getName() + " with " + quest.getStages().size() + " stages.");
+        QuestsXL.log("Created new activeQuest for " + player.getPlayer().getName() + " with " + quest.getStages().size() + " stages.");
     }
 
     public ActiveQuest(QPlayer player, QQuest quest, int stage) {
         this.player = player;
         this.quest = quest;
         this.currentStage = quest.getStages().get(stage);
-        MessageUtil.log("Loaded already started activeQuest for " + player.getPlayer().getName() + " with " + quest.getStages().size() + " stages.");
+        QuestsXL.log("Loaded already started activeQuest for " + player.getPlayer().getName() + " with " + quest.getStages().size() + " stages.");
     }
 
     public void progress(QPlayer player) {
-        MessageUtil.log("Progressing quest " + quest.getName() + " for " + player.getPlayer().getName());
+        QuestsXL.log("Progressing quest " + quest.getName() + " for " + player.getPlayer().getName());
         QStage next = null;
         int currentID = currentStage.getId();
         for (QStage stage : quest.getStages()) {
@@ -52,14 +52,14 @@ public class ActiveQuest {
 
     public void finish(QPlayer player) {
         quest.reward(player);
-        MessageUtil.log(player.getPlayer().getName() + " finished quest " + quest.getName());
+        QuestsXL.log(player.getPlayer().getName() + " finished quest " + quest.getName());
         player.clearObjectives();
         player.removeActive(this);
         player.getCompletedQuests().put(this.getQuest(), System.currentTimeMillis());
     }
 
     public void finishWithoutRewards(QPlayer player) {
-        MessageUtil.log(player.getPlayer().getName() + " finished quest " + quest.getName() + " without rewards.");
+        QuestsXL.log(player.getPlayer().getName() + " finished quest " + quest.getName() + " without rewards.");
         player.clearObjectives();
         player.removeActive(this);
         player.getCompletedQuests().put(this.getQuest(), System.currentTimeMillis());

@@ -1,6 +1,6 @@
 package de.erethon.questsxl.common;
 
-import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.objective.ActiveObjective;
 import de.erethon.questsxl.objective.QObjective;
 import org.bukkit.Location;
@@ -33,7 +33,7 @@ public interface ObjectiveHolder {
                         ActiveObjective objective = ActiveObjective.load(this, objSection);
                         getCurrentObjectives().add(objective);
                     } catch (Exception e) {
-                        MessageUtil.log("Failed to load objective from config: " + key + " in " + cfg.getName());
+                        QuestsXL.log("Failed to load objective from config: " + key + " in " + cfg.getName());
                         e.printStackTrace();
                     }
                 }
@@ -49,7 +49,7 @@ public interface ObjectiveHolder {
                 objective.save(objSection);
                 index++;
             } catch (Exception e) {
-                MessageUtil.log("Failed to save objective to config: " + objective.getObjective().getClass().getSimpleName() + " in " + cfg.getName());
+                QuestsXL.log("Failed to save objective to config: " + objective.getObjective().getClass().getSimpleName() + " in " + cfg.getName());
                 e.printStackTrace();
             }
         }

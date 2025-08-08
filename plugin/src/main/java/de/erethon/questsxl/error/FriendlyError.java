@@ -27,7 +27,7 @@ public class FriendlyError {
         this.location = location;
         this.exception = exception;
         this.hint = hint;
-        MessageUtil.log("[QXL] " + getMessage());
+        QuestsXL.log("[QXL] " + getMessage());
     }
 
     public String getMessage() {

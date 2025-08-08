@@ -59,8 +59,8 @@ public class AnimationManager {
             animation.load(config);
             animations.add(animation);
         }
-        MessageUtil.log("Loaded " + animations.size() + " animations.");
-        MessageUtil.log("Loaded " + cutscenes.size() + " cutscenes.");
+        QuestsXL.log("Loaded " + animations.size() + " animations.");
+        QuestsXL.log("Loaded " + cutscenes.size() + " cutscenes.");
     }
 
     public void save() {

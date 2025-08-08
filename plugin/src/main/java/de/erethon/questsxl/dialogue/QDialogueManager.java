@@ -1,8 +1,8 @@
 package de.erethon.questsxl.dialogue;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.misc.FileUtil;
 import de.erethon.bedrock.misc.Registry;
+import de.erethon.questsxl.QuestsXL;
 
 import java.io.File;
 
@@ -26,7 +26,7 @@ public class QDialogueManager extends Registry<String, QDialogue> {
             add(dialogue.getName(), dialogue);
             npcRegistry.add(dialogue.getNPCId(), dialogue.getName());
         }
-        MessageUtil.log("Loaded " + size() + " dialogues.");
+        QuestsXL.log("Loaded " + size() + " dialogues.");
     }
 
     public Registry<String, String> getNPCRegistry() {

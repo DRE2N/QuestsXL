@@ -17,14 +17,14 @@ public class QRegistries {
     public static final QRegistry<QObjective> OBJECTIVES = new QRegistry<>();
 
     public static void init() {
-        MessageUtil.log("Initializing QRegistries...");
+        QuestsXL.log("Initializing QRegistries...");
         initActions();
-        MessageUtil.log("Initialised " + ACTIONS.size() + " actions.");
+        QuestsXL.log("Initialised " + ACTIONS.size() + " actions.");
         initConditions();
-        MessageUtil.log("Initialised " + CONDITIONS.size() + " conditions.");
+        QuestsXL.log("Initialised " + CONDITIONS.size() + " conditions.");
         initObjectives();
-        MessageUtil.log("Initialised " + OBJECTIVES.size() + " objectives.");
-        MessageUtil.log("Successfully initialised all QRegistries.");
+        QuestsXL.log("Initialised " + OBJECTIVES.size() + " objectives.");
+        QuestsXL.log("Successfully initialised all QRegistries.");
     }
 
     private static void initActions() {
@@ -57,7 +57,7 @@ public class QRegistries {
         ACTIONS.register("teleport", TeleportPlayerAction::new);
         ACTIONS.register("velocity", VelocityAction::new);
         if (qxl.isWEEnabled()) {
-            MessageUtil.log("Found WorldEdit, enabling WorldEdit actions.");
+            QuestsXL.log("Found WorldEdit, enabling WorldEdit actions.");
             ACTIONS.register("paste_schematic", PasteSchematicAction::new);
         }
     }
@@ -91,7 +91,7 @@ public class QRegistries {
         CONDITIONS.register("velocity", VelocityCondition::new);
         CONDITIONS.register("wet", WetCondition::new);
         if (qxl.isAergiaEnabled()) {
-            MessageUtil.log("Found Aergia, enabling Aergia conditions.");
+            QuestsXL.log("Found Aergia, enabling Aergia conditions.");
             CONDITIONS.register("group_size", GroupSizeCondition::new);
         }
     }
@@ -119,7 +119,7 @@ public class QRegistries {
         OBJECTIVES.register("take_damage", TakeDamageObjective::new);
         OBJECTIVES.register("wait", WaitObjective::new);
         if (qxl.isHephaestusEnabled()) {
-            MessageUtil.log("Found Hephaestus, enabling Hephaestus objectives.");
+            QuestsXL.log("Found Hephaestus, enabling Hephaestus objectives.");
             OBJECTIVES.register("consume_item", ConsumeItemObjective::new);
             OBJECTIVES.register("drop_item", DropItemObjective::new);
             OBJECTIVES.register("pickup_item", ItemPickupObjective::new);

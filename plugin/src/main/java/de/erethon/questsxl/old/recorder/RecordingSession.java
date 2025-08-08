@@ -48,13 +48,13 @@ public class RecordingSession implements Listener {
     }
 
     public void snap() {
-        MessageUtil.log("Updating state....");
+        QuestsXL.log("Updating state....");
         state = getBlocks(pos1.getWorld());
         Snapshot snapshot = new Snapshot();
         for (Block block : state) {
             snapshot.add(block);
         }
-        MessageUtil.log("Adding new Snapshot after " + recording.getDelay());
+        QuestsXL.log("Adding new Snapshot after " + recording.getDelay());
         recording.add(snapshot, recording.getDelay());
     }
 

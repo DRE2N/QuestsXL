@@ -35,7 +35,7 @@ public class QPacketListener extends ChannelDuplexHandler {
             if (chatPacket.content() != null) {
                 component = PaperAdventure.asAdventure(chatPacket.content());
             } else {
-                MessageUtil.log("Adventure & json content in chat packet for " + player + " are both null!");
+                QuestsXL.log("Adventure & json content in chat packet for " + player + " are both null!");
                 return;
             }
 

@@ -41,14 +41,14 @@ public class GitSync {
         for (String name : foldersToSync) {
             File file = new File(Bukkit.getPluginsFolder() + "/" + name);
             if (!file.exists()) {
-                MessageUtil.log("Could not find folder " + name + " in plugins folder. Skipping.");
+                QuestsXL.log("Could not find folder " + name + " in plugins folder. Skipping.");
                 continue;
             }
             foldersInPlugins.add(new File(Bukkit.getPluginsFolder() + "/" + name));
             foldersInCache.add(new File(cache + "/" + name));
         }
         if (cache.exists()) {
-            MessageUtil.log("Found existing repo at " + cache);
+            QuestsXL.log("Found existing repo at " + cache);
             git = Git.open(cache);
             repository = git.getRepository();
             return;
@@ -89,7 +89,7 @@ public class GitSync {
                 .setStrategy(MergeStrategy.RESOLVE)
                 .call();
         MergeResult mergeResult = pullResult.getMergeResult();
-        MessageUtil.log("Git sync merge result: " + mergeResult.getMergeStatus());
+        QuestsXL.log("Git sync merge result: " + mergeResult.getMergeStatus());
         copyToPlugins();
     }
 
@@ -100,7 +100,7 @@ public class GitSync {
         git.add().addFilepattern(".").call();
         git.add().addFilepattern(".").setUpdate(true).call();
         if (git.status().call().isClean()) {
-            MessageUtil.log("No changes to commit.");
+            QuestsXL.log("No changes to commit.");
             return;
         }
         git.commit()
@@ -116,7 +116,7 @@ public class GitSync {
         File pluginsFolder = Bukkit.getPluginsFolder();
         for (File file : foldersInCache) {
             if (!file.exists()) {
-                MessageUtil.log("Could not find folder " + file.getName() + " in cache. Skipping.");
+                QuestsXL.log("Could not find folder " + file.getName() + " in cache. Skipping.");
                 continue;
             }
             FileUtil.copyDir(file, new File(pluginsFolder + "/" + file.getName() + "/"));
@@ -127,7 +127,7 @@ public class GitSync {
         try {
             for (File file : foldersInPlugins) {
                 if (!file.exists()) {
-                    MessageUtil.log("Could not find folder " + file.getName() + " in plugins folder. Skipping.");
+                    QuestsXL.log("Could not find folder " + file.getName() + " in plugins folder. Skipping.");
                     continue;
                 }
                 FileUtil.copyDir(file, new File(cache + "/" + file.getName() + "/"), EXCLUSIONS.toArray(new String[0]));

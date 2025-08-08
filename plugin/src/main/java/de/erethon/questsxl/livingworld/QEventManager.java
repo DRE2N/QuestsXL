@@ -34,7 +34,7 @@ public class QEventManager {
                 event = new QEvent(file1);
             }
             catch (Throwable e) {
-                MessageUtil.log("Failed to load event from " + file1.getName());
+                QuestsXL.log("Failed to load event from " + file1.getName());
                 e.printStackTrace();
                 FriendlyError error = new FriendlyError(file1.getName(), "Failed to load event "+ file1.getName(), e.getMessage(),"").addStacktrace(e.getStackTrace());
                 QuestsXL.get().addRuntimeError(error);
@@ -45,7 +45,7 @@ public class QEventManager {
                 event.loadProgress(event.getCfg());
             }
         }
-        MessageUtil.log("Loaded " + events.size() + " events.");
+        QuestsXL.log("Loaded " + events.size() + " events.");
     }
 
     public void save() {

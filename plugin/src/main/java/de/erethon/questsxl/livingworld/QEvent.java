@@ -181,7 +181,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
                     return; // Cooldown not over yet
                 }
                 startEvent();
-                MessageUtil.log("Event " + getName() + " started with stage " + currentStage.getId() + " with " + getCurrentObjectives().size() + " objectives.");
+                QuestsXL.log("Event " + getName() + " started with stage " + currentStage.getId() + " with " + getCurrentObjectives().size() + " objectives.");
             }
             case COMPLETED -> {
                 if (currentTime - timeLastCompleted > cooldown * 1000L) {
@@ -204,7 +204,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
             }
         }
         startEvent();
-        MessageUtil.log("Event " + getName() + " started from action.");
+        QuestsXL.log("Event " + getName() + " started from action.");
     }
 
     private void startEvent() {
@@ -234,11 +234,11 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
         clearObjectives();
         currentStage = next;
         next.start(this);
-        MessageUtil.log("Event " + getName() + " progressed to stage " + currentStage.getId());
+        QuestsXL.log("Event " + getName() + " progressed to stage " + currentStage.getId());
     }
 
     public void finish() {
-        MessageUtil.log("Event " + getName() + " finished.");
+        QuestsXL.log("Event " + getName() + " finished.");
         reward();
         state = EventState.COMPLETED;
         timeLastCompleted = System.currentTimeMillis();
@@ -289,7 +289,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
 
     public void participate(@NotNull QPlayer player, int amount) {
         eventParticipation.put(player, eventParticipation.getOrDefault(player, 0) + amount);
-        MessageUtil.log("Player " + player.getName() + " participated in event " + getName() + " with " + amount + " points. (Total: " + eventParticipation.get(player) + ")");
+        QuestsXL.log("Player " + player.getName() + " participated in event " + getName() + " with " + amount + " points. (Total: " + eventParticipation.get(player) + ")");
     }
 
     public int getEventParticipation(@NotNull QPlayer player) {
@@ -376,7 +376,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
 
         ConfigurationSection stageSection = cfg.getConfigurationSection("stages");
         if (stageSection == null) {
-            MessageUtil.log("Event " + id + " does not contain any stages!");
+            QuestsXL.log("Event " + id + " does not contain any stages!");
             return;
         }
         for (String key : stageSection.getKeys(false)) {
@@ -404,7 +404,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
         timeLastCompleted = cfg.getLong("state.timeLastCompleted", 0);
 
         isValid = true;
-        MessageUtil.log("Loaded event " + id + " with " + stages.size() + " stages at " + centerLocation.getWorld().getName() + " / " + centerLocation.getX() + " / " + centerLocation.getY() + " / " + centerLocation.getZ());
+        QuestsXL.log("Loaded event " + id + " with " + stages.size() + " stages at " + centerLocation.getWorld().getName() + " / " + centerLocation.getX() + " / " + centerLocation.getY() + " / " + centerLocation.getZ());
     }
 
     public void save() {

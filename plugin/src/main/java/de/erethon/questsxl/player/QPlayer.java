@@ -110,7 +110,7 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
             return;
         }
         addActive(quest);
-        MessageUtil.log("Active: " + activeQuests.keySet().size());
+        QuestsXL.log("Active: " + activeQuests.keySet().size());
     }
 
     public void progress(@NotNull Completable completable) {
@@ -138,8 +138,8 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
     }
 
     public void progressQuest(@NotNull QQuest quest) {
-        MessageUtil.log("Looking to progress " + quest.getName());
-        MessageUtil.log("Quests: " + activeQuests.keySet().size());
+        QuestsXL.log("Looking to progress " + quest.getName());
+        QuestsXL.log("Quests: " + activeQuests.keySet().size());
         for (ActiveQuest active : activeQuests.keySet()) {
             if (active.getQuest() == quest) {
                 active.progress(this);
@@ -225,7 +225,7 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
     @Override
     public void addObjective(@NotNull ActiveObjective objective) {
         currentObjectives.add(objective);
-        MessageUtil.log(player.getName() + " now has " + currentObjectives.size() + " objectives.");
+        QuestsXL.log(player.getName() + " now has " + currentObjectives.size() + " objectives.");
     }
 
     public void send(@NotNull String msg) {

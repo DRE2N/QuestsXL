@@ -149,19 +149,19 @@ public final class QuestsXL extends EPlugin {
         initFile(GLOBAL_OBJ = new File(getDataFolder(), "globalObjectives.yml"));
         qPlayerCache = new QPlayerCache(this);
         exploration = new Exploration();
-        MessageUtil.log(" ");
-        MessageUtil.log(" ");
-        MessageUtil.log(" --- Sync ---");
+        QuestsXL.log(" ");
+        QuestsXL.log(" ");
+        QuestsXL.log(" --- Sync ---");
         if (gitToken == null || gitBranch == null) {
-            MessageUtil.log("Environment: OFFLINE");
+            QuestsXL.log("Environment: OFFLINE");
             gitSync = false;
         } else {
-            MessageUtil.log("Environment: " + gitBranch);
+            QuestsXL.log("Environment: " + gitBranch);
             sync();
         }
 
-        MessageUtil.log(" ");
-        MessageUtil.log(" ");
+        QuestsXL.log(" ");
+        QuestsXL.log(" ");
     }
 
     public void initFolder(File folder) {
@@ -187,7 +187,7 @@ public final class QuestsXL extends EPlugin {
      * @param supplier
      */
     public void registerComponent(QRegistry<?> registry, String id, Supplier supplier) {
-        MessageUtil.log("Registering " + id + " with " + supplier.get().getClass().getSimpleName());
+        QuestsXL.log("Registering " + id + " with " + supplier.get().getClass().getSimpleName());
         registry.register(id, supplier);
     }
 
@@ -203,7 +203,7 @@ public final class QuestsXL extends EPlugin {
         dialogueManager = new QDialogueManager(DIALOGUES);
         objectiveEventManager = new ObjectiveEventManager(this);
         try {
-            MessageUtil.log("Loading global objectives...");
+            QuestsXL.log("Loading global objectives...");
             globalObjectives = new GlobalObjectives(GLOBAL_OBJ);
         } catch (Exception e) {
             errors.add(new FriendlyError("Global", "Failed to load global objectives", e.getMessage(), "Schaue im Stacktrace nach dem Fehler.").addStacktrace(e.getStackTrace()));
@@ -220,12 +220,12 @@ public final class QuestsXL extends EPlugin {
         if (isAergiaEnabled()) {
             aergia.getEScoreboard().addScores(new QuestScoreboardLines());
         }
-        MessageUtil.log("Loading QComponents...");
+        QuestsXL.log("Loading QComponents...");
         questManager.load();
         eventManager.load(EVENTS);
         dialogueManager.load();
         // Generate docs
-        MessageUtil.log("Generating documentation...");
+        QuestsXL.log("Generating documentation...");
         Path docPath = getDataFolder().toPath().resolve("docs");
         if (!docPath.toFile().exists()) {
             docPath.toFile().mkdirs();
@@ -329,7 +329,7 @@ public final class QuestsXL extends EPlugin {
         errors.clear();
         onDisable();
         loadCore();
-        MessageUtil.log("Loading QComponents...");
+        QuestsXL.log("Loading QComponents...");
         questManager.load();
         eventManager.load(EVENTS);
         dialogueManager.load();
@@ -375,8 +375,8 @@ public final class QuestsXL extends EPlugin {
             @Override
             public void run() {
                 try {
-                    MessageUtil.log("Syncing...");
-                    MessageUtil.log("Included folders: " + Arrays.toString(folders.toArray()));
+                    QuestsXL.log("Syncing...");
+                    QuestsXL.log("Included folders: " + Arrays.toString(folders.toArray()));
                     GitSync sync = new GitSync(folders, isPassiveSync());
                     sync.update();
                 } catch (IOException | InterruptedException | GitAPIException e) {
@@ -398,7 +398,11 @@ public final class QuestsXL extends EPlugin {
 
     public void debug(String msg) {
          // check for debug mode here
-        MessageUtil.log(msg);
+        log(msg);
+    }
+    
+    public static void log(String msg) {
+        plugin.getLogger().info(msg);
     }
 
     public void registerTranslation(QTranslatable translatable) {
