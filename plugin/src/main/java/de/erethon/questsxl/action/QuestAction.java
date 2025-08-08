@@ -2,14 +2,12 @@ package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
-import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.player.QPlayerCache;
 import de.erethon.questsxl.quest.QQuest;
-import org.bukkit.configuration.ConfigurationSection;
 
 @QLoadableDoc(
         value = "start_quest",
@@ -22,7 +20,7 @@ import org.bukkit.configuration.ConfigurationSection;
 )
 public class QuestAction extends QBaseAction {
 
-    QuestsXL plugin = QuestsXL.getInstance();
+    QuestsXL plugin = QuestsXL.get();
     QPlayerCache playerCache = plugin.getPlayerCache();
 
     @QParamDoc(name = "quest", description = "The ID of the quest to start", required = true)

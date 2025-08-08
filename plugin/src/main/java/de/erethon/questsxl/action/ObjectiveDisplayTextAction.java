@@ -1,6 +1,5 @@
 package de.erethon.questsxl.action;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.Completable;
 import de.erethon.questsxl.common.QConfig;
@@ -74,9 +73,9 @@ public class ObjectiveDisplayTextAction extends QBaseAction {
     public void load(QConfig cfg) {
         super.load(cfg);
         text = cfg.getString("text", "");
-        completable = QuestsXL.getInstance().getQuestManager().getByName(cfg.getString("id"));
+        completable = QuestsXL.get().getQuestManager().getByName(cfg.getString("id"));
         if (completable == null) {
-            completable = QuestsXL.getInstance().getEventManager().getByID(cfg.getString("id"));
+            completable = QuestsXL.get().getEventManager().getByID(cfg.getString("id"));
         }
     }
 }

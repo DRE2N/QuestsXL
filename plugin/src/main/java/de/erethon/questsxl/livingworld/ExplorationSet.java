@@ -1,6 +1,5 @@
 package de.erethon.questsxl.livingworld;
 
-import com.google.gson.JsonObject;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.common.QTranslatable;
@@ -152,7 +151,7 @@ public final class ExplorationSet {
                         FriendlyError error = new FriendlyError("ExplorationSet " + id, "Error while playing reward action", e.getMessage(), "Action: " + action.getClass().getSimpleName());
                         error.addPlayer(player);
                         error.addStacktrace(e.getStackTrace());
-                        QuestsXL.getInstance().addRuntimeError(error);
+                        QuestsXL.get().addRuntimeError(error);
                     }
                 }
             }

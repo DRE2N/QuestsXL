@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 public class IBCCommand extends ECommand {
 
-    QuestsXL plugin = QuestsXL.getInstance();
+    QuestsXL plugin = QuestsXL.get();
     BlockCollectionManager manager = plugin.getBlockCollectionManager();
     InstancedBlockCollection ibc = null;
 

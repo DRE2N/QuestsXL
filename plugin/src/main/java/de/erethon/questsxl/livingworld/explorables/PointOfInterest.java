@@ -38,6 +38,10 @@ public class PointOfInterest implements QComponent, Explorable {
     private Map<Integer, List<QAction>> rewardActions = new HashMap<>();
     private Set<QCondition> conditions = new HashSet<>();
 
+    public PointOfInterest() {
+        // Default constructor for QLineConfig parsing
+    }
+
     public PointOfInterest(String id, Location location, double radius) {
         this.id = id;
         this.location = location;
@@ -94,7 +98,7 @@ public class PointOfInterest implements QComponent, Explorable {
         try {
             PointOfInterest poi = new PointOfInterest();
             poi.id = section.getName();
-            poi.set = QuestsXL.getInstance().getExploration().getSet(section.getString("parentSet"));
+            poi.set = QuestsXL.get().getExploration().getSet(section.getString("parentSet"));
             if (poi.set == null) {
                 throw new IllegalArgumentException("Parent set not found");
             }
@@ -110,7 +114,7 @@ public class PointOfInterest implements QComponent, Explorable {
         } catch (Exception e) {
             FriendlyError error = new FriendlyError("POI" + section.getName(), "Error while parsing from QLineConfig", e.getMessage(), "Check the configuration for errors");
             error.addStacktrace(e.getStackTrace());
-            QuestsXL.getInstance().addRuntimeError(error);
+            QuestsXL.get().addRuntimeError(error);
             return null;
         }
     }
@@ -129,7 +133,7 @@ public class PointOfInterest implements QComponent, Explorable {
         } catch (Exception e) {
             FriendlyError error = new FriendlyError("POI" + id, "Error while saving to QLineConfig", e.getMessage(), "...");
             error.addStacktrace(e.getStackTrace());
-            QuestsXL.getInstance().addRuntimeError(error);
+            QuestsXL.get().addRuntimeError(error);
         }
         return cfg;
     }

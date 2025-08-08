@@ -5,8 +5,6 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.Quester;
-import de.erethon.questsxl.livingworld.QEvent;
-import de.erethon.questsxl.player.QPlayer;
 
 @QLoadableDoc(
         value = "global_score",
@@ -27,7 +25,7 @@ public class GlobalScoreCondition extends QBaseCondition {
 
     @Override
     public boolean check(Quester quester) {
-        if (QuestsXL.getInstance().getScore(score) >= value) {
+        if (QuestsXL.get().getScore(score) >= value) {
             return success(quester);
         }
         return fail(quester);

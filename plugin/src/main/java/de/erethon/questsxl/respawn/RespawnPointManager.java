@@ -12,7 +12,7 @@ import java.util.List;
 
 public class RespawnPointManager implements Listener {
 
-    QuestsXL plugin = QuestsXL.getInstance();
+    QuestsXL plugin = QuestsXL.get();
 
     List<RespawnPoint> points = new ArrayList<>();
 

@@ -48,7 +48,7 @@ public class PermissionAction extends QBaseAction {
     public PermissionAction(String permission, EPermissionAction action) {
         this.permission = permission;
         this.action = action;
-        rsp = QuestsXL.getInstance().getServer().getServicesManager().getRegistration(Permission.class);
+        rsp = QuestsXL.get().getServer().getServicesManager().getRegistration(Permission.class);
     }
 
     @Override

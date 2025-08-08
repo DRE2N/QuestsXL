@@ -2,14 +2,11 @@ package de.erethon.questsxl.condition;
 
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
-import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.Quester;
-import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.region.QRegion;
-import org.bukkit.configuration.ConfigurationSection;
 
 @QLoadableDoc(
         value = "region",
@@ -39,7 +36,7 @@ public class RegionCondition extends QBaseCondition {
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        region = QuestsXL.getInstance().getRegionManager().getByID(cfg.getString("region"));
+        region = QuestsXL.get().getRegionManager().getByID(cfg.getString("region"));
     }
 
 }

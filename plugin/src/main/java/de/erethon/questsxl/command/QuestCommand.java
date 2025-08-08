@@ -13,7 +13,7 @@ import java.util.List;
 
 public class QuestCommand extends ECommand {
 
-    QuestsXL plugin = QuestsXL.getInstance();
+    QuestsXL plugin = QuestsXL.get();
 
     public QuestCommand() {
         setCommand("info");

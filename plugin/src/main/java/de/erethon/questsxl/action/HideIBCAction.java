@@ -2,15 +2,12 @@ package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
-import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.instancing.BlockCollectionManager;
 import de.erethon.questsxl.instancing.InstancedBlockCollection;
-import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
-import org.bukkit.configuration.ConfigurationSection;
 
 @QLoadableDoc(
         value = "hide_ibc",
@@ -23,7 +20,7 @@ import org.bukkit.configuration.ConfigurationSection;
 )
 public class HideIBCAction extends QBaseAction {
 
-    BlockCollectionManager manager = QuestsXL.getInstance().getBlockCollectionManager();
+    BlockCollectionManager manager = QuestsXL.get().getBlockCollectionManager();
     @QParamDoc(name = "id", description = "The ID of the IBC to hide", required = true)
     InstancedBlockCollection collection = null;
 

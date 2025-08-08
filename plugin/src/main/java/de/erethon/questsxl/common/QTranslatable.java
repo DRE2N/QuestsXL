@@ -16,7 +16,7 @@ public class QTranslatable {
     public QTranslatable(String key, Map<Locale, String> translations) {
         this.key = key;
         this.translations = translations;
-        QuestsXL.getInstance().registerTranslation(this);
+        QuestsXL.get().registerTranslation(this);
     }
 
     public TranslatableComponent get() {

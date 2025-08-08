@@ -3,7 +3,6 @@ package de.erethon.questsxl.action;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.Quester;
-import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.tool.BeamTool;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -69,7 +68,7 @@ public class DisplayLocationMarkerAction extends QBaseAction {
                 cancelBeam();
             }
         };
-        delay.runTaskLater(QuestsXL.getInstance(), seconds * 20L);
+        delay.runTaskLater(QuestsXL.get(), seconds * 20L);
     }
 
     public void cancelBeam() {

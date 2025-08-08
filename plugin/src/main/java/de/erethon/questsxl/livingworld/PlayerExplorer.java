@@ -18,7 +18,7 @@ import java.util.Set;
  */
 public class PlayerExplorer {
 
-    private final QuestsXL plugin = QuestsXL.getInstance();
+    private final QuestsXL plugin = QuestsXL.get();
     private final Exploration exploration = plugin.getExploration();
 
     private QPlayer qPlayer;

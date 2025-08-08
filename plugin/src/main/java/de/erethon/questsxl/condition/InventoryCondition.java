@@ -1,19 +1,14 @@
 package de.erethon.questsxl.condition;
 
 import de.erethon.hephaestus.items.HItem;
-import de.erethon.hephaestus.items.HItemLibrary;
-import de.erethon.hephaestus.items.HItemStack;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.Quester;
-import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.Locale;
 
@@ -62,7 +57,7 @@ public class InventoryCondition extends QBaseCondition {
         amount = cfg.getInt("amount", 1);
         if (cfg.contains("item")) {
             NamespacedKey key = NamespacedKey.fromString(cfg.getString("item", "minecraft:air"));
-            item = QuestsXL.getInstance().getItemLibrary().get(key);
+            item = QuestsXL.get().getItemLibrary().get(key);
         }
     }
 }

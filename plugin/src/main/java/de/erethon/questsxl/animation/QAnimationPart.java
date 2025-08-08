@@ -5,7 +5,7 @@ import org.bukkit.configuration.ConfigurationSection;
 
 public abstract class QAnimationPart {
 
-    QuestsXL qxl = QuestsXL.getInstance();
+    QuestsXL qxl = QuestsXL.get();
 
     int start;
     boolean isFinished = false;

@@ -55,7 +55,7 @@ import java.util.function.Supplier;
 
 public final class QuestsXL extends EPlugin {
 
-    static QuestsXL instance;
+    private static QuestsXL plugin;
     public static String ERROR = "<dark_gray>[<red><bold>!<!bold><dark_gray>]<gray> ";
     public static String EXPLORATION = "<dark_gray>[<yellow>\uD83E\uDDED<dark_gray>]<gray> ";
 
@@ -115,8 +115,8 @@ public final class QuestsXL extends EPlugin {
     @Override
     public void onEnable() {
         super.onEnable();
+        plugin = this;
         getServer().getPluginManager().registerEvents(new PluginListener(), this);
-        instance = this;
         YamlConfiguration gitConfig = YamlConfiguration.loadConfiguration(this.gitConfig);
         gitToken = gitConfig.getString("token");
         gitBranch = gitConfig.getString("branch");
@@ -191,6 +191,8 @@ public final class QuestsXL extends EPlugin {
         registry.register(id, supplier);
     }
 
+    // Notably, this is only called on reload and in the ServerLoadEvent (the "Done" message on startup). This is to allow other
+    // plugins to load their components before QuestsXL loads the content that uses them.
     public void loadCore() {
         respawnPointManager = new RespawnPointManager(RESPAWNS);
         regionManager = new QRegionManager(REGIONS);
@@ -205,7 +207,7 @@ public final class QuestsXL extends EPlugin {
             globalObjectives = new GlobalObjectives(GLOBAL_OBJ);
         } catch (Exception e) {
             errors.add(new FriendlyError("Global", "Failed to load global objectives", e.getMessage(), "Schaue im Stacktrace nach dem Fehler.").addStacktrace(e.getStackTrace()));
-            MessageUtil.broadcastMessageIf("Errors: " + QuestsXL.getInstance().getErrors().size(), p -> p.hasPermission("qxl.admin.info"));
+            MessageUtil.broadcastMessageIf("Errors: " + QuestsXL.get().getErrors().size(), p -> p.hasPermission("qxl.admin.info"));
         }
         commandCache = new QCommandCache(this);
         commandCache.register(this);
@@ -233,7 +235,7 @@ public final class QuestsXL extends EPlugin {
             docGen.generate();
         } catch (Exception e) {
             errors.add(new FriendlyError("Docs", "Failed to generate runtime documentation", e.getMessage(), "Schaue im Stacktrace nach dem Fehler.").addStacktrace(e.getStackTrace()));
-            MessageUtil.broadcastMessageIf("Errors: " + QuestsXL.getInstance().getErrors().size(), p -> p.hasPermission("qxl.admin.info"));
+            MessageUtil.broadcastMessageIf("Errors: " + QuestsXL.get().getErrors().size(), p -> p.hasPermission("qxl.admin.info"));
         }
     }
 
@@ -282,8 +284,8 @@ public final class QuestsXL extends EPlugin {
         return eventManager;
     }
 
-    public static QuestsXL getInstance() {
-        return instance;
+    public static QuestsXL get() {
+        return plugin;
     }
 
     public HItemLibrary getItemLibrary() {
@@ -387,7 +389,7 @@ public final class QuestsXL extends EPlugin {
                         MessageUtil.broadcastMessageIf("&aGitHub-Sync abgeschlossen!", p -> p.hasPermission("qxl.admin.sync"));
                     }
                 };
-                waitForCopy.runTaskLaterAsynchronously(QuestsXL.getInstance(), 60);
+                waitForCopy.runTaskLaterAsynchronously(QuestsXL.get(), 60);
                 lastSync = System.currentTimeMillis();
             }
         };

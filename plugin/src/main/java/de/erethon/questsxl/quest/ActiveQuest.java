@@ -7,7 +7,7 @@ import de.erethon.questsxl.player.QPlayer;
 
 public class ActiveQuest {
 
-    private final QuestsXL plugin = QuestsXL.getInstance();
+    private final QuestsXL plugin = QuestsXL.get();
 
     private final QPlayer player;
     private final QQuest quest;

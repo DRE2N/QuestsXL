@@ -7,7 +7,6 @@ import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
-import de.erethon.questsxl.player.QPlayerCache;
 
 @QLoadableDoc(
         value = "event_participation",
@@ -21,7 +20,7 @@ import de.erethon.questsxl.player.QPlayerCache;
 )
 public class AddEventParticipationAction extends QBaseAction {
 
-    QuestsXL plugin = QuestsXL.getInstance();
+    QuestsXL plugin = QuestsXL.get();
 
     @QParamDoc(name = "id", description = "The ID of the event to participate in. Defaults to the top parent event if not specified.")
     private String id = null;

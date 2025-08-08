@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 public class NPCCommand extends ECommand {
 
-    QuestsXL plugin = QuestsXL.getInstance();
+    QuestsXL plugin = QuestsXL.get();
 
     public NPCCommand() {
         setCommand("npc");

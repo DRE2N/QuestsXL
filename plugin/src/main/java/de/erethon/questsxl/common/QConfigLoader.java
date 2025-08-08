@@ -1,6 +1,5 @@
 package de.erethon.questsxl.common;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.error.FriendlyError;
 import org.bukkit.configuration.ConfigurationSection;
@@ -40,7 +39,7 @@ public class QConfigLoader {
                     loadable.load(new QLineConfig(section.getString(key)));
                     loadables.add(loadable);
                 } catch (Exception e) {
-                    QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Failed to load " + key, e.getMessage(), "Path:\n" + section.getCurrentPath() + "." + key).addStacktrace(e.getStackTrace()));
+                    QuestsXL.get().getErrors().add(new FriendlyError(id, "Failed to load " + key, e.getMessage(), "Path:\n" + section.getCurrentPath() + "." + key).addStacktrace(e.getStackTrace()));
                     e.printStackTrace();
                 }
                 continue;
@@ -61,7 +60,7 @@ public class QConfigLoader {
                     type = subsection.getName();
                 }
                 if (type == null) {
-                    QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Unknown type", type, "Path:\n" + section.getCurrentPath() + "." + key));
+                    QuestsXL.get().getErrors().add(new FriendlyError(id, "Unknown type", type, "Path:\n" + section.getCurrentPath() + "." + key));
                     continue;
                 }
                 if (registry.isValid(type)) {
@@ -71,15 +70,15 @@ public class QConfigLoader {
                         loadable.load(qConfigurationSection);
                         loadables.add(loadable);
                     } catch (Exception e) {
-                        QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Failed to load " + type + " " + key, e.getMessage(), "Path:\n" + section.getCurrentPath() + "." + key).addStacktrace(e.getStackTrace()));
+                        QuestsXL.get().getErrors().add(new FriendlyError(id, "Failed to load " + type + " " + key, e.getMessage(), "Path:\n" + section.getCurrentPath() + "." + key).addStacktrace(e.getStackTrace()));
                         e.printStackTrace();
                     }
                 } else {
-                    QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Unknown type: " + type, type, "Path:\n" + section.getCurrentPath() + "." + key + "\n Maybe the type is not loaded in the registry."));
+                    QuestsXL.get().getErrors().add(new FriendlyError(id, "Unknown type: " + type, type, "Path:\n" + section.getCurrentPath() + "." + key + "\n Maybe the type is not loaded in the registry."));
                 }
                 continue;
             }
-            QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Unknown type: " + key + " (Format: MultiLine)", key, "Path:\n" + section.getCurrentPath() + "." + key + "\n Maybe the type is not loaded in the registry."));
+            QuestsXL.get().getErrors().add(new FriendlyError(id, "Unknown type: " + key + " (Format: MultiLine)", key, "Path:\n" + section.getCurrentPath() + "." + key + "\n Maybe the type is not loaded in the registry."));
         }
         return loadables;
     }
@@ -101,12 +100,12 @@ public class QConfigLoader {
                     loadable.load(new QLineConfig(s.replace(type + ":", "")));
                     loadables.add(loadable);
                 } catch (Exception e) {
-                    QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Failed to load " + type, e.getMessage(), "Pfad:\n" + s).addStacktrace(e.getStackTrace()));
+                    QuestsXL.get().getErrors().add(new FriendlyError(id, "Failed to load " + type, e.getMessage(), "Pfad:\n" + s).addStacktrace(e.getStackTrace()));
                     e.printStackTrace();
                 }
                 continue;
             }
-            QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Unknown type: " + s + "(Format: SingleLine)", s, "Path:\n" + id + "\n Maybe the type is not loaded in the registry."));
+            QuestsXL.get().getErrors().add(new FriendlyError(id, "Unknown type: " + s + "(Format: SingleLine)", s, "Path:\n" + id + "\n Maybe the type is not loaded in the registry."));
         }
         return loadables;
     }

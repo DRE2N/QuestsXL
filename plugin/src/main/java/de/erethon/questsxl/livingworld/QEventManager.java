@@ -6,7 +6,6 @@ import de.erethon.questsxl.error.FriendlyError;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -17,7 +16,7 @@ public class QEventManager {
     Set<QEvent> events = new HashSet<>();
 
     public QEventManager() {
-        new EventUpdater().runTaskTimer(QuestsXL.getInstance(), 100, 100); // Update events every 5 seconds
+        new EventUpdater().runTaskTimer(QuestsXL.get(), 100, 100); // Update events every 5 seconds
     }
 
     public QEvent getByID(String id) {
@@ -38,7 +37,7 @@ public class QEventManager {
                 MessageUtil.log("Failed to load event from " + file1.getName());
                 e.printStackTrace();
                 FriendlyError error = new FriendlyError(file1.getName(), "Failed to load event "+ file1.getName(), e.getMessage(),"").addStacktrace(e.getStackTrace());
-                QuestsXL.getInstance().addRuntimeError(error);
+                QuestsXL.get().addRuntimeError(error);
                 continue;
             }
             if (event.isValid()) {

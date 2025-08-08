@@ -7,7 +7,6 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import org.bukkit.NamespacedKey;
-import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 
 @QLoadableDoc(
@@ -21,7 +20,7 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 )
 public class ConsumeItemObjective extends QBaseObjective<PlayerItemConsumeEvent> {
 
-    private final HItemLibrary itemLibrary = QuestsXL.getInstance().getItemLibrary();
+    private final HItemLibrary itemLibrary = QuestsXL.get().getItemLibrary();
 
     @QParamDoc(name = "item", description = "The key of the item that needs to be consumed. Same as in /give", required = true)
     private NamespacedKey itemID;

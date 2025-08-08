@@ -71,14 +71,6 @@ tasks {
         apiVersion = "1.21"
         name = "QuestsXL"
         authors = listOf("Malfrador", "Fyreum")
-        commands {
-            register("quests") {
-                description = "Main command for QXL"
-                aliases = listOf("q", "qxl")
-                permission = "qxl.cmd"
-                usage = "/qxl help"
-            }
-        }
         softDepend = listOf("Aergia")
     }
 }

@@ -22,6 +22,6 @@ public class SyncCommand extends ECommand {
     public void onExecute(String[] args, CommandSender commandSender) {
         MessageUtil.sendMessage(commandSender, "&aSynchronisiere Daten mit Github...");
         MessageUtil.sendMessage(commandSender, "&7Dies kann einen Moment dauern.");
-        QuestsXL.getInstance().sync();
+        QuestsXL.get().sync();
     }
 }

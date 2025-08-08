@@ -16,7 +16,7 @@ import java.util.Set;
 
 public class QRegion {
 
-    QuestsXL plugin = QuestsXL.getInstance();
+    QuestsXL plugin = QuestsXL.get();
     QuestManager questManager = plugin.getQuestManager();
     public long lastAccessed;
 

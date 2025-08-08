@@ -9,7 +9,6 @@ import de.erethon.questsxl.global.GlobalObjectives;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.quest.QQuest;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.event.Event;
 
 import java.util.Objects;
 
@@ -97,20 +96,20 @@ public class ActiveObjective {
         String objectiveId = section.getString("objective");
         QObjective objective = QRegistries.OBJECTIVES.get(objectiveId);
         if (objective == null) {
-            QuestsXL.getInstance().getLogger().warning("Failed to load objective with id " + objectiveId + " Missing dependency?");
+            QuestsXL.get().getLogger().warning("Failed to load objective with id " + objectiveId + " Missing dependency?");
             return null;
         }
         boolean completed = section.getBoolean("completed");
         int progress = section.getInt("progress");
         Completable completable = null;
         if (section.contains("event")) {
-            completable = QuestsXL.getInstance().getEventManager().getByID(section.getString("event"));
+            completable = QuestsXL.get().getEventManager().getByID(section.getString("event"));
         }
         if (section.contains("quest")) {
-            completable = QuestsXL.getInstance().getQuestManager().getByName(section.getString("quest"));
+            completable = QuestsXL.get().getQuestManager().getByName(section.getString("quest"));
         }
         if (section.contains("global")) {
-            completable = QuestsXL.getInstance().getGlobalObjectives();
+            completable = QuestsXL.get().getGlobalObjectives();
         }
         QStage stage = completable.getStages().get(section.getInt("stage"));
 

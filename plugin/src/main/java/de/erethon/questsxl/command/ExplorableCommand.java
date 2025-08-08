@@ -17,7 +17,7 @@ import java.util.List;
 
 public class ExplorableCommand extends ECommand {
 
-    private final QuestsXL plugin = QuestsXL.getInstance();
+    private final QuestsXL plugin = QuestsXL.get();
     private final Exploration exploration = plugin.getExploration();
 
     public  ExplorableCommand() {

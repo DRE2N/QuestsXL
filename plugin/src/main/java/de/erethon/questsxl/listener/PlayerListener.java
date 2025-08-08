@@ -5,7 +5,6 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.event.QRegionEnterEvent;
 import de.erethon.questsxl.event.QRegionLeaveEvent;
 import de.erethon.questsxl.livingworld.QEvent;
-import de.erethon.questsxl.objective.ActiveObjective;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.region.QRegion;
 import de.erethon.questsxl.region.QRegionManager;
@@ -19,17 +18,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListener extends AbstractListener {
 
-    QuestsXL plugin = QuestsXL.getInstance();
+    QuestsXL plugin = QuestsXL.get();
     QRegionManager regionManager = plugin.getRegionManager();
 
     @EventHandler

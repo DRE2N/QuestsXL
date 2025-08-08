@@ -10,7 +10,7 @@ import de.erethon.questsxl.objective.*;
 
 public class QRegistries {
 
-    private static final QuestsXL qxl = QuestsXL.getInstance();
+    private static final QuestsXL qxl = QuestsXL.get();
 
     public static final QRegistry<QAction> ACTIONS = new QRegistry<>();
     public static final QRegistry<QCondition> CONDITIONS = new QRegistry<>();

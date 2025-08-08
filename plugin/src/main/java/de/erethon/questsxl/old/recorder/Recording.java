@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class Recording {
 
-    QuestsXL plugin = QuestsXL.getInstance();
+    QuestsXL plugin = QuestsXL.get();
 
     private final LinkedHashMap<Snapshot, Integer> playlist = new LinkedHashMap<>();
     BukkitRunnable playTask;

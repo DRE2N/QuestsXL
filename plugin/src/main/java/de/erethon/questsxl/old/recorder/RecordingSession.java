@@ -18,7 +18,7 @@ import java.util.Set;
 
 public class RecordingSession implements Listener {
 
-    QuestsXL plugin = QuestsXL.getInstance();
+    QuestsXL plugin = QuestsXL.get();
     private final Player player;
     private Location pos1;
     private Location pos2;

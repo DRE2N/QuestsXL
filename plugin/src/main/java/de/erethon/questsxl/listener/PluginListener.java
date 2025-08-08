@@ -9,7 +9,7 @@ public class PluginListener implements Listener {
 
     @EventHandler
     private void onServerLoad(ServerLoadEvent event) {
-        QuestsXL.getInstance().loadCore();
+        QuestsXL.get().loadCore();
 
     }
 

@@ -18,7 +18,7 @@ import java.util.Set;
 
 public class QStage implements QComponent {
 
-    private final QuestsXL plugin = QuestsXL.getInstance();
+    private final QuestsXL plugin = QuestsXL.get();
 
     private final Completable owner;
     private final Set<QObjective> goals = new HashSet<>();
@@ -68,7 +68,7 @@ public class QStage implements QComponent {
         }
         catch (Exception e) {
             FriendlyError error = new FriendlyError(holder.getName() + ".stages." + id, "Failed to start stage " + id, e.getMessage(), "" + id).addStacktrace(e.getStackTrace());
-            QuestsXL.getInstance().addRuntimeError(error);
+            QuestsXL.get().addRuntimeError(error);
             MessageUtil.log("Failed to start stage " + id + " for " + holder.getName());
             e.printStackTrace();
         }
@@ -103,7 +103,7 @@ public class QStage implements QComponent {
                     }
                 } catch (Exception e) {
                     FriendlyError error = new FriendlyError(holder.getName() + ".stages." + id, "Failed to check condition " + condition.getClass().getName(), e.getMessage(), "" + id).addStacktrace(e.getStackTrace());
-                    QuestsXL.getInstance().addRuntimeError(error);
+                    QuestsXL.get().addRuntimeError(error);
                     MessageUtil.log("Failed to check condition " + condition.getClass().getName() + " for " + holder.getName());
                 }
             }
@@ -118,7 +118,7 @@ public class QStage implements QComponent {
                     }
                 } catch (Exception e) {
                     FriendlyError error = new FriendlyError(qEvent.getName() + ".stages." + id, "Failed to check condition " + condition.getClass().getName(), e.getMessage(), "" + id).addStacktrace(e.getStackTrace());
-                    QuestsXL.getInstance().addRuntimeError(error);
+                    QuestsXL.get().addRuntimeError(error);
                     MessageUtil.log("Failed to check condition " + condition.getClass().getName() + " for " + qEvent.getName());
                 }
             }

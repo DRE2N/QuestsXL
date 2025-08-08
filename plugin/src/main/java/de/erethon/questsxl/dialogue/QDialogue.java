@@ -9,9 +9,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * @author Fyreum
@@ -31,7 +29,7 @@ public class QDialogue implements QComponent {
         this.file = file;
         this.cfg = YamlConfiguration.loadConfiguration(file);
         if (cfg.getKeys(false).size() == 0) {
-            QuestsXL.getInstance().getErrors().add(new FriendlyError("Dialog: " + name, "Datei ungültig.", "Datei " + file.getName() + " ist ungültig.", "Wahrscheinlich falsche Einrückung."));
+            QuestsXL.get().getErrors().add(new FriendlyError("Dialog: " + name, "Datei ungültig.", "Datei " + file.getName() + " ist ungültig.", "Wahrscheinlich falsche Einrückung."));
             return;
         }
         this.stages = new HashMap<>();
@@ -44,13 +42,13 @@ public class QDialogue implements QComponent {
         ConfigurationSection stagesSection = cfg.getConfigurationSection("stages");
         String id = "Dialog: " + getName();
         if (stagesSection == null) {
-            QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Stages konnten nicht geladen werden.", "stages section is null", "Wahrscheinlich falsche Einrückung."));
+            QuestsXL.get().getErrors().add(new FriendlyError(id, "Stages konnten nicht geladen werden.", "stages section is null", "Wahrscheinlich falsche Einrückung."));
             return;
         }
         for (String key : stagesSection.getKeys(false)) {
             ConfigurationSection stageSection = stagesSection.getConfigurationSection(key);
             if (stageSection == null) {
-                QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Stage '" + key + "' konnte nicht geladen werden", "stage section is null", "Wahrscheinlich falsche Einrückung."));
+                QuestsXL.get().getErrors().add(new FriendlyError(id, "Stage '" + key + "' konnte nicht geladen werden", "stage section is null", "Wahrscheinlich falsche Einrückung."));
                 continue;
             }
             try {
@@ -59,7 +57,7 @@ public class QDialogue implements QComponent {
                 stage.setParent(this);
                 stages.put(index, stage);
             } catch (Exception e) {
-                QuestsXL.getInstance().getErrors().add(new FriendlyError(id, "Stage '" + key + "' konnte nicht geladen werden", e.getMessage(), "Wahrscheinlich falsche Einrückung."));
+                QuestsXL.get().getErrors().add(new FriendlyError(id, "Stage '" + key + "' konnte nicht geladen werden", e.getMessage(), "Wahrscheinlich falsche Einrückung."));
             }
         }
     }

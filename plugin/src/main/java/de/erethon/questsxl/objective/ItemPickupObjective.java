@@ -8,7 +8,6 @@ import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 
 @QLoadableDoc(
@@ -23,7 +22,7 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 )
 public class ItemPickupObjective extends QBaseObjective<EntityPickupItemEvent> {
 
-    private final HItemLibrary itemLibrary = QuestsXL.getInstance().getItemLibrary();
+    private final HItemLibrary itemLibrary = QuestsXL.get().getItemLibrary();
 
     @QParamDoc(name = "item", description = "The key of the item that needs to be picked up. Same as in /give", required = true)
     private NamespacedKey itemID;

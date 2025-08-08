@@ -48,7 +48,7 @@ public class ModifyAttributeAction extends QBaseAction {
             AttributeModifier modifier = new AttributeModifier(key, amount, AttributeModifier.Operation.ADD_NUMBER);
             p.getAttribute(attribute).addTransientModifier(modifier);
             if (duration > 0) {
-                QuestsXL.getInstance().getServer().getScheduler().runTaskLater(QuestsXL.getInstance(), () -> p.getAttribute(attribute).removeModifier(key), duration);
+                QuestsXL.get().getServer().getScheduler().runTaskLater(QuestsXL.get(), () -> p.getAttribute(attribute).removeModifier(key), duration);
             }
         });
         onFinish(quester);
@@ -59,7 +59,7 @@ public class ModifyAttributeAction extends QBaseAction {
         super.load(cfg);
         attribute = Registry.ATTRIBUTE.get(new NamespacedKey("minecraft", cfg.getString("id").toLowerCase(Locale.ROOT)));
         if (attribute == null) {
-            QuestsXL.getInstance().addRuntimeError(new FriendlyError(cfg.getName(), "Invalid attribute: " + cfg.getString("id"), "Null attribute", "Make sure the attribute is spelled correctly."));
+            QuestsXL.get().addRuntimeError(new FriendlyError(cfg.getName(), "Invalid attribute: " + cfg.getString("id"), "Null attribute", "Make sure the attribute is spelled correctly."));
         }
         amount = cfg.getDouble("amount", 0);
         duration = cfg.getInt("duration", 0);

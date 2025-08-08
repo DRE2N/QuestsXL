@@ -25,7 +25,7 @@ import java.util.Map;
 
 public class QCutscene {
 
-    private transient final QuestsXL plugin = QuestsXL.getInstance();
+    private transient final QuestsXL plugin = QuestsXL.get();
 
     private final String id;
 

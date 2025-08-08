@@ -66,7 +66,7 @@ public class TestCommand extends ECommand {
             return;
         }
         if (args[1].equals("text")) {
-            QPlayer qPlayer = QuestsXL.getInstance().getPlayerCache().getByPlayer(player);
+            QPlayer qPlayer = QuestsXL.get().getPlayerCache().getByPlayer(player);
             qPlayer.setInConversation(true);
             player.sendMessage("Hello");
             player.sendMessage("Hello1");
@@ -86,11 +86,11 @@ public class TestCommand extends ECommand {
                     qPlayer.sendMessagesInQueue(false);
                 }
             };
-            later.runTaskLater(QuestsXL.getInstance(), 20);
+            later.runTaskLater(QuestsXL.get(), 20);
             return;
         }
         if (args[1].equals("conv")) {
-            new TalkAction().play(QuestsXL.getInstance().getPlayerCache().getByPlayer(player));
+            new TalkAction().play(QuestsXL.get().getPlayerCache().getByPlayer(player));
             return;
         }
         MessageUtil.sendMessage(player, "Invalid test command.");

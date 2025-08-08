@@ -32,8 +32,8 @@ import java.util.*;
 
 public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponent, Quester, Explorable {
 
-    private final QPlayerCache playerCache = QuestsXL.getInstance().getPlayerCache();
-    private final QuestsXL plugin = QuestsXL.getInstance();
+    private final QPlayerCache playerCache = QuestsXL.get().getPlayerCache();
+    private final QuestsXL plugin = QuestsXL.get();
 
     private final File file;
     private final YamlConfiguration cfg;
@@ -78,7 +78,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
         id = fileName.replace(".yml", "");
         cfg = YamlConfiguration.loadConfiguration(file);
         if (cfg.getKeys(false).isEmpty()) {
-            QuestsXL.getInstance().getErrors().add(new FriendlyError("Event: " + this.getName(), "Datei ungültig.", "Datei " + file.getName() + " ist ungültig.", "Wahrscheinlich falsche Einrückung."));
+            QuestsXL.get().getErrors().add(new FriendlyError("Event: " + this.getName(), "Datei ungültig.", "Datei " + file.getName() + " ist ungültig.", "Wahrscheinlich falsche Einrückung."));
             isValid = false;
             return;
         }
@@ -136,7 +136,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
             FriendlyError error = new FriendlyError("Event: " + id, "Failed to execute reward action", e.getMessage(), "Action: " + action.getClass().getSimpleName());
             error.addPlayer(playerEntry.getKey());
             error.addStacktrace(e.getStackTrace());
-            QuestsXL.getInstance().getErrors().add(error);
+            QuestsXL.get().getErrors().add(error);
         }
     }
 
@@ -390,7 +390,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
             try {
                 stage.load(this, stageS);
             } catch (Exception e) {
-                QuestsXL.getInstance().getErrors().add(new FriendlyError("Event: " + this.getName(), "Stage " + id + " konnte nicht geladen werden.", e.getMessage(), "...").addStacktrace(e.getStackTrace()));
+                QuestsXL.get().getErrors().add(new FriendlyError("Event: " + this.getName(), "Stage " + id + " konnte nicht geladen werden.", e.getMessage(), "...").addStacktrace(e.getStackTrace()));
             }
             stages.add(stage);
         }

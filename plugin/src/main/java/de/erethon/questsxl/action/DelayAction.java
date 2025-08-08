@@ -5,7 +5,6 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.Quester;
-import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ import java.util.Set;
 )
 public class DelayAction extends QBaseAction {
 
-    private final QuestsXL plugin = QuestsXL.getInstance();
+    private final QuestsXL plugin = QuestsXL.get();
 
     @QParamDoc(name = "duration", description = "The duration in seconds", def="0", required = true)
     private long delay;

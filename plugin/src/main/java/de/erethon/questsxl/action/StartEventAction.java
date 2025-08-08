@@ -2,13 +2,10 @@ package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
-import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.livingworld.QEvent;
-import de.erethon.questsxl.player.QPlayer;
-import org.bukkit.configuration.ConfigurationSection;
 
 @QLoadableDoc(
         value = "start_event",
@@ -22,7 +19,7 @@ import org.bukkit.configuration.ConfigurationSection;
 )
 public class StartEventAction extends QBaseAction {
 
-    QuestsXL plugin = QuestsXL.getInstance();
+    QuestsXL plugin = QuestsXL.get();
 
     @QParamDoc(name = "event", description = "The ID of the event to start", required = true)
     QEvent event;

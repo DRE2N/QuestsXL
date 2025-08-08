@@ -14,7 +14,7 @@ public record CompletedExplorable(ExplorationSet set, Explorable explorable, lon
     }
 
     public static CompletedExplorable fromJson(JsonObject json) {
-        Exploration exploration = QuestsXL.getInstance().getExploration();
+        Exploration exploration = QuestsXL.get().getExploration();
         ExplorationSet set = exploration.getSet(json.get("set").getAsString());
         Explorable explorable = set.getExplorable(json.get("explorable").getAsString());
         long timestamp = json.get("timestamp").getAsLong();

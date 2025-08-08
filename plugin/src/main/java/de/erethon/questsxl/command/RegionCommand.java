@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class RegionCommand extends ECommand {
 
-    QuestsXL plugin = QuestsXL.getInstance();
+    QuestsXL plugin = QuestsXL.get();
     QRegionManager manager = plugin.getRegionManager();
 
     public RegionCommand() {

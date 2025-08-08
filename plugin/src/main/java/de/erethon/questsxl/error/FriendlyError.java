@@ -31,7 +31,7 @@ public class FriendlyError {
     }
 
     public String getMessage() {
-        if (stacktrace != null && QuestsXL.getInstance().isShowStacktraces()) {
+        if (stacktrace != null && QuestsXL.get().isShowStacktraces()) {
             return "&8- &c" + location + "&8: &e<hover:show_text:'<red>" + exception + "\n<green>" + hint + "\n<dark_gray>" + stacktrace + "'>" + title + "</hover>";
         }
         return "&8- &c" + location + "&8: &e<hover:show_text:'<red>" + exception + "\n<green>" + hint + "'>" + title + "</hover>";

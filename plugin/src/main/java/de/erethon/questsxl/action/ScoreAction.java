@@ -2,14 +2,11 @@ package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
-import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.Quester;
-import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.player.QPlayerCache;
-import org.bukkit.configuration.ConfigurationSection;
 
 enum Scope {
     GLOBAL,
@@ -42,7 +39,7 @@ enum Operation {
 )
 public class ScoreAction extends QBaseAction {
 
-    QuestsXL plugin = QuestsXL.getInstance();
+    QuestsXL plugin = QuestsXL.get();
     QPlayerCache playerCache = plugin.getPlayerCache();
 
     @QParamDoc(name = "score", description = "The score to modify", required = true)

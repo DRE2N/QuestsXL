@@ -72,12 +72,12 @@ public class QLineConfig implements QConfig {
 
     @Override
     public QEvent getQEvent(String event) {
-        return QuestsXL.getInstance().getEventManager().getByID(event);
+        return QuestsXL.get().getEventManager().getByID(event);
     }
 
     @Override
     public QQuest getQuest(String quest) {
-        return QuestsXL.getInstance().getQuestManager().getByName(quest);
+        return QuestsXL.get().getQuestManager().getByName(quest);
     }
 
     public String getString(String key) {

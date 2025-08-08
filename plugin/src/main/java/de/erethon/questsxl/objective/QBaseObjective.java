@@ -14,7 +14,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 enum ActionScope {
@@ -24,7 +23,7 @@ enum ActionScope {
 
 public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
 
-    protected final QuestsXL plugin = QuestsXL.getInstance();
+    protected final QuestsXL plugin = QuestsXL.get();
     private String displayText;
     private final Set<QAction> completeActions = new HashSet<>();
     private final Set<QAction> progressActions = new HashSet<>();
@@ -184,7 +183,7 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
                     FriendlyError error = new FriendlyError(instigator.getName(), "Failed to run action for " + player.getName(), e.getMessage(), "Action: " + action.getClass().getName());
                     error.addPlayer(player);
                     error.addStacktrace(e.getStackTrace());
-                    QuestsXL.getInstance().getErrors().add(error);
+                    QuestsXL.get().getErrors().add(error);
                 }
             }
             else if (instigator instanceof QEvent event) {
@@ -193,7 +192,7 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
                 } catch (Exception e) {
                     FriendlyError error = new FriendlyError(instigator.getName(), "Failed to run action for " + event.getName(), e.getMessage(), "Action: " + action.getClass().getName());
                     error.addStacktrace(e.getStackTrace());
-                    QuestsXL.getInstance().getErrors().add(error);
+                    QuestsXL.get().getErrors().add(error);
                 }
             }
         }

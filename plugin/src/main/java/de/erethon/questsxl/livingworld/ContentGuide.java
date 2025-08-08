@@ -4,9 +4,7 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.player.QPlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -45,7 +43,7 @@ public class ContentGuide {
                 update();
             }
         };
-        task.runTaskTimer(QuestsXL.getInstance(), 0, 25);
+        task.runTaskTimer(QuestsXL.get(), 0, 25);
     }
 
     private void update() {

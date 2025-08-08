@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class DialogueCommand extends ECommand {
 
-    QuestsXL plugin = QuestsXL.getInstance();
+    QuestsXL plugin = QuestsXL.get();
 
     final List<String> subs = List.of("start", "next");
 

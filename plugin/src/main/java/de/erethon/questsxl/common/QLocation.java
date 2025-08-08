@@ -1,6 +1,5 @@
 package de.erethon.questsxl.common;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.error.FriendlyError;
 import org.bukkit.Bukkit;
@@ -14,7 +13,7 @@ import org.bukkit.configuration.ConfigurationSection;
  */
 public class QLocation {
 
-    private final QuestsXL plugin = QuestsXL.getInstance();
+    private final QuestsXL plugin = QuestsXL.get();
     //private final DungeonsAPI dungeonsAPI = plugin.getDungeonsAPI();
 
     private String worldID;

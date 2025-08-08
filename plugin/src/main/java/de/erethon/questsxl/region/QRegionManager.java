@@ -3,7 +3,6 @@ package de.erethon.questsxl.region;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -24,7 +23,7 @@ public class QRegionManager {
 
     public QRegionManager(File regionDataFile) {
         regionData = regionDataFile;
-        new CacheCleanTask().runTaskTimer(QuestsXL.getInstance(), 6000, 18000); // 15 min
+        new CacheCleanTask().runTaskTimer(QuestsXL.get(), 6000, 18000); // 15 min
         load();
     }
 
@@ -98,7 +97,7 @@ class CacheCleanTask extends BukkitRunnable {
     public void run() {
         Set<QRegion> toRemove = new HashSet<>();
         long time = System.currentTimeMillis();
-        QRegionManager manager = QuestsXL.getInstance().getRegionManager();
+        QRegionManager manager = QuestsXL.get().getRegionManager();
         for (QRegion region : manager.getCache()) {
             if (region.lastAccessed + 300000 < time) {
                 toRemove.add(region);

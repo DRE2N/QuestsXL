@@ -28,7 +28,7 @@ enum Mode {
 )
 public class PlayersInRangeCondition extends QBaseCondition {
 
-    private final QuestsXL plugin = QuestsXL.getInstance();
+    private final QuestsXL plugin = QuestsXL.get();
 
     @QParamDoc(name = "event", description = "The ID of the event.")
     private QEvent event;

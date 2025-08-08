@@ -12,7 +12,6 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.ObjectiveHolder;
 import de.erethon.questsxl.common.QConfig;
-import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.common.QParamDoc;
@@ -20,11 +19,9 @@ import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
-import java.util.Arrays;
 
 @QLoadableDoc(
         value = "paste_schematic",
@@ -91,7 +88,7 @@ public class PasteSchematicAction extends QBaseAction {
                     undo.flushQueue();
                 }
             };
-            undoRunnable.runTaskLater(QuestsXL.getInstance(), time);
+            undoRunnable.runTaskLater(QuestsXL.get(), time);
         }
     }
 

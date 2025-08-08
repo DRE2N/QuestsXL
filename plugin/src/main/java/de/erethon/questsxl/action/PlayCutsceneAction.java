@@ -4,12 +4,10 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.animation.AnimationManager;
 import de.erethon.questsxl.animation.QCutscene;
 import de.erethon.questsxl.common.QConfig;
-import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.player.QPlayer;
-import org.bukkit.configuration.ConfigurationSection;
 
 @QLoadableDoc(
         value = "play_cutscene",
@@ -22,7 +20,7 @@ import org.bukkit.configuration.ConfigurationSection;
 )
 public class PlayCutsceneAction extends QBaseAction {
 
-    AnimationManager manager = QuestsXL.getInstance().getAnimationManager();
+    AnimationManager manager = QuestsXL.get().getAnimationManager();
 
     @QParamDoc(name = "cutscene", description = "The ID of the cutscene to play", required = true)
     QCutscene cutscene;

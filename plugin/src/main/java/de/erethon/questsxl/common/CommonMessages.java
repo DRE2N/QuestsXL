@@ -27,7 +27,7 @@ public class CommonMessages {
 
         for (Map.Entry<String, Map<Locale, String>> entry : messages.entrySet()) {
             QTranslatable translatable = new QTranslatable(entry.getKey(), entry.getValue());
-            QuestsXL.getInstance().registerTranslation(translatable);
+            QuestsXL.get().registerTranslation(translatable);
         }
     }
 

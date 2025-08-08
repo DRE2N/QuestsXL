@@ -10,6 +10,6 @@ import org.bukkit.event.Listener;
  */
 public abstract class AbstractListener implements Listener {
 
-    QPlayerCache cache = QuestsXL.getInstance().getPlayerCache();
-    QEventManager eventManager = QuestsXL.getInstance().getEventManager();
+    QPlayerCache cache = QuestsXL.get().getPlayerCache();
+    QEventManager eventManager = QuestsXL.get().getEventManager();
 }

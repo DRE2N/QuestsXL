@@ -24,7 +24,7 @@ public class MainCommand extends ECommand {
 
     @Override
     public void onExecute(String[] args, CommandSender commandSender) {
-        QuestsXL plugin = QuestsXL.getInstance();
+        QuestsXL plugin = QuestsXL.get();
         Player player = (Player) commandSender;
         QPlayer qPlayer = plugin.getPlayerCache().getByPlayer(player);
         if (player.hasPermission("qxl.admin.version")) {

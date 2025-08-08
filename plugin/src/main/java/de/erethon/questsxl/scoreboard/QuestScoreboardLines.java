@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class QuestScoreboardLines implements ScoreboardLines {
 
-    final QuestsXL plugin = QuestsXL.getInstance();
+    final QuestsXL plugin = QuestsXL.get();
 
     private static final String QUEST_COLOR = "<dark_gray>[<#3fda52>♥<dark_gray>]<#3fda52> ";
     private static final String EVENT_COLOR = "<dark_gray>[<#ec762c>\uD83D\uDDE1<dark_gray>]<#ec762c> ";

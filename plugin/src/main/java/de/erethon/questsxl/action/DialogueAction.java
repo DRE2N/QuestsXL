@@ -1,17 +1,12 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.action.QBaseAction;
 import de.erethon.questsxl.common.QConfig;
-import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.dialogue.QDialogue;
 import de.erethon.questsxl.dialogue.QDialogueManager;
-import de.erethon.questsxl.livingworld.QEvent;
-import de.erethon.questsxl.player.QPlayer;
-import org.bukkit.configuration.ConfigurationSection;
 
 @QLoadableDoc(
         value = "play_dialogue",
@@ -24,7 +19,7 @@ import org.bukkit.configuration.ConfigurationSection;
 )
 public class DialogueAction extends QBaseAction {
 
-    QuestsXL plugin = QuestsXL.getInstance();
+    QuestsXL plugin = QuestsXL.get();
     QDialogueManager dialogueManager = plugin.getDialogueManager();
     @QParamDoc(name = "dialogue", description = "The ID of the dialogue to play", required = true)
     QDialogue dialogue;

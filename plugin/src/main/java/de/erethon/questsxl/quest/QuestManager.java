@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class QuestManager {
 
-    QuestsXL plugin = QuestsXL.getInstance();
+    QuestsXL plugin = QuestsXL.get();
 
     Set<QQuest> quests = new HashSet<>();
 

@@ -4,7 +4,6 @@ import de.erethon.bedrock.misc.NumberUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.common.QComponent;
-import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QConfigLoader;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QRegistries;
@@ -12,12 +11,10 @@ import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -106,7 +103,7 @@ public class QDialogueStage implements QComponent {
             try {
                 dialogueOption.load(qlc);
             } catch (Exception e) {
-                QuestsXL.getInstance().getErrors().add(new FriendlyError(cfg.getName(), "Failed to load dialogue option", e.getMessage(), "Path: " + cfg.getCurrentPath() + "." + option).addStacktrace(e.getStackTrace()));
+                QuestsXL.get().getErrors().add(new FriendlyError(cfg.getName(), "Failed to load dialogue option", e.getMessage(), "Path: " + cfg.getCurrentPath() + "." + option).addStacktrace(e.getStackTrace()));
             }
         }
     }

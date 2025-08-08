@@ -1,14 +1,11 @@
 package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.common.ObjectiveHolder;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.error.FriendlyError;
-import de.erethon.questsxl.livingworld.QEvent;
-import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Set;
@@ -27,7 +24,7 @@ import java.util.Set;
 )
 public class RepeatAction extends QBaseAction {
 
-    private transient final QuestsXL plugin = QuestsXL.getInstance();
+    private transient final QuestsXL plugin = QuestsXL.get();
 
     @QParamDoc(name = "delay", description = "The delay between each repetition in seconds", def="0")
     long delay;

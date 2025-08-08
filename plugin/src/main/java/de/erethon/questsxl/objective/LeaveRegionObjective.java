@@ -2,13 +2,10 @@ package de.erethon.questsxl.objective;
 
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
-import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.event.QRegionLeaveEvent;
 import de.erethon.questsxl.region.QRegion;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.event.Event;
 
 @QLoadableDoc(
         value = "leave_region",
@@ -35,7 +32,7 @@ public class LeaveRegionObjective extends QBaseObjective<QRegionLeaveEvent> {
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        region = QuestsXL.getInstance().getRegionManager().getByID(cfg.getString("region"));
+        region = QuestsXL.get().getRegionManager().getByID(cfg.getString("region"));
     }
 
     @Override

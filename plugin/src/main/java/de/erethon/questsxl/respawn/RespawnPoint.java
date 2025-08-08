@@ -19,7 +19,7 @@ enum UseMode {
 
 public class RespawnPoint {
 
-    QuestsXL plugin = QuestsXL.getInstance();
+    QuestsXL plugin = QuestsXL.get();
 
     String id;
     Location location;

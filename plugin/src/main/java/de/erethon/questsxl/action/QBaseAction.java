@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 
 public abstract class QBaseAction implements QAction {
 
-    QuestsXL plugin = QuestsXL.getInstance();
+    QuestsXL plugin = QuestsXL.get();
     QPlayerCache cache = plugin.getPlayerCache();
     List<QCondition> conditions = new ArrayList<>();
     Set<QAction> runAfter = new HashSet<>();

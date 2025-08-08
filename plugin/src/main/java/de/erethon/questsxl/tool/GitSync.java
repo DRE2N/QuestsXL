@@ -30,7 +30,7 @@ public class GitSync {
     Set<File> foldersInPlugins = new HashSet<>();
     Repository repository;
     Git git;
-    QuestsXL plugin = QuestsXL.getInstance();
+    QuestsXL plugin = QuestsXL.get();
 
     private boolean isSyncOnly;
 
@@ -62,7 +62,7 @@ public class GitSync {
         if (!plugin.isGitSync()) {
             return;
         }
-        String token = QuestsXL.getInstance().getGitToken();
+        String token = QuestsXL.get().getGitToken();
         CredentialsProvider credentialsProvider = new UsernamePasswordCredentialsProvider(token, "");
         git = Git.cloneRepository()
                 .setURI("https://github.com/DRE2N/Erethon")

@@ -51,7 +51,7 @@ public class MountedCondition extends QBaseCondition {
         //noinspection UnstableApiUsage
         entityType = EntityType.fromName(cfg.getString("entity_type").toUpperCase(Locale.ROOT));
         if (entityType == null) {
-            QuestsXL.getInstance().addRuntimeError(new FriendlyError(cfg.getName(), "Invalid entity type: " + cfg.getString("entity"), "Null entity type", "Make sure the entity type is spelled correctly."));
+            QuestsXL.get().addRuntimeError(new FriendlyError(cfg.getName(), "Invalid entity type: " + cfg.getString("entity"), "Null entity type", "Make sure the entity type is spelled correctly."));
         }
     }
 }

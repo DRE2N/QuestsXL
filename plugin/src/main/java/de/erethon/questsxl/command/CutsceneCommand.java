@@ -16,7 +16,7 @@ import java.util.List;
 public class CutsceneCommand extends ECommand {
 
 
-        QuestsXL plugin = QuestsXL.getInstance();
+        QuestsXL plugin = QuestsXL.get();
         AnimationManager manager = plugin.getAnimationManager();
         QCutscene scene = null;
         List<Location> locationList = new ArrayList<>();

@@ -24,18 +24,18 @@ public class ReloadCommand extends ECommand {
     @Override
     public void onExecute(String[] args, CommandSender commandSender) {
         if (args.length > 1) {
-            QuestsXL.getInstance().setShowStacktraces(true);
+            QuestsXL.get().setShowStacktraces(true);
         }
         MessageUtil.sendMessage(commandSender, "&aReloading...");
-        QuestsXL.getInstance().reload();
+        QuestsXL.get().reload();
         MessageUtil.sendMessage(commandSender, "&aReload complete.");
-        List<FriendlyError> errors = QuestsXL.getInstance().getErrors();
+        List<FriendlyError> errors = QuestsXL.get().getErrors();
         if (!errors.isEmpty()) {
             MessageUtil.sendMessage(commandSender, "&4Es sind &c" + errors.size() + " &4Fehler aufgetreten:");
         }
         for (FriendlyError error : errors) {
             MessageUtil.sendMessage(commandSender, error.getMessage());
         }
-        QuestsXL.getInstance().setShowStacktraces(false);
+        QuestsXL.get().setShowStacktraces(false);
     }
 }

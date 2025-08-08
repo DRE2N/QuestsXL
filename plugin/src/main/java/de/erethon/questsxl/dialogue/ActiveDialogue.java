@@ -33,7 +33,7 @@ public class ActiveDialogue extends BukkitRunnable {
     public BukkitTask start() {
         qPlayer.setActiveDialogue(this);
         qPlayer.setInConversation(true);
-        return runTaskTimerAsynchronously(QuestsXL.getInstance(), 0, TIMER_PERIOD);
+        return runTaskTimerAsynchronously(QuestsXL.get(), 0, TIMER_PERIOD);
     }
 
     @Override

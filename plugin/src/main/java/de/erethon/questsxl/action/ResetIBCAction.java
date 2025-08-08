@@ -2,14 +2,12 @@ package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
-import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.instancing.BlockCollectionManager;
 import de.erethon.questsxl.instancing.InstancedBlockCollection;
 import de.erethon.questsxl.player.QPlayer;
-import org.bukkit.configuration.ConfigurationSection;
 
 @QLoadableDoc(
         value = "reset_ibc",
@@ -22,7 +20,7 @@ import org.bukkit.configuration.ConfigurationSection;
 )
 public class ResetIBCAction extends QBaseAction {
 
-    BlockCollectionManager manager = QuestsXL.getInstance().getBlockCollectionManager();
+    BlockCollectionManager manager = QuestsXL.get().getBlockCollectionManager();
 
     @QParamDoc(name = "ibc", description = "The ID of the IBC to reset", required = true)
     InstancedBlockCollection collection = null;

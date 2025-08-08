@@ -40,13 +40,13 @@ public class QQuest implements Completable, QComponent {
         name = fileName.replace(".yml", "");
         cfg = YamlConfiguration.loadConfiguration(file);
         if (cfg.getKeys(false).size() == 0) {
-            QuestsXL.getInstance().getErrors().add(new FriendlyError("Quest: " + this.getName(), "Datei ungültig.", "Datei " + file.getName() + " ist ungültig.", "Wahrscheinlich falsche Einrückung."));
+            QuestsXL.get().getErrors().add(new FriendlyError("Quest: " + this.getName(), "Datei ungültig.", "Datei " + file.getName() + " ist ungültig.", "Wahrscheinlich falsche Einrückung."));
             return;
         }
         try {
             load();
         } catch (Exception e) {
-            QuestsXL.getInstance().getErrors().add(new FriendlyError(fileName, "Failed to load quest", e.getMessage(), "Format invalid?"));
+            QuestsXL.get().getErrors().add(new FriendlyError(fileName, "Failed to load quest", e.getMessage(), "Format invalid?"));
             e.printStackTrace();
         }
     }
@@ -60,7 +60,7 @@ public class QQuest implements Completable, QComponent {
                 FriendlyError error = new FriendlyError("Quest: " + this.getName(), "Failed to reward player", e.getMessage(), "Action: " + action.getClass().getSimpleName());
                 error.addPlayer(player);
                 error.addStacktrace(e.getStackTrace());
-                QuestsXL.getInstance().getErrors().add(error);
+                QuestsXL.get().getErrors().add(error);
             }
         }
     }
@@ -83,7 +83,7 @@ public class QQuest implements Completable, QComponent {
                 FriendlyError error = new FriendlyError("Quest: " + this.getName(), "Failed to check condition", e.getMessage(), "Condition: " + condition.getClass().getSimpleName());
                 error.addPlayer(qPlayer);
                 error.addStacktrace(e.getStackTrace());
-                QuestsXL.getInstance().getErrors().add(error);
+                QuestsXL.get().getErrors().add(error);
                 return false;
             }
         }
@@ -163,7 +163,7 @@ public class QQuest implements Completable, QComponent {
         for (String key : stageSection.getKeys(false)) {
             ConfigurationSection stageS = stageSection.getConfigurationSection(key);
             if (stageS == null) {
-                QuestsXL.getInstance().getErrors().add(new FriendlyError("Quest: " + this.getName(), "Stage '" + key + "' konnte nicht geladen werden", "stage section is null", "Wahrscheinlich falsche Einrückung."));
+                QuestsXL.get().getErrors().add(new FriendlyError("Quest: " + this.getName(), "Stage '" + key + "' konnte nicht geladen werden", "stage section is null", "Wahrscheinlich falsche Einrückung."));
                 continue;
             }
             int id = Integer.parseInt(key);
@@ -171,7 +171,7 @@ public class QQuest implements Completable, QComponent {
             try {
                 stage.load(this, stageS);
             } catch (Exception e) {
-                QuestsXL.getInstance().getErrors().add(new FriendlyError("Quest: " + this.getName(), "Stage " + id + " konnte nicht geladen werden.", e.getMessage(), "..."));
+                QuestsXL.get().getErrors().add(new FriendlyError("Quest: " + this.getName(), "Stage " + id + " konnte nicht geladen werden.", e.getMessage(), "..."));
                 e.printStackTrace();
             }
             stages.add(stage);

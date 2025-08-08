@@ -2,7 +2,6 @@ package de.erethon.questsxl.action;
 
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
-import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -44,7 +43,7 @@ public class TalkAction extends QBaseAction {
                 }
             };
             time = time + (messages.get(msg) * 20);
-            later.runTaskLater(QuestsXL.getInstance(), time);
+            later.runTaskLater(QuestsXL.get(), time);
         }
     }
 

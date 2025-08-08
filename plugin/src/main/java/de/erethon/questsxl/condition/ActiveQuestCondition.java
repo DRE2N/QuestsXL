@@ -2,15 +2,12 @@ package de.erethon.questsxl.condition;
 
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
-import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.Quester;
-import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.QQuest;
 import de.erethon.questsxl.quest.QuestManager;
-import org.bukkit.configuration.ConfigurationSection;
 
 @QLoadableDoc(
         value = "active_quest",
@@ -23,7 +20,7 @@ import org.bukkit.configuration.ConfigurationSection;
 )
 public class ActiveQuestCondition extends QBaseCondition {
 
-    QuestManager questManager = QuestsXL.getInstance().getQuestManager();
+    QuestManager questManager = QuestsXL.get().getQuestManager();
 
     @QParamDoc(name = "quest", description = "The ID of the quest.", required = true)
     QQuest quest;

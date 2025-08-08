@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 
 public class AdminCommand extends ECommand {
 
-    QuestsXL plugin = QuestsXL.getInstance();
+    QuestsXL plugin = QuestsXL.get();
 
     public AdminCommand() {
         setCommand("admin");

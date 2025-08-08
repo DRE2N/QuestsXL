@@ -60,7 +60,7 @@ public class RunCommand extends ECommand implements QComponent {
             public void run() {
                 MessageUtil.sendMessage(player, "Playing " + finalQActions.size() + " actions...");
                 try {
-                    finalQActions.forEach(action -> action.play(QuestsXL.getInstance().getPlayerCache().getByPlayer(player)));
+                    finalQActions.forEach(action -> action.play(QuestsXL.get().getPlayerCache().getByPlayer(player)));
                 } catch (Exception exception) {
                     errors.add(new FriendlyError("Command", "Failed to execute action", exception.getMessage(), "").addStacktrace(exception.getStackTrace()));
                 }
@@ -72,7 +72,7 @@ public class RunCommand extends ECommand implements QComponent {
                 }
             }
         };
-        later.runTaskLater(QuestsXL.getInstance(), 0);
+        later.runTaskLater(QuestsXL.get(), 0);
     }
 
     @Override

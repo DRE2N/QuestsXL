@@ -20,7 +20,7 @@ public class QuestBook {
         Component bookAuthor = Component.text("ffsg");
         Collection<Component> bookPages = new ArrayList<>();
         Component page = Component.empty();
-        for (QQuest quest : QuestsXL.getInstance().getQuestManager().getQuests()) {
+        for (QQuest quest : QuestsXL.get().getQuestManager().getQuests()) {
             Component questEntry = Component.text(" - ").color(TextColor.color(20, 20, 20));
             questEntry = questEntry.append(Component.text(quest.getName()));
             Component hover = Component.empty();
@@ -40,7 +40,7 @@ public class QuestBook {
 
     public static String stageDesc(Player player, QQuest quest) {
         ActiveQuest active = null;
-        for (ActiveQuest activeQuest : QuestsXL.getInstance().getPlayerCache().getByPlayer(player).getActiveQuests().keySet()) {
+        for (ActiveQuest activeQuest : QuestsXL.get().getPlayerCache().getByPlayer(player).getActiveQuests().keySet()) {
             if (activeQuest.getQuest() == quest) {
                 active = activeQuest;
             }

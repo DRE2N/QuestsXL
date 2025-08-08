@@ -21,7 +21,6 @@ import de.erethon.questsxl.quest.QQuest;
 import de.erethon.questsxl.region.QRegion;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -32,14 +31,12 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.w3c.dom.html.HTMLScriptElement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +53,7 @@ import java.util.regex.Pattern;
 public class QPlayer extends StorageDataContainer implements LoadableUser, ObjectiveHolder, Scorable, Quester {
 
     public static final int CONFIG_VERSION = 1;
-    private final QuestsXL plugin = QuestsXL.getInstance();
+    private final QuestsXL plugin = QuestsXL.get();
 
     UUID uuid;
     Player player;
@@ -96,7 +93,7 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
         CraftPlayer craftPlayer = (CraftPlayer) player;
         serverPlayer = craftPlayer.getHandle();
         explorer = new PlayerExplorer(this);
-        GlobalObjectives globalObjectives = QuestsXL.getInstance().getGlobalObjectives();
+        GlobalObjectives globalObjectives = QuestsXL.get().getGlobalObjectives();
         if (globalObjectives != null) {
             for (QObjective objective : globalObjectives.getObjectives()) {
                 ActiveObjective activeObjective = new ActiveObjective(this, globalObjectives, globalObjectives.getStages().getFirst(), objective);
@@ -184,7 +181,7 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
             for (String questName : questsSection.getKeys(false)) {
                 ConfigurationSection section = questsSection.getConfigurationSection(questName);
                 if (section == null) continue;
-                QQuest quest = QuestsXL.getInstance().getQuestManager().getByName(questName);
+                QQuest quest = QuestsXL.get().getQuestManager().getByName(questName);
                 if (quest == null) continue;
                 int currentStage = section.getInt("currentStage");
                 long started = section.getInt("started");
@@ -467,6 +464,6 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
     }
 
     public static QPlayer get(Player player) {
-        return QuestsXL.getInstance().getPlayerCache().getByPlayer(player);
+        return QuestsXL.get().getPlayerCache().getByPlayer(player);
     }
 }
