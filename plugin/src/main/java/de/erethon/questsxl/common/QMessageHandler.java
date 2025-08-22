@@ -26,17 +26,33 @@ public class QMessageHandler extends MiniMessageTranslator {
     @Override
     protected @Nullable String getMiniMessageString(@NotNull String key, @NotNull Locale locale) {
         Map<Locale, String> map = translations.get(key);
-        return map == null ? null : map.get(locale);
+        if (map == null) return null;
+        String value = map.get(locale);
+        if (value != null) return value;
+        Locale langOnly = new Locale(locale.getLanguage());
+        value = map.get(langOnly);
+        if (value != null) return value;
+        value = map.get(Locale.ENGLISH);
+        if (value != null) return value;
+        return map.values().stream().findFirst().orElse(null);
     }
 
     private String toTranslationPath(String path) {
-        return translatorKey.namespace() + "." + path;
+        if (path == null) return null;
+        String prefix = translatorKey.namespace() + ".";
+        if (path.startsWith(prefix)) {
+            return path;
+        }
+        return prefix + path;
     }
 
     public void registerTranslation(QTranslatable translatable) {
         String translationPath = toTranslationPath(translatable.getKey());
+        if (translationPath == null) return;
         for (Map.Entry<Locale, String> entry : translatable.getTranslations().entrySet()) {
-            translations.computeIfAbsent(translationPath, s -> new HashMap<>()).putIfAbsent(entry.getKey(), entry.getValue());
+            translations
+                    .computeIfAbsent(translationPath, s -> new HashMap<>())
+                    .putIfAbsent(entry.getKey(), entry.getValue());
         }
     }
 
@@ -47,6 +63,6 @@ public class QMessageHandler extends MiniMessageTranslator {
 
     @Override
     public @NotNull TriState hasAnyTranslations() {
-        return super.hasAnyTranslations();
+        return translations.isEmpty() ? TriState.FALSE : TriState.TRUE;
     }
 }

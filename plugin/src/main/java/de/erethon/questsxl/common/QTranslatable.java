@@ -2,7 +2,7 @@ package de.erethon.questsxl.common;
 
 import de.erethon.questsxl.QuestsXL;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TranslatableComponent;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -12,15 +12,33 @@ public class QTranslatable {
 
     private final String key;
     private final Map<Locale, String> translations;
+    private final String literal;
+
+    private Component cachedLiteralComponent;
 
     public QTranslatable(String key, Map<Locale, String> translations) {
         this.key = key;
-        this.translations = translations;
-        QuestsXL.get().registerTranslation(this);
+        this.translations = translations == null ? new HashMap<>() : translations;
+        this.literal = null;
+        if (!this.translations.isEmpty()) {
+            QuestsXL.get().registerTranslation(this);
+        }
     }
 
-    public TranslatableComponent get() {
-        return Component.translatable(key);
+    private QTranslatable(String literal) {
+        this.key = null;
+        this.translations = new HashMap<>();
+        this.literal = literal;
+    }
+
+    public Component get() {
+        if (key != null) {
+            return Component.translatable(key);
+        }
+        if (cachedLiteralComponent == null) {
+            cachedLiteralComponent = MiniMessage.miniMessage().deserialize(literal == null ? "" : literal);
+        }
+        return cachedLiteralComponent;
     }
 
     public String getKey() {
@@ -32,25 +50,30 @@ public class QTranslatable {
     }
 
     public static QTranslatable fromString(String str) {
-        Map<Locale, String> translations = new HashMap<>();
-        Locale defaultLocale = Locale.ENGLISH;
-        if (!str.contains(";")) {
-            // Simple message
-            translations.put(defaultLocale, str);
-            return new QTranslatable(str, translations);
-        } else {
-            // Complex message
-            String[] split = str.split(";");
-            for (String part : split) {
-                String[] keyValue = part.split("=", 2);
-                if (keyValue.length == 2) {
-                    String localeStr = keyValue[0].trim();
-                    Locale locale = Locale.forLanguageTag(localeStr);
-                    translations.put(locale, keyValue[1].trim());
+        if (str == null) {
+            return new QTranslatable("");
+        }
+        Map<Locale, String> parsed = new HashMap<>();
+        boolean hasLocaleEntries = false;
+        String[] parts = str.split(";");
+        for (String part : parts) {
+            String[] kv = part.split("=", 2);
+            if (kv.length == 2) {
+                String left = kv[0].trim();
+                String right = kv[1].trim();
+                // if left looks like a language tag (e.g., en or de-DE), treat as locale entry
+                if (left.matches("[a-zA-Z]{2,3}(-[a-zA-Z]{2,3})?")) {
+                    Locale locale = Locale.forLanguageTag(left);
+                    parsed.put(locale, right);
+                    hasLocaleEntries = true;
                 }
             }
-            return new QTranslatable(translations.getOrDefault(Locale.ENGLISH, "default_key"), translations);
         }
+        if (hasLocaleEntries && !parsed.isEmpty()) {
+            String syntheticKey = "qxl.dynamic." + Integer.toHexString(str.hashCode());
+            return new QTranslatable(syntheticKey, parsed);
+        }
+        return new QTranslatable(str);
     }
 
 }
