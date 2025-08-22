@@ -46,9 +46,9 @@ public class DialogueCommand extends ECommand {
                 MessageUtil.sendMessage(player, QuestsXL.ERROR + "Der angegebene Dialog konnte nicht gefunden werden.");
                 return;
             }
-            dialogue.start(plugin.getPlayerCache().getByPlayer(player));
+            dialogue.start(plugin.getDatabaseManager().getCurrentPlayer(player));
         } else if (args[1].equalsIgnoreCase("next")) {
-            QPlayer qPlayer = plugin.getPlayerCache().getByPlayer(player);
+            QPlayer qPlayer = plugin.getDatabaseManager().getCurrentPlayer(player);
             ActiveDialogue activeDialogue = qPlayer.getActiveDialogue();
             if (activeDialogue == null) {
                 MessageUtil.sendMessage(player, QuestsXL.ERROR + "Du hast derzeit keinen aktiven Dialog.");

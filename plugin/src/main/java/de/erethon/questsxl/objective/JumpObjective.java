@@ -17,7 +17,7 @@ public class JumpObjective extends QBaseObjective<PlayerJumpEvent> {
     @Override
     public void check(ActiveObjective active, PlayerJumpEvent e) {
         if (!conditions(e.getPlayer())) return;
-        checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(e.getPlayer()));
+        checkCompletion(active, this, plugin.getDatabaseManager().getCurrentPlayer(e.getPlayer()));
     }
 
     @Override

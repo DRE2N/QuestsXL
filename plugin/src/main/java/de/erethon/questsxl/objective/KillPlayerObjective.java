@@ -16,7 +16,7 @@ public class KillPlayerObjective extends QBaseObjective<PlayerDeathEvent> {
             return;
         }
 
-        checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(e.getPlayer()));
+        checkCompletion(active, this, plugin.getDatabaseManager().getCurrentPlayer(e.getPlayer()));
 
     }
 

@@ -78,7 +78,7 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
     }
 
     public boolean conditions(Player player) {
-        QPlayer qPlayer = plugin.getPlayerCache().getByPlayer(player);
+        QPlayer qPlayer = plugin.getDatabaseManager().getCurrentPlayer(player);
         return conditions(qPlayer, qPlayer);
     }
 
@@ -94,6 +94,10 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
         active.addProgress(1);
         progress(active.getHolder(), instigator);
         QuestsXL.log("Progress: " + active.getProgress() + " Goal: " + progressGoal + " Scope: " + progressScope);
+
+        // Save progress to database
+        active.saveToDatabase();
+
         if (active.getProgress() >= progressGoal) {
             complete(active.getHolder(), objective, instigator);
         }
@@ -114,6 +118,8 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
             QuestsXL.log("Active: Objective: " + activeObjective.getObjective().getClass().getName() + " Holder: " + activeObjective.getHolder().getName() + " | Objective: " + obj.getClass().getName() + " Holder: " + holder.getName());
             if (activeObjective.getObjective() == obj && activeObjective.getHolder() == holder) {
                 activeObjective.setCompleted(true);
+                // Save completion status to database
+                activeObjective.saveToDatabase();
                 QuestsXL.log("Completed " + obj.getClass().getName());
                 if (activeObjective.getStage() != null) {
                     activeObjective.getStage().checkCompleted(holder);
@@ -126,6 +132,8 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
         for (ActiveObjective activeObjective : toRemove) {
             activeObjectives.remove(activeObjective);
             plugin.getObjectiveEventManager().unregister(activeObjective);
+            // Remove from database when objective is removed
+            activeObjective.removeFromDatabase();
         }
         if (completeScope == ActionScope.PLAYER) {
             runActions(completeActions, instigator);

@@ -1,6 +1,5 @@
 package de.erethon.questsxl.livingworld;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.common.QComponent;
@@ -9,13 +8,13 @@ import de.erethon.questsxl.common.QRegistries;
 import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.common.Scorable;
+import de.erethon.questsxl.common.data.QDatabaseManager;
 import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.objective.ActiveObjective;
 import de.erethon.questsxl.common.ObjectiveHolder;
 import de.erethon.questsxl.objective.QObjective;
 import de.erethon.questsxl.player.QPlayer;
-import de.erethon.questsxl.player.QPlayerCache;
 import de.erethon.questsxl.common.Completable;
 import de.erethon.questsxl.common.QStage;
 import org.bukkit.Bukkit;
@@ -32,11 +31,11 @@ import java.util.*;
 
 public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponent, Quester, Explorable {
 
-    private final QPlayerCache playerCache = QuestsXL.get().getPlayerCache();
     private final QuestsXL plugin = QuestsXL.get();
+    private final QDatabaseManager databaseManager = plugin.getDatabaseManager();
 
     private final File file;
-    private final YamlConfiguration cfg;
+    public YamlConfiguration cfg;
     private boolean isValid;
     private QComponent parent;
 
@@ -162,7 +161,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
                     if (!Bukkit.getOnlinePlayers().contains(player)) {
                         continue;
                     }
-                    playersInRange.add(playerCache.getByPlayer(player));
+                    playersInRange.add(databaseManager.getCurrentPlayer(player));
                 }
                 for (QAction action : updateActions) {
                     action.play(this);
@@ -415,7 +414,6 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
             cfg.set("state.currentStage", 0);
         }
         cfg.set("state.timeLastCompleted", (long) timeLastCompleted);
-        saveProgress(cfg);
         try {
             cfg.save(file);
         } catch (IOException e) {

@@ -63,7 +63,7 @@ public class AdminCommand extends ECommand {
                 MessageUtil.sendMessage(player, QuestsXL.ERROR + "Dieser Spieler existiert nicht");
                 return;
             }
-            QPlayer qPlayer = plugin.getPlayerCache().getByPlayer(otherPlayer);
+            QPlayer qPlayer = plugin.getDatabaseManager().getCurrentPlayer(otherPlayer);
             if (qPlayer.getActiveQuests().isEmpty()) {
                 MessageUtil.sendMessage(player, QuestsXL.ERROR + "Dieser hat keine aktiven Quests.");
                 return;
@@ -83,7 +83,7 @@ public class AdminCommand extends ECommand {
                 MessageUtil.sendMessage(player, QuestsXL.ERROR + "Dieser Spieler existiert nicht");
                 return;
             }
-            QPlayer qPlayer = plugin.getPlayerCache().getByPlayer(otherPlayer);
+            QPlayer qPlayer = plugin.getDatabaseManager().getCurrentPlayer(otherPlayer);
             if (args.length < 4) {
                 MessageUtil.sendMessage(player, QuestsXL.ERROR + "Bitte gebe eine Quest an.");
                 return;
@@ -98,7 +98,7 @@ public class AdminCommand extends ECommand {
             return;
         }
         if (args[1].equalsIgnoreCase("objectives") || args[1].equalsIgnoreCase("o")) {
-            QPlayer player1 = plugin.getPlayerCache().getByPlayer(player);
+            QPlayer player1 = plugin.getDatabaseManager().getCurrentPlayer(player);
             MessageUtil.sendMessage(player, "&7Aktive Objectives:");
             player1.getCurrentObjectives().forEach((objective) -> {
                 MessageUtil.sendMessage(player, "&8- &6" + objective.getObjective().getClass().toString());

@@ -1,16 +1,14 @@
 package de.erethon.questsxl.listener;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.data.QDatabaseManager;
 import de.erethon.questsxl.player.QPlayer;
-import de.erethon.questsxl.player.QPlayerCache;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -19,13 +17,12 @@ public class QPacketListener extends ChannelDuplexHandler {
     QuestsXL plugin;
     ServerPlayer player;
     final QPlayer qPlayer;
-    QPlayerCache cache;
 
     public QPacketListener(QuestsXL plugin, ServerPlayer player) {
         this.plugin = plugin;
         this.player = player;
-        this.cache= plugin.getPlayerCache();
-        qPlayer = cache.getByPlayer(player.getBukkitEntity());
+        QDatabaseManager databaseManager = plugin.getDatabaseManager();
+        qPlayer = databaseManager.getCurrentPlayer(player.getBukkitEntity());
     }
 
     @Override

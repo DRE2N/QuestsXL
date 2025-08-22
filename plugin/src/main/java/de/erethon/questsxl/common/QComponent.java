@@ -16,7 +16,7 @@ public interface QComponent extends ContextAware {
      * @return the ObjectiveHolder for the player
      */
     default QPlayer getPlayerHolder(Player player) {
-        return QuestsXL.get().getPlayerCache().getByPlayer(player);
+        return QuestsXL.get().getDatabaseManager().getCurrentPlayer(player);
     }
 
     default void load(QConfig cfg) {

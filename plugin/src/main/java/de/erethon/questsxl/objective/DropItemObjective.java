@@ -32,7 +32,7 @@ public class DropItemObjective extends QBaseObjective<EntityDropItemEvent> {
         if (item == null) return;
         if (item.getKey().equals(itemID)) {
             if (shouldCancelEvent) e.setCancelled(true);
-            complete(active.getHolder(), this, plugin.getPlayerCache().getByPlayer(player));
+            complete(active.getHolder(), this, plugin.getDatabaseManager().getCurrentPlayer(player));
 
         }
     }

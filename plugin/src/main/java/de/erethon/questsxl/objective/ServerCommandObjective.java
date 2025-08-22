@@ -26,7 +26,7 @@ public class ServerCommandObjective extends QBaseObjective<CommandTriggerEvent> 
     public void check(ActiveObjective objective, CommandTriggerEvent e) {
         if (!conditions(e.getPlayer())) return;
         if (identifier.equals(e.getID())) {
-            checkCompletion(objective, this, plugin.getPlayerCache().getByPlayer(e.getPlayer()));
+            checkCompletion(objective, this, plugin.getDatabaseManager().getCurrentPlayer(e.getPlayer()));
         }
 
     }

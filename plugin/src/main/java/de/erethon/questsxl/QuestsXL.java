@@ -5,8 +5,11 @@ import de.erethon.aergia.Aergia;
 import de.erethon.aergia.scoreboard.EScoreboard;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.compatibility.Internals;
+import de.erethon.bedrock.database.BedrockDBConnection;
 import de.erethon.bedrock.plugin.EPlugin;
 import de.erethon.bedrock.plugin.EPluginSettings;
+import de.erethon.hecate.Hecate;
+import de.erethon.hecate.data.DatabaseManager;
 import de.erethon.hephaestus.Hephaestus;
 import de.erethon.hephaestus.blocks.HBlockLibrary;
 import de.erethon.hephaestus.items.HItemLibrary;
@@ -18,6 +21,7 @@ import de.erethon.questsxl.common.QRegistries;
 import de.erethon.questsxl.common.QRegistry;
 import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.common.RuntimeDocGenerator;
+import de.erethon.questsxl.common.data.QDatabaseManager;
 import de.erethon.questsxl.dialogue.QDialogueManager;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.global.GlobalObjectives;
@@ -27,7 +31,6 @@ import de.erethon.questsxl.listener.PluginListener;
 import de.erethon.questsxl.livingworld.Exploration;
 import de.erethon.questsxl.livingworld.QEventManager;
 import de.erethon.questsxl.objective.event.ObjectiveEventManager;
-import de.erethon.questsxl.player.QPlayerCache;
 import de.erethon.questsxl.quest.QuestManager;
 import de.erethon.questsxl.region.QRegionManager;
 import de.erethon.questsxl.respawn.RespawnPointManager;
@@ -73,7 +76,7 @@ public final class QuestsXL extends EPlugin {
 
     private final QMessageHandler messageHandler = new QMessageHandler();
 
-    private QPlayerCache qPlayerCache;
+    private QDatabaseManager databaseManager;
     private RespawnPointManager respawnPointManager;
     private QuestManager questManager;
     private QEventManager eventManager;
@@ -147,7 +150,19 @@ public final class QuestsXL extends EPlugin {
         initFile(REGIONS = new File(getDataFolder(), "regions.yml"));
         initFile(RESPAWNS = new File(getDataFolder(), "respawnPoints.yml"));
         initFile(GLOBAL_OBJ = new File(getDataFolder(), "globalObjectives.yml"));
-        qPlayerCache = new QPlayerCache(this);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File(Bukkit.getWorldContainer(), "environment.yml"));
+        try {
+            BedrockDBConnection connection = new BedrockDBConnection(config.getString("dbUrl"),
+                    config.getString("dbUser"),
+                    config.getString("dbPassword"),
+                    "org.postgresql.ds.PGSimpleDataSource");
+            databaseManager = new QDatabaseManager(connection);
+        }
+        catch (Exception e) {
+            Hecate.log("Failed to connect to database. Hecate will not work.");
+            e.printStackTrace();
+            return;
+        }
         exploration = new Exploration();
         QuestsXL.log(" ");
         QuestsXL.log(" ");
@@ -272,10 +287,6 @@ public final class QuestsXL extends EPlugin {
         return scores.getOrDefault(id, 0);
     }
 
-    public QPlayerCache getPlayerCache() {
-        return qPlayerCache;
-    }
-
     public QuestManager getQuestManager() {
         return questManager;
     }
@@ -324,8 +335,11 @@ public final class QuestsXL extends EPlugin {
         return objectiveEventManager;
     }
 
+    public QDatabaseManager getDatabaseManager() {
+       return databaseManager;
+    }
+
     public void reload() {
-        getPlayerCache().saveAll();
         errors.clear();
         onDisable();
         loadCore();

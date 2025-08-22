@@ -18,7 +18,7 @@ public class SleepObjective extends QBaseObjective<PlayerBedEnterEvent> {
     public void check(ActiveObjective active, PlayerBedEnterEvent e) {
         if (!conditions(e.getPlayer())) return;
         if (shouldCancelEvent) e.setCancelled(true);
-        checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(e.getPlayer()));
+        checkCompletion(active, this, plugin.getDatabaseManager().getCurrentPlayer(e.getPlayer()));
     }
 
     @Override

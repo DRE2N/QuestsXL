@@ -1,6 +1,5 @@
 package de.erethon.questsxl.livingworld;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.error.FriendlyError;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -42,7 +41,6 @@ public class QEventManager {
             }
             if (event.isValid()) {
                 events.add(event);
-                event.loadProgress(event.getCfg());
             }
         }
         QuestsXL.log("Loaded " + events.size() + " events.");

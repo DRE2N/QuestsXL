@@ -30,7 +30,7 @@ public class ChatObjective extends QBaseObjective<AsyncChatEvent> {
         if (message != null && exactMatch && !PlainTextComponentSerializer.plainText().serialize(e.message()).equals(message)) return;
         if (message != null && !exactMatch && !PlainTextComponentSerializer.plainText().serialize(e.message()).contains(message)) return;
         if (shouldCancelEvent) e.setCancelled(true);
-        checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(e.getPlayer()));
+        checkCompletion(active, this, plugin.getDatabaseManager().getCurrentPlayer(e.getPlayer()));
     }
 
     @Override

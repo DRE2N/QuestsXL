@@ -59,7 +59,7 @@ public class RunAsAction extends QBaseAction {
         if (!conditions(event)) return;
         switch (runMode) {
             case EVENT_IN_RANGE:
-                event.getLocation().getNearbyPlayers(event.getRange() + runValue).forEach(p -> run(cache.getByPlayer(p)));
+                event.getLocation().getNearbyPlayers(event.getRange() + runValue).forEach(p -> run(databaseManager.getCurrentPlayer(p)));
                 break;
             case EVENT_PARTICIPANTS:
                 for (Map.Entry<QPlayer, Integer> entry : event.getParticipants().entrySet()) {
@@ -70,7 +70,7 @@ public class RunAsAction extends QBaseAction {
                 break;
             case ONLINE:
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    run(cache.getByPlayer(player));
+                    run(databaseManager.getCurrentPlayer(player));
                 }
                 break;
         }

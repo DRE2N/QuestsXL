@@ -76,48 +76,20 @@ public class ActiveObjective {
         this.progress = progress;
     }
 
-    public void save(ConfigurationSection section) {
-        section.set("objective", QRegistries.OBJECTIVES.getId(objective.getClass()));
-        section.set("completed", completed);
-        section.set("progress", progress);
-        if (stage.getOwner() instanceof QEvent event) {
-            section.set("event", event.getId());
+    public void saveToDatabase() {
+        var databaseManager = QuestsXL.get().getDatabaseManager();
+        if (databaseManager != null) {
+            databaseManager.saveObjectiveProgress(this);
         }
-        if (stage.getOwner() instanceof QQuest quest) {
-            section.set("quest", quest.getName());
-        }
-        if (stage.getOwner() instanceof GlobalObjectives global) {
-            section.set("global", true);
-        }
-        section.set("stage", stage.getId());
     }
 
-    public static ActiveObjective load(ObjectiveHolder holder, ConfigurationSection section) {
-        String objectiveId = section.getString("objective");
-        QObjective objective = QRegistries.OBJECTIVES.get(objectiveId);
-        if (objective == null) {
-            QuestsXL.get().getLogger().warning("Failed to load objective with id " + objectiveId + " Missing dependency?");
-            return null;
+    public void removeFromDatabase() {
+        var databaseManager = QuestsXL.get().getDatabaseManager();
+        if (databaseManager != null) {
+            databaseManager.removeObjectiveProgress(this);
         }
-        boolean completed = section.getBoolean("completed");
-        int progress = section.getInt("progress");
-        Completable completable = null;
-        if (section.contains("event")) {
-            completable = QuestsXL.get().getEventManager().getByID(section.getString("event"));
-        }
-        if (section.contains("quest")) {
-            completable = QuestsXL.get().getQuestManager().getByName(section.getString("quest"));
-        }
-        if (section.contains("global")) {
-            completable = QuestsXL.get().getGlobalObjectives();
-        }
-        QStage stage = completable.getStages().get(section.getInt("stage"));
-
-        ActiveObjective activeObjective = new ActiveObjective(holder, completable, stage, objective);
-        activeObjective.setCompleted(completed);
-        activeObjective.setProgress(progress);
-        return activeObjective;
     }
+
 
     @Override
     public boolean equals(Object o) {

@@ -6,7 +6,6 @@ import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.player.QPlayer;
-import de.erethon.questsxl.player.QPlayerCache;
 
 enum Scope {
     GLOBAL,
@@ -40,7 +39,6 @@ enum Operation {
 public class ScoreAction extends QBaseAction {
 
     QuestsXL plugin = QuestsXL.get();
-    QPlayerCache playerCache = plugin.getPlayerCache();
 
     @QParamDoc(name = "score", description = "The score to modify", required = true)
     private String score;

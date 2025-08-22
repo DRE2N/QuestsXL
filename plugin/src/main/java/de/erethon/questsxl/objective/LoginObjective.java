@@ -22,6 +22,6 @@ public class LoginObjective extends QBaseObjective<PlayerJoinEvent> {
     @Override
     public void check(ActiveObjective active, PlayerJoinEvent event) {
         if (!conditions(event.getPlayer())) return;
-        checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(event.getPlayer()));
+        checkCompletion(active, this, plugin.getDatabaseManager().getCurrentPlayer(event.getPlayer()));
     }
 }

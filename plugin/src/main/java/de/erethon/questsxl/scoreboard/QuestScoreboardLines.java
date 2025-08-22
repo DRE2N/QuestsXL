@@ -28,7 +28,11 @@ public class QuestScoreboardLines implements ScoreboardLines {
     @NotNull
     @Override
     public List<ScoreboardComponent> getLines(@NotNull EPlayer ePlayer) {
-        QPlayer player = plugin.getPlayerCache().getByPlayer(ePlayer.getPlayer());
+        QPlayer player = plugin.getDatabaseManager().getCurrentPlayerByUUID(ePlayer.getUniqueId());
+        if (player == null) {
+            QuestsXL.log("Player " + ePlayer.getDisplayName() + " not found in database, cannot show quest scoreboard lines.");
+            return List.of();
+        }
         ActiveQuest trackedQuest = player.getTrackedQuest();
 
         if (trackedQuest == null && player.getTrackedEvent() == null && player.getContentGuideText() == null) {

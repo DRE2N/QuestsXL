@@ -66,7 +66,7 @@ public class TestCommand extends ECommand {
             return;
         }
         if (args[1].equals("text")) {
-            QPlayer qPlayer = QuestsXL.get().getPlayerCache().getByPlayer(player);
+            QPlayer qPlayer = QuestsXL.get().getDatabaseManager().getCurrentPlayer(player);
             qPlayer.setInConversation(true);
             player.sendMessage("Hello");
             player.sendMessage("Hello1");
@@ -90,7 +90,7 @@ public class TestCommand extends ECommand {
             return;
         }
         if (args[1].equals("conv")) {
-            new TalkAction().play(QuestsXL.get().getPlayerCache().getByPlayer(player));
+            new TalkAction().play(QuestsXL.get().getDatabaseManager().getCurrentPlayer(player));
             return;
         }
         MessageUtil.sendMessage(player, "Invalid test command.");

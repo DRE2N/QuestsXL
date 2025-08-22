@@ -40,7 +40,7 @@ public class QuestBook {
 
     public static String stageDesc(Player player, QQuest quest) {
         ActiveQuest active = null;
-        for (ActiveQuest activeQuest : QuestsXL.get().getPlayerCache().getByPlayer(player).getActiveQuests().keySet()) {
+        for (ActiveQuest activeQuest : QuestsXL.get().getDatabaseManager().getCurrentPlayer(player).getActiveQuests().keySet()) {
             if (activeQuest.getQuest() == quest) {
                 active = activeQuest;
             }

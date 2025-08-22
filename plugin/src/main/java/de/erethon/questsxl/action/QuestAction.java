@@ -5,8 +5,8 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.Quester;
+import de.erethon.questsxl.common.data.QDatabaseManager;
 import de.erethon.questsxl.player.QPlayer;
-import de.erethon.questsxl.player.QPlayerCache;
 import de.erethon.questsxl.quest.QQuest;
 
 @QLoadableDoc(
@@ -21,7 +21,6 @@ import de.erethon.questsxl.quest.QQuest;
 public class QuestAction extends QBaseAction {
 
     QuestsXL plugin = QuestsXL.get();
-    QPlayerCache playerCache = plugin.getPlayerCache();
 
     @QParamDoc(name = "quest", description = "The ID of the quest to start", required = true)
     QQuest quest;

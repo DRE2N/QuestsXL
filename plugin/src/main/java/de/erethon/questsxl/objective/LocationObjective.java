@@ -41,7 +41,7 @@ public class LocationObjective extends QBaseObjective<PlayerMoveEvent> {
         }
         if (e.getTo().distance(loc.get(e.getTo())) <= range) {
             if (shouldCancelEvent) e.setCancelled(true);
-            checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(e.getPlayer()));
+            checkCompletion(active, this, plugin.getDatabaseManager().getCurrentPlayer(e.getPlayer()));
         }
     }
 

@@ -1,10 +1,6 @@
 package de.erethon.questsxl.player;
 
 import de.erethon.bedrock.chat.MessageUtil;
-import de.erethon.bedrock.config.storage.Nullability;
-import de.erethon.bedrock.config.storage.StorageData;
-import de.erethon.bedrock.config.storage.StorageDataContainer;
-import de.erethon.bedrock.user.LoadableUser;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.Completable;
 import de.erethon.questsxl.common.ObjectiveHolder;
@@ -30,11 +26,8 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,9 +43,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class QPlayer extends StorageDataContainer implements LoadableUser, ObjectiveHolder, Scorable, Quester {
+public class QPlayer implements ObjectiveHolder, Scorable, Quester {
 
-    public static final int CONFIG_VERSION = 1;
     private final QuestsXL plugin = QuestsXL.get();
 
     UUID uuid;
@@ -66,7 +58,6 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
     private final List<String> dialogueRecollection = new ArrayList<>();
 
     private final Set<QRegion> currentRegions = new HashSet<>();
-    @StorageData(type = HashMap.class, keyTypes = String.class, valueTypes = Integer.class, nullability = Nullability.IGNORE)
     private final Map<String, Integer> scores = new HashMap<>();
 
     private ActiveDialogue activeDialogue = null;
@@ -87,7 +78,6 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
     private Component explorerContentGuide;
 
     public QPlayer(@NotNull Player player) {
-        super(QuestsXL.getPlayerFile(player.getUniqueId()), CONFIG_VERSION);
         this.uuid = player.getUniqueId();
         this.player = player;
         CraftPlayer craftPlayer = (CraftPlayer) player;
@@ -101,7 +91,7 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
                 plugin.getObjectiveEventManager().register(activeObjective);
             }
         }
-        defaultLoadProcess();
+        loadFromDatabase();
         MessageUtil.sendMessage(player, "&2[QXL] &7Loaded " + currentObjectives.size() + " objectives.");
     }
 
@@ -111,6 +101,7 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
         }
         addActive(quest);
         QuestsXL.log("Active: " + activeQuests.keySet().size());
+        saveToDatabase(); // Save to database when quest starts
     }
 
     public void progress(@NotNull Completable completable) {
@@ -151,53 +142,26 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
         //
     }
 
-    /* LoadableUser methods */
-
-    @Override
-    public void onJoin(PlayerJoinEvent event) {
-        player = event.getPlayer();
-    }
-
-    @Override
-    public void onQuit(PlayerQuitEvent event) {
-        if (activeDialogue != null) {
-            activeDialogue.cancel();
+    private void loadFromDatabase() {
+        var databaseManager = QuestsXL.get().getDatabaseManager();
+        if (databaseManager != null) {
+            databaseManager.loadPlayerData(this).join();
         }
-        activeDialogue = null;
-        player = null;
     }
 
-    @Override
-    public void saveUser() {
-        saveData();
-    }
-
-    /* StorageDataContainer methods */
-
-    @Override
-    public void load() {
-        ConfigurationSection questsSection = config.getConfigurationSection("activeQuests");
-        if (questsSection != null) {
-            for (String questName : questsSection.getKeys(false)) {
-                ConfigurationSection section = questsSection.getConfigurationSection(questName);
-                if (section == null) continue;
-                QQuest quest = QuestsXL.get().getQuestManager().getByName(questName);
-                if (quest == null) continue;
-                int currentStage = section.getInt("currentStage");
-                long started = section.getInt("started");
-                activeQuests.put(new ActiveQuest(this, quest, currentStage), started);
-            }
+    private void saveToDatabase() {
+        var databaseManager = QuestsXL.get().getDatabaseManager();
+        if (databaseManager != null) {
+            databaseManager.savePlayerData(this);
         }
-        loadProgress(config);
-        super.load(); // Important to still call this! Else the container won't work properly.
     }
 
+    public @NotNull Map<String, Integer> getScores() {
+        return scores;
+    }
 
-    @Override
-    public void saveData() {
-        activeQuests.forEach((quest, started) -> config.set("activeQuests." + quest.getQuest().getName(), Map.of("currentStage", quest.getCurrentStage(), "started", started)));
-        saveProgress(config);
-        super.saveData(); // Important to still call this! Else the container won't work properly.
+    public void setExplorer(PlayerExplorer explorer) {
+        this.explorer = explorer;
     }
 
     /* getter and setter */
@@ -215,6 +179,7 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
     @Override
     public void setScore(@NotNull String score, int amount) {
         scores.put(score, amount);
+        saveToDatabase(); // Save to database when score changes
     }
 
     @Override
@@ -241,6 +206,8 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
     public void clearObjectives() {
         for (ActiveObjective objective : currentObjectives) {
             plugin.getObjectiveEventManager().unregister(objective);
+            // Remove from database when objectives are cleared
+            objective.removeFromDatabase();
         }
         currentObjectives.clear();
     }
@@ -249,10 +216,13 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
     public void removeObjective(@NotNull ActiveObjective objective) {
         plugin.getObjectiveEventManager().unregister(objective);
         currentObjectives.remove(objective);
+        // Remove from database when objective is removed
+        objective.removeFromDatabase();
     }
 
     public void removeActive(@NotNull ActiveQuest quest) {
         activeQuests.remove(quest);
+        saveToDatabase(); // Save to database when quest is removed
     }
 
     public @NotNull Map<ActiveQuest, Long> getActiveQuests() {
@@ -270,6 +240,11 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
 
     public @NotNull Map<QQuest, Long> getCompletedQuests() {
         return completedQuests;
+    }
+
+    public void completeQuest(@NotNull QQuest quest, long completedAt) {
+        completedQuests.put(quest, completedAt);
+        saveToDatabase();
     }
 
     @Override
@@ -428,13 +403,6 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
         return player;
     }
 
-    @Override
-    public void updatePlayer(Player player) {
-        if (uuid.equals(player.getUniqueId())) {
-            this.player = player;
-        }
-    }
-
     public void sendMessage(Component component) {
         player.sendMessage(component);
     }
@@ -464,6 +432,6 @@ public class QPlayer extends StorageDataContainer implements LoadableUser, Objec
     }
 
     public static QPlayer get(Player player) {
-        return QuestsXL.get().getPlayerCache().getByPlayer(player);
+        return QuestsXL.get().getDatabaseManager().getCurrentPlayer(player);
     }
 }

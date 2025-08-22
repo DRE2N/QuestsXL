@@ -23,37 +23,7 @@ public interface ObjectiveHolder {
     Location getLocation();
     String getName();
     String getUniqueId();
-    default void loadProgress(FileConfiguration cfg) {
-        ConfigurationSection section = cfg.getConfigurationSection("objectives");
-        if (section != null) {
-            for (String key : section.getKeys(false)) {
-                ConfigurationSection objSection = section.getConfigurationSection(key);
-                if (objSection != null) {
-                    try {
-                        ActiveObjective objective = ActiveObjective.load(this, objSection);
-                        getCurrentObjectives().add(objective);
-                    } catch (Exception e) {
-                        QuestsXL.log("Failed to load objective from config: " + key + " in " + cfg.getName());
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-    }
-    default void saveProgress(FileConfiguration cfg) {
-        ConfigurationSection section = cfg.createSection("objectives");
-        int index = 0;
-        for (ActiveObjective objective : getCurrentObjectives()) {
-            ConfigurationSection objSection = section.createSection(String.valueOf(index));
-            try {
-                objective.save(objSection);
-                index++;
-            } catch (Exception e) {
-                QuestsXL.log("Failed to save objective to config: " + objective.getObjective().getClass().getSimpleName() + " in " + cfg.getName());
-                e.printStackTrace();
-            }
-        }
-    }
+
 
     default ActiveObjective findObjective(QObjective objective) {
         for (ActiveObjective activeObjective : getCurrentObjectives()) {

@@ -27,7 +27,7 @@ public class EnterRegionObjective extends QBaseObjective<QRegionEnterEvent> {
             return;
         }
         if (e.getRegion() == region) {
-            checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(e.getPlayer()));
+            checkCompletion(active, this, plugin.getDatabaseManager().getCurrentPlayer(e.getPlayer()));
         }
     }
 

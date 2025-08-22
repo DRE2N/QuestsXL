@@ -1,8 +1,8 @@
 package de.erethon.questsxl.listener;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.data.QDatabaseManager;
 import de.erethon.questsxl.livingworld.QEventManager;
-import de.erethon.questsxl.player.QPlayerCache;
 import org.bukkit.event.Listener;
 
 /**
@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
  */
 public abstract class AbstractListener implements Listener {
 
-    QPlayerCache cache = QuestsXL.get().getPlayerCache();
+    QDatabaseManager databaseManager = QuestsXL.get().getDatabaseManager();
+
     QEventManager eventManager = QuestsXL.get().getEventManager();
 }

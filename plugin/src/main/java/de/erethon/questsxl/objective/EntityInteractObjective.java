@@ -24,7 +24,7 @@ public class EntityInteractObjective extends QBaseObjective<PlayerInteractEntity
                 return;
             }*/
         }
-        checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(player));
+        checkCompletion(active, this, plugin.getDatabaseManager().getCurrentPlayer(player));
     }
 
     @Override

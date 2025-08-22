@@ -45,7 +45,7 @@ public class QConfigLoader {
                 continue;
             }
             // Format:
-            // blabla or <type>:
+            // <id> or <type>:
             //  type: <type> (Optional)
             //  value: key
             if (section.isConfigurationSection(key)) {

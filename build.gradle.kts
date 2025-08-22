@@ -15,7 +15,7 @@ repositories {
 
 allprojects {
     group = "de.erethon.questsxl"
-    version = "1.0.2-SNAPSHOT"
+    version = "1.0.4-SNAPSHOT"
 
     repositories {
         mavenLocal()
@@ -49,7 +49,6 @@ allprojects {
 }
 
 val papyrusVersion = "1.21.7-R0.1-SNAPSHOT"
-val pluginVersion = "1.0.1-SNAPSHOT"
 
 subprojects {
     apply(plugin = "java-library")
@@ -60,7 +59,7 @@ subprojects {
         description = "Used for deploying the plugin to the shared server. runServer will do this automatically." +
                 "This task is only for manual deployment when running runServer from another plugin."
         dependsOn(":plugin:shadowJar")
-        from(project(":plugin").layout.buildDirectory.file("libs/QuestsXL-$pluginVersion-all.jar"))
+        from(project(":plugin").layout.buildDirectory.file("libs/QuestsXL-$version-all.jar"))
         into("C:\\Dev\\Erethon\\plugins")
     }
 }

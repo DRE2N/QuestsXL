@@ -6,10 +6,12 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.livingworld.EventState;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
+import io.papermc.paper.entity.TeleportFlag;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -64,7 +66,7 @@ public class EventCommand extends ECommand {
         }
         if (args.length > 2 && (args[2].equalsIgnoreCase("teleport") || args[2].equalsIgnoreCase("tp"))) {
             Player player = (Player) commandSender;
-            player.teleport(event.getLocation());
+            player.teleportAsync(event.getLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN, TeleportFlag.EntityState.RETAIN_PASSENGERS);
             MessageUtil.sendMessage(commandSender, "&7Du wurdest zum Event &a" + event.getName() + " &7teleportiert.");
             return;
         }

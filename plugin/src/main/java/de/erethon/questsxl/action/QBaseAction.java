@@ -4,10 +4,10 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QComponent;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.Quester;
+import de.erethon.questsxl.common.data.QDatabaseManager;
 import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
-import de.erethon.questsxl.player.QPlayerCache;
 import org.bukkit.Material;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 public abstract class QBaseAction implements QAction {
 
     QuestsXL plugin = QuestsXL.get();
-    QPlayerCache cache = plugin.getPlayerCache();
+    QDatabaseManager databaseManager = plugin.getDatabaseManager();
     List<QCondition> conditions = new ArrayList<>();
     Set<QAction> runAfter = new HashSet<>();
 

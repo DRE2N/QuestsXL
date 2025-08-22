@@ -55,14 +55,14 @@ public class ActiveQuest {
         QuestsXL.log(player.getPlayer().getName() + " finished quest " + quest.getName());
         player.clearObjectives();
         player.removeActive(this);
-        player.getCompletedQuests().put(this.getQuest(), System.currentTimeMillis());
+        player.completeQuest(this.getQuest(), System.currentTimeMillis());
     }
 
     public void finishWithoutRewards(QPlayer player) {
         QuestsXL.log(player.getPlayer().getName() + " finished quest " + quest.getName() + " without rewards.");
         player.clearObjectives();
         player.removeActive(this);
-        player.getCompletedQuests().put(this.getQuest(), System.currentTimeMillis());
+        player.completeQuest(this.getQuest(), System.currentTimeMillis());
     }
 
     public QStage getCurrentStage() {

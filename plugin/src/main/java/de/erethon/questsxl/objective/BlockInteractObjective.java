@@ -31,7 +31,7 @@ public class BlockInteractObjective extends QBaseObjective<PlayerInteractEvent> 
         if (e.getClickedBlock() == null) return;
         if (location.equals(e.getClickedBlock().getLocation())) {
             if (shouldCancelEvent) e.setCancelled(true);
-            checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(e.getPlayer()));
+            checkCompletion(active, this, plugin.getDatabaseManager().getCurrentPlayer(e.getPlayer()));
         }
     }
 

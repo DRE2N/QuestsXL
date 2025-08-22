@@ -23,7 +23,7 @@ import java.util.Set;
 
 public class QQuest implements Completable, QComponent {
 
-    YamlConfiguration cfg;
+    public YamlConfiguration cfg;
     String name;
     String displayName;
     String description;

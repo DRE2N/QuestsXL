@@ -34,7 +34,7 @@ public class ItemPickupObjective extends QBaseObjective<EntityPickupItemEvent> {
         if (item == null) return;
         if (item.getKey().equals(itemID)) {
             if (shouldCancelEvent) e.setCancelled(true);
-            checkCompletion(active, this, plugin.getPlayerCache().getByPlayer((Player) e.getEntity()));
+            checkCompletion(active, this, plugin.getDatabaseManager().getCurrentPlayer((Player) e.getEntity()));
         }
     }
 

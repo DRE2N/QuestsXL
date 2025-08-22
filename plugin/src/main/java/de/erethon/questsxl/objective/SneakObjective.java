@@ -18,7 +18,7 @@ public class SneakObjective extends QBaseObjective<PlayerToggleSneakEvent> {
     public void check(ActiveObjective active, PlayerToggleSneakEvent e) {
         if (!conditions(e.getPlayer())) return;
         if (!e.isSneaking()) return;
-        checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(e.getPlayer()));
+        checkCompletion(active, this, plugin.getDatabaseManager().getCurrentPlayer(e.getPlayer()));
     }
 
     @Override

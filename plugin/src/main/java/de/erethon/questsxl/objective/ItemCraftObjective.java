@@ -27,7 +27,7 @@ public class ItemCraftObjective extends QBaseObjective<CraftItemEvent> {
         Player player = (Player) e.getWhoClicked();
         HItemStack item = plugin.getItemLibrary().get(e.getRecipe().getResult());
         if (conditions(player) && item.getItem().getKey().equals(id)) {
-            checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(player));
+            checkCompletion(active, this, plugin.getDatabaseManager().getCurrentPlayer(player));
         }
 
     }

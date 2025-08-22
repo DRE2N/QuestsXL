@@ -25,7 +25,7 @@ public class LeaveRegionObjective extends QBaseObjective<QRegionLeaveEvent> {
     public void check(ActiveObjective active, QRegionLeaveEvent e) {
         if (!conditions(e.getPlayer())) return;
         if (e.getRegion() == region) {
-            checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(e.getPlayer()));
+            checkCompletion(active, this, plugin.getDatabaseManager().getCurrentPlayer(e.getPlayer()));
         }
     }
 

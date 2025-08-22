@@ -26,18 +26,13 @@ public class MainCommand extends ECommand {
     public void onExecute(String[] args, CommandSender commandSender) {
         QuestsXL plugin = QuestsXL.get();
         Player player = (Player) commandSender;
-        QPlayer qPlayer = plugin.getPlayerCache().getByPlayer(player);
+        QPlayer qPlayer = plugin.getDatabaseManager().getCurrentPlayer(player);
         if (player.hasPermission("qxl.admin.version")) {
             MessageUtil.sendMessage(player, "&8&m   &r &aQuests&2XL &6" + plugin.getDescription().getVersion() + " &7by Malfrador &8&m   &r");
             MessageUtil.sendMessage(player, "");
             MessageUtil.sendMessage(player, "&7Internals: &6" + MinecraftServer.getServer().getServerModName()
                     + " " + MinecraftServer.getServer().getServerVersion());
             MessageUtil.sendMessage(player, "&7Last sync from GitHub: &6" + new Date(plugin.lastSync));
-            File[] playerFiles = QuestsXL.PLAYERS.listFiles();
-            if (playerFiles != null) {
-                MessageUtil.sendMessage(player, "&7Players: &6" + playerFiles.length + " &8- &7Loaded: &6"
-                        + plugin.getPlayerCache().getCachedUsersAmount());
-            }
             MessageUtil.sendMessage(player, "&7Quests: &6" + plugin.getQuestManager().getQuests().size()
                     + "&8 - &7Global Objectives: &6" + plugin.getGlobalObjectives().getObjectives().size());
             MessageUtil.sendMessage(player, "&7Regions: &6" + plugin.getRegionManager().getRegions().size()

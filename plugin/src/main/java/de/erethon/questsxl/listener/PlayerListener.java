@@ -38,7 +38,7 @@ public class PlayerListener extends AbstractListener {
 
     @EventHandler
     public void onDisconnect(PlayerQuitEvent event) {
-        QPlayer player = cache.getByPlayer(event.getPlayer());
+        QPlayer player = databaseManager.getCurrentPlayer(event.getPlayer());
         for (QEvent qEvent : plugin.getEventManager().getEvents()) {
             qEvent.removePlayerOnDisconnect(player);
         }
@@ -50,7 +50,7 @@ public class PlayerListener extends AbstractListener {
             return;
         }
         Player player = event.getPlayer();
-        QPlayer qp = cache.getByPlayer(player);
+        QPlayer qp = databaseManager.getCurrentPlayer(player);
         if (qp.isFrozen()) {
             event.setCancelled(true);
             return;
@@ -72,7 +72,7 @@ public class PlayerListener extends AbstractListener {
 
     @EventHandler
     public void onChat(AsyncChatEvent event) {
-        QPlayer player = cache.getByPlayer(event.getPlayer());
+        QPlayer player = databaseManager.getCurrentPlayer(event.getPlayer());
         if (player.isInConversation()) {
             MessageUtil.sendActionBarMessage(player.getPlayer(), QuestsXL.ERROR + "Du kannst den Chat jetzt nicht nutzen.");
             event.setCancelled(true); // TODO: Aergia seems to ignore this
@@ -102,7 +102,7 @@ public class PlayerListener extends AbstractListener {
         if (region.getLinkedQuest() == null) {
             return region.hasPublicFlag(flag);
         }
-        QPlayer qplayer = cache.getByPlayer(player);
+        QPlayer qplayer = databaseManager.getCurrentPlayer(player);
         if (qplayer.hasQuest(region.getLinkedQuest())) {
             return region.hasQuestFlag(flag);
         }

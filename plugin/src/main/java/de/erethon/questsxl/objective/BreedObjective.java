@@ -30,7 +30,7 @@ public class BreedObjective extends QBaseObjective<EntityBreedEvent> {
         if (!(e.getBreeder() instanceof Player player)) return;
         if (entityType != null && e.getMother().getType() != entityType) return;
         if (!conditions(player)) return;
-        checkCompletion(active, this, plugin.getPlayerCache().getByPlayer(player));
+        checkCompletion(active, this, plugin.getDatabaseManager().getCurrentPlayer(player));
     }
 
     @Override
