@@ -5,8 +5,8 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.common.QComponent;
 import de.erethon.questsxl.common.QConfigLoader;
-import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QRegistries;
+import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.player.QPlayer;
@@ -26,7 +26,7 @@ public class QDialogueStage implements QComponent {
 
     private QComponent parent;
     protected QDialogue dialogue;
-    protected LinkedList<Map.Entry<String, Integer>> messages;
+    protected LinkedList<Map.Entry<QTranslatable, Integer>> messages;
     protected int maxMessageCount;
     protected List<QCondition> conditions;
     protected List<QAction> actions;
@@ -43,9 +43,9 @@ public class QDialogueStage implements QComponent {
         this.dialogue = stage.dialogue;
         this.messages = new LinkedList<>(stage.messages);
         this.maxMessageCount = stage.maxMessageCount;
-        this.conditions = new ArrayList<>(stage.conditions);
-        this.actions = new ArrayList<>(stage.actions);
-        this.dialogueOptions = new ArrayList<>(stage.dialogueOptions);
+        this.conditions = stage.conditions != null ? new ArrayList<>(stage.conditions) : new ArrayList<>();
+        this.actions = stage.actions != null ? new ArrayList<>(stage.actions) : new ArrayList<>();
+        this.dialogueOptions = stage.dialogueOptions != null ? new ArrayList<>(stage.dialogueOptions) : new ArrayList<>();
         this.autoNext = stage.autoNext;
         this.index = stage.index;
     }
@@ -82,12 +82,27 @@ public class QDialogueStage implements QComponent {
         List<String> messageList = cfg.getStringList("messages");
         maxMessageCount = messageList.size();
         for (String message : messageList) {
-            String[] split = message.split(";");
-            if (split.length == 2) {
-                messages.add(new AbstractMap.SimpleEntry<>(split[0], NumberUtil.parseInt(split[1])));
-            } else {
-                messages.add(new AbstractMap.SimpleEntry<>(message, 0));
+            // Look for delay at the end - format: "message|delay" or "message;delay"
+            String messageText = message;
+            int delay = 0;
+
+            String[] splitSemicolon = message.split(";");
+            String[] splitPipe = message.split("\\|");
+
+            // Check if the last part is a number (delay)
+            String lastPartSemicolon = splitSemicolon.length > 1 ? splitSemicolon[splitSemicolon.length - 1].trim() : null;
+            String lastPartPipe = splitPipe.length > 1 ? splitPipe[splitPipe.length - 1].trim() : null;
+
+            if (lastPartSemicolon != null && lastPartSemicolon.matches("\\d+")) {
+                delay = NumberUtil.parseInt(lastPartSemicolon);
+                messageText = String.join(";", java.util.Arrays.copyOf(splitSemicolon, splitSemicolon.length - 1));
             }
+            else if (lastPartPipe != null && lastPartPipe.matches("\\d+")) {
+                delay = NumberUtil.parseInt(lastPartPipe);
+                messageText = String.join("|", java.util.Arrays.copyOf(splitPipe, splitPipe.length - 1));
+            }
+
+            messages.add(new AbstractMap.SimpleEntry<>(QTranslatable.fromString(messageText), delay));
         }
         if (messages.isEmpty()) {
             throw new RuntimeException("The dialogue stage in " + cfg.getName() + " does not have any messages.");
@@ -98,13 +113,20 @@ public class QDialogueStage implements QComponent {
         List<String> options = cfg.getStringList("options");
         dialogueOptions = new ArrayList<>();
         for (String option : options) {
-            QLineConfig qlc = new QLineConfig(option);
             DialogueOption dialogueOption = new DialogueOption(this);
             try {
-                dialogueOption.load(qlc);
+                dialogueOption.loadFromString(option);
+                dialogueOptions.add(dialogueOption);
             } catch (Exception e) {
                 QuestsXL.get().getErrors().add(new FriendlyError(cfg.getName(), "Failed to load dialogue option", e.getMessage(), "Path: " + cfg.getCurrentPath() + "." + option).addStacktrace(e.getStackTrace()));
             }
+        }
+    }
+
+    // Validate and link stage references for all dialogue options after all stages have been loaded
+    public void validateAndLinkOptions() {
+        for (DialogueOption option : dialogueOptions) {
+            option.validateAndLinkStages();
         }
     }
 }

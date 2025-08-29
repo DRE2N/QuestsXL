@@ -33,12 +33,15 @@ public class PlayerListener extends AbstractListener {
         ServerPlayer serverPlayer = bukkitPlayer.getHandle();
         QPacketListener packetHandler = new QPacketListener(plugin, serverPlayer);
         ChannelPipeline pipeline = serverPlayer.connection.connection.channel.pipeline();
-        //pipeline.addAfter("packet_handler", "qxl_handler", packetHandler); // Server -> QXL -> Client
+        pipeline.addAfter("packet_handler", "qxl_handler", packetHandler); // Server -> QXL -> Client
     }
 
     @EventHandler
     public void onDisconnect(PlayerQuitEvent event) {
         QPlayer player = databaseManager.getCurrentPlayer(event.getPlayer());
+        if (player == null) {
+            return; // Player likely in char selection
+        }
         for (QEvent qEvent : plugin.getEventManager().getEvents()) {
             qEvent.removePlayerOnDisconnect(player);
         }
@@ -51,6 +54,9 @@ public class PlayerListener extends AbstractListener {
         }
         Player player = event.getPlayer();
         QPlayer qp = databaseManager.getCurrentPlayer(player);
+        if (qp == null) {
+            return; // Player likely in char selection
+        }
         if (qp.isFrozen()) {
             event.setCancelled(true);
             return;
@@ -73,6 +79,9 @@ public class PlayerListener extends AbstractListener {
     @EventHandler
     public void onChat(AsyncChatEvent event) {
         QPlayer player = databaseManager.getCurrentPlayer(event.getPlayer());
+        if (player == null) {
+            return; // Player likely in char selection
+        }
         if (player.isInConversation()) {
             MessageUtil.sendActionBarMessage(player.getPlayer(), QuestsXL.ERROR + "Du kannst den Chat jetzt nicht nutzen.");
             event.setCancelled(true); // TODO: Aergia seems to ignore this
@@ -103,6 +112,9 @@ public class PlayerListener extends AbstractListener {
             return region.hasPublicFlag(flag);
         }
         QPlayer qplayer = databaseManager.getCurrentPlayer(player);
+        if (qplayer == null) {
+            return region.hasPublicFlag(flag);
+        }
         if (qplayer.hasQuest(region.getLinkedQuest())) {
             return region.hasQuestFlag(flag);
         }

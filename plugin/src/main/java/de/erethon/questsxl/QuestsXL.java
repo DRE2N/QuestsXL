@@ -9,7 +9,6 @@ import de.erethon.bedrock.database.BedrockDBConnection;
 import de.erethon.bedrock.plugin.EPlugin;
 import de.erethon.bedrock.plugin.EPluginSettings;
 import de.erethon.hecate.Hecate;
-import de.erethon.hecate.data.DatabaseManager;
 import de.erethon.hephaestus.Hephaestus;
 import de.erethon.hephaestus.blocks.HBlockLibrary;
 import de.erethon.hephaestus.items.HItemLibrary;

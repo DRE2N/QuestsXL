@@ -2,10 +2,14 @@ package de.erethon.questsxl.dialogue;
 
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.player.QPlayer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.kyori.adventure.translation.GlobalTranslator;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.HashSet;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 /**
  * @author Fyreum
@@ -16,6 +20,7 @@ public class ActiveDialogue extends BukkitRunnable {
 
     private final QPlayer qPlayer;
     private final QDialogue dialogue;
+    private final Set<Integer> visitedStages = new HashSet<>();
     private int currentStageIndex;
     private QActiveDialogueStage activeStage;
     private int passedTicks;
@@ -25,7 +30,7 @@ public class ActiveDialogue extends BukkitRunnable {
         this.qPlayer = qPlayer;
         this.dialogue = dialogue;
         this.currentStageIndex = 0;
-        this.activeStage = activeStage();
+        this.activeStage = null; // Initialize as null, will be set in activeStage() method
         this.passedTicks = 0;
         this.messageDelay = 0;
     }
@@ -45,6 +50,12 @@ public class ActiveDialogue extends BukkitRunnable {
 
     public void continueDialogue() {
         passedTicks = 0;
+        if (activeStage == null) {
+            activeStage = activeStage();
+            if (activeStage == null) {
+                return;
+            }
+        }
         try {
             messageDelay = activeStage.sendMessage(dialogue.getSenderName());
         } catch (NoSuchElementException e) {
@@ -52,19 +63,37 @@ public class ActiveDialogue extends BukkitRunnable {
             if (activeStage.autoNext) {
                 try {
                     activeStage = nextStage();
-                    if (!activeStage.canStart(qPlayer)) {
+                    if (activeStage == null || !activeStage.canStart(qPlayer)) {
                         cancel();
                     }
                 } catch (IndexOutOfBoundsException e2) {
                     finish();
                 }
+            } else {
+                if (!activeStage.dialogueOptions.isEmpty()) {
+                    return;
+                }
+                finish();
             }
         }
     }
 
     public QActiveDialogueStage activeStage() {
         if (activeStage == null) {
-            activeStage = dialogue.getStages().get(currentStageIndex).start(qPlayer);
+            QDialogueStage stage = dialogue.getStages().get(currentStageIndex);
+            if (stage == null) {
+                finish();
+                return null;
+            }
+
+            boolean isRevisited = visitedStages.contains(currentStageIndex);
+
+            activeStage = stage.start(qPlayer);
+
+            if (isRevisited) {
+                activeStage.setRevisited(true);
+            }
+            visitedStages.add(currentStageIndex);
         }
         return activeStage;
     }
@@ -87,12 +116,32 @@ public class ActiveDialogue extends BukkitRunnable {
         cancel("\n&7&oGespräch wurde erfolgreich beendet\n");
     }
 
+    public void transitionToStage(int stageIndex) {
+        if (!dialogue.getStages().containsKey(stageIndex)) {
+            finish();
+            return;
+        }
+
+        currentStageIndex = stageIndex;
+        activeStage = null;
+        passedTicks = 0;
+        messageDelay = 0;
+
+        activeStage = activeStage();
+        if (!activeStage.canStart(qPlayer)) {
+            cancel();
+            return;
+        }
+
+        continueDialogue();
+    }
+
     private void cancel(String msg) {
         qPlayer.setActiveDialogue(null);
         qPlayer.setInConversation(false);
-        //qPlayer.send(msg);
         qPlayer.sendMessagesInQueue(false);
-        qPlayer.endDialogueAndSendRecollection(dialogue.getSenderName());
+        String senderName = PlainTextComponentSerializer.plainText().serialize(GlobalTranslator.render(dialogue.getSenderName().get(), qPlayer.getPlayer().locale()));
+        qPlayer.endDialogueAndSendRecollection(senderName);
         super.cancel();
     }
 
@@ -100,4 +149,3 @@ public class ActiveDialogue extends BukkitRunnable {
         return dialogue;
     }
 }
-

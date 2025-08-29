@@ -1,0 +1,177 @@
+sender:
+  de: Bibliothekar
+  en: Librarian
+npcId: "librarian_npc"
+
+stages:
+  0:
+    id: "greeting"
+    messages:
+      - "en=Welcome to our ancient library, traveler.;de=Willkommen in unserer alten Bibliothek, Reisender.;20"
+      - "en=I am the keeper of knowledge here. How may I assist you?;de=Ich bin der Hüter des Wissens hier. Wie kann ich euch helfen?;30"
+    autoNext: false
+    options:
+      - "text=en=Tell me about this library;de=Erzählt mir von dieser Bibliothek|next=1|hint=en=Learn about the library's history;de=Erfahrt mehr über die Geschichte der Bibliothek"
+      - "text=en=What books do you have?;de=Welche Bücher habt ihr?|next=2|hint=en=Browse the collection;de=Durchstöbert die Sammlung"
+      - "text=en=I'm looking for something specific;de=Ich suche etwas Bestimmtes|next=3|hint=en=Ask for help finding books;de=Bittet um Hilfe beim Finden von Büchern"
+      - "text=en=Thank you, goodbye;de=Danke, auf Wiedersehen|hint=en=End the conversation;de=Beendet das Gespräch"
+
+  1:
+    id: "library_history"
+    messages:
+      - "en=This library was founded over 300 years ago by the great scholar Aldric.;de=Diese Bibliothek wurde vor über 300 Jahren vom großen Gelehrten Aldric gegründet.;35"
+      - "en=It contains texts from across the known world, including rare manuscripts.;de=Sie enthält Texte aus der ganzen bekannten Welt, einschließlich seltener Manuskripte.;30"
+      - "en=The building itself is enchanted to preserve the books.;de=Das Gebäude selbst ist verzaubert, um die Bücher zu bewahren.;25"
+    autoNext: false
+    options:
+      - "text=en=Tell me more about Aldric;de=Erzählt mir mehr über Aldric|next=4|hint=en=Learn about the founder;de=Erfahrt mehr über den Gründer"
+      - "text=en=What kind of rare manuscripts?;de=Was für seltene Manuskripte?|next=5|hint=en=Ask about the rare books;de=Fragt nach den seltenen Büchern"
+      - "text=en=I'd like to hear about something else;de=Ich möchte etwas anderes hören|next=0|hint=en=Return to main topics;de=Zurück zu den Hauptthemen"
+
+  2:
+    id: "book_collection"
+    messages:
+      - "en=Our collection spans many subjects and genres.;de=Unsere Sammlung umfasst viele Themen und Genres.;25"
+      - "en=We have historical chronicles, magical treatises, and adventure tales.;de=Wir haben historische Chroniken, magische Abhandlungen und Abenteuergeschichten.;30"
+      - "en=What particular subject interests you?;de=Welches Thema interessiert euch besonders?;20"
+    autoNext: false
+    options:
+      - "text=en=History and chronicles;de=Geschichte und Chroniken|next=6|hint=en=Browse historical texts;de=Durchstöbert historische Texte"
+      - "text=en=Magic and spellcraft;de=Magie und Zauberkunst|next=7|hint=en=Look at magical knowledge;de=Schaut euch magisches Wissen an"
+      - "text=en=Adventure stories;de=Abenteuergeschichten|next=8|hint=en=Read thrilling tales;de=Lest spannende Geschichten"
+      - "text=en=Let's talk about something else;de=Sprechen wir über etwas anderes|next=0|hint=en=Change the subject;de=Wechselt das Thema"
+
+  3:
+    id: "specific_search"
+    messages:
+      - "en=Ah, a scholar with purpose! I admire that.;de=Ah, ein Gelehrter mit einem Ziel! Das bewundere ich.;25"
+      - "en=What exactly are you seeking? Perhaps I can guide you.;de=Was genau sucht ihr? Vielleicht kann ich euch führen.;30"
+    autoNext: false
+    options:
+      - "text=en=Information about local legends;de=Informationen über lokale Legenden|next=9|hint=en=Learn about regional folklore;de=Erfahrt mehr über regionale Folklore"
+      - "text=en=Maps of distant lands;de=Karten ferner Länder|next=10|hint=en=Find geographical knowledge;de=Findet geografisches Wissen"
+      - "text=en=Actually, I'll browse on my own;de=Eigentlich werde ich selbst stöbern|next=2|hint=en=Go back to general browsing;de=Zurück zum allgemeinen Stöbern"
+
+  4:
+    id: "about_aldric"
+    messages:
+      - "en=Aldric the Wise was a remarkable scholar and mage.;de=Aldric der Weise war ein bemerkenswarter Gelehrter und Magier.;30"
+      - "en=He traveled the world collecting knowledge for all to share.;de=Er bereiste die Welt, um Wissen für alle zu sammeln.;25"
+      - "en=His legacy lives on in every book here.;de=Sein Vermächtnis lebt in jedem Buch hier weiter.;20"
+    autoNext: false
+    options:
+      - "text=en=What was his greatest discovery?;de=Was war seine größte Entdeckung?|next=11|hint=en=Learn about Aldric's achievements;de=Erfahrt mehr über Aldrics Errungenschaften"
+      - "text=en=Tell me about the library again;de=Erzählt mir nochmal von der Bibliothek|next=1|hint=en=Return to library history;de=Zurück zur Bibliotheksgeschichte"
+
+  5:
+    id: "rare_manuscripts"
+    messages:
+      - "en=We possess texts that exist nowhere else in the world.;de=Wir besitzen Texte, die nirgendwo sonst auf der Welt existieren.;30"
+      - "en=There's the lost poetry of Lysander and the Chronicle of the First Age.;de=Es gibt die verlorene Dichtung von Lysander und die Chronik des Ersten Zeitalters.;35"
+      - "en=Each one tells a story lost to time.;de=Jede erzählt eine Geschichte, die der Zeit verloren ging.;25"
+    autoNext: false
+    options:
+      - "text=en=Tell me about Lysander's poetry;de=Erzählt mir von Lysanders Dichtung|next=12|hint=en=Learn about the lost poet;de=Erfahrt mehr über den verlorenen Dichter"
+      - "text=en=The First Age sounds fascinating;de=Das Erste Zeitalter klingt faszinierend|next=13|hint=en=Discover ancient history;de=Entdeckt alte Geschichte"
+      - "text=en=I'd like to know about other topics;de=Ich möchte über andere Themen wissen|next=1|hint=en=Return to library topics;de=Zurück zu Bibliotheksthemen"
+
+  6:
+    id: "history_section"
+    messages:
+      - "en=Our history section spans two millennia of recorded events.;de=Unsere Geschichtsabteilung umfasst zwei Jahrtausende aufgezeichneter Ereignisse.;30"
+      - "en=From the rise and fall of empires to local village records.;de=Vom Aufstieg und Fall der Reiche bis zu örtlichen Dorfaufzeichnungen.;25"
+    autoNext: false
+    options:
+      - "text=en=Show me the ancient chronicles;de=Zeigt mir die alten Chroniken|next=13|hint=en=Study ancient times;de=Studiert alte Zeiten"
+      - "text=en=I'll browse other subjects;de=Ich werde andere Themen durchstöbern|next=2|hint=en=Return to collection;de=Zurück zur Sammlung"
+
+  7:
+    id: "magic_section"
+    messages:
+      - "en=Our magical texts range from basic cantrips to advanced theory.;de=Unsere magischen Texte reichen von einfachen Zaubertricks bis zu fortgeschrittener Theorie.;30"
+      - "en=All are available for study, though some require careful handling.;de=Alle sind zum Studium verfügbar, obwohl einige sorgfältige Behandlung erfordern.;25"
+    autoNext: false
+    options:
+      - "text=en=I'd like practical spellbooks;de=Ich möchte praktische Zauberbücher|next=14|hint=en=Learn practical magic;de=Lernt praktische Magie"
+      - "text=en=Let me look at other subjects;de=Lasst mich andere Themen betrachten|next=2|hint=en=Browse other topics;de=Andere Themen durchstöbern"
+
+  8:
+    id: "adventure_stories"
+    messages:
+      - "en=Ah, tales of heroism and exploration! We have many such works.;de=Ah, Geschichten von Heldentum und Erforschung! Wir haben viele solcher Werke.;30"
+      - "en=Some say these stories inspire real adventures!;de=Manche sagen, diese Geschichten inspirieren echte Abenteuer!;20"
+    autoNext: false
+    options:
+      - "text=en=Show me the legendary quests;de=Zeigt mir die legendären Quests|next=15|hint=en=Read about famous adventures;de=Lest über berühmte Abenteuer"
+      - "text=en=Maybe I'll look at other books;de=Vielleicht schaue ich mir andere Bücher an|next=2|hint=en=Browse different genres;de=Verschiedene Genres durchstöbern"
+
+  9:
+    id: "local_legends"
+    messages:
+      - "en=Local legends... yes, we have collected many tales from this region.;de=Lokale Legenden... ja, wir haben viele Geschichten aus dieser Region gesammelt.;30"
+      - "en=Stories of ancient spirits, hidden treasures, and mysterious events.;de=Geschichten von alten Geistern, versteckten Schätzen und mysteriösen Ereignissen.;25"
+    autoNext: false
+    options:
+      - "text=en=Tell me about the ancient spirits;de=Erzählt mir von den alten Geistern|next=16|hint=en=Learn about supernatural beings;de=Erfahrt mehr über übernatürliche Wesen"
+      - "text=en=I'd rather search for something else;de=Ich würde lieber nach etwas anderem suchen|next=3|hint=en=Look for different information;de=Nach anderen Informationen suchen"
+
+  10:
+    id: "maps_section"
+    messages:
+      - "en=Our cartography collection covers known and rumored lands.;de=Unsere Kartografie-Sammlung deckt bekannte und gerüchteweise Länder ab.;30"
+      - "en=We have trade routes, exploration charts, and even treasure maps.;de=Wir haben Handelsrouten, Erkundungskarten und sogar Schatzkarten.;25"
+    autoNext: false
+    options:
+      - "text=en=Show me the trade routes;de=Zeigt mir die Handelsrouten|next=17|hint=en=Learn about commerce paths;de=Erfahrt mehr über Handelswege"
+      - "text=en=Let me search for something else;de=Lasst mich nach etwas anderem suchen|next=3|hint=en=Look for different materials;de=Nach anderen Materialien suchen"
+
+  # Ending conversation stages
+  11:
+    id: "aldrics_discovery"
+    messages:
+      - "en=Aldric discovered the principle of knowledge resonance.;de=Aldric entdeckte das Prinzip der Wissensresonanz.;30"
+      - "en=Related knowledge naturally attracts and reinforces itself.;de=Verwandtes Wissen zieht sich natürlich an und verstärkt sich.;25"
+      - "en=This principle guides how we organize our entire collection.;de=Dieses Prinzip leitet, wie wir unsere gesamte Sammlung organisieren.;20"
+    autoNext: true
+
+  12:
+    id: "lysander_poetry"
+    messages:
+      - "en=Lysander wrote of love, loss, and natural beauty.;de=Lysander schrieb über Liebe, Verlust und natürliche Schönheit.;25"
+      - "en=His words have a musical quality that can cast gentle enchantments.;de=Seine Worte haben eine musikalische Qualität, die sanfte Verzauberungen wirken kann.;30"
+    autoNext: true
+
+  13:
+    id: "first_age"
+    messages:
+      - "en=The First Age was a time of great magic and wonder.;de=Das Erste Zeitalter war eine Zeit großer Magie und Wunder.;30"
+      - "en=The Chronicle tells of floating cities and talking beasts.;de=Die Chronik erzählt von schwebenden Städten und sprechenden Tieren.;25"
+    autoNext: true
+
+  14:
+    id: "practical_magic"
+    messages:
+      - "en=Here are some excellent introductory spellbooks.;de=Hier sind einige ausgezeichnete einführende Zauberbücher.;25"
+      - "en=Start with these, and return when you're ready for advanced texts.;de=Beginnt mit diesen und kehrt zurück, wenn ihr bereit für fortgeschrittene Texte seid.;30"
+    autoNext: true
+
+  15:
+    id: "legendary_quests"
+    messages:
+      - "en=These tales speak of heroes who shaped the world.;de=Diese Geschichten erzählen von Helden, die die Welt formten.;25"
+      - "en=Perhaps they'll inspire your own adventures!;de=Vielleicht inspirieren sie eure eigenen Abenteuer!;20"
+    autoNext: true
+
+  16:
+    id: "ancient_spirits"
+    messages:
+      - "en=The spirits are said to guard ancient secrets and treasures.;de=Die Geister sollen alte Geheimnisse und Schätze bewachen.;30"
+      - "en=Some are benevolent, others... less so. Approach with caution.;de=Manche sind wohlwollend, andere... weniger. Nähert euch mit Vorsicht.;25"
+    autoNext: true
+
+  17:
+    id: "trade_routes"
+    messages:
+      - "en=These maps show the safest paths between major cities.;de=Diese Karten zeigen die sichersten Wege zwischen großen Städten.;25"
+      - "en=Knowledge that could prove invaluable for any traveler.;de=Wissen, das für jeden Reisenden von unschätzbarem Wert sein könnte.;30"
+    autoNext: true

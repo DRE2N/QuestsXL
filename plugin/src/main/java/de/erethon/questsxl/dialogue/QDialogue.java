@@ -2,6 +2,7 @@ package de.erethon.questsxl.dialogue;
 
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QComponent;
+import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.player.QPlayer;
@@ -10,6 +11,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * @author Fyreum
@@ -20,7 +23,7 @@ public class QDialogue implements QComponent {
     YamlConfiguration cfg;
 
     private final String name;
-    private String senderName;
+    private QTranslatable senderName;
     private String npcId;
     private HashMap<Integer, QDialogueStage> stages;
 
@@ -37,7 +40,28 @@ public class QDialogue implements QComponent {
     }
 
     public void load() {
-        senderName = cfg.getString("sender", "Unbekannter");
+        if (cfg.isString("sender")) {
+            String senderString = cfg.getString("sender", "Unbekannter");
+            senderName = QTranslatable.fromString(senderString);
+        } else if (cfg.isConfigurationSection("sender")) {
+            ConfigurationSection senderSection = cfg.getConfigurationSection("sender");
+            Map<Locale, String> translations = new HashMap<>();
+            for (String key : senderSection.getKeys(false)) {
+                if (key.matches("[a-zA-Z]{2,3}(-[a-zA-Z]{2,3})?")) {
+                    Locale locale = Locale.forLanguageTag(key);
+                    translations.put(locale, senderSection.getString(key));
+                }
+            }
+            if (!translations.isEmpty()) {
+                String syntheticKey = "qxl.dialogue.sender." + name;
+                senderName = new QTranslatable(syntheticKey, translations);
+            } else {
+                senderName = QTranslatable.fromString("Unbekannter");
+            }
+        } else {
+            senderName = QTranslatable.fromString("Unbekannter");
+        }
+
         npcId = cfg.getString("npcId");
         ConfigurationSection stagesSection = cfg.getConfigurationSection("stages");
         String id = "Dialog: " + getName();
@@ -60,6 +84,15 @@ public class QDialogue implements QComponent {
                 QuestsXL.get().getErrors().add(new FriendlyError(id, "Stage '" + key + "' konnte nicht geladen werden", e.getMessage(), "Wahrscheinlich falsche Einrückung."));
             }
         }
+
+        // After all stages are loaded, validate and link dialogue option stage references
+        for (QDialogueStage stage : stages.values()) {
+            try {
+                stage.validateAndLinkOptions();
+            } catch (Exception e) {
+                QuestsXL.get().getErrors().add(new FriendlyError(id, "Failed to validate dialogue options", e.getMessage(), "Invalid stage reference in dialogue options"));
+            }
+        }
     }
 
     public boolean canStart(QPlayer player) {
@@ -79,7 +112,7 @@ public class QDialogue implements QComponent {
         return name;
     }
 
-    public String getSenderName() {
+    public QTranslatable getSenderName() {
         return senderName;
     }
 

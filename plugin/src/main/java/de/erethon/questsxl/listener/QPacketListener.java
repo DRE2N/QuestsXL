@@ -16,18 +16,22 @@ public class QPacketListener extends ChannelDuplexHandler {
 
     QuestsXL plugin;
     ServerPlayer player;
-    final QPlayer qPlayer;
+    QDatabaseManager databaseManager;
 
     public QPacketListener(QuestsXL plugin, ServerPlayer player) {
         this.plugin = plugin;
         this.player = player;
-        QDatabaseManager databaseManager = plugin.getDatabaseManager();
-        qPlayer = databaseManager.getCurrentPlayer(player.getBukkitEntity());
+        this.databaseManager = plugin.getDatabaseManager();
     }
 
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         if (msg instanceof ClientboundSystemChatPacket chatPacket) {
+            QPlayer qPlayer = databaseManager.getCurrentPlayer(player.getBukkitEntity());
+            if (qPlayer == null) {
+                super.write(ctx, msg, promise);
+                return;
+            }
             Component component;
             if (chatPacket.content() != null) {
                 component = PaperAdventure.asAdventure(chatPacket.content());

@@ -24,7 +24,10 @@ public class QDialogueManager extends Registry<String, QDialogue> {
         for (File file : FileUtil.getFilesForFolder(folder)) {
             QDialogue dialogue = new QDialogue(file);
             add(dialogue.getName(), dialogue);
-            npcRegistry.add(dialogue.getNPCId(), dialogue.getName());
+            // Only register NPC mapping if dialogue has an NPC ID
+            if (dialogue.getNPCId() != null && !dialogue.getNPCId().trim().isEmpty()) {
+                npcRegistry.add(dialogue.getNPCId(), dialogue.getName());
+            }
         }
         QuestsXL.log("Loaded " + size() + " dialogues.");
     }

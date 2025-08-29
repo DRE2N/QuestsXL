@@ -4,6 +4,7 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.Completable;
 import de.erethon.questsxl.common.ObjectiveHolder;
+import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.common.Scorable;
 import de.erethon.questsxl.dialogue.ActiveDialogue;
@@ -17,6 +18,7 @@ import de.erethon.questsxl.quest.QQuest;
 import de.erethon.questsxl.region.QRegion;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -24,6 +26,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.kyori.adventure.translation.GlobalTranslator;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
@@ -78,6 +81,7 @@ public class QPlayer implements ObjectiveHolder, Scorable, Quester {
     private Component explorerContentGuide;
 
     public QPlayer(@NotNull Player player) {
+        // Note: Do not, ever, send any messages here. This will cause a recursion loop on player join.
         this.uuid = player.getUniqueId();
         this.player = player;
         CraftPlayer craftPlayer = (CraftPlayer) player;
@@ -92,7 +96,6 @@ public class QPlayer implements ObjectiveHolder, Scorable, Quester {
             }
         }
         loadFromDatabase();
-        MessageUtil.sendMessage(player, "&2[QXL] &7Loaded " + currentObjectives.size() + " objectives.");
     }
 
     public void startQuest(@NotNull QQuest quest) {
@@ -339,20 +342,18 @@ public class QPlayer implements ObjectiveHolder, Scorable, Quester {
         player.sendMessage(recollection);
     }
 
-    public void sendConversationMsg(@NotNull String raw, String senderName, int id, int max) {
-        sendConversationMsg(MessageUtil.parse(raw), senderName, id, max);
-    }
-
-    public void sendConversationMsg(@NotNull Component message, String senderName, int id, int max) {
+    public void sendConversationMsg(@NotNull QTranslatable translatable, QTranslatable senderName, int id, int max) {
+        Component message = translatable.get();
         sendMessagesInQueue(true);
+        String plainSenderName = PlainTextComponentSerializer.plainText().serialize(GlobalTranslator.render(senderName.get(), getPlayer().locale()));
         sendMarkedMessage(Component.empty());
         sendMarkedMessage(Component.empty());
         sendMarkedMessage(Component.empty());
-        Component header = miniMessage.deserialize("<green>                      <b>" + senderName + "<!b> <dark_gray> -  <gray>[" + id + "/" + max + "]");
+        Component header = miniMessage.deserialize("<green>                      <b>" + plainSenderName + "<!b> <dark_gray> -  <gray>[" + id + "/" + max + "]");
         sendMarkedMessage(header);
         sendMarkedMessage(Component.empty());
         sendMarkedMessage(message);
-        dialogueRecollection.add(senderName + ": " + PlainTextComponentSerializer.plainText().serialize(message));
+        dialogueRecollection.add(plainSenderName + ": " + PlainTextComponentSerializer.plainText().serialize(GlobalTranslator.render(message, getPlayer().locale())));
         sendMarkedMessage(Component.empty());
     }
 
