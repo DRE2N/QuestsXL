@@ -135,7 +135,6 @@ public class QLocation {
         World world;
         if (worldID == null) {
             world = location.getWorld();
-            return null;
         } else {
             world = Bukkit.getWorld(worldID);
         }
@@ -163,6 +162,9 @@ public class QLocation {
      * @return true if the given location shares the same world as the QLocation.
      */
     public boolean sameWorld(Location location) {
+        if (worldID == null) {
+            return true; // If no world is specified, assume same world
+        }
         return location.getWorld().getName().equals(worldID);
     }
 
@@ -224,5 +226,10 @@ public class QLocation {
 
     public void setRelative(boolean relative) {
         isRelative = relative;
+    }
+
+    @Override
+    public String toString() {
+        return x + " / " + y + " / " + z;
     }
 }

@@ -1,11 +1,11 @@
 package de.erethon.questsxl.objective;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.common.ObjectiveHolder;
 import de.erethon.questsxl.common.QComponent;
 import de.erethon.questsxl.common.QConfig;
+import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.livingworld.QEvent;
@@ -24,7 +24,7 @@ enum ActionScope {
 public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
 
     protected final QuestsXL plugin = QuestsXL.get();
-    private String displayText;
+    private QTranslatable displayText;
     private final Set<QAction> completeActions = new HashSet<>();
     private final Set<QAction> progressActions = new HashSet<>();
     private final Set<QCondition> conditions = new HashSet<>();
@@ -38,6 +38,7 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
     private boolean optional = false;
     private boolean persistent = false;
     private boolean isGlobal = false;
+    private boolean isHidden = false;
     protected boolean shouldCancelEvent = false;
 
     private QComponent parent;
@@ -250,9 +251,21 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
      * @return the text that is displayed to the player.
      */
     @Override
-    public String getDisplayText() {
-        return displayText;
+    public QTranslatable getDisplayText(Player player) {
+        if (displayText != null) {
+            return displayText;
+        }
+        return getDefaultDisplayText(player);
     }
+
+    /**
+     * Generates the default display text for this objective type.
+     * This should be overridden by specific objective implementations to provide
+     * meaningful default text when no custom display text is configured.
+     *
+     * @return the default translatable display text for this objective
+     */
+    protected abstract QTranslatable getDefaultDisplayText(Player player);
 
     /**
      * @return a set of conditions that are checked. Conditions are checked per player.
@@ -283,6 +296,14 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
     }
 
     /**
+     * @return if the objective is hidden from the player.
+     */
+    @Override
+    public boolean isHidden() {
+        return isHidden;
+    }
+
+    /**
      * @return the progress goal of the objective.
      */
     @Override
@@ -303,7 +324,10 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
     @Override
     public void load(QConfig cfg) {
         if (cfg.contains("display")) {
-            displayText = cfg.getString("display");
+            displayText = QTranslatable.fromString(cfg.getString("display"));
+        }
+        if (cfg.contains("hidden")) {
+            isHidden = cfg.getBoolean("hidden", false);
         }
         if (cfg.contains("cancel")) {
             shouldCancelEvent = cfg.getBoolean("cancel");

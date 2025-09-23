@@ -73,6 +73,11 @@ public class PlayerListener extends AbstractListener {
         }
         if (event.getFrom().getChunk() != event.getTo().getChunk()) {
             qp.getExplorer().updateClosestSet();
+
+            // Trigger automatic tracking update when player moves to a new chunk
+            if (plugin.getAutoTrackingManager() != null) {
+                plugin.getAutoTrackingManager().triggerImmediateUpdate(qp);
+            }
         }
     }
 

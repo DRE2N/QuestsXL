@@ -5,7 +5,9 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.QTranslatable;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
 @QLoadableDoc(
@@ -66,6 +68,11 @@ public class WaitObjective extends QBaseObjective {
         if (distance <= 0) {
             throw new RuntimeException("The wait objective in " + cfg.getName() + " contains a negative range.");
         }
+    }
+
+    @Override
+    protected QTranslatable getDefaultDisplayText(Player player) {
+        return QTranslatable.fromString("en=Wait; de=Warte");
     }
 
     @Override

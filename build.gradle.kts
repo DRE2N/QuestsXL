@@ -15,7 +15,7 @@ repositories {
 
 allprojects {
     group = "de.erethon.questsxl"
-    version = "1.0.4-SNAPSHOT"
+    version = "1.0.5-SNAPSHOT"
 
     repositories {
         mavenLocal()
@@ -48,7 +48,7 @@ allprojects {
     }
 }
 
-val papyrusVersion = "1.21.7-R0.1-SNAPSHOT"
+val papyrusVersion = "1.21.8-R0.1-SNAPSHOT"
 
 subprojects {
     apply(plugin = "java-library")

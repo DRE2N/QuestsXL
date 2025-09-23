@@ -10,6 +10,8 @@ import java.util.Map;
 
 public class QTranslatable {
 
+    private static final Map<String, QTranslatable> STRING_CACHE = new HashMap<>();
+
     private final String key;
     private final Map<Locale, String> translations;
     private final String literal;
@@ -53,6 +55,9 @@ public class QTranslatable {
         if (str == null) {
             return new QTranslatable("");
         }
+        if (STRING_CACHE.containsKey(str)) {
+            return STRING_CACHE.get(str);
+        }
         Map<Locale, String> parsed = new HashMap<>();
         boolean hasLocaleEntries = false;
         String[] parts = str.split(";");
@@ -69,11 +74,15 @@ public class QTranslatable {
                 }
             }
         }
+        QTranslatable translatable;
         if (hasLocaleEntries && !parsed.isEmpty()) {
             String syntheticKey = "qxl.dynamic." + Integer.toHexString(str.hashCode());
-            return new QTranslatable(syntheticKey, parsed);
+            translatable = new QTranslatable(syntheticKey, parsed);
+        } else {
+            translatable = new QTranslatable(str);
         }
-        return new QTranslatable(str);
+        STRING_CACHE.put(str, translatable);
+        return translatable;
     }
 
 }

@@ -9,7 +9,7 @@ plugins {
     id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
 }
 
-val papyrusVersion = "1.21.7-R0.1-SNAPSHOT"
+val papyrusVersion = "1.21.8-R0.1-SNAPSHOT"
 paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
 
 dependencies {

@@ -27,6 +27,7 @@ public class ExplorableCommand extends ECommand {
         setPermission("questsxl.explorable");
         setUsage("/questsxl explorable <subcommand> [args]");
         setConsoleCommand(false);
+        setPlayerCommand(true);
     }
 
     @Override

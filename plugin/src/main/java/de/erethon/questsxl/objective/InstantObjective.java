@@ -1,7 +1,9 @@
 package de.erethon.questsxl.objective;
 
 import de.erethon.questsxl.common.QLoadableDoc;
+import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.event.QStageStartEvent;
+import org.bukkit.entity.Player;
 
 @QLoadableDoc(
         value = "instant",
@@ -18,6 +20,11 @@ public class InstantObjective extends QBaseObjective<QStageStartEvent> {
         if (!e.getStage().hasObjective(this)) return;
         if (!conditions(e.getPlayer().getPlayer())) return;
         checkCompletion(active, this, null);
+    }
+
+    @Override
+    protected QTranslatable getDefaultDisplayText(Player player) {
+        return QTranslatable.fromString("en=Instant; de=Sofort");
     }
 
     @Override

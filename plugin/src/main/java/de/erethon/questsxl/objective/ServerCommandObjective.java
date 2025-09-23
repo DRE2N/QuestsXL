@@ -1,12 +1,11 @@
 package de.erethon.questsxl.objective;
 
 import de.erethon.questsxl.common.QConfig;
-import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.event.CommandTriggerEvent;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.event.Event;
+import org.bukkit.entity.Player;
 
 @QLoadableDoc(
         value = "server_command",
@@ -35,6 +34,11 @@ public class ServerCommandObjective extends QBaseObjective<CommandTriggerEvent> 
     public void load(QConfig cfg) {
         super.load(cfg);
         identifier = cfg.getString("identifier");
+    }
+
+    @Override
+    protected QTranslatable getDefaultDisplayText(Player player) {
+        return QTranslatable.fromString("Server command: " + (identifier != null ? identifier : "a command"));
     }
 
     @Override

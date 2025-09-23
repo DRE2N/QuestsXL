@@ -1,7 +1,7 @@
 package de.erethon.questsxl.objective;
 
+import de.erethon.questsxl.common.QTranslatable;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 
 public class ExperienceObjective extends QBaseObjective<PlayerExpChangeEvent> {
@@ -12,6 +12,11 @@ public class ExperienceObjective extends QBaseObjective<PlayerExpChangeEvent> {
     @Override
     public void check(ActiveObjective active, PlayerExpChangeEvent event) {
 
+    }
+
+    @Override
+    protected QTranslatable getDefaultDisplayText(Player player) {
+        return QTranslatable.fromString("en=Experience; de=Erfahrung");
     }
 
     @Override

@@ -30,8 +30,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -657,5 +659,9 @@ public class QDatabaseManager extends EDatabaseManager {
         }
 
         return null;
+    }
+
+    public Set<QPlayer> getPlayers() {
+        return new HashSet<>(uuidqPlayerMap.values());
     }
 }

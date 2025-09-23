@@ -3,12 +3,14 @@ package de.erethon.questsxl.objective;
 import de.erethon.questsxl.action.QAction;
 import de.erethon.questsxl.common.QComponent;
 import de.erethon.questsxl.common.ObjectiveHolder;
+import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.condition.QCondition;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
 import java.util.Set;
 
-public interface QObjective<T extends Event> extends QComponent { // Assuming QComponent is a base interface
+public interface QObjective<T extends Event> extends QComponent {
 
     /**
      * Returns the specific Event class that this objective needs to listen to.
@@ -32,6 +34,7 @@ public interface QObjective<T extends Event> extends QComponent { // Assuming QC
     boolean isOptional();
     boolean isFailed();
     boolean isPersistent();
+    boolean isHidden();
     Set<QAction> getCompleteActions();
     Set<QAction> getFailActions();
     Set<QAction> getConditionFailActions();
@@ -41,7 +44,7 @@ public interface QObjective<T extends Event> extends QComponent { // Assuming QC
     void setGlobal(boolean global);
     boolean isGlobal();
 
-    String getDisplayText();
+    QTranslatable getDisplayText(Player player);
 
     void onStart(ObjectiveHolder player);
 

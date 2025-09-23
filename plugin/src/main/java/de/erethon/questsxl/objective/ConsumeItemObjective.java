@@ -6,7 +6,9 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.QTranslatable;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 
 @QLoadableDoc(
@@ -35,11 +37,15 @@ public class ConsumeItemObjective extends QBaseObjective<PlayerItemConsumeEvent>
         }
     }
 
-
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
         itemID = NamespacedKey.fromString(cfg.getString("item"));
+    }
+
+    @Override
+    protected QTranslatable getDefaultDisplayText(Player player) {
+        return QTranslatable.fromString("en=Consume item; de=Konsumiere Item");
     }
 
     @Override

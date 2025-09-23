@@ -1,7 +1,8 @@
 package de.erethon.questsxl.objective;
 
 import de.erethon.questsxl.common.QLoadableDoc;
-import org.bukkit.event.Event;
+import de.erethon.questsxl.common.QTranslatable;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 @QLoadableDoc(
@@ -20,6 +21,11 @@ public class DeathObjective extends QBaseObjective<PlayerDeathEvent> {
             if (shouldCancelEvent) e.setCancelled(true);
             checkCompletion(active, this, plugin.getDatabaseManager().getCurrentPlayer(e.getEntity()));
         }
+    }
+
+    @Override
+    protected QTranslatable getDefaultDisplayText(Player player) {
+        return QTranslatable.fromString("en=Die; de=Stirb");
     }
 
     @Override

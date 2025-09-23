@@ -1,6 +1,7 @@
 package de.erethon.questsxl.objective;
 
 import de.erethon.questsxl.common.QLocation;
+import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.quest.QuestMarkerType;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -130,7 +131,7 @@ public abstract class AbstractLocationBasedObjective extends QBaseObjective {
 
 
     @Override
-    public String getDisplayText() {
+    public QTranslatable getDisplayText(Player player) {
         return null;
     }
 

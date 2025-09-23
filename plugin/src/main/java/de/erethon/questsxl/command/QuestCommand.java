@@ -60,7 +60,7 @@ public class QuestCommand extends ECommand {
                 if (objective.isPersistent() && objective.isOptional()) {
                     continue;
                 }
-                MessageUtil.sendMessage(player, "&8- &a" + objective.getDisplayText());
+                MessageUtil.sendMessage(player, "&8- &a" + objective.getDisplayText(player));
             }
             return;
         }
@@ -70,7 +70,7 @@ public class QuestCommand extends ECommand {
             if (objective.isPersistent() && objective.isOptional()) {
                 continue;
             }
-            MessageUtil.sendMessage(player, "&8- &a" + objective.getDisplayText());
+            MessageUtil.sendMessage(player, "&8- &a" + objective.getDisplayText(player));
         }
     }
 

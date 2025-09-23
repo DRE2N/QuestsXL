@@ -37,10 +37,6 @@ public class ActiveObjective {
         return holder;
     }
 
-    public String getMessage() {
-        return objective.getDisplayText();
-    }
-
     public QObjective<?> getObjective() {
         return objective;
     }

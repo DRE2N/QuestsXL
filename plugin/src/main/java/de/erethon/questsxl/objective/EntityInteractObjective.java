@@ -1,9 +1,9 @@
 package de.erethon.questsxl.objective;
 
 import de.erethon.questsxl.common.QConfig;
+import de.erethon.questsxl.common.QTranslatable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 public class EntityInteractObjective extends QBaseObjective<PlayerInteractEntityEvent> {
@@ -31,6 +31,11 @@ public class EntityInteractObjective extends QBaseObjective<PlayerInteractEntity
     public void load(QConfig cfg) {
         super.load(cfg);
         mob = cfg.getString("id");
+    }
+
+    @Override
+    protected QTranslatable getDefaultDisplayText(Player player) {
+        return QTranslatable.fromString("en=Interact with " + mob + "; de=Interagiere mit " + mob);
     }
 
     @Override

@@ -1,6 +1,8 @@
 package de.erethon.questsxl.objective;
 
 import de.erethon.questsxl.common.QLoadableDoc;
+import de.erethon.questsxl.common.QTranslatable;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
 @QLoadableDoc(
@@ -16,6 +18,11 @@ public class ImpossibleObjective extends QBaseObjective {
     @Override
     public void check(ActiveObjective active, Event event) {
 
+    }
+
+    @Override
+    protected QTranslatable getDefaultDisplayText(Player player) {
+        return QTranslatable.fromString("en=Impossible; de=Unmöglich");
     }
 
     @Override

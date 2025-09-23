@@ -4,6 +4,7 @@ import de.erethon.hephaestus.items.HItemStack;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.QTranslatable;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.CraftItemEvent;
@@ -36,6 +37,11 @@ public class ItemCraftObjective extends QBaseObjective<CraftItemEvent> {
     public void load(QConfig cfg) {
         super.load(cfg);
         id = NamespacedKey.fromString(cfg.getString("item"));
+    }
+
+    @Override
+    protected QTranslatable getDefaultDisplayText(Player player) {
+        return QTranslatable.fromString("en=Craft item; de=Stelle Item her");
     }
 
     @Override

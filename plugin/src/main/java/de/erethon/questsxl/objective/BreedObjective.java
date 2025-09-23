@@ -3,10 +3,10 @@ package de.erethon.questsxl.objective;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.error.FriendlyError;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityBreedEvent;
 
 import java.util.Locale;
@@ -41,6 +41,11 @@ public class BreedObjective extends QBaseObjective<EntityBreedEvent> {
         if (entityType == null) {
             plugin.addRuntimeError(new FriendlyError(cfg.getName(), "Invalid entity type: " + cfg.getString("entity"), "Null entity type", "Make sure the entity type is spelled correctly."));
         }
+    }
+
+    @Override
+    protected QTranslatable getDefaultDisplayText(Player player) {
+        return QTranslatable.fromString("en=Breed; de=Züchten");
     }
 
     @Override

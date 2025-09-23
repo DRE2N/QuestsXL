@@ -5,23 +5,24 @@ import de.erethon.questsxl.player.QPlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 public class ContentGuide {
 
-    char LEFT = '←';
-    char FORWARD_RIGHT = '⬈';
-    char RIGHT = '→';
-    char FORWARD_LEFT = '⬉';
-    char BACKWARD = '↓';
-    char BACKWARD_RIGHT = '⬊';
-    char FORWARD = '↑';
-    char BACKWARD_LEFT = '⬋';
-    char UNKNOWN = '-';
-    char UP = '▲';
-    char DOWN = '▼';
-    char SAME = '◆';
+    static char LEFT = '←';
+    static char FORWARD_RIGHT = '⬈';
+    static char RIGHT = '→';
+    static char FORWARD_LEFT = '⬉';
+    static char BACKWARD = '↓';
+    static char BACKWARD_RIGHT = '⬊';
+    static char FORWARD = '↑';
+    static char BACKWARD_LEFT = '⬋';
+    static char UNKNOWN = '-';
+    static char UP = '▲';
+    static char DOWN = '▼';
+    static char SAME = '◆';
 
     public static final double MAX_DISTANCE_FOR_HINT = 64;
 
@@ -57,7 +58,7 @@ public class ContentGuide {
         if (distance > MAX_DISTANCE_FOR_HINT) {
             return;
         }
-        Component hint = Component.text(getDirectionalMarker(closest.location()) + " ", NamedTextColor.DARK_PURPLE);
+        Component hint = Component.text(getDirectionalMarker(player.getPlayer(), closest.location()) + " ", NamedTextColor.DARK_PURPLE);
         hint = hint.append(Component.translatable("qxl.explorable.undiscovered"));
         player.setContentGuideText(hint);
     }
@@ -82,7 +83,7 @@ public class ContentGuide {
         return closest;
     }
 
-    public char getDirectionalMarker(Location toLoc) {
+    public static char getDirectionalMarker(Player player, Location toLoc) {
         Location fromLoc = player.getLocation().clone();
         if (toLoc.getWorld() != fromLoc.getWorld()) {
             return UNKNOWN;

@@ -94,6 +94,8 @@ public class AdminCommand extends ECommand {
                 return;
             }
             qPlayer.addActive(quest);
+            qPlayer.setTrackedQuest(quest, 9999);
+            MessageUtil.sendMessage(otherPlayer, "&a" + player.getName() + " &7hat dir die Quest &a" + quest.getName() + " &7gegeben.");
             MessageUtil.sendMessage(player, "&a" + player.getName() + " &7hat erfolgreich die Quest &a" + quest.getName() + " &7gestartet.");
             return;
         }

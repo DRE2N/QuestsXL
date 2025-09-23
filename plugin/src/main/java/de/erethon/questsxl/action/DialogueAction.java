@@ -35,5 +35,8 @@ public class DialogueAction extends QBaseAction {
     public void load(QConfig cfg) {
         super.load(cfg);
         dialogue = dialogueManager.get(cfg.getString("dialogue"));
+        if (dialogue == null) {
+            throw new RuntimeException("The dialogue action in " + cfg.getName() + " contains an invalid dialogue ID.");
+        }
     }
 }

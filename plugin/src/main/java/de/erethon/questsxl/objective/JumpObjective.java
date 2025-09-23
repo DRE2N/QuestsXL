@@ -2,7 +2,8 @@ package de.erethon.questsxl.objective;
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import de.erethon.questsxl.common.QLoadableDoc;
-import org.bukkit.event.Event;
+import de.erethon.questsxl.common.QTranslatable;
+import org.bukkit.entity.Player;
 
 @QLoadableDoc(
         value = "jump",
@@ -18,6 +19,11 @@ public class JumpObjective extends QBaseObjective<PlayerJumpEvent> {
     public void check(ActiveObjective active, PlayerJumpEvent e) {
         if (!conditions(e.getPlayer())) return;
         checkCompletion(active, this, plugin.getDatabaseManager().getCurrentPlayer(e.getPlayer()));
+    }
+
+    @Override
+    protected QTranslatable getDefaultDisplayText(Player player) {
+        return QTranslatable.fromString("en=Jump!; de=Spring!");
     }
 
     @Override

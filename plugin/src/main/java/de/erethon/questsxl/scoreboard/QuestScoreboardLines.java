@@ -6,9 +6,14 @@ import de.erethon.aergia.scoreboard.ScoreboardLines;
 import de.erethon.aergia.util.DynamicComponent;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.livingworld.EventState;
+import de.erethon.questsxl.livingworld.QEvent;
+import de.erethon.questsxl.objective.ActiveObjective;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.ActiveQuest;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.kyori.adventure.translation.GlobalTranslator;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -33,8 +38,14 @@ public class QuestScoreboardLines implements ScoreboardLines {
             QuestsXL.log("Player " + ePlayer.getDisplayName() + " not found in database, cannot show quest scoreboard lines.");
             return List.of();
         }
+        // Check if tracked event is still active, untrack if not
+        if (player.getTrackedEvent() != null && player.getTrackedEvent().getState() != EventState.ACTIVE) {
+            player.setTrackedEvent(null, 0);
+        }
+
         ActiveQuest trackedQuest = player.getTrackedQuest();
 
+        // Check conditions after potentially untracking the event
         if (trackedQuest == null && player.getTrackedEvent() == null && player.getContentGuideText() == null) {
             return List.of();
         }
@@ -55,8 +66,9 @@ public class QuestScoreboardLines implements ScoreboardLines {
 
             lines.add(ScoreboardComponent.of((p) -> header));
 
-            if (player.getTrackedEvent().getObjectiveDisplayText() != null) {
-                for (String line : player.getTrackedEvent().getObjectiveDisplayText().split("<br>", 3)) {
+            String objectiveText = getEventObjectiveDisplayText(player, player.getTrackedEvent());
+            if (objectiveText != null) {
+                for (String line : objectiveText.split("<br>", 3)) {
                     lines.add(ScoreboardComponent.of((p) -> MessageUtil.parse("<gray>" + line + "<gray>")));
                 }
             }
@@ -68,14 +80,116 @@ public class QuestScoreboardLines implements ScoreboardLines {
 
             lines.add(ScoreboardComponent.of((p) -> header));
 
-            if (trackedQuest.getObjectiveDisplayText() != null) {
-                for (String line : trackedQuest.getObjectiveDisplayText().split("<br>", 3)) {
+            String objectiveText = getObjectiveDisplayText(player, trackedQuest);
+            if (objectiveText != null) {
+                for (String line : objectiveText.split("<br>", 3)) {
                     lines.add(ScoreboardComponent.of((p) -> MessageUtil.parse("<gray>" + line + "<gray>")));
                 }
             }
         }
 
         return lines;
+    }
+
+    /**
+     * Gets the objective display text for a quest. Returns either the manually set text
+     * or generates translated text from all active objectives.
+     */
+    private String getObjectiveDisplayText(QPlayer player, ActiveQuest activeQuest) {
+        if (activeQuest.getObjectiveDisplayText() != null) {
+            return activeQuest.getObjectiveDisplayText();
+        }
+
+        List<ActiveObjective> questObjectives = new ArrayList<>();
+        for (ActiveObjective objective : player.getCurrentObjectives()) {
+            if (objective.getCompletable() == activeQuest.getQuest()) {
+                questObjectives.add(objective);
+            }
+        }
+        return generateObjectiveDisplayText(player, questObjectives);
+    }
+
+    private String getEventObjectiveDisplayText(QPlayer player, QEvent event) {
+        if (event.getObjectiveDisplayText() != null) {
+            return event.getObjectiveDisplayText();
+        }
+        return generateObjectiveDisplayText(player, event.getCurrentObjectives());
+    }
+
+    private String generateObjectiveDisplayText(QPlayer player, Iterable<ActiveObjective> objectives) {
+        List<String> objectiveLines = new ArrayList<>();
+
+        for (ActiveObjective activeObjective : objectives) {
+            if (activeObjective.isCompleted()) {
+                continue; // Skip completed objectives
+            }
+
+            if (activeObjective.getObjective().isPersistent()) {
+                continue; // Skip persistent objectives
+            }
+
+            var displayText = activeObjective.getObjective().getDisplayText(player.getPlayer());
+            Component translatedComponent = GlobalTranslator.render(displayText.get(), player.getPlayer().locale());
+            String translatedText = PlainTextComponentSerializer.plainText().serialize(translatedComponent);
+            String progressText = "";
+            if (activeObjective.getObjective().getProgressGoal() > 1) {
+                progressText = " (" + activeObjective.getProgress() + "/" + activeObjective.getObjective().getProgressGoal() + ")";
+            }
+
+            translatedText = truncateSmartlyWithProgress(translatedText, progressText, 35);
+            objectiveLines.add(translatedText);
+        }
+
+        return objectiveLines.isEmpty() ? null : String.join("<br>", objectiveLines);
+    }
+
+    /**
+     * Smartly truncates text to fit within the scoreboard line limit while preserving progress information.
+     * Progress information (X/Y) will always be shown, even if the line becomes longer than maxLength.
+     */
+    private String truncateSmartlyWithProgress(String text, String progressText, int maxLength) {
+        String fullText = text + progressText;
+        if (fullText.length() <= maxLength) {
+            return fullText;
+        }
+
+        if (!progressText.isEmpty()) {
+            int availableLength = maxLength - progressText.length() - 3; //  3 chars for "..."
+
+            if (availableLength < 10) {
+                String truncated = text.length() > 10 ? text.substring(0, 7) + "..." : text;
+                return truncated + progressText;
+            }
+
+            String truncated = text.substring(0, availableLength);
+
+            int lastSpace = truncated.lastIndexOf(' ');
+            if (lastSpace > availableLength * 0.6) {
+                truncated = truncated.substring(0, lastSpace);
+            }
+
+            return truncated + "..." + progressText;
+        }
+        return truncateSmartly(fullText, maxLength);
+    }
+
+    /**
+     * Smartly truncates text to fit within the scoreboard line limit.
+     * Tries to break at word boundaries and adds ellipsis when needed.
+     */
+    private String truncateSmartly(String text, int maxLength) {
+        if (text.length() <= maxLength) {
+            return text;
+        }
+
+        String truncated = text.substring(0, maxLength - 3); // 3 chars for "..."
+
+        int lastSpace = truncated.lastIndexOf(' ');
+        if (lastSpace > maxLength * 0.6) {
+            truncated = truncated.substring(0, lastSpace);
+        }
+
+        return truncated + "...";
     }
 
     @Override

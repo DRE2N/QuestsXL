@@ -3,9 +3,10 @@ package de.erethon.questsxl.objective;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.QTranslatable;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.event.Event;
+import org.bukkit.entity.Player;
 
 @QLoadableDoc(
         value = "chat",
@@ -23,6 +24,18 @@ public class ChatObjective extends QBaseObjective<AsyncChatEvent> {
     private String message;
     @QParamDoc(description = "Whether the message has to be an exact match.", def = "false")
     private boolean exactMatch = false;
+
+    @Override
+    protected QTranslatable getDefaultDisplayText(Player player) {
+        if (message != null) {
+            if (exactMatch) {
+                return QTranslatable.fromString("Say \"" + message + "\"");
+            } else {
+                return QTranslatable.fromString("Say something containing \"" + message + "\"");
+            }
+        }
+        return QTranslatable.fromString("Send a message in chat");
+    }
 
     @Override
     public void check(ActiveObjective active, AsyncChatEvent e) {

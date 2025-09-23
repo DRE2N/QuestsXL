@@ -1,7 +1,8 @@
 package de.erethon.questsxl.objective;
 
 import de.erethon.questsxl.common.QLoadableDoc;
-import org.bukkit.event.Event;
+import de.erethon.questsxl.common.QTranslatable;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 @QLoadableDoc(
@@ -15,13 +16,18 @@ import org.bukkit.event.player.PlayerJoinEvent;
 public class LoginObjective extends QBaseObjective<PlayerJoinEvent> {
 
     @Override
-    public Class<PlayerJoinEvent> getEventType() {
-        return PlayerJoinEvent.class;
-    }
-
-    @Override
     public void check(ActiveObjective active, PlayerJoinEvent event) {
         if (!conditions(event.getPlayer())) return;
         checkCompletion(active, this, plugin.getDatabaseManager().getCurrentPlayer(event.getPlayer()));
+    }
+
+    @Override
+    protected QTranslatable getDefaultDisplayText(Player player) {
+        return QTranslatable.fromString("en=Login; de=Einloggen");
+    }
+
+    @Override
+    public Class<PlayerJoinEvent> getEventType() {
+        return PlayerJoinEvent.class;
     }
 }

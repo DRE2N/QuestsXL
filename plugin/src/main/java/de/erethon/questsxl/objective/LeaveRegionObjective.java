@@ -4,8 +4,10 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.event.QRegionLeaveEvent;
 import de.erethon.questsxl.region.QRegion;
+import org.bukkit.entity.Player;
 
 @QLoadableDoc(
         value = "leave_region",
@@ -33,6 +35,11 @@ public class LeaveRegionObjective extends QBaseObjective<QRegionLeaveEvent> {
     public void load(QConfig cfg) {
         super.load(cfg);
         region = QuestsXL.get().getRegionManager().getByID(cfg.getString("region"));
+    }
+
+    @Override
+    protected QTranslatable getDefaultDisplayText(Player player) {
+        return QTranslatable.fromString("en=Leave region " + (region != null ? region.getId() : "a region") + "; de=Verlasse Region " + (region != null ? region.getId() : "eine Region"));
     }
 
     @Override

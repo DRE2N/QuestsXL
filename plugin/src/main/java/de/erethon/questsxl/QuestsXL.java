@@ -27,6 +27,7 @@ import de.erethon.questsxl.global.GlobalObjectives;
 import de.erethon.questsxl.instancing.BlockCollectionManager;
 import de.erethon.questsxl.listener.PlayerListener;
 import de.erethon.questsxl.listener.PluginListener;
+import de.erethon.questsxl.livingworld.AutoTrackingManager;
 import de.erethon.questsxl.livingworld.Exploration;
 import de.erethon.questsxl.livingworld.QEventManager;
 import de.erethon.questsxl.objective.event.ObjectiveEventManager;
@@ -88,6 +89,7 @@ public final class QuestsXL extends EPlugin {
     private PlayerListener playerListener;
     private Exploration exploration;
     private ObjectiveEventManager objectiveEventManager;
+    private AutoTrackingManager autoTrackingManager;
 
     private final Map<String, Integer> scores = new HashMap<>();
     private final List<FriendlyError> errors = new ArrayList<>();
@@ -235,9 +237,14 @@ public final class QuestsXL extends EPlugin {
             aergia.getEScoreboard().addScores(new QuestScoreboardLines());
         }
         QuestsXL.log("Loading QComponents...");
+        dialogueManager.load();
         questManager.load();
         eventManager.load(EVENTS);
-        dialogueManager.load();
+
+        // Initialize automatic tracking manager
+        autoTrackingManager = new AutoTrackingManager(this);
+        QuestsXL.log("Automatic tracking manager initialized");
+
         // Generate docs
         QuestsXL.log("Generating documentation...");
         Path docPath = getDataFolder().toPath().resolve("docs");
@@ -338,14 +345,18 @@ public final class QuestsXL extends EPlugin {
        return databaseManager;
     }
 
+    public AutoTrackingManager getAutoTrackingManager() {
+        return autoTrackingManager;
+    }
+
     public void reload() {
         errors.clear();
         onDisable();
         loadCore();
         QuestsXL.log("Loading QComponents...");
+        dialogueManager.load();
         questManager.load();
         eventManager.load(EVENTS);
-        dialogueManager.load();
     }
 
     public boolean isWEEnabled() {

@@ -103,6 +103,7 @@ public class QPlayer implements ObjectiveHolder, Scorable, Quester {
             return;
         }
         addActive(quest);
+        setTrackedQuest(quest, 99); // Default priority for newly started quests
         QuestsXL.log("Active: " + activeQuests.keySet().size());
         saveToDatabase(); // Save to database when quest starts
     }
@@ -225,6 +226,7 @@ public class QPlayer implements ObjectiveHolder, Scorable, Quester {
 
     public void removeActive(@NotNull ActiveQuest quest) {
         activeQuests.remove(quest);
+        setTrackedQuest(null, 99);
         saveToDatabase(); // Save to database when quest is removed
     }
 
@@ -384,6 +386,11 @@ public class QPlayer implements ObjectiveHolder, Scorable, Quester {
     }
 
     public void setTrackedQuest(QQuest trackedQuest, int priority) {
+        if (trackedQuest == null) {
+            this.trackedQuest = null;
+            currentTrackedQuestPriority = 0;
+            return;
+        }
         if (priority < currentTrackedQuestPriority) {
             return;
         }
@@ -417,7 +424,7 @@ public class QPlayer implements ObjectiveHolder, Scorable, Quester {
     }
 
     public void setTrackedEvent(QEvent trackedEvent, int priority) {
-        if (priority < currentTrackedEventPriority) {
+        if (priority < currentTrackedEventPriority && trackedEvent != null) {
             return;
         }
         this.trackedEvent = trackedEvent;
@@ -430,6 +437,10 @@ public class QPlayer implements ObjectiveHolder, Scorable, Quester {
 
     public Component getContentGuideText() {
         return explorerContentGuide;
+    }
+
+    public int getCurrentTrackedEventPriority() {
+        return currentTrackedEventPriority;
     }
 
     public static QPlayer get(Player player) {

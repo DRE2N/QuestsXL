@@ -6,6 +6,7 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.QTranslatable;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDropItemEvent;
@@ -41,6 +42,11 @@ public class DropItemObjective extends QBaseObjective<EntityDropItemEvent> {
     public void load(QConfig cfg) {
         super.load(cfg);
         itemID = NamespacedKey.fromString(cfg.getString("item"));
+    }
+
+    @Override
+    protected QTranslatable getDefaultDisplayText(Player player) {
+        return QTranslatable.fromString("en=Drop Item; de=Droppe Item");
     }
 
     @Override

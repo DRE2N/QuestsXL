@@ -30,7 +30,7 @@ public class QMessageHandler extends MiniMessageTranslator {
         if (map == null) return null;
         String value = map.get(locale);
         if (value != null) return value;
-        Locale langOnly = new Locale(locale.getLanguage());
+        Locale langOnly = Locale.forLanguageTag(locale.getLanguage());
         value = map.get(langOnly);
         if (value != null) return value;
         value = map.get(Locale.ENGLISH);
@@ -50,15 +50,20 @@ public class QMessageHandler extends MiniMessageTranslator {
     public void registerTranslation(QTranslatable translatable) {
         String key = translatable.getKey();
         if (key == null) return;
-        // Don't add prefix if the key already starts with our namespace
         String translationPath = key.startsWith("qxl.") ? key : toTranslationPath(key);
+
+        boolean isNewTranslation = !translations.containsKey(translationPath);
+
         for (Map.Entry<Locale, String> entry : translatable.getTranslations().entrySet()) {
             translations
                     .computeIfAbsent(translationPath, s -> new HashMap<>())
                     .putIfAbsent(entry.getKey(), entry.getValue());
         }
-        QuestsXL.log("Registered translation: " + translationPath + " with the following locales: " + translatable.getTranslations().keySet());
-        QuestsXL.log("Translations for " + translationPath + ": " + translations.get(translationPath));
+
+        if (isNewTranslation) {
+            QuestsXL.log("Registered translation: " + translationPath + " with the following locales: " + translatable.getTranslations().keySet());
+            QuestsXL.log("Translations for " + translationPath + ": " + translations.get(translationPath));
+        }
     }
 
     @Override

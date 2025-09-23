@@ -4,8 +4,10 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
+import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.event.QRegionEnterEvent;
 import de.erethon.questsxl.region.QRegion;
+import org.bukkit.entity.Player;
 
 @QLoadableDoc(
         value = "enter_region",
@@ -35,6 +37,11 @@ public class EnterRegionObjective extends QBaseObjective<QRegionEnterEvent> {
     public void load(QConfig cfg) {
         super.load(cfg);
         region = QuestsXL.get().getRegionManager().getByID(cfg.getString("region"));
+    }
+
+    @Override
+    protected QTranslatable getDefaultDisplayText(Player player) {
+        return QTranslatable.fromString("en=Enter " + (region != null ? region.getId() : "a region") + "; de=Betrete " + (region != null ? region.getId() : "eine Region"));
     }
 
     @Override

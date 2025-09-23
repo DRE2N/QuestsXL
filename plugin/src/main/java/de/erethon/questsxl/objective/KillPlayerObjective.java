@@ -1,13 +1,11 @@
 package de.erethon.questsxl.objective;
 
-import de.erethon.questsxl.common.QConfig;
-import de.erethon.questsxl.common.QLineConfig;
-import org.bukkit.configuration.ConfigurationSection;
+import de.erethon.questsxl.common.QTranslatable;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 public class KillPlayerObjective extends QBaseObjective<PlayerDeathEvent> {
+
 
     @Override
     public void check(ActiveObjective active, PlayerDeathEvent e) {
@@ -18,6 +16,14 @@ public class KillPlayerObjective extends QBaseObjective<PlayerDeathEvent> {
 
         checkCompletion(active, this, plugin.getDatabaseManager().getCurrentPlayer(e.getPlayer()));
 
+    }
+
+    @Override
+    protected QTranslatable getDefaultDisplayText(Player player) {
+        if (progressGoal > 1) {
+            return QTranslatable.fromString("en=Kill " + progressGoal + " players; de=Töte " + progressGoal + " Spieler");
+        }
+        return QTranslatable.fromString("en=Kill a player; de=Töte einen Spieler");
     }
 
     @Override

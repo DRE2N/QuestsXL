@@ -1,7 +1,8 @@
 package de.erethon.questsxl.objective;
 
 import de.erethon.questsxl.common.QLoadableDoc;
-import org.bukkit.event.Event;
+import de.erethon.questsxl.common.QTranslatable;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 
 @QLoadableDoc(
@@ -19,6 +20,11 @@ public class SleepObjective extends QBaseObjective<PlayerBedEnterEvent> {
         if (!conditions(e.getPlayer())) return;
         if (shouldCancelEvent) e.setCancelled(true);
         checkCompletion(active, this, plugin.getDatabaseManager().getCurrentPlayer(e.getPlayer()));
+    }
+
+    @Override
+    protected QTranslatable getDefaultDisplayText(Player player) {
+        return QTranslatable.fromString("en=Sleep; de=Schlafe");
     }
 
     @Override

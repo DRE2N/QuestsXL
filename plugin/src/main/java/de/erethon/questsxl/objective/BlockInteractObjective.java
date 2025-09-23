@@ -4,9 +4,9 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.common.QParamDoc;
-import org.bukkit.event.Event;
+import de.erethon.questsxl.common.QTranslatable;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 
 @QLoadableDoc(
         value = "block_interact",
@@ -39,6 +39,12 @@ public class BlockInteractObjective extends QBaseObjective<PlayerInteractEvent> 
     public void load(QConfig cfg) {
         super.load(cfg);
         location = cfg.getQLocation("location");
+    }
+
+    @Override
+    protected QTranslatable getDefaultDisplayText(Player player) {
+        String locationText = location != null ? location.toString() : "a specific location";
+        return QTranslatable.fromString("en=Interact with block at " + locationText + "; de=Interagiere mit dem Block bei " + locationText);
     }
 
     @Override

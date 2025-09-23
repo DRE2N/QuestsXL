@@ -1,15 +1,14 @@
 package de.erethon.questsxl.objective;
 
 import de.erethon.questsxl.common.QConfig;
-import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.common.QParamDoc;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.event.Event;
+import de.erethon.questsxl.common.QTranslatable;
+import de.erethon.questsxl.livingworld.ContentGuide;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
-
-import java.util.Arrays;
 
 @QLoadableDoc(
         value = "location",
@@ -39,7 +38,8 @@ public class LocationObjective extends QBaseObjective<PlayerMoveEvent> {
         if (loc == null || !loc.sameWorld(e.getTo())) {
             return;
         }
-        if (e.getTo().distance(loc.get(e.getTo())) <= range) {
+        Location targetLocation = loc.get(e.getTo());
+        if (e.getTo().distance(targetLocation) <= range) {
             if (shouldCancelEvent) e.setCancelled(true);
             checkCompletion(active, this, plugin.getDatabaseManager().getCurrentPlayer(e.getPlayer()));
         }
@@ -53,6 +53,17 @@ public class LocationObjective extends QBaseObjective<PlayerMoveEvent> {
         if (range <= 0) {
             throw new RuntimeException("The location objective in " + cfg.getName() + " contains a negative range.");
         }
+    }
+
+    @Override
+    protected QTranslatable getDefaultDisplayText(Player player) {
+        if (loc != null) {
+            String markerText = "[" + ContentGuide.getDirectionalMarker(player, loc.get(player.getLocation())) + "] ";
+            String locationText = String.format("%d / %d / %d",
+                    (int) loc.getX(), (int) loc.getY(), (int) loc.getZ());
+            return QTranslatable.fromString("en=" + markerText + "Go to " + locationText + "; de=" + markerText + "Gehe zu " + locationText);
+        }
+        return QTranslatable.fromString("en=Go to location; de=Gehe zu einem Ort");
     }
 
     @Override
