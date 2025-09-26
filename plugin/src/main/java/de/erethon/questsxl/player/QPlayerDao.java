@@ -61,19 +61,6 @@ public interface QPlayerDao {
     @SqlUpdate("DELETE FROM q_character_objectives WHERE character_id = ? AND completable_type = ? AND completable_id = ?")
     void removeAllCharacterObjectivesForCompletable(UUID characterId, String completableType, String completableId);
 
-    // Event Objective Operations
-    @SqlQuery("SELECT stage_id, objective_id, objective_type, progress, completed, objective_data FROM q_event_objectives WHERE event_id = ?")
-    List<EventObjectiveProgressData> getEventObjectives(String eventId);
-
-    @SqlUpdate("INSERT INTO q_event_objectives (event_id, stage_id, objective_id, objective_type, progress, completed, objective_data) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT (event_id, stage_id, objective_id) DO UPDATE SET progress = EXCLUDED.progress, completed = EXCLUDED.completed, objective_data = EXCLUDED.objective_data, updated_at = CURRENT_TIMESTAMP")
-    void saveEventObjective(String eventId, int stageId, String objectiveId, String objectiveType, int progress, boolean completed, String objectiveData);
-
-    @SqlUpdate("DELETE FROM q_event_objectives WHERE event_id = ? AND stage_id = ? AND objective_id = ?")
-    void removeEventObjective(String eventId, int stageId, String objectiveId);
-
-    @SqlUpdate("DELETE FROM q_event_objectives WHERE event_id = ?")
-    void removeAllEventObjectives(String eventId);
-
     // Data Transfer Objects
     class ActiveQuestData {
         public String questId;
@@ -128,26 +115,6 @@ public interface QPlayerDao {
         public ObjectiveProgressData(String completableType, String completableId, int stageId, String objectiveId, String objectiveType, int progress, boolean completed, String objectiveData) {
             this.completableType = completableType;
             this.completableId = completableId;
-            this.stageId = stageId;
-            this.objectiveId = objectiveId;
-            this.objectiveType = objectiveType;
-            this.progress = progress;
-            this.completed = completed;
-            this.objectiveData = objectiveData;
-        }
-    }
-
-    class EventObjectiveProgressData {
-        public int stageId;
-        public String objectiveId;
-        public String objectiveType;
-        public int progress;
-        public boolean completed;
-        public String objectiveData;
-
-        public EventObjectiveProgressData() {}
-
-        public EventObjectiveProgressData(int stageId, String objectiveId, String objectiveType, int progress, boolean completed, String objectiveData) {
             this.stageId = stageId;
             this.objectiveId = objectiveId;
             this.objectiveType = objectiveType;

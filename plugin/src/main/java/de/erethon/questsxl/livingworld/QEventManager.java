@@ -46,12 +46,6 @@ public class QEventManager {
         QuestsXL.log("Loaded " + events.size() + " events.");
     }
 
-    public void save() {
-        for (QEvent event : events){
-            event.save();
-        }
-    }
-
     public Set<QEvent> getEvents() {
         return events;
     }

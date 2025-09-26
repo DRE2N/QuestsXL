@@ -13,6 +13,7 @@ import de.erethon.questsxl.common.QStage;
 import de.erethon.questsxl.global.GlobalObjectives;
 import de.erethon.questsxl.livingworld.PlayerExplorer;
 import de.erethon.questsxl.livingworld.QEvent;
+import de.erethon.questsxl.livingworld.QEventDao;
 import de.erethon.questsxl.objective.ActiveObjective;
 import de.erethon.questsxl.objective.QObjective;
 import de.erethon.questsxl.player.QPlayer;
@@ -21,7 +22,8 @@ import de.erethon.questsxl.player.QPlayerDao.ActiveQuestData;
 import de.erethon.questsxl.player.QPlayerDao.CompletedQuestData;
 import de.erethon.questsxl.player.QPlayerDao.ScoreData;
 import de.erethon.questsxl.player.QPlayerDao.ObjectiveProgressData;
-import de.erethon.questsxl.player.QPlayerDao.EventObjectiveProgressData;
+import de.erethon.questsxl.livingworld.QEventDao.EventObjectiveProgressData;
+import de.erethon.questsxl.livingworld.QEventDao.EventStateData;
 import de.erethon.questsxl.quest.ActiveQuest;
 import de.erethon.questsxl.quest.QQuest;
 import org.bukkit.Bukkit;
@@ -48,6 +50,7 @@ public class QDatabaseManager extends EDatabaseManager {
     private final Map<UUID, QPlayer> minecraftUUIDtoQPlayerMap = new ConcurrentHashMap<>();
 
     private final QPlayerDao playerDao;
+    private final QEventDao eventDao;
 
     public QDatabaseManager(BedrockDBConnection connection) {
         super(connection, new ThreadPoolExecutor(2, 4, 60L, java.util.concurrent.TimeUnit.SECONDS, new java.util.concurrent.LinkedBlockingQueue<>()));
@@ -57,6 +60,7 @@ public class QDatabaseManager extends EDatabaseManager {
             throw new IllegalStateException("Hecate database manager is not initialized.");
         }
         playerDao = getDao(QPlayerDao.class);
+        eventDao = getDao(QEventDao.class);
     }
 
     @Override
@@ -141,6 +145,20 @@ public class QDatabaseManager extends EDatabaseManager {
                         PRIMARY KEY (event_id, stage_id, objective_id)
                     )
                 """);
+
+                // Create event state table
+                handle.execute("""
+                    CREATE TABLE IF NOT EXISTS q_event_states (
+                        event_id VARCHAR(255) NOT NULL,
+                        state VARCHAR(50) NOT NULL DEFAULT 'NOT_STARTED',
+                        current_stage_id INTEGER NOT NULL DEFAULT 0,
+                        time_last_completed BIGINT NOT NULL DEFAULT 0,
+                        scores TEXT,
+                        event_participation TEXT,
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        PRIMARY KEY (event_id)
+                    )
+                """);
             } catch (Exception e) {
                 QuestsXL.log("Failed to initialize schema: " + e.getMessage());
                 e.printStackTrace();
@@ -195,6 +213,16 @@ public class QDatabaseManager extends EDatabaseManager {
                 rs.getString("objective_data")
             );
         });
+
+        jdbi.registerRowMapper(EventStateData.class, (rs, ctx) -> {
+            return new EventStateData(
+                rs.getString("state"),
+                rs.getInt("current_stage_id"),
+                rs.getLong("time_last_completed"),
+                rs.getString("scores"),
+                rs.getString("event_participation")
+            );
+        });
     }
 
     public CompletableFuture<Void> saveObjectiveProgress(ActiveObjective activeObjective) {
@@ -229,7 +257,7 @@ public class QDatabaseManager extends EDatabaseManager {
                         objectiveData
                     );
                 } else if (holder instanceof QEvent event) {
-                    playerDao.saveEventObjective(
+                    eventDao.saveEventObjective(
                         event.getId(),
                         stage.getId(),
                         objectiveId,
@@ -261,7 +289,7 @@ public class QDatabaseManager extends EDatabaseManager {
                         restoreActiveObjective(holder, completable, objData.stageId, objData.objectiveId, objData.objectiveType, objData.progress, objData.completed, objData.objectiveData);
                     }
                 } else if (holder instanceof QEvent event) {
-                    var objectives = playerDao.getEventObjectives(event.getId());
+                    var objectives = eventDao.getEventObjectives(event.getId());
                     for (var objData : objectives) {
                         restoreActiveObjective(holder, completable, objData.stageId, objData.objectiveId, objData.objectiveType, objData.progress, objData.completed, objData.objectiveData);
                     }
@@ -292,7 +320,7 @@ public class QDatabaseManager extends EDatabaseManager {
 
                     playerDao.removeCharacterObjective(characterId, completableType, completableId, stage.getId(), objectiveId);
                 } else if (holder instanceof QEvent event) {
-                    playerDao.removeEventObjective(event.getId(), stage.getId(), objectiveId);
+                    eventDao.removeEventObjective(event.getId(), stage.getId(), objectiveId);
                 }
             } catch (Exception e) {
                 QuestsXL.log("Failed to remove objective progress: " + e.getMessage());
@@ -663,5 +691,138 @@ public class QDatabaseManager extends EDatabaseManager {
 
     public Set<QPlayer> getPlayers() {
         return new HashSet<>(uuidqPlayerMap.values());
+    }
+
+    public CompletableFuture<Void> saveEventState(QEvent event) {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                String eventId = event.getId();
+                String state = event.getState().name();
+                int currentStageId = event.getCurrentStage() != null ? event.getCurrentStage().getId() : 0;
+                long timeLastCompleted = event.getTimeLastCompleted();
+
+                // Serialize scores and event participation
+                String scoresJson = serializeScores(event.getScores());
+                String participationJson = serializeEventParticipation(event.getParticipants());
+
+                eventDao.saveEventState(eventId, state, currentStageId, timeLastCompleted, scoresJson, participationJson);
+
+                QuestsXL.log("Saved state for event " + eventId + " (State: " + state + ", Stage: " + currentStageId + ")");
+            } catch (Exception e) {
+                QuestsXL.log("Failed to save event state for " + event.getId() + ": " + e.getMessage());
+                e.printStackTrace();
+            }
+        }, asyncExecutor);
+    }
+
+    public CompletableFuture<Void> loadEventState(QEvent event) {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                String eventId = event.getId();
+                var stateData = eventDao.getEventState(eventId);
+
+                if (stateData.isPresent()) {
+                    var data = stateData.get();
+
+                    // Restore state
+                    event.setState(de.erethon.questsxl.livingworld.EventState.valueOf(data.state));
+                    event.setTimeLastCompleted(data.timeLastCompleted);
+
+                    // Restore current stage
+                    if (data.currentStageId > 0) {
+                        event.setCurrentStage(data.currentStageId);
+                    }
+
+                    // Restore scores
+                    if (data.scores != null) {
+                        deserializeScores(data.scores, event.getScores());
+                    }
+
+                    // Restore event participation
+                    if (data.eventParticipation != null) {
+                        deserializeEventParticipation(data.eventParticipation, event.getParticipants());
+                    }
+
+                    QuestsXL.log("Loaded state for event " + eventId + " (State: " + data.state + ", Stage: " + data.currentStageId + ")");
+                } else {
+                    QuestsXL.log("No saved state found for event " + eventId + ", using default state");
+                }
+
+                // Load objectives after state is restored
+                loadObjectivesForCompletable(event, event).join();
+
+            } catch (Exception e) {
+                QuestsXL.log("Failed to load event state for " + event.getId() + ": " + e.getMessage());
+                e.printStackTrace();
+            }
+        }, asyncExecutor);
+    }
+
+    private String serializeScores(Map<String, Integer> scores) {
+        try {
+            com.google.gson.JsonObject json = new com.google.gson.JsonObject();
+            for (Map.Entry<String, Integer> entry : scores.entrySet()) {
+                json.addProperty(entry.getKey(), entry.getValue());
+            }
+            return json.toString();
+        } catch (Exception e) {
+            QuestsXL.log("Failed to serialize scores: " + e.getMessage());
+            return "{}";
+        }
+    }
+
+    private void deserializeScores(String scoresJson, Map<String, Integer> targetMap) {
+        try {
+            if (scoresJson == null || scoresJson.trim().isEmpty()) {
+                return;
+            }
+
+            com.google.gson.JsonObject json = com.google.gson.JsonParser.parseString(scoresJson).getAsJsonObject();
+            for (Map.Entry<String, com.google.gson.JsonElement> entry : json.entrySet()) {
+                targetMap.put(entry.getKey(), entry.getValue().getAsInt());
+            }
+        } catch (Exception e) {
+            QuestsXL.log("Failed to deserialize scores: " + e.getMessage());
+        }
+    }
+
+    private String serializeEventParticipation(Map<QPlayer, Integer> participation) {
+        try {
+            com.google.gson.JsonObject json = new com.google.gson.JsonObject();
+            for (Map.Entry<QPlayer, Integer> entry : participation.entrySet()) {
+                UUID characterId = getCurrentCharacterId(entry.getKey().getPlayer());
+                if (characterId != null) {
+                    json.addProperty(characterId.toString(), entry.getValue());
+                }
+            }
+            return json.toString();
+        } catch (Exception e) {
+            QuestsXL.log("Failed to serialize event participation: " + e.getMessage());
+            return "{}";
+        }
+    }
+
+    private void deserializeEventParticipation(String participationJson, Map<QPlayer, Integer> targetMap) {
+        try {
+            if (participationJson == null || participationJson.trim().isEmpty()) {
+                return;
+            }
+
+            com.google.gson.JsonObject json = com.google.gson.JsonParser.parseString(participationJson).getAsJsonObject();
+            for (Map.Entry<String, com.google.gson.JsonElement> entry : json.entrySet()) {
+                try {
+                    UUID characterId = UUID.fromString(entry.getKey());
+                    QPlayer qPlayer = uuidqPlayerMap.get(characterId);
+
+                    if (qPlayer != null) {
+                        targetMap.put(qPlayer, entry.getValue().getAsInt());
+                    }
+                } catch (IllegalArgumentException e) {
+                    QuestsXL.log("Invalid UUID in event participation data: " + entry.getKey());
+                }
+            }
+        } catch (Exception e) {
+            QuestsXL.log("Failed to deserialize event participation: " + e.getMessage());
+        }
     }
 }

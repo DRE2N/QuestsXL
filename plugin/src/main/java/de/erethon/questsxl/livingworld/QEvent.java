@@ -26,7 +26,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponent, Quester, Explorable {
@@ -150,6 +149,8 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
 
     public void setState(EventState state) {
         this.state = state;
+        // Save state to database whenever it changes
+        databaseManager.saveEventState(this);
     }
 
     public void update() {
@@ -244,10 +245,19 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
         clearObjectives();
         playersInRange.clear();
         eventParticipation.clear();
+        // Save state to database
+        databaseManager.saveEventState(this);
     }
 
-    public void setCurrentStage(int id) {
-        currentStage = stages.get(id);
+    public void setCurrentStage(int stageId) {
+        currentStage = stages.stream()
+            .filter(s -> s.getId() == stageId)
+            .findFirst()
+            .orElse(null);
+        if (currentStage != null) {
+            // Save state to database when stage changes
+            databaseManager.saveEventState(this);
+        }
     }
 
     @Override
@@ -300,6 +310,18 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
 
     public Map<QPlayer, Integer> getParticipants() {
         return eventParticipation;
+    }
+
+    public Map<String, Integer> getScores() {
+        return scores;
+    }
+
+    public long getTimeLastCompleted() {
+        return timeLastCompleted;
+    }
+
+    public void setTimeLastCompleted(long timeLastCompleted) {
+        this.timeLastCompleted = timeLastCompleted;
     }
 
     public void removePlayerOnDisconnect(QPlayer player) {
@@ -394,31 +416,16 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
             stages.add(stage);
         }
 
-        // Restore state
-        state = EventState.valueOf(cfg.getString("state.state", "NOT_STARTED"));
-        int currentStageID = cfg.getInt("state.currentStage", 0);
-        if (currentStageID != 0) {
-            currentStage = stages.stream().filter(s -> s.getId() == currentStageID).findFirst().orElse(null);
-        }
-        timeLastCompleted = cfg.getLong("state.timeLastCompleted", 0);
+        // Set default state - actual state will be loaded from database after this
+        state = EventState.NOT_STARTED;
+        timeLastCompleted = 0;
+        currentStage = null;
 
         isValid = true;
         QuestsXL.log("Loaded event " + id + " with " + stages.size() + " stages at " + centerLocation.getWorld().getName() + " / " + centerLocation.getX() + " / " + centerLocation.getY() + " / " + centerLocation.getZ());
-    }
 
-    public void save() {
-        cfg.set("state.state", state.name());
-        if (currentStage != null) {
-            cfg.set("state.currentStage", currentStage.getId());
-        } else {
-            cfg.set("state.currentStage", 0);
-        }
-        cfg.set("state.timeLastCompleted", (long) timeLastCompleted);
-        try {
-            cfg.save(file);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        // Load state from database after basic configuration is loaded
+        databaseManager.loadEventState(this);
     }
 
     public boolean isValid() {
