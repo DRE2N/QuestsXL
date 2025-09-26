@@ -1,0 +1,13 @@
+stages:
+  0:
+    id: "greeting"
+    messages:
+      - "en=Welcome to our ancient library, traveler.;de=Willkommen in unserer alten Bibliothek, Reisender.;20"
+      - "en=I am the keeper of knowledge here. How may I assist you?;de=Ich bin der Hüter des Wissens hier. Wie kann ich Ihnen helfen?;30"
+    autoNext: false
+    options:
+      - "text=en=Tell me about this library;de=Erzählen Sie mir von dieser Bibliothek|next=1|hint=en=Learn about the library's history;de=Erfahren Sie mehr über die Geschichte der Bibliothek"
+      - "text=en=What books do you have?;de=Welche Bücher haben Sie?|next=2|hint=en=Browse the collection;de=Durchstöbern Sie die Sammlung"
+      - "text=en=I'm looking for something specific;de=Ich suche etwas Bestimmtes|next=3|hint=en=Ask for help finding books;de=Bitten Sie um Hilfe beim Finden von Büchern"
+      - "text=en=Thank you, goodbye;de=Danke, auf Wiedersehen|hint=en=End the conversation;de=Beenden Sie das Gespräch"
+

@@ -2,6 +2,7 @@ package de.erethon.questsxl.livingworld;
 
 import de.erethon.questsxl.livingworld.explorables.LootChest;
 import de.erethon.questsxl.livingworld.explorables.PointOfInterest;
+import de.erethon.questsxl.livingworld.explorables.ExplorableRespawnPoint;
 import org.bukkit.Location;
 
 import java.util.Collection;
@@ -13,6 +14,7 @@ public class Exploration {
     private final Set<ExplorationSet> sets = new HashSet<>();
     private final Set<PointOfInterest> pointsOfInterest = new HashSet<>();
     private final Set<LootChest> lootChests = new HashSet<>();
+    private final Set<ExplorableRespawnPoint> explorableRespawnPoints = new HashSet<>();
 
     public void addSet(ExplorationSet set) {
         if (set != null) {
@@ -132,6 +134,40 @@ public class Exploration {
         Set<String> ids = new HashSet<>();
         for (LootChest chest : lootChests) {
             ids.add(chest.id());
+        }
+        return ids;
+    }
+
+    public void addExplorableRespawnPoint(ExplorableRespawnPoint respawnPoint) {
+        if (respawnPoint != null) {
+            explorableRespawnPoints.add(respawnPoint);
+        }
+    }
+
+    public void removeExplorableRespawnPoint(ExplorableRespawnPoint respawnPoint) {
+        if (respawnPoint != null) {
+            explorableRespawnPoints.remove(respawnPoint);
+            respawnPoint.cleanup();
+        }
+    }
+
+    public Set<ExplorableRespawnPoint> getExplorableRespawnPoints() {
+        return new HashSet<>(explorableRespawnPoints);
+    }
+
+    public ExplorableRespawnPoint getExplorableRespawnPoint(String id) {
+        for (ExplorableRespawnPoint respawnPoint : explorableRespawnPoints) {
+            if (respawnPoint.id().equals(id)) {
+                return respawnPoint;
+            }
+        }
+        return null;
+    }
+
+    public Set<String> getExplorableRespawnPointIDs() {
+        Set<String> ids = new HashSet<>();
+        for (ExplorableRespawnPoint respawnPoint : explorableRespawnPoints) {
+            ids.add(respawnPoint.id());
         }
         return ids;
     }

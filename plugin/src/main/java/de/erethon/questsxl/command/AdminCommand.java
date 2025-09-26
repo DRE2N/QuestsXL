@@ -3,6 +3,10 @@ package de.erethon.questsxl.command;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.livingworld.CompletedExplorable;
+import de.erethon.questsxl.livingworld.Explorable;
+import de.erethon.questsxl.livingworld.ExplorationSet;
+import de.erethon.questsxl.livingworld.explorables.ExplorableRespawnPoint;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.ActiveQuest;
 import de.erethon.questsxl.quest.QQuest;
@@ -10,6 +14,9 @@ import de.erethon.questsxl.common.QStage;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.Iterator;
+import java.util.Set;
 
 public class AdminCommand extends ECommand {
 
@@ -19,7 +26,7 @@ public class AdminCommand extends ECommand {
         setCommand("admin");
         setAliases("a");
         setMinArgs(0);
-        setMaxArgs(4);
+        setMaxArgs(5);
         setPlayerCommand(true);
         setHelp("Help.");
         setPermission("qxl.admin.admincommand");
@@ -107,6 +114,222 @@ public class AdminCommand extends ECommand {
             });
             return;
         }
-        MessageUtil.sendMessage(player, QuestsXL.ERROR + "Unbekannter Befehl. Probiere z.B: /q admin info, /q admin objectives, /q admin list oder /q admin give");
+        if (args[1].equalsIgnoreCase("explore") || args[1].equalsIgnoreCase("ex")) {
+            if (args.length < 4) {
+                MessageUtil.sendMessage(player, QuestsXL.ERROR + "Usage: /q admin explore <player> <set_id> [explorable_id]");
+                return;
+            }
+            Player targetPlayer = Bukkit.getPlayer(args[2]);
+            if (targetPlayer == null) {
+                MessageUtil.sendMessage(player, QuestsXL.ERROR + "Spieler nicht gefunden.");
+                return;
+            }
+            QPlayer qPlayer = plugin.getDatabaseManager().getCurrentPlayer(targetPlayer);
+            if (qPlayer == null) {
+                MessageUtil.sendMessage(player, QuestsXL.ERROR + "QPlayer nicht gefunden.");
+                return;
+            }
+
+            String setId = args[3];
+            ExplorationSet explorationSet = plugin.getExploration().getSet(setId);
+            if (explorationSet == null) {
+                MessageUtil.sendMessage(player, QuestsXL.ERROR + "Exploration Set '" + setId + "' nicht gefunden.");
+                return;
+            }
+
+            if (args.length >= 5) {
+                // Specific explorable
+                String explorableId = args[4];
+                Explorable explorable = explorationSet.getExplorable(explorableId);
+                if (explorable == null) {
+                    MessageUtil.sendMessage(player, QuestsXL.ERROR + "Explorable '" + explorableId + "' nicht in Set '" + setId + "' gefunden.");
+                    return;
+                }
+
+                boolean success = qPlayer.getExplorer().completeExplorable(explorationSet, explorable, System.currentTimeMillis());
+                if (success) {
+                    MessageUtil.sendMessage(player, "&7Spieler &6" + targetPlayer.getName() + " &7hat jetzt &6" + explorable.displayName().get() + " &7erkundet.");
+                    MessageUtil.sendMessage(targetPlayer, "&7Ein Admin hat dir &6" + explorable.displayName().get() + " &7als erkundet markiert.");
+                } else {
+                    MessageUtil.sendMessage(player, QuestsXL.ERROR + "Spieler hat bereits &6" + explorable.displayName().get() + " &7erkundet.");
+                }
+            } else {
+                // All explorables in set
+                int completed = 0;
+                for (Explorable explorable : explorationSet.entries()) {
+                    if (qPlayer.getExplorer().completeExplorable(explorationSet, explorable, System.currentTimeMillis())) {
+                        completed++;
+                    }
+                }
+                MessageUtil.sendMessage(player, "&7Spieler &6" + targetPlayer.getName() + " &7hat jetzt &6" + completed + " &7neue Explorables in Set '" + setId + "' erkundet.");
+                if (completed > 0) {
+                    MessageUtil.sendMessage(targetPlayer, "&7Ein Admin hat dir &6" + completed + " &7Explorables in Set '" + setId + "' als erkundet markiert.");
+                }
+            }
+            return;
+        }
+        if (args[1].equalsIgnoreCase("unexplore") || args[1].equalsIgnoreCase("unex")) {
+            if (args.length < 4) {
+                MessageUtil.sendMessage(player, QuestsXL.ERROR + "Usage: /q admin unexplore <player> <set_id> [explorable_id]");
+                return;
+            }
+            Player targetPlayer = Bukkit.getPlayer(args[2]);
+            if (targetPlayer == null) {
+                MessageUtil.sendMessage(player, QuestsXL.ERROR + "Spieler nicht gefunden.");
+                return;
+            }
+            QPlayer qPlayer = plugin.getDatabaseManager().getCurrentPlayer(targetPlayer);
+            if (qPlayer == null) {
+                MessageUtil.sendMessage(player, QuestsXL.ERROR + "QPlayer nicht gefunden.");
+                return;
+            }
+
+            String setId = args[3];
+            ExplorationSet explorationSet = plugin.getExploration().getSet(setId);
+            if (explorationSet == null) {
+                MessageUtil.sendMessage(player, QuestsXL.ERROR + "Exploration Set '" + setId + "' nicht gefunden.");
+                return;
+            }
+
+            if (args.length >= 5) {
+                // Specific explorable
+                String explorableId = args[4];
+                Explorable explorable = explorationSet.getExplorable(explorableId);
+                if (explorable == null) {
+                    MessageUtil.sendMessage(player, QuestsXL.ERROR + "Explorable '" + explorableId + "' nicht in Set '" + setId + "' gefunden.");
+                    return;
+                }
+
+                boolean success = removeExplorableFromPlayer(qPlayer, explorationSet, explorable);
+                if (success) {
+                    MessageUtil.sendMessage(player, "&7Spieler &6" + targetPlayer.getName() + " &7hat &6" + explorable.displayName().get() + " &7als unerkundet markiert.");
+                    MessageUtil.sendMessage(targetPlayer, "&7Ein Admin hat &6" + explorable.displayName().get() + " &7als unerkundet markiert.");
+                } else {
+                    MessageUtil.sendMessage(player, QuestsXL.ERROR + "Spieler hatte &6" + explorable.displayName().get() + " &7noch nicht erkundet.");
+                }
+            } else {
+                // All explorables in set
+                int removed = removeAllExplorablesFromSet(qPlayer, explorationSet);
+                MessageUtil.sendMessage(player, "&7Spieler &6" + targetPlayer.getName() + " &7hat &6" + removed + " &7Explorables in Set '" + setId + "' als unerkundet markiert.");
+                if (removed > 0) {
+                    MessageUtil.sendMessage(targetPlayer, "&7Ein Admin hat &6" + removed + " &7Explorables in Set '" + setId + "' als unerkundet markiert.");
+                }
+            }
+            return;
+        }
+        if (args[1].equalsIgnoreCase("unlock") || args[1].equalsIgnoreCase("ul")) {
+            if (args.length < 4) {
+                MessageUtil.sendMessage(player, QuestsXL.ERROR + "Usage: /q admin unlock <player> <respawn_id>");
+                return;
+            }
+            Player targetPlayer = Bukkit.getPlayer(args[2]);
+            if (targetPlayer == null) {
+                MessageUtil.sendMessage(player, QuestsXL.ERROR + "Spieler nicht gefunden.");
+                return;
+            }
+            QPlayer qPlayer = plugin.getDatabaseManager().getCurrentPlayer(targetPlayer);
+            if (qPlayer == null) {
+                MessageUtil.sendMessage(player, QuestsXL.ERROR + "QPlayer nicht gefunden.");
+                return;
+            }
+
+            String respawnId = args[3];
+            ExplorableRespawnPoint respawnPoint = plugin.getExploration().getExplorableRespawnPoint(respawnId);
+            if (respawnPoint == null) {
+                MessageUtil.sendMessage(player, QuestsXL.ERROR + "Respawn Point '" + respawnId + "' nicht gefunden.");
+                return;
+            }
+
+            // For respawn points, we need to use the exploration system if they're part of a set
+            ExplorationSet set = respawnPoint.getSet();
+            if (set != null) {
+                // If it's part of a set, use the normal exploration system
+                boolean success = qPlayer.getExplorer().completeExplorable(set, respawnPoint, System.currentTimeMillis());
+                if (success) {
+                    MessageUtil.sendMessage(player, "&7Spieler &6" + targetPlayer.getName() + " &7hat jetzt Respawn Point &6" + respawnPoint.displayName().get() + " &7freigeschaltet.");
+                    MessageUtil.sendMessage(targetPlayer, "&7Ein Admin hat dir Respawn Point &6" + respawnPoint.displayName().get() + " &7freigeschaltet.");
+                } else {
+                    MessageUtil.sendMessage(player, QuestsXL.ERROR + "Spieler hat bereits Respawn Point &6" + respawnPoint.displayName().get() + " &7freigeschaltet.");
+                }
+            } else {
+                // For standalone respawn points, we need to create a temporary set or handle differently
+                // Since the respawn points use hasExplored() from PlayerExplorer, we need to mark it as explored somehow
+                MessageUtil.sendMessage(player, QuestsXL.ERROR + "Respawn Point &6" + respawnPoint.displayName().get() + " &7ist nicht Teil eines Sets. Standalone Respawn Points können aktuell nicht über Admin-Befehle freigeschaltet werden.");
+            }
+            return;
+        }
+        if (args[1].equalsIgnoreCase("lock") || args[1].equalsIgnoreCase("lk")) {
+            if (args.length < 4) {
+                MessageUtil.sendMessage(player, QuestsXL.ERROR + "Usage: /q admin lock <player> <respawn_id>");
+                return;
+            }
+            Player targetPlayer = Bukkit.getPlayer(args[2]);
+            if (targetPlayer == null) {
+                MessageUtil.sendMessage(player, QuestsXL.ERROR + "Spieler nicht gefunden.");
+                return;
+            }
+            QPlayer qPlayer = plugin.getDatabaseManager().getCurrentPlayer(targetPlayer);
+            if (qPlayer == null) {
+                MessageUtil.sendMessage(player, QuestsXL.ERROR + "QPlayer nicht gefunden.");
+                return;
+            }
+
+            String respawnId = args[3];
+            ExplorableRespawnPoint respawnPoint = plugin.getExploration().getExplorableRespawnPoint(respawnId);
+            if (respawnPoint == null) {
+                MessageUtil.sendMessage(player, QuestsXL.ERROR + "Respawn Point '" + respawnId + "' nicht gefunden.");
+                return;
+            }
+
+            // For respawn points, we need to remove them from the exploration system if they're part of a set
+            ExplorationSet set = respawnPoint.getSet();
+            if (set != null) {
+                boolean success = removeExplorableFromPlayer(qPlayer, set, respawnPoint);
+                if (success) {
+                    MessageUtil.sendMessage(player, "&7Spieler &6" + targetPlayer.getName() + " &7hat Respawn Point &6" + respawnPoint.displayName().get() + " &7gesperrt.");
+                    MessageUtil.sendMessage(targetPlayer, "&7Ein Admin hat Respawn Point &6" + respawnPoint.displayName().get() + " &7gesperrt.");
+                } else {
+                    MessageUtil.sendMessage(player, QuestsXL.ERROR + "Spieler hatte Respawn Point &6" + respawnPoint.displayName().get() + " &7noch nicht freigeschaltet.");
+                }
+            } else {
+                MessageUtil.sendMessage(player, QuestsXL.ERROR + "Respawn Point &6" + respawnPoint.displayName().get() + " &7ist nicht Teil eines Sets. Standalone Respawn Points können aktuell nicht über Admin-Befehle gesperrt werden.");
+            }
+            return;
+        }
+        MessageUtil.sendMessage(player, QuestsXL.ERROR + "Unbekannter Befehl. Probiere z.B: /q admin info, /q admin objectives, /q admin list, /q admin give, /q admin explore, /q admin unexplore, /q admin unlock oder /q admin lock");
+    }
+
+    /**
+     * Removes a specific explorable from a player's completed explorables
+     */
+    private boolean removeExplorableFromPlayer(QPlayer qPlayer, ExplorationSet set, Explorable explorable) {
+        Set<CompletedExplorable> completed = qPlayer.getExplorer().getCompletedExplorables().get(set);
+        if (completed == null) {
+            return false;
+        }
+
+        Iterator<CompletedExplorable> iterator = completed.iterator();
+        while (iterator.hasNext()) {
+            CompletedExplorable completedExplorable = iterator.next();
+            if (completedExplorable.explorable().equals(explorable)) {
+                iterator.remove();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Removes all explorables from a specific set for a player
+     */
+    private int removeAllExplorablesFromSet(QPlayer qPlayer, ExplorationSet set) {
+        Set<CompletedExplorable> completed = qPlayer.getExplorer().getCompletedExplorables().get(set);
+        if (completed == null) {
+            return 0;
+        }
+
+        int removed = completed.size();
+        completed.clear();
+        return removed;
     }
 }

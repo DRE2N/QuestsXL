@@ -16,6 +16,11 @@ public class BeamTool {
     private Location start;
     private Location end;
 
+    // Distance threshold for showing visualization to players (in blocks)
+    private static final double MAX_VISUALIZATION_DISTANCE = 64.0;
+    // Distance squared for performance (avoid sqrt calculation)
+    private static final double MAX_VISUALIZATION_DISTANCE_SQUARED = MAX_VISUALIZATION_DISTANCE * MAX_VISUALIZATION_DISTANCE;
+
     private final Object createGuardianPacket;
     private final Object createSquidPacket;
     private final Object teamAddPacket;
@@ -58,10 +63,13 @@ public class BeamTool {
     }
 
     public void show() {
-        try {
-            sendStartPackets(player);
-        } catch (ReflectiveOperationException e) {
-            e.printStackTrace();
+        // Only show if conditions are met
+        if (shouldShowVisualization()) {
+            try {
+                sendStartPackets(player);
+            } catch (ReflectiveOperationException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -80,9 +88,11 @@ public class BeamTool {
 
     public void moveStart(Location location) throws ReflectiveOperationException {
         this.start = location;
-        Object packet = Packets.createPacketMoveEntity(start, guardian);
-        Packets.sendPacket(player, packet);
-
+        // Only send update if visualization should be shown
+        if (shouldShowVisualization()) {
+            Object packet = Packets.createPacketMoveEntity(start, guardian);
+            Packets.sendPacket(player, packet);
+        }
     }
 
     public Location getStart() {
@@ -91,8 +101,11 @@ public class BeamTool {
 
     public void moveEnd(Location location) throws ReflectiveOperationException {
         this.end = location;
-        Object packet = Packets.createPacketMoveEntity(end, squid);
-        Packets.sendPacket(player, packet);
+        // Only send update if visualization should be shown
+        if (shouldShowVisualization()) {
+            Object packet = Packets.createPacketMoveEntity(end, squid);
+            Packets.sendPacket(player, packet);
+        }
     }
 
     public Location getEnd() {
@@ -100,14 +113,58 @@ public class BeamTool {
     }
 
     public void callColorChange() throws ReflectiveOperationException{
-        Packets.sendPacket(player, metadataPacketGuardian);
+        // Only send update if visualization should be shown
+        if (shouldShowVisualization()) {
+            Packets.sendPacket(player, metadataPacketGuardian);
+        }
     }
 
     public boolean isStarted() {
         return run != null;
     }
 
+    /**
+     * Checks if the visualization should be shown based on chunk loading and player distance
+     * @return true if visualization should be shown, false otherwise
+     */
+    private boolean shouldShowVisualization() {
+        if (player == null || !player.isOnline()) {
+            return false;
+        }
+
+        Location playerLoc = player.getLocation();
+
+        // Check if start location chunk is loaded and player is close enough
+        if (start != null && start.getWorld() != null) {
+            if (!start.getChunk().isLoaded()) {
+                return false;
+            }
+            if (playerLoc.getWorld().equals(start.getWorld()) &&
+                playerLoc.distanceSquared(start) > MAX_VISUALIZATION_DISTANCE_SQUARED) {
+                return false;
+            }
+        }
+
+        // Check if end location chunk is loaded and player is close enough
+        if (end != null && end.getWorld() != null) {
+            if (!end.getChunk().isLoaded()) {
+                return false;
+            }
+            if (playerLoc.getWorld().equals(end.getWorld()) &&
+                playerLoc.distanceSquared(end) > MAX_VISUALIZATION_DISTANCE_SQUARED) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private void sendStartPackets(Player p) throws ReflectiveOperationException {
+        // Only send packets if visualization should be shown
+        if (!shouldShowVisualization()) {
+            return;
+        }
+
         Packets.sendPacket(p, createSquidPacket);
         Packets.sendPacket(p, createGuardianPacket);
         if (Packets.version > 14) {

@@ -17,6 +17,11 @@ public interface Explorable {
     // The location of the explorable
     Location location();
 
+    // The description of the explorable (optional)
+    default QTranslatable description() {
+        return null;
+    }
+
     // Some explorables might not count for progress, like a random loot chest
     default boolean countsForProgress() {
         return true;

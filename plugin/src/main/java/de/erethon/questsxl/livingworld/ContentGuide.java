@@ -2,6 +2,7 @@ package de.erethon.questsxl.livingworld;
 
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.player.QPlayer;
+import de.erethon.questsxl.livingworld.explorables.ExplorableRespawnPoint;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
@@ -48,18 +49,49 @@ public class ContentGuide {
     }
 
     private void update() {
-        if (explorer.getCurrentClosestSet() == null || explorer.hasCompletedSet(explorer.getCurrentClosestSet())) {
+        Explorable closest = null;
+        double closestDistance = Double.MAX_VALUE;
+
+        // First, check for unexplored items in the current closest set
+        if (explorer.getCurrentClosestSet() != null && !explorer.hasCompletedSet(explorer.getCurrentClosestSet())) {
+            Explorable setClosest = getClosestUnexploredInSet(explorer.getCurrentClosestSet());
+            if (setClosest != null && distance < closestDistance) {
+                closest = setClosest;
+                closestDistance = distance;
+            }
+        }
+
+        // Also check for standalone explorable respawn points that might be nearby
+        QuestsXL plugin = QuestsXL.get();
+        Location playerLoc = player.getPlayer().getLocation();
+        for (ExplorableRespawnPoint respawnPoint : plugin.getExploration().getExplorableRespawnPoints()) {
+            // Check if this respawn point is visible and not yet explored
+            if (respawnPoint.isVisibleTo(player) && !explorer.hasExplored(respawnPoint)) {
+                double dist = Math.sqrt(respawnPoint.location().distanceSquared(playerLoc));
+                if (dist < closestDistance && dist <= MAX_DISTANCE_FOR_HINT) {
+                    closest = respawnPoint;
+                    closestDistance = dist;
+                }
+            }
+        }
+
+        // Update distance for the chosen closest explorable
+        distance = closestDistance;
+
+        if (closest == null || distance > MAX_DISTANCE_FOR_HINT) {
+            player.setContentGuideText(null); // Clear the content guide text when no explorable is nearby
             return;
         }
-        Explorable closest = getClosestUnexploredInSet(explorer.getCurrentClosestSet());
-        if (closest == null) {
-            return;
-        }
-        if (distance > MAX_DISTANCE_FOR_HINT) {
-            return;
-        }
+
         Component hint = Component.text(getDirectionalMarker(player.getPlayer(), closest.location()) + " ", NamedTextColor.DARK_PURPLE);
-        hint = hint.append(Component.translatable("qxl.explorable.undiscovered"));
+
+        // Customize message based on explorable type
+        if (closest instanceof ExplorableRespawnPoint) {
+            hint = hint.append(Component.translatable("qxl.explorable.respawn.nearby"));
+        } else {
+            hint = hint.append(Component.translatable("qxl.explorable.undiscovered"));
+        }
+
         player.setContentGuideText(hint);
     }
 

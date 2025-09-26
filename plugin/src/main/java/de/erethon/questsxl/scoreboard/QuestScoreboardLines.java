@@ -55,14 +55,17 @@ public class QuestScoreboardLines implements ScoreboardLines {
             lines.add(ScoreboardComponent.of(new DynamicComponent() { // Is there a better way to do this?
                 @Override
                 public @NotNull Component get(EPlayer ePlayer) {
-                    return MessageUtil.parse(CONTENT_GUIDE_COLOR + player.getContentGuideText());
+                    Component translatedContentGuide = GlobalTranslator.render(player.getContentGuideText(), ePlayer.getPlayer().locale());
+                    return MessageUtil.parse(CONTENT_GUIDE_COLOR).append(translatedContentGuide);
                 }
             }));
             lines.add(ScoreboardComponent.EMPTY);
         }
 
         if (player.getTrackedEvent() != null) {
-            Component header = MessageUtil.parse(EVENT_COLOR + player.getTrackedEvent().getName());
+            Component eventNameComponent = Component.translatable(player.getTrackedEvent().getName());
+            Component translatedEventName = GlobalTranslator.render(eventNameComponent, ePlayer.getPlayer().locale());
+            Component header = MessageUtil.parse(EVENT_COLOR).append(translatedEventName);
 
             lines.add(ScoreboardComponent.of((p) -> header));
 
@@ -76,7 +79,9 @@ public class QuestScoreboardLines implements ScoreboardLines {
         }
 
         if (trackedQuest != null) {
-            Component header = MessageUtil.parse(QUEST_COLOR + trackedQuest.getQuest().getDisplayName());
+            Component questNameComponent = Component.translatable(trackedQuest.getQuest().getDisplayName());
+            Component translatedQuestName = GlobalTranslator.render(questNameComponent, ePlayer.getPlayer().locale());
+            Component header = MessageUtil.parse(QUEST_COLOR).append(translatedQuestName);
 
             lines.add(ScoreboardComponent.of((p) -> header));
 

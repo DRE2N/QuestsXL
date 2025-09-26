@@ -3,6 +3,8 @@ package de.erethon.questsxl.livingworld;
 import com.google.gson.JsonObject;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.player.QPlayer;
+import de.erethon.questsxl.livingworld.explorables.ExplorableRespawnPoint;
+import de.erethon.questsxl.livingworld.explorables.PointOfInterest;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
@@ -44,7 +46,19 @@ public class PlayerExplorer {
         }
         CompletedExplorable completed = new CompletedExplorable(set, explorable, timestamp);
         explorableSet.add(completed);
-        qPlayer.sendMessage(Component.translatable("qxl.explorable.discovered", explorable.displayName().get()));
+
+        // Send unlock message based on explorable type
+        if (explorable instanceof ExplorableRespawnPoint respawnPoint) {
+            qPlayer.sendMessage(Component.translatable("qxl.explorable.respawn.unlocked",
+                respawnPoint.displayName().get()));
+        } else if (explorable instanceof PointOfInterest poi) {
+            qPlayer.sendMessage(Component.translatable("qxl.explorable.poi.discovered",
+                poi.displayName().get()));
+        } else {
+            qPlayer.sendMessage(Component.translatable("qxl.explorable.discovered",
+                explorable.displayName().get()));
+        }
+
         set.checkCompletion(qPlayer); // Check if the set is now fully completed
         return true;
     }

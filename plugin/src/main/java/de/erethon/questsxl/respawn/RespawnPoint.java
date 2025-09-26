@@ -1,17 +1,13 @@
 package de.erethon.questsxl.respawn;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.QQuest;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-enum UnlockMode {
-    NEAR,
-    ACTION,
-    QUEST
-}
 enum UseMode {
     NEAREST,
     LAST,
@@ -23,10 +19,10 @@ public class RespawnPoint {
 
     String id;
     Location location;
-    String displayName;
+    QTranslatable displayName;
     int cooldown;
     long lastUsed;
-    UnlockMode unlockMode;
+    RespawnPointUnlockMode respawnPointUnlockMode;
     UseMode useMode;
     String useQuest;
 
@@ -36,7 +32,10 @@ public class RespawnPoint {
 
     public RespawnPoint(String id, Location location) {
         this.id = id;
-        this.location = location;
+        Location l = location.clone();
+        l.setPitch(0);
+        l.setYaw(0);
+        this.location = l;
     }
 
     public void setLastUsed() {
@@ -48,7 +47,7 @@ public class RespawnPoint {
         if (cooldown != 0 && lastUsed + cooldown < now) {
             return false;
         }
-        if (unlockMode == UnlockMode.QUEST && useQuest != null) {
+        if (respawnPointUnlockMode == RespawnPointUnlockMode.QUEST && useQuest != null) {
             QQuest quest = plugin.getQuestManager().getByName(useQuest);
             if (quest == null) {
                 return false;
@@ -62,12 +61,56 @@ public class RespawnPoint {
         return id;
     }
 
+    public Location getLocation() {
+        return location;
+    }
+
+    public QTranslatable getDisplayName() {
+        return displayName;
+    }
+
+    public UseMode getUseMode() {
+        return useMode;
+    }
+
+    public String getUseQuest() {
+        return useQuest;
+    }
+
+    public RespawnPointUnlockMode getUnlockMode() {
+        return respawnPointUnlockMode;
+    }
+
+    public void setDisplayName(QTranslatable displayName) {
+        this.displayName = displayName;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public void setUseMode(UseMode useMode) {
+        this.useMode = useMode;
+    }
+
+    public void setUseQuest(String useQuest) {
+        this.useQuest = useQuest;
+    }
+
+    public void setCooldown(int cooldown) {
+        this.cooldown = cooldown;
+    }
+
+    public void setUnlockMode(RespawnPointUnlockMode respawnPointUnlockMode) {
+        this.respawnPointUnlockMode = respawnPointUnlockMode;
+    }
+
     public ConfigurationSection save() {
         YamlConfiguration configuration = new YamlConfiguration();
         configuration.set("location", location);
-        configuration.set("displayName", displayName);
+        configuration.set("displayName", displayName.toString());
         configuration.set("cooldown", cooldown);
-        configuration.set("unlockMode", unlockMode);
+        configuration.set("unlockMode", respawnPointUnlockMode);
         configuration.set("useMode", useMode);
         configuration.set("quest", useQuest);
         return configuration;
@@ -75,9 +118,9 @@ public class RespawnPoint {
 
     public void load(ConfigurationSection section) {
         location = section.getLocation("location");
-        displayName = section.getString("displayName", null);
+        displayName = QTranslatable.fromString(section.getString("displayName"));
         cooldown = section.getInt("cooldown", 0);
-        unlockMode = UnlockMode.valueOf(section.getString("unlockMode", "NEAR"));
+        respawnPointUnlockMode = RespawnPointUnlockMode.valueOf(section.getString("unlockMode", "NEAR"));
         useMode = UseMode.valueOf(section.getString("useMode", "NEAREST"));
         useQuest = section.getString("quest", null);
     }

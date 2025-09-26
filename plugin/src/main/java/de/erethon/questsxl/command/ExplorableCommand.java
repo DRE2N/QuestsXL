@@ -3,10 +3,14 @@ package de.erethon.questsxl.command;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.livingworld.Exploration;
 import de.erethon.questsxl.livingworld.ExplorationSet;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.livingworld.explorables.PointOfInterest;
+import de.erethon.questsxl.livingworld.explorables.ExplorableRespawnPoint;
+import de.erethon.questsxl.respawn.RespawnPoint;
+import de.erethon.questsxl.respawn.RespawnPointUnlockMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -26,6 +30,8 @@ public class ExplorableCommand extends ECommand {
         setDescription("Manage explorable areas.");
         setPermission("questsxl.explorable");
         setUsage("/questsxl explorable <subcommand> [args]");
+        setMinArgs(0);
+        setMaxArgs(Integer.MAX_VALUE);
         setConsoleCommand(false);
         setPlayerCommand(true);
     }
@@ -33,7 +39,21 @@ public class ExplorableCommand extends ECommand {
     @Override
     public void onExecute(String[] args, CommandSender commandSender) {
         Player player = (Player) commandSender;
+        if (args.length <= 1) {
+            MessageUtil.sendMessage(player, "<gold>Usage: /qxl explorable <subcommand>");
+            MessageUtil.sendMessage(player, "<gray>Available subcommands:");
+            MessageUtil.sendMessage(player, "<gray> - <gold>set <create|delete|add|parent|list> <id> [args]<gray> - Manage exploration sets");
+            MessageUtil.sendMessage(player, "<gray> - <gold>poi <create|delete|tp> <id> [args]<gray> - Manage points of interest");
+            MessageUtil.sendMessage(player, "<gray> - <gold>respawn <create|delete|tp|list> <id> [args]<gray> - Manage respawn points");
+            MessageUtil.sendMessage(player, "<gray> - <gold>chest<gray> - Create loot chest (look at chest block)");
+            return;
+        }
+
         if (args[1].equalsIgnoreCase("set")) {
+            if (args.length <= 2) {
+                MessageUtil.sendMessage(player, "<red>Usage: /qxl explorable set <create|delete|add|parent|list> <id> [args]");
+                return;
+            }
             if (args[2].equalsIgnoreCase("create")) {
                 if (args.length < 4) {
                     MessageUtil.sendMessage(player, "<red>Usage: /qxl explorable set create <id>");
@@ -106,6 +126,21 @@ public class ExplorableCommand extends ECommand {
                         MessageUtil.sendMessage(player, "<green>Added event <gold>" + event.id() + "<green> to set <gold>" + set.id() + "<green>.");
                         return;
                     }
+                    case "respawn" -> {
+                        if (args.length < 6) {
+                            MessageUtil.sendMessage(player, "<red>Usage: /qxl explorable set add <id> respawn <respawn_point_id>");
+                            return;
+                        }
+                        ExplorableRespawnPoint respawnPoint = exploration.getExplorableRespawnPoint(args[5]);
+                        if (respawnPoint == null) {
+                            MessageUtil.sendMessage(player, "<red>Explorable respawn point with id <gold>" + args[5] + "<red> does not exist.");
+                            return;
+                        }
+                        respawnPoint.setSet(set);
+                        set.addExplorable(respawnPoint);
+                        MessageUtil.sendMessage(player, "<green>Added respawn point <gold>" + respawnPoint.id() + "<green> to set <gold>" + set.id() + "<green>.");
+                        return;
+                    }
                     default -> MessageUtil.sendMessage(player, "<red>Unknown type: " + args[4]);
                 }
             }
@@ -155,6 +190,10 @@ public class ExplorableCommand extends ECommand {
             }
         }
         if (args[1].equalsIgnoreCase("poi")) {
+            if (args.length <= 2) {
+                MessageUtil.sendMessage(player, "<red>Usage: /qxl explorable poi <create|delete|tp> <id> [args]");
+                return;
+            }
             Location location = player.getLocation();
             if (args[2].equalsIgnoreCase("create")) {
                 if (args.length < 4) {
@@ -207,12 +246,105 @@ public class ExplorableCommand extends ECommand {
             }
             MessageUtil.sendMessage(player, "<red>Unknown subcommand for poi: " + args[2] + " (available: create, delete,  teleport)");
         }
+        if (args[1].equalsIgnoreCase("respawn")) {
+            if (args.length <= 2) {
+                MessageUtil.sendMessage(player, "<red>Usage: /qxl explorable respawn <create|delete|tp|list> <id> [args]");
+                return;
+            }
+            Location location = player.getLocation();
+            if (args[2].equalsIgnoreCase("create")) {
+                if (args.length < 4) {
+                    MessageUtil.sendMessage(player, "<red>Usage: /qxl explorable respawn create <id> [displayName] [unlockMode]");
+                    return;
+                }
+                String id = args[3];
+                if (plugin.getRespawnPointManager().getRespawnPoint(id) != null) {
+                    MessageUtil.sendMessage(player, "<red>Respawn point with ID <gold>" + id + "<red> already exists.");
+                    return;
+                }
+
+                String displayName = args.length > 4 ? args[4] : id;
+                RespawnPointUnlockMode respawnPointUnlockMode = RespawnPointUnlockMode.NEAR; // Default to NEAR for explorable integration
+
+                if (args.length > 5) {
+                    try {
+                        respawnPointUnlockMode = RespawnPointUnlockMode.valueOf(args[5].toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        MessageUtil.sendMessage(player, "<red>Invalid unlock mode: " + args[5] + ". Valid modes: NEAR, ACTION, QUEST");
+                        return;
+                    }
+                }
+
+                RespawnPoint respawnPoint = new RespawnPoint(id, location);
+                respawnPoint.setDisplayName(QTranslatable.fromString(displayName));
+                respawnPoint.setUnlockMode(respawnPointUnlockMode);
+
+                plugin.getRespawnPointManager().addRespawnPoint(respawnPoint);
+                plugin.getRespawnPointManager().save();
+
+                MessageUtil.sendMessage(player, "<green>Created respawn point <gold>" + id + "<green> at your location with unlock mode <gold>" + respawnPointUnlockMode + "<green>.");
+
+                if (respawnPointUnlockMode == RespawnPointUnlockMode.NEAR) {
+                    MessageUtil.sendMessage(player, "<yellow>Added to exploration system as an explorable respawn point.");
+                }
+                return;
+            }
+            if (args[2].equalsIgnoreCase("delete")) {
+                if (args.length < 4) {
+                    MessageUtil.sendMessage(player, "<red>Usage: /qxl explorable respawn delete <id>");
+                    return;
+                }
+                String id = args[3];
+                RespawnPoint respawnPoint = plugin.getRespawnPointManager().getRespawnPoint(id);
+                if (respawnPoint == null) {
+                    MessageUtil.sendMessage(player, "<red>Respawn point with id <gold>" + id + "<red> does not exist.");
+                    return;
+                }
+                plugin.getRespawnPointManager().removeRespawnPoint(respawnPoint);
+                plugin.getRespawnPointManager().save();
+                MessageUtil.sendMessage(player, "<green>Deleted respawn point <gold>" + id + "<green>.");
+                return;
+            }
+            if (args[2].equalsIgnoreCase("tp") || args[2].equalsIgnoreCase("teleport")) {
+                if (args.length < 4) {
+                    MessageUtil.sendMessage(player, "<red>Usage: /qxl explorable respawn teleport <id>");
+                    return;
+                }
+                String id = args[3];
+                RespawnPoint respawnPoint = plugin.getRespawnPointManager().getRespawnPoint(id);
+                if (respawnPoint == null) {
+                    MessageUtil.sendMessage(player, "<red>Respawn point with id <gold>" + id + "<red> does not exist.");
+                    return;
+                }
+                Location respawnLocation = respawnPoint.getLocation();
+                if (respawnLocation == null) {
+                    MessageUtil.sendMessage(player, "<red>Respawn point with id <gold>" + id + "<red> has no valid location.");
+                    return;
+                }
+                if (respawnLocation.getWorld() == null) {
+                    MessageUtil.sendMessage(player, "<red>Respawn point with id <gold>" + id + "<red> has no valid world.");
+                    return;
+                }
+                player.teleportAsync(respawnLocation);
+                MessageUtil.sendMessage(player, "<green>Teleported to respawn point <gold>" + id + "<green>.");
+                return;
+            }
+            if (args[2].equalsIgnoreCase("list")) {
+                StringBuilder sb = new StringBuilder("<green>Respawn points: ");
+                for (RespawnPoint point : plugin.getRespawnPointManager().getRespawnPoints()) {
+                    sb.append("<gold>").append(point.getId()).append(" (").append(point.getUnlockMode()).append(")<green>, ");
+                }
+                MessageUtil.sendMessage(player, sb.toString());
+                return;
+            }
+            MessageUtil.sendMessage(player, "<red>Unknown subcommand for respawn: " + args[2] + " (available: create, delete, teleport, list)");
+        }
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, String[] args) {
         if (args.length == 2) {
-            List<String> completes = new java.util.ArrayList<>(List.of("set", "poi", "chest"));
+            List<String> completes = new java.util.ArrayList<>(List.of("set", "poi", "chest", "respawn"));
             completes.removeIf(id -> !id.startsWith(args[1]));
             return completes;
         }
@@ -226,13 +358,23 @@ public class ExplorableCommand extends ECommand {
             completes.removeIf(id -> !id.startsWith(args[2]));
             return completes;
         }
+        if (args.length == 3 && args[1].equalsIgnoreCase("respawn")) {
+            List<String> completes = new java.util.ArrayList<>(List.of("create", "delete", "tp", "teleport", "list"));
+            completes.removeIf(id -> !id.startsWith(args[2]));
+            return completes;
+        }
         if (args.length == 4 && args[1].equalsIgnoreCase("set") && args[2].equalsIgnoreCase("add")) {
-            List<String> completes = new java.util.ArrayList<>(List.of("poi", "chest", "event"));
+            List<String> completes = new java.util.ArrayList<>(List.of("poi", "chest", "event", "respawn"));
             completes.removeIf(id -> !id.startsWith(args[3]));
             return completes;
         }
         if (args.length == 5 && args[1].equalsIgnoreCase("set") && args[2].equalsIgnoreCase("add") && args[3].equalsIgnoreCase("poi")) {
             return exploration.getPointOfInterestIDs().stream()
+                    .filter(id -> id.startsWith(args[4]))
+                    .toList();
+        }
+        if (args.length == 5 && args[1].equalsIgnoreCase("set") && args[2].equalsIgnoreCase("add") && args[3].equalsIgnoreCase("respawn")) {
+            return exploration.getExplorableRespawnPointIDs().stream()
                     .filter(id -> id.startsWith(args[4]))
                     .toList();
         }
@@ -251,9 +393,15 @@ public class ExplorableCommand extends ECommand {
                     .filter(id -> id.startsWith(args[3]))
                     .toList();
         }
-        if (args.length == 4 && args[1].equalsIgnoreCase("chest")) {
-            List<String> completes = new java.util.ArrayList<>(List.of("create", "delete"));
-            completes.removeIf(id -> !id.startsWith(args[3]));
+        if (args.length == 4 && args[1].equalsIgnoreCase("respawn") && (args[2].equalsIgnoreCase("tp") || args[2].equalsIgnoreCase("teleport") || args[2].equalsIgnoreCase("delete"))) {
+            return plugin.getRespawnPointManager().getRespawnPoints().stream()
+                    .map(RespawnPoint::getId)
+                    .filter(id -> id.startsWith(args[3]))
+                    .toList();
+        }
+        if (args.length == 6 && args[1].equalsIgnoreCase("respawn") && args[2].equalsIgnoreCase("create")) {
+            List<String> completes = new java.util.ArrayList<>(List.of("NEAR", "ACTION", "QUEST"));
+            completes.removeIf(id -> !id.startsWith(args[5].toUpperCase()));
             return completes;
         }
         return super.onTabComplete(sender, args);

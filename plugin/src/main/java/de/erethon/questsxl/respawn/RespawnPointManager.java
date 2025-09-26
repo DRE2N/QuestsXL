@@ -1,6 +1,7 @@
 package de.erethon.questsxl.respawn;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.livingworld.explorables.ExplorableRespawnPoint;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
@@ -8,16 +9,20 @@ import org.bukkit.event.Listener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RespawnPointManager implements Listener {
 
     QuestsXL plugin = QuestsXL.get();
 
     List<RespawnPoint> points = new ArrayList<>();
+    Map<String, ExplorableRespawnPoint> explorableRespawnPoints = new HashMap<>();
 
     public RespawnPointManager(File file) {
         Bukkit.getPluginManager().registerEvents(this, plugin);
+        load(file);
     }
 
     public void load(File file) {
@@ -27,6 +32,9 @@ public class RespawnPointManager implements Listener {
             point.load(config.getConfigurationSection(key));
             points.add(point);
         }
+
+        // Create explorable respawn points for NEAR mode points after loading
+        updateExplorationIntegration();
     }
 
     public void save() {
@@ -38,6 +46,65 @@ public class RespawnPointManager implements Listener {
             configuration.save(QuestsXL.RESPAWNS);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void addRespawnPoint(RespawnPoint point) {
+        if (point != null) {
+            points.add(point);
+
+            // If this is a NEAR unlock mode respawn point, add it to the exploration system
+            if (point.getUnlockMode() == RespawnPointUnlockMode.NEAR) {
+                ExplorableRespawnPoint explorable = new ExplorableRespawnPoint(point);
+                explorableRespawnPoints.put(point.getId(), explorable);
+                plugin.getExploration().addExplorableRespawnPoint(explorable);
+            }
+        }
+    }
+
+    public void removeRespawnPoint(RespawnPoint point) {
+        if (point != null) {
+            points.remove(point);
+
+            // Remove from exploration system if it exists
+            ExplorableRespawnPoint explorable = explorableRespawnPoints.get(point.getId());
+            if (explorable != null) {
+                plugin.getExploration().removeExplorableRespawnPoint(explorable);
+                explorableRespawnPoints.remove(point.getId());
+            }
+        }
+    }
+
+    public RespawnPoint getRespawnPoint(String id) {
+        for (RespawnPoint point : points) {
+            if (point.getId().equals(id)) {
+                return point;
+            }
+        }
+        return null;
+    }
+
+    public List<RespawnPoint> getRespawnPoints() {
+        return new ArrayList<>(points);
+    }
+
+    public ExplorableRespawnPoint getExplorableRespawnPoint(String id) {
+        return explorableRespawnPoints.get(id);
+    }
+
+    // We need to register NEAR points as explorable respawn points
+    private void updateExplorationIntegration() {
+        for (ExplorableRespawnPoint explorable : explorableRespawnPoints.values()) {
+            plugin.getExploration().removeExplorableRespawnPoint(explorable);
+        }
+        explorableRespawnPoints.clear();
+
+        for (RespawnPoint point : points) {
+            if (point.getUnlockMode() == RespawnPointUnlockMode.NEAR) {
+                ExplorableRespawnPoint explorable = new ExplorableRespawnPoint(point);
+                explorableRespawnPoints.put(point.getId(), explorable);
+                plugin.getExploration().addExplorableRespawnPoint(explorable);
+            }
         }
     }
 }

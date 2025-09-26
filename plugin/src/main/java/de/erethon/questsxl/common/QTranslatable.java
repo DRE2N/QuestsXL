@@ -85,4 +85,19 @@ public class QTranslatable {
         return translatable;
     }
 
+    @Override
+    public String toString() {
+        // Return the same string that was used to create this QTranslatable
+        if (key != null) {
+            StringBuilder sb = new StringBuilder();
+            for (Map.Entry<Locale, String> entry : translations.entrySet()) {
+                if (!sb.isEmpty()) {
+                    sb.append("; ");
+                }
+                sb.append(entry.getKey().toLanguageTag()).append("=").append(entry.getValue());
+            }
+            return sb.toString();
+        }
+        return literal == null ? "" : literal;
+    }
 }

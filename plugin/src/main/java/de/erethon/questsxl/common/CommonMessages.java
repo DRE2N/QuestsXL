@@ -25,6 +25,24 @@ public class CommonMessages {
         registerMessage("explorationset.completed", Locale.ENGLISH, QuestsXL.EXPLORATION + "<purple>You completed <arg:0>!");
         registerMessage("explorationset.completed", Locale.GERMAN, QuestsXL.EXPLORATION + "<purple>Du hast <arg:0> <purple>abgeschlossen!");
 
+        // Exploration GUI messages
+        registerMessage("gui.exploration.title", Locale.ENGLISH, "Exploration");
+        registerMessage("gui.exploration.title", Locale.GERMAN, "Erkundung");
+        registerMessage("gui.exploration.set.progress", Locale.ENGLISH, "<gray>Progress: <white><arg:0>/<arg:1>");
+        registerMessage("gui.exploration.set.progress", Locale.GERMAN, "<gray>Fortschritt: <white><arg:0>/<arg:1>");
+        registerMessage("gui.exploration.set.distance", Locale.ENGLISH, "<gray>Distance: <yellow><arg:0>m");
+        registerMessage("gui.exploration.set.distance", Locale.GERMAN, "<gray>Entfernung: <yellow><arg:0>m");
+        registerMessage("gui.exploration.set.completed", Locale.ENGLISH, "<green>✓ Completed");
+        registerMessage("gui.exploration.set.completed", Locale.GERMAN, "<green>✓ Abgeschlossen");
+        registerMessage("gui.exploration.set.clicktoview", Locale.ENGLISH, "<gray>Click to view explorables");
+        registerMessage("gui.exploration.set.clicktoview", Locale.GERMAN, "<gray>Klicke um Erkundungen anzusehen");
+        registerMessage("gui.exploration.back", Locale.ENGLISH, "<gray>Back to Sets");
+        registerMessage("gui.exploration.back", Locale.GERMAN, "<gray>Zurück zu den Sets");
+        registerMessage("gui.exploration.explorable.discovered", Locale.ENGLISH, "<green>✓ Discovered");
+        registerMessage("gui.exploration.explorable.discovered", Locale.GERMAN, "<green>✓ Entdeckt");
+        registerMessage("gui.exploration.explorable.undiscovered", Locale.ENGLISH, "<red>✗ Undiscovered");
+        registerMessage("gui.exploration.explorable.undiscovered", Locale.GERMAN, "<red>✗ Unentdeckt");
+
         for (Map.Entry<String, Map<Locale, String>> entry : messages.entrySet()) {
             QTranslatable translatable = new QTranslatable(entry.getKey(), entry.getValue());
             QuestsXL.get().registerTranslation(translatable);
