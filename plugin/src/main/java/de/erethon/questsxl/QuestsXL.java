@@ -265,8 +265,7 @@ public final class QuestsXL extends EPlugin {
         regionManager.save();
         blockCollectionManager.save();
         animationManager.save();
-        eventManager.save();
-        HandlerList.unregisterAll((Plugin) this);
+        HandlerList.unregisterAll(this);
     }
 
     public void addAergiaScoreboardIntegration() {
@@ -315,6 +314,10 @@ public final class QuestsXL extends EPlugin {
 
     public QRegionManager getRegionManager() {
         return regionManager;
+    }
+
+    public RespawnPointManager getRespawnPointManager() {
+        return respawnPointManager;
     }
 
     public BlockCollectionManager getBlockCollectionManager() {
@@ -399,22 +402,81 @@ public final class QuestsXL extends EPlugin {
             @Override
             public void run() {
                 try {
-                    QuestsXL.log("Syncing...");
+                    QuestsXL.log("Syncing (pull only)...");
                     QuestsXL.log("Included folders: " + Arrays.toString(folders.toArray()));
-                    GitSync sync = new GitSync(folders, isPassiveSync());
-                    sync.update();
-                } catch (IOException | InterruptedException | GitAPIException e) {
+                    GitSync sync = new GitSync(folders);
+                    sync.sync(); // Use the new sync method that only pulls
+                    sync.close();
+                } catch (IOException | GitAPIException e) {
                     MessageUtil.broadcastMessageIf("&cGithub-Sync-Error: " + e.getMessage(), p -> p.hasPermission("qxl.admin.sync"));
                     e.printStackTrace();
                 }
                 BukkitRunnable waitForCopy = new BukkitRunnable() {
                     @Override
                     public void run() {
-                        MessageUtil.broadcastMessageIf("&aGitHub-Sync abgeschlossen!", p -> p.hasPermission("qxl.admin.sync"));
+                        MessageUtil.broadcastMessageIf("&aGitHub-Sync (pull) abgeschlossen!", p -> p.hasPermission("qxl.admin.sync"));
                     }
                 };
                 waitForCopy.runTaskLaterAsynchronously(QuestsXL.get(), 60);
                 lastSync = System.currentTimeMillis();
+            }
+        };
+        updateGit.runTaskAsynchronously(this);
+    }
+
+    public void fullSync() {
+        BukkitRunnable updateGit = new BukkitRunnable() {
+            @Override
+            public void run() {
+                try {
+                    QuestsXL.log("Full syncing (push + pull)...");
+                    QuestsXL.log("Included folders: " + Arrays.toString(folders.toArray()));
+                    GitSync sync = new GitSync(folders);
+                    sync.fullSync();
+                    sync.close();
+                } catch (IOException | GitAPIException e) {
+                    MessageUtil.broadcastMessageIf("&cGithub-Sync-Error: " + e.getMessage(), p -> p.hasPermission("qxl.admin.sync"));
+                    e.printStackTrace();
+                }
+                BukkitRunnable waitForCopy = new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        MessageUtil.broadcastMessageIf("&aGitHub-Full-Sync abgeschlossen!", p -> p.hasPermission("qxl.admin.sync"));
+                    }
+                };
+                waitForCopy.runTaskLaterAsynchronously(QuestsXL.get(), 60);
+                lastSync = System.currentTimeMillis();
+            }
+        };
+        updateGit.runTaskAsynchronously(this);
+    }
+
+    public void pushServerChanges() {
+        pushServerChanges(false);
+    }
+
+    public void pushServerChanges(boolean force) {
+        BukkitRunnable updateGit = new BukkitRunnable() {
+            @Override
+            public void run() {
+                try {
+                    QuestsXL.log("Pushing server changes" + (force ? " (FORCE)" : "") + "...");
+                    QuestsXL.log("Included folders: " + Arrays.toString(folders.toArray()));
+                    GitSync sync = new GitSync(folders);
+                    sync.pushServerChanges(force);
+                    sync.close();
+                } catch (IOException | GitAPIException e) {
+                    MessageUtil.broadcastMessageIf("&cGithub-Push-Error: " + e.getMessage(), p -> p.hasPermission("qxl.admin.sync"));
+                    e.printStackTrace();
+                }
+                BukkitRunnable waitForCopy = new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        String message = force ? "&aServer-Änderungen force-gepusht!" : "&aServer-Änderungen gepusht!";
+                        MessageUtil.broadcastMessageIf(message, p -> p.hasPermission("qxl.admin.sync"));
+                    }
+                };
+                waitForCopy.runTaskLaterAsynchronously(QuestsXL.get(), 60);
             }
         };
         updateGit.runTaskAsynchronously(this);
@@ -453,4 +515,5 @@ public final class QuestsXL extends EPlugin {
     public boolean isPassiveSync() {
         return gitIsPassive;
     }
+
 }
