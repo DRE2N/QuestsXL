@@ -22,8 +22,14 @@ public class CommonMessages {
         registerMessage("explorable.discovered", Locale.GERMAN, QuestsXL.EXPLORATION + "<purple>Du hast <arg:0><purple>entdeckt!");
         registerMessage("explorable.undiscovered", Locale.ENGLISH, QuestsXL.EXPLORATION + "<gray>Undiscovered");
         registerMessage("explorable.undiscovered", Locale.GERMAN, QuestsXL.EXPLORATION + "<gray>Unentdeckt");
+        registerMessage("explorable.respawn.nearby", Locale.ENGLISH, "Waypoint");
+        registerMessage("explorable.respawn.nearby", Locale.GERMAN, "Wegpunkt");
+        registerMessage("explorable.respawn.unlocked", Locale.ENGLISH, "Waypoint");
+        registerMessage("explorable.respawn.unlocked", Locale.GERMAN, "Wegpunkt");
         registerMessage("explorationset.completed", Locale.ENGLISH, QuestsXL.EXPLORATION + "<purple>You completed <arg:0>!");
         registerMessage("explorationset.completed", Locale.GERMAN, QuestsXL.EXPLORATION + "<purple>Du hast <arg:0> <purple>abgeschlossen!");
+        registerMessage("qxl.respawn.location", Locale.ENGLISH, QuestsXL.EXPLORATION + "<gray>Respawning at <arg:0>");
+        registerMessage("qxl.respawn.location", Locale.GERMAN, QuestsXL.EXPLORATION + "<gray>Respawne bei <arg:0>");
 
         // Exploration GUI messages
         registerMessage("gui.exploration.title", Locale.ENGLISH, "Exploration");
@@ -42,6 +48,7 @@ public class CommonMessages {
         registerMessage("gui.exploration.explorable.discovered", Locale.GERMAN, "<green>✓ Entdeckt");
         registerMessage("gui.exploration.explorable.undiscovered", Locale.ENGLISH, "<red>✗ Undiscovered");
         registerMessage("gui.exploration.explorable.undiscovered", Locale.GERMAN, "<red>✗ Unentdeckt");
+
 
         for (Map.Entry<String, Map<Locale, String>> entry : messages.entrySet()) {
             QTranslatable translatable = new QTranslatable(entry.getKey(), entry.getValue());

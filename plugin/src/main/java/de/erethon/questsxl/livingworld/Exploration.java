@@ -147,7 +147,6 @@ public class Exploration {
     public void removeExplorableRespawnPoint(ExplorableRespawnPoint respawnPoint) {
         if (respawnPoint != null) {
             explorableRespawnPoints.remove(respawnPoint);
-            respawnPoint.cleanup();
         }
     }
 

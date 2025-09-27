@@ -7,6 +7,7 @@ import de.erethon.questsxl.livingworld.CompletedExplorable;
 import de.erethon.questsxl.livingworld.Explorable;
 import de.erethon.questsxl.livingworld.ExplorationSet;
 import de.erethon.questsxl.livingworld.explorables.ExplorableRespawnPoint;
+import de.erethon.questsxl.respawn.RespawnPoint;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.ActiveQuest;
 import de.erethon.questsxl.quest.QQuest;
@@ -17,6 +18,8 @@ import org.bukkit.entity.Player;
 
 import java.util.Iterator;
 import java.util.Set;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class AdminCommand extends ECommand {
 
@@ -234,27 +237,38 @@ public class AdminCommand extends ECommand {
             }
 
             String respawnId = args[3];
-            ExplorableRespawnPoint respawnPoint = plugin.getExploration().getExplorableRespawnPoint(respawnId);
+
+            // First try to find it as an explorable respawn point
+            ExplorableRespawnPoint explorableRespawnPoint = plugin.getExploration().getExplorableRespawnPoint(respawnId);
+            if (explorableRespawnPoint != null) {
+                ExplorationSet set = explorableRespawnPoint.getSet();
+                if (set != null) {
+                    // If it's part of a set, use the normal exploration system
+                    boolean success = qPlayer.getExplorer().completeExplorable(set, explorableRespawnPoint, System.currentTimeMillis());
+                    if (success) {
+                        MessageUtil.sendMessage(player, "&7Spieler &6" + targetPlayer.getName() + " &7hat jetzt Respawn Point &6" + explorableRespawnPoint.displayName().get() + " &7freigeschaltet.");
+                        MessageUtil.sendMessage(targetPlayer, "&7Ein Admin hat dir Respawn Point &6" + explorableRespawnPoint.displayName().get() + " &7freigeschaltet.");
+                    } else {
+                        MessageUtil.sendMessage(player, QuestsXL.ERROR + "Spieler hat bereits Respawn Point &6" + explorableRespawnPoint.displayName().get() + " &7freigeschaltet.");
+                    }
+                    return;
+                }
+            }
+
+            // If not found as explorable, try as standalone respawn point
+            RespawnPoint respawnPoint = plugin.getRespawnPointManager().getRespawnPoint(respawnId);
             if (respawnPoint == null) {
                 MessageUtil.sendMessage(player, QuestsXL.ERROR + "Respawn Point '" + respawnId + "' nicht gefunden.");
                 return;
             }
 
-            // For respawn points, we need to use the exploration system if they're part of a set
-            ExplorationSet set = respawnPoint.getSet();
-            if (set != null) {
-                // If it's part of a set, use the normal exploration system
-                boolean success = qPlayer.getExplorer().completeExplorable(set, respawnPoint, System.currentTimeMillis());
-                if (success) {
-                    MessageUtil.sendMessage(player, "&7Spieler &6" + targetPlayer.getName() + " &7hat jetzt Respawn Point &6" + respawnPoint.displayName().get() + " &7freigeschaltet.");
-                    MessageUtil.sendMessage(targetPlayer, "&7Ein Admin hat dir Respawn Point &6" + respawnPoint.displayName().get() + " &7freigeschaltet.");
-                } else {
-                    MessageUtil.sendMessage(player, QuestsXL.ERROR + "Spieler hat bereits Respawn Point &6" + respawnPoint.displayName().get() + " &7freigeschaltet.");
-                }
+            // Handle standalone respawn point
+            boolean success = qPlayer.getExplorer().unlockStandaloneRespawnPoint(respawnId);
+            if (success) {
+                MessageUtil.sendMessage(player, "&7Spieler &6" + targetPlayer.getName() + " &7hat jetzt Respawn Point &6" + respawnPoint.getDisplayName().get() + " &7freigeschaltet.");
+                MessageUtil.sendMessage(targetPlayer, "&7Ein Admin hat dir Respawn Point &6" + respawnPoint.getDisplayName().get() + " &7freigeschaltet.");
             } else {
-                // For standalone respawn points, we need to create a temporary set or handle differently
-                // Since the respawn points use hasExplored() from PlayerExplorer, we need to mark it as explored somehow
-                MessageUtil.sendMessage(player, QuestsXL.ERROR + "Respawn Point &6" + respawnPoint.displayName().get() + " &7ist nicht Teil eines Sets. Standalone Respawn Points können aktuell nicht über Admin-Befehle freigeschaltet werden.");
+                MessageUtil.sendMessage(player, QuestsXL.ERROR + "Spieler hat bereits Respawn Point &6" + respawnPoint.getDisplayName().get() + " &7freigeschaltet.");
             }
             return;
         }
@@ -275,24 +289,37 @@ public class AdminCommand extends ECommand {
             }
 
             String respawnId = args[3];
-            ExplorableRespawnPoint respawnPoint = plugin.getExploration().getExplorableRespawnPoint(respawnId);
+
+            // First try to find it as an explorable respawn point
+            ExplorableRespawnPoint explorableRespawnPoint = plugin.getExploration().getExplorableRespawnPoint(respawnId);
+            if (explorableRespawnPoint != null) {
+                ExplorationSet set = explorableRespawnPoint.getSet();
+                if (set != null) {
+                    boolean success = removeExplorableFromPlayer(qPlayer, set, explorableRespawnPoint);
+                    if (success) {
+                        MessageUtil.sendMessage(player, "&7Spieler &6" + targetPlayer.getName() + " &7hat Respawn Point &6" + explorableRespawnPoint.displayName().get() + " &7gesperrt.");
+                        MessageUtil.sendMessage(targetPlayer, "&7Ein Admin hat Respawn Point &6" + explorableRespawnPoint.displayName().get() + " &7gesperrt.");
+                    } else {
+                        MessageUtil.sendMessage(player, QuestsXL.ERROR + "Spieler hatte Respawn Point &6" + explorableRespawnPoint.displayName().get() + " &7noch nicht freigeschaltet.");
+                    }
+                    return;
+                }
+            }
+
+            // If not found as explorable, try as standalone respawn point
+            RespawnPoint respawnPoint = plugin.getRespawnPointManager().getRespawnPoint(respawnId);
             if (respawnPoint == null) {
                 MessageUtil.sendMessage(player, QuestsXL.ERROR + "Respawn Point '" + respawnId + "' nicht gefunden.");
                 return;
             }
 
-            // For respawn points, we need to remove them from the exploration system if they're part of a set
-            ExplorationSet set = respawnPoint.getSet();
-            if (set != null) {
-                boolean success = removeExplorableFromPlayer(qPlayer, set, respawnPoint);
-                if (success) {
-                    MessageUtil.sendMessage(player, "&7Spieler &6" + targetPlayer.getName() + " &7hat Respawn Point &6" + respawnPoint.displayName().get() + " &7gesperrt.");
-                    MessageUtil.sendMessage(targetPlayer, "&7Ein Admin hat Respawn Point &6" + respawnPoint.displayName().get() + " &7gesperrt.");
-                } else {
-                    MessageUtil.sendMessage(player, QuestsXL.ERROR + "Spieler hatte Respawn Point &6" + respawnPoint.displayName().get() + " &7noch nicht freigeschaltet.");
-                }
+            // Handle standalone respawn point
+            boolean success = qPlayer.getExplorer().lockStandaloneRespawnPoint(respawnId);
+            if (success) {
+                MessageUtil.sendMessage(player, "&7Spieler &6" + targetPlayer.getName() + " &7hat Respawn Point &6" + respawnPoint.getDisplayName().get() + " &7gesperrt.");
+                MessageUtil.sendMessage(targetPlayer, "&7Ein Admin hat Respawn Point &6" + respawnPoint.getDisplayName().get() + " &7gesperrt.");
             } else {
-                MessageUtil.sendMessage(player, QuestsXL.ERROR + "Respawn Point &6" + respawnPoint.displayName().get() + " &7ist nicht Teil eines Sets. Standalone Respawn Points können aktuell nicht über Admin-Befehle gesperrt werden.");
+                MessageUtil.sendMessage(player, QuestsXL.ERROR + "Spieler hatte Respawn Point &6" + respawnPoint.getDisplayName().get() + " &7noch nicht freigeschaltet.");
             }
             return;
         }
@@ -331,5 +358,86 @@ public class AdminCommand extends ECommand {
         int removed = completed.size();
         completed.clear();
         return removed;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, String[] args) {
+        if (args.length == 2) {
+            List<String> completes = new java.util.ArrayList<>(List.of("info", "i", "list", "ls", "give", "g", "objectives", "o", "explore", "ex", "unexplore", "unex", "unlock", "ul", "lock", "lk"));
+            completes.removeIf(id -> !id.toLowerCase().startsWith(args[1].toLowerCase()));
+            return completes;
+        }
+
+        // For commands that need player names
+        if (args.length == 3 && (args[1].equalsIgnoreCase("list") || args[1].equalsIgnoreCase("ls") ||
+                args[1].equalsIgnoreCase("give") || args[1].equalsIgnoreCase("g") ||
+                args[1].equalsIgnoreCase("explore") || args[1].equalsIgnoreCase("ex") ||
+                args[1].equalsIgnoreCase("unexplore") || args[1].equalsIgnoreCase("unex") ||
+                args[1].equalsIgnoreCase("unlock") || args[1].equalsIgnoreCase("ul") ||
+                args[1].equalsIgnoreCase("lock") || args[1].equalsIgnoreCase("lk"))) {
+            return Bukkit.getOnlinePlayers().stream()
+                    .map(Player::getName)
+                    .filter(name -> name.toLowerCase().startsWith(args[2].toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+
+        // For quest info command
+        if (args.length == 3 && (args[1].equalsIgnoreCase("info") || args[1].equalsIgnoreCase("i"))) {
+            return plugin.getQuestManager().getQuests().stream()
+                    .map(QQuest::getName)
+                    .filter(name -> name.toLowerCase().startsWith(args[2].toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+
+        // For give command - quest names
+        if (args.length == 4 && (args[1].equalsIgnoreCase("give") || args[1].equalsIgnoreCase("g"))) {
+            return plugin.getQuestManager().getQuests().stream()
+                    .map(QQuest::getName)
+                    .filter(name -> name.toLowerCase().startsWith(args[3].toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+
+        // For explore/unexplore commands - exploration set IDs
+        if (args.length == 4 && (args[1].equalsIgnoreCase("explore") || args[1].equalsIgnoreCase("ex") ||
+                args[1].equalsIgnoreCase("unexplore") || args[1].equalsIgnoreCase("unex"))) {
+            return plugin.getExploration().getSetIDs().stream()
+                    .filter(id -> id.toLowerCase().startsWith(args[3].toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+
+        // For explore/unexplore commands - specific explorable IDs within a set
+        if (args.length == 5 && (args[1].equalsIgnoreCase("explore") || args[1].equalsIgnoreCase("ex") ||
+                args[1].equalsIgnoreCase("unexplore") || args[1].equalsIgnoreCase("unex"))) {
+            String setId = args[3];
+            ExplorationSet explorationSet = plugin.getExploration().getSet(setId);
+            if (explorationSet != null) {
+                return explorationSet.entries().stream()
+                        .map(explorable -> explorable.id())
+                        .filter(id -> id.toLowerCase().startsWith(args[4].toLowerCase()))
+                        .collect(Collectors.toList());
+            }
+        }
+
+        // For unlock/lock commands - all respawn point IDs (both explorable and standalone)
+        if (args.length == 4 && (args[1].equalsIgnoreCase("unlock") || args[1].equalsIgnoreCase("ul") ||
+                args[1].equalsIgnoreCase("lock") || args[1].equalsIgnoreCase("lk"))) {
+            List<String> allRespawnIds = new java.util.ArrayList<>();
+
+            // Add explorable respawn point IDs
+            allRespawnIds.addAll(plugin.getExploration().getExplorableRespawnPointIDs());
+
+            // Add all respawn point IDs from RespawnPointManager
+            allRespawnIds.addAll(plugin.getRespawnPointManager().getRespawnPoints().stream()
+                    .map(RespawnPoint::getId)
+                    .collect(Collectors.toList()));
+
+            // Remove duplicates and filter by input
+            return allRespawnIds.stream()
+                    .distinct()
+                    .filter(id -> id.toLowerCase().startsWith(args[3].toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+
+        return super.onTabComplete(sender, args);
     }
 }

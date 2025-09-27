@@ -153,7 +153,7 @@ public class QPlayer implements ObjectiveHolder, Scorable, Quester {
         }
     }
 
-    private void saveToDatabase() {
+    public void saveToDatabase() {
         var databaseManager = QuestsXL.get().getDatabaseManager();
         if (databaseManager != null) {
             databaseManager.savePlayerData(this);

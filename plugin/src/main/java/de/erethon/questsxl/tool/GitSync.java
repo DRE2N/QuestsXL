@@ -1,6 +1,5 @@
 package de.erethon.questsxl.tool;
 
-import de.erethon.bedrock.misc.FileUtil;
 import de.erethon.questsxl.QuestsXL;
 import org.bukkit.Bukkit;
 import org.eclipse.jgit.api.Git;
@@ -57,6 +56,8 @@ public class GitSync {
     private static final List<String> EXCLUSIONS = List.of(
         "players", "playerdata", "inventories", "backups", "output", "docs", "users", "ips", "debug.txt"
     );
+
+    private File tempBackupDir;
 
     public GitSync(List<String> folderNames) throws IOException, GitAPIException {
         this.foldersToSync.addAll(folderNames);
@@ -124,9 +125,6 @@ public class GitSync {
         }
 
         QuestsXL.log("Starting Git sync...");
-
-        // First, backup server changes for files that might be modified by server
-        backupServerChanges();
 
         // Pull latest changes from remote
         pullFromRemote();
@@ -196,64 +194,166 @@ public class GitSync {
         QuestsXL.log("Server changes pushed successfully" + (force ? " (forced)" : ""));
     }
 
-    private void backupServerChanges() throws IOException {
-        QuestsXL.log("Backing up server-modified files...");
-
-        File backupDir = new File(repoFolder.getParent(), "server_backup_" + getCurrentTimestamp().replace(":", "-"));
-        if (!backupDir.mkdirs() && !backupDir.exists()) {
-            QuestsXL.log("Warning: Could not create backup directory: " + backupDir.getAbsolutePath());
+    /**
+     * Backup server-modifiable files to a temporary location before git operations
+     */
+    private void backupServerModifiableFiles() throws IOException {
+        // Create temporary backup directory
+        tempBackupDir = new File(repoFolder.getParent(), "temp_server_backup_" + System.currentTimeMillis());
+        if (!tempBackupDir.mkdirs()) {
+            throw new IOException("Could not create temporary backup directory: " + tempBackupDir.getAbsolutePath());
         }
 
-        for (String folderName : foldersToSync) {
-            File sourceFolder = new File(pluginsFolder, folderName);
-            File backupFolder = new File(backupDir, folderName);
+        QuestsXL.log("Backing up server-modifiable files to: " + tempBackupDir.getAbsolutePath());
 
-            if (sourceFolder.exists()) {
-                copyServerModifiableFilesOnly(sourceFolder.toPath(), backupFolder.toPath());
+        // Backup server-modifiable files from the git repo
+        for (String folderName : foldersToSync) {
+            File repoSourceFolder = new File(repoFolder, folderName);
+            File backupFolder = new File(tempBackupDir, folderName);
+
+            if (repoSourceFolder.exists()) {
+                copyServerModifiableFilesOnly(repoSourceFolder.toPath(), backupFolder.toPath());
             }
+        }
+
+        QuestsXL.log("Server-modifiable files backed up successfully");
+    }
+
+    /**
+     * Restore server-modifiable files from temporary backup after git operations
+     */
+    private void restoreServerModifiableFiles() throws IOException {
+        if (tempBackupDir == null || !tempBackupDir.exists()) {
+            QuestsXL.log("No backup directory found, skipping restore");
+            return;
+        }
+
+        QuestsXL.log("Restoring server-modifiable files from backup...");
+
+        // Restore server-modifiable files back to the git repo
+        for (String folderName : foldersToSync) {
+            File backupFolder = new File(tempBackupDir, folderName);
+            File repoTargetFolder = new File(repoFolder, folderName);
+
+            if (backupFolder.exists()) {
+                copyServerModifiableFilesOnly(backupFolder.toPath(), repoTargetFolder.toPath());
+            }
+        }
+
+        // Clean up temporary backup directory
+        try {
+            deleteDirectory(tempBackupDir);
+            QuestsXL.log("Temporary backup cleaned up");
+        } catch (IOException e) {
+            QuestsXL.log("Warning: Could not delete temporary backup directory: " + e.getMessage());
+        }
+
+        tempBackupDir = null;
+        QuestsXL.log("Server-modifiable files restored successfully");
+    }
+
+    /**
+     * Recursively delete a directory and all its contents
+     */
+    private void deleteDirectory(File directory) throws IOException {
+        if (!directory.exists()) {
+            return;
+        }
+
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    deleteDirectory(file);
+                } else {
+                    if (!file.delete()) {
+                        throw new IOException("Could not delete file: " + file.getAbsolutePath());
+                    }
+                }
+            }
+        }
+
+        if (!directory.delete()) {
+            throw new IOException("Could not delete directory: " + directory.getAbsolutePath());
         }
     }
 
-    private void pullFromRemote() throws GitAPIException {
+    private void pullFromRemote() throws GitAPIException, IOException {
         QuestsXL.log("Pulling latest changes from remote...");
 
         String token = plugin.getGitToken();
         String branch = plugin.getGitBranch();
 
-        // Fetch latest changes
+        // Fetch latest changes first
+        QuestsXL.log("Fetching from remote...");
         git.fetch()
                 .setCredentialsProvider(new UsernamePasswordCredentialsProvider(token, ""))
                 .call();
 
-        // Check if there are local changes that could conflict
+        // Check current HEAD and remote HEAD
+        String localRef = repository.resolve("HEAD").getName();
+        String remoteRef = repository.resolve("origin/" + branch).getName();
+        QuestsXL.log("Local HEAD: " + localRef);
+        QuestsXL.log("Remote HEAD: " + remoteRef);
+
+        if (localRef.equals(remoteRef)) {
+            QuestsXL.log("Repository is already up to date");
+            return;
+        }
+
+        // Check if there are local changes
         Status status = git.status().call();
         if (!status.isClean()) {
-            QuestsXL.log("Local changes detected. Resetting to prioritize remote changes...");
-            // Reset hard to remote state (GitHub is source of truth)
-            git.reset()
-                    .setMode(ResetCommand.ResetType.HARD)
-                    .setRef("origin/" + branch)
-                    .call();
-        } else {
-            // Clean pull
-            PullResult pullResult = git.pull()
-                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider(token, ""))
-                    .setRemoteBranchName(branch)
-                    .setStrategy(MergeStrategy.OURS) // Prefer remote changes
-                    .call();
+            QuestsXL.log("Local changes detected. Backing up server-modifiable files...");
 
-            MergeResult mergeResult = pullResult.getMergeResult();
-            if (mergeResult != null) {
-                QuestsXL.log("Pull result: " + mergeResult.getMergeStatus());
+            // Backup server-modifiable files before any git operations
+            backupServerModifiableFiles();
 
-                if (!mergeResult.getMergeStatus().isSuccessful()) {
-                    QuestsXL.log("Merge conflicts detected. Resolving by preferring remote...");
-                    git.reset()
-                            .setMode(ResetCommand.ResetType.HARD)
-                            .setRef("origin/" + branch)
-                            .call();
-                }
+            // Stash all changes temporarily
+            try {
+                git.stashCreate().setIndexMessage("Auto-stash before sync").call();
+                QuestsXL.log("Local changes stashed");
+            } catch (Exception e) {
+                QuestsXL.log("Could not stash changes: " + e.getMessage());
             }
+        }
+
+        // Now do a clean pull to get remote changes
+        QuestsXL.log("Performing clean pull from remote...");
+        PullResult pullResult = git.pull()
+                .setCredentialsProvider(new UsernamePasswordCredentialsProvider(token, ""))
+                .setRemoteBranchName(branch)
+                .setStrategy(MergeStrategy.THEIRS) // Prefer remote changes for conflicts
+                .call();
+
+        MergeResult mergeResult = pullResult.getMergeResult();
+        if (mergeResult != null) {
+            QuestsXL.log("Pull result: " + mergeResult.getMergeStatus());
+
+            if (!mergeResult.getMergeStatus().isSuccessful()) {
+                QuestsXL.log("Merge conflicts detected. Resolving conflicts...");
+                // If there are still conflicts after using THEIRS strategy, force reset
+                git.reset()
+                        .setMode(ResetCommand.ResetType.HARD)
+                        .setRef("origin/" + branch)
+                        .call();
+                QuestsXL.log("Forced reset to remote state to resolve conflicts");
+            }
+        }
+
+        // Restore server-modifiable files from backup
+        if (!status.isClean()) {
+            QuestsXL.log("Restoring server-modifiable files from backup...");
+            restoreServerModifiableFiles();
+        }
+
+        // Verify the update worked
+        String newLocalRef = repository.resolve("HEAD").getName();
+        QuestsXL.log("New local HEAD: " + newLocalRef);
+        if (newLocalRef.equals(remoteRef)) {
+            QuestsXL.log("Successfully updated to remote changes");
+        } else {
+            QuestsXL.log("Warning: Local HEAD still doesn't match remote HEAD");
         }
     }
 
@@ -265,13 +365,7 @@ public class GitSync {
             File targetFolder = new File(pluginsFolder, folderName);
 
             if (sourceFolder.exists()) {
-                // Ensure target directory exists
-                if (!targetFolder.mkdirs() && !targetFolder.exists()) {
-                    QuestsXL.log("Warning: Could not create target directory: " + targetFolder.getAbsolutePath());
-                }
-
-                // Copy with exclusions
-                FileUtil.copyDir(sourceFolder, targetFolder, EXCLUSIONS.toArray(new String[0]));
+                copyDirWithExclusions(sourceFolder, targetFolder, EXCLUSIONS);
                 QuestsXL.log("Copied " + folderName + " from repository to plugins");
             }
         }
@@ -285,7 +379,7 @@ public class GitSync {
             File targetFolder = new File(repoFolder, folderName);
 
             if (sourceFolder.exists()) {
-                FileUtil.copyDir(sourceFolder, targetFolder, EXCLUSIONS.toArray(new String[0]));
+                copyDirWithExclusions(sourceFolder, targetFolder, EXCLUSIONS);
             }
         }
     }
@@ -330,7 +424,6 @@ public class GitSync {
     }
 
     private boolean pathMatches(String path, String pattern) {
-        // Simple pattern matching for now - can be enhanced with proper glob matching
         pattern = pattern.replace("**", ".*").replace("*", "[^/]*");
         return path.matches(".*" + pattern + ".*");
     }
@@ -349,14 +442,6 @@ public class GitSync {
         QuestsXL.log("Changes committed: " + message);
     }
 
-    private void pushToRemote() throws GitAPIException {
-        String token = plugin.getGitToken();
-        git.push()
-                .setCredentialsProvider(new UsernamePasswordCredentialsProvider(token, ""))
-                .call();
-        QuestsXL.log("Changes pushed to remote");
-    }
-
     private void pushToRemote(boolean force) throws GitAPIException {
         String token = plugin.getGitToken();
         git.push()
@@ -368,6 +453,53 @@ public class GitSync {
 
     private String getCurrentTimestamp() {
         return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    }
+
+    /**
+     * Custom directory copy method that properly handles exclusions for subdirectories
+     */
+    private void copyDirWithExclusions(File source, File target, List<String> exclusions) throws IOException {
+        if (!source.exists()) {
+            return;
+        }
+
+        if (!target.exists() && !target.mkdirs()) {
+            QuestsXL.log("Warning: Could not create target directory: " + target.getAbsolutePath());
+            return;
+        }
+
+        File[] files = source.listFiles();
+        if (files == null) {
+            return;
+        }
+
+        for (File file : files) {
+            String fileName = file.getName();
+
+            // Check if this file/directory should be excluded
+            boolean shouldExclude = exclusions.stream().anyMatch(exclusion ->
+                fileName.equals(exclusion) || fileName.contains(exclusion)
+            );
+
+            if (shouldExclude) {
+                QuestsXL.log("Excluding: " + file.getAbsolutePath());
+                continue;
+            }
+
+            File targetFile = new File(target, fileName);
+
+            if (file.isDirectory()) {
+                // Recursively copy directory
+                copyDirWithExclusions(file, targetFile, exclusions);
+            } else {
+                // Copy file
+                try {
+                    Files.copy(file.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    QuestsXL.log("Failed to copy file: " + file.getAbsolutePath() + " - " + e.getMessage());
+                }
+            }
+        }
     }
 
     /**

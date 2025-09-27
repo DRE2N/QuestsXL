@@ -20,7 +20,7 @@ public class QMessageHandler extends MiniMessageTranslator {
     GlobalTranslator globalTranslator = GlobalTranslator.translator();
 
     public QMessageHandler() {
-        this.translatorKey = Key.key("qxl");
+        this.translatorKey = Key.key("qxl", "main");
         globalTranslator.addSource(this);
     }
 

@@ -9,23 +9,36 @@ import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.region.QRegion;
 import de.erethon.questsxl.region.QRegionManager;
 import de.erethon.questsxl.region.RegionFlag;
+import de.erethon.questsxl.respawn.RespawnPoint;
 import io.netty.channel.ChannelPipeline;
 import io.papermc.paper.event.player.AsyncChatEvent;
+import net.kyori.adventure.text.Component;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class PlayerListener extends AbstractListener {
 
     QuestsXL plugin = QuestsXL.get();
     QRegionManager regionManager = plugin.getRegionManager();
+
+    // Store death locations temporarily for respawn calculation
+    private final Map<UUID, Location> deathLocations = new HashMap<>();
 
     @EventHandler
     public void onLogin(PlayerJoinEvent event) {
@@ -45,6 +58,9 @@ public class PlayerListener extends AbstractListener {
         for (QEvent qEvent : plugin.getEventManager().getEvents()) {
             qEvent.removePlayerOnDisconnect(player);
         }
+
+        // Clean up stored death location to prevent memory leaks
+        deathLocations.remove(event.getPlayer().getUniqueId());
     }
 
     @EventHandler
@@ -79,6 +95,9 @@ public class PlayerListener extends AbstractListener {
                 plugin.getAutoTrackingManager().triggerImmediateUpdate(qp);
             }
         }
+
+        // Check for proximity-based explorable discoveries on every move
+        qp.getExplorer().checkProximityDiscoveries();
     }
 
     @EventHandler
@@ -126,4 +145,42 @@ public class PlayerListener extends AbstractListener {
         return region.hasPublicFlag(flag);
     }
 
+    @EventHandler
+    public void onDeath(PlayerDeathEvent event) {
+        QPlayer qPlayer = databaseManager.getCurrentPlayer(event.getPlayer());
+        if (qPlayer == null) {
+            return; // Player likely in char selection
+        }
+
+        deathLocations.put(event.getPlayer().getUniqueId(), event.getPlayer().getLocation().clone());
+
+        for (QEvent qEvent : plugin.getEventManager().getEvents()) {
+            qEvent.removePlayerOnDisconnect(qPlayer);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onRespawn(PlayerRespawnEvent event) {
+        QPlayer qPlayer = databaseManager.getCurrentPlayer(event.getPlayer());
+        if (qPlayer == null) {
+            return; // Player likely in char selection
+        }
+
+        Location deathLocation = deathLocations.remove(event.getPlayer().getUniqueId());
+        if (deathLocation == null) {
+            deathLocation = event.getPlayer().getLocation();
+        }
+
+        RespawnPoint bestRespawnPoint = plugin.getRespawnPointManager().getBestRespawnPoint(qPlayer, deathLocation);
+
+        if (bestRespawnPoint != null) {
+            event.setRespawnLocation(bestRespawnPoint.getLocation());
+
+            qPlayer.getExplorer().setLastRespawnPoint(bestRespawnPoint.getId());
+            bestRespawnPoint.setLastUsed();
+
+            qPlayer.sendMessage(Component.translatable("qxl.respawn.location",
+                bestRespawnPoint.getDisplayName().get()));
+        }
+    }
 }

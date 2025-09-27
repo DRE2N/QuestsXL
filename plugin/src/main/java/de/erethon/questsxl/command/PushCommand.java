@@ -10,7 +10,7 @@ public class PushCommand extends ECommand {
     public PushCommand() {
         setCommand("push");
         setMinArgs(0);
-        setMaxArgs(1);
+        setMaxArgs(2);
         setPlayerCommand(true);
         setConsoleCommand(true);
         setHelp("Push server-modified files to GitHub repository. Usage: /q push [force]");
@@ -19,7 +19,7 @@ public class PushCommand extends ECommand {
 
     @Override
     public void onExecute(String[] args, CommandSender commandSender) {
-        boolean force = args.length > 0 && args[0].equalsIgnoreCase("force");
+        boolean force = args.length > 1 && args[1].equalsIgnoreCase("force");
 
         if (force) {
             MessageUtil.sendMessage(commandSender, "&cForce pushing server changes to GitHub...");

@@ -92,6 +92,42 @@ public class RespawnPointManager implements Listener {
         return explorableRespawnPoints.get(id);
     }
 
+    /**
+     * Gets the best respawn point for a player based on their death location.
+     * Rules:
+     * 1. If the last used respawn point has UseMode.LAST, use that
+     * 2. Otherwise, use the nearest unlocked respawn point to the death location
+     *
+     * @param qPlayer        The player who died
+     * @param deathLocation The location where the player died
+     * @return The best respawn point, or null if no unlocked respawn points are available
+     */
+    public RespawnPoint getBestRespawnPoint(de.erethon.questsxl.player.QPlayer qPlayer, org.bukkit.Location deathLocation) {
+        RespawnPoint lastUsed = qPlayer.getExplorer().getLastRespawnPoint();
+        if (lastUsed != null && lastUsed.getUseMode() == UseMode.LAST &&
+                qPlayer.getExplorer().isRespawnPointUnlocked(lastUsed) &&
+                lastUsed.canRespawn(qPlayer)) {
+            return lastUsed;
+        }
+
+        RespawnPoint nearestRespawnPoint = null;
+        double nearestDistance = Double.MAX_VALUE;
+
+        for (RespawnPoint respawnPoint : points) {
+            if (!qPlayer.getExplorer().isRespawnPointUnlocked(respawnPoint) || !respawnPoint.canRespawn(qPlayer)) {
+                continue;
+            }
+
+            double distance = deathLocation.distance(respawnPoint.getLocation());
+            if (distance < nearestDistance) {
+                nearestDistance = distance;
+                nearestRespawnPoint = respawnPoint;
+            }
+        }
+
+        return nearestRespawnPoint;
+    }
+
     // We need to register NEAR points as explorable respawn points
     private void updateExplorationIntegration() {
         for (ExplorableRespawnPoint explorable : explorableRespawnPoints.values()) {

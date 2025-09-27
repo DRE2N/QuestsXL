@@ -35,6 +35,7 @@ public class RespawnPoint {
         Location l = location.clone();
         l.setPitch(0);
         l.setYaw(0);
+        l.add(0, 1.5f, 0);
         this.location = l;
     }
 
@@ -44,7 +45,7 @@ public class RespawnPoint {
 
     public boolean canRespawn(QPlayer qPlayer) {
         long now = System.currentTimeMillis();
-        if (cooldown != 0 && lastUsed + cooldown < now) {
+        if (cooldown != 0 && lastUsed + cooldown > now) {
             return false;
         }
         if (respawnPointUnlockMode == RespawnPointUnlockMode.QUEST && useQuest != null) {
@@ -110,8 +111,11 @@ public class RespawnPoint {
         configuration.set("location", location);
         configuration.set("displayName", displayName.toString());
         configuration.set("cooldown", cooldown);
-        configuration.set("unlockMode", respawnPointUnlockMode);
-        configuration.set("useMode", useMode);
+        configuration.set("unlockMode", respawnPointUnlockMode.name());
+        if (useMode == null) {
+            useMode = UseMode.NEAREST;
+        }
+        configuration.set("useMode", useMode.name());
         configuration.set("quest", useQuest);
         return configuration;
     }

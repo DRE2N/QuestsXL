@@ -193,7 +193,7 @@ public class ExplorationGUI implements InventoryHolder, Listener {
         } else if (explorable instanceof LootChest) {
             return Material.CHEST;
         } else if (explorable instanceof ExplorableRespawnPoint) {
-            return Material.RESPAWN_ANCHOR;
+            return Material.BEACON;
         }
         return Material.COMPASS;
     }

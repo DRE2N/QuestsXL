@@ -37,14 +37,6 @@ public class ExplorableRespawnPointVFXManager {
     }
 
     /**
-     * Unregisters a respawn point from visual effects updates
-     */
-    public void unregister(ExplorableRespawnPoint point) {
-        registeredPoints.remove(point);
-        point.cleanupVFX(); // Clean up any existing displays
-    }
-
-    /**
      * Gets the time when the VFX system started (for animations)
      */
     public long getStartTime() {
@@ -84,21 +76,4 @@ public class ExplorableRespawnPointVFXManager {
         }
     }
 
-    /**
-     * Shuts down the VFX manager and cleans up all resources
-     */
-    public void shutdown() {
-        if (vfxTask != null) {
-            vfxTask.cancel();
-            vfxTask = null;
-        }
-
-        // Clean up all registered points
-        for (ExplorableRespawnPoint point : registeredPoints) {
-            point.cleanupVFX();
-        }
-        registeredPoints.clear();
-
-        instance = null;
-    }
 }

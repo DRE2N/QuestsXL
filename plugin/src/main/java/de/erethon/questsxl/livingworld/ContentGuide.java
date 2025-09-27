@@ -65,8 +65,8 @@ public class ContentGuide {
         QuestsXL plugin = QuestsXL.get();
         Location playerLoc = player.getPlayer().getLocation();
         for (ExplorableRespawnPoint respawnPoint : plugin.getExploration().getExplorableRespawnPoints()) {
-            // Check if this respawn point is visible and not yet explored
-            if (respawnPoint.isVisibleTo(player) && !explorer.hasExplored(respawnPoint)) {
+            // Check if this respawn point is visible and not yet unlocked
+            if (respawnPoint.isVisibleTo(player) && !respawnPoint.isUnlockedFor(player)) {
                 double dist = Math.sqrt(respawnPoint.location().distanceSquared(playerLoc));
                 if (dist < closestDistance && dist <= MAX_DISTANCE_FOR_HINT) {
                     closest = respawnPoint;
@@ -78,7 +78,7 @@ public class ContentGuide {
         // Update distance for the chosen closest explorable
         distance = closestDistance;
 
-        if (closest == null || distance > MAX_DISTANCE_FOR_HINT) {
+        if (closest == null || closestDistance > MAX_DISTANCE_FOR_HINT) {
             player.setContentGuideText(null); // Clear the content guide text when no explorable is nearby
             return;
         }
