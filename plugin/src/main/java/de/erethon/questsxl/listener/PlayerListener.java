@@ -61,6 +61,7 @@ public class PlayerListener extends AbstractListener {
 
         // Clean up stored death location to prevent memory leaks
         deathLocations.remove(event.getPlayer().getUniqueId());
+        player.saveToDatabase();
     }
 
     @EventHandler

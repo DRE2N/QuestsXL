@@ -6,7 +6,6 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.livingworld.CompletedExplorable;
 import de.erethon.questsxl.livingworld.Explorable;
 import de.erethon.questsxl.livingworld.ExplorationSet;
-import de.erethon.questsxl.livingworld.explorables.ExplorableRespawnPoint;
 import de.erethon.questsxl.respawn.RespawnPoint;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.ActiveQuest;
@@ -151,10 +150,10 @@ public class AdminCommand extends ECommand {
 
                 boolean success = qPlayer.getExplorer().completeExplorable(explorationSet, explorable, System.currentTimeMillis());
                 if (success) {
-                    MessageUtil.sendMessage(player, "&7Spieler &6" + targetPlayer.getName() + " &7hat jetzt &6" + explorable.displayName().get() + " &7erkundet.");
-                    MessageUtil.sendMessage(targetPlayer, "&7Ein Admin hat dir &6" + explorable.displayName().get() + " &7als erkundet markiert.");
+                    MessageUtil.sendMessage(player, "&7Spieler &6" + targetPlayer.getName() + " &7hat jetzt &6" + explorable.displayName().getAsString() + " &7erkundet.");
+                    MessageUtil.sendMessage(targetPlayer, "&7Ein Admin hat dir &6" + explorable.displayName().getAsString() + " &7als erkundet markiert.");
                 } else {
-                    MessageUtil.sendMessage(player, QuestsXL.ERROR + "Spieler hat bereits &6" + explorable.displayName().get() + " &7erkundet.");
+                    MessageUtil.sendMessage(player, QuestsXL.ERROR + "Spieler hat bereits &6" + explorable.displayName().getAsString() + " &7erkundet.");
                 }
             } else {
                 // All explorables in set
@@ -205,14 +204,18 @@ public class AdminCommand extends ECommand {
 
                 boolean success = removeExplorableFromPlayer(qPlayer, explorationSet, explorable);
                 if (success) {
-                    MessageUtil.sendMessage(player, "&7Spieler &6" + targetPlayer.getName() + " &7hat &6" + explorable.displayName().get() + " &7als unerkundet markiert.");
-                    MessageUtil.sendMessage(targetPlayer, "&7Ein Admin hat &6" + explorable.displayName().get() + " &7als unerkundet markiert.");
+                    qPlayer.saveToDatabase();
+                    MessageUtil.sendMessage(player, "&7Spieler &6" + targetPlayer.getName() + " &7hat &6" + explorable.displayName().getAsString() + " &7als unerkundet markiert.");
+                    MessageUtil.sendMessage(targetPlayer, "&7Ein Admin hat &6" + explorable.displayName().getAsString() + " &7als unerkundet markiert.");
                 } else {
-                    MessageUtil.sendMessage(player, QuestsXL.ERROR + "Spieler hatte &6" + explorable.displayName().get() + " &7noch nicht erkundet.");
+                    MessageUtil.sendMessage(player, QuestsXL.ERROR + "Spieler hatte &6" + explorable.displayName().getAsString() + " &7noch nicht erkundet.");
                 }
             } else {
-                // All explorables in set
                 int removed = removeAllExplorablesFromSet(qPlayer, explorationSet);
+                // Save to database immediately to ensure persistence
+                if (removed > 0) {
+                    qPlayer.saveToDatabase();
+                }
                 MessageUtil.sendMessage(player, "&7Spieler &6" + targetPlayer.getName() + " &7hat &6" + removed + " &7Explorables in Set '" + setId + "' als unerkundet markiert.");
                 if (removed > 0) {
                     MessageUtil.sendMessage(targetPlayer, "&7Ein Admin hat &6" + removed + " &7Explorables in Set '" + setId + "' als unerkundet markiert.");
@@ -237,38 +240,31 @@ public class AdminCommand extends ECommand {
             }
 
             String respawnId = args[3];
-
-            // First try to find it as an explorable respawn point
-            ExplorableRespawnPoint explorableRespawnPoint = plugin.getExploration().getExplorableRespawnPoint(respawnId);
-            if (explorableRespawnPoint != null) {
-                ExplorationSet set = explorableRespawnPoint.getSet();
-                if (set != null) {
-                    // If it's part of a set, use the normal exploration system
-                    boolean success = qPlayer.getExplorer().completeExplorable(set, explorableRespawnPoint, System.currentTimeMillis());
-                    if (success) {
-                        MessageUtil.sendMessage(player, "&7Spieler &6" + targetPlayer.getName() + " &7hat jetzt Respawn Point &6" + explorableRespawnPoint.displayName().get() + " &7freigeschaltet.");
-                        MessageUtil.sendMessage(targetPlayer, "&7Ein Admin hat dir Respawn Point &6" + explorableRespawnPoint.displayName().get() + " &7freigeschaltet.");
-                    } else {
-                        MessageUtil.sendMessage(player, QuestsXL.ERROR + "Spieler hat bereits Respawn Point &6" + explorableRespawnPoint.displayName().get() + " &7freigeschaltet.");
-                    }
-                    return;
-                }
-            }
-
-            // If not found as explorable, try as standalone respawn point
             RespawnPoint respawnPoint = plugin.getRespawnPointManager().getRespawnPoint(respawnId);
             if (respawnPoint == null) {
                 MessageUtil.sendMessage(player, QuestsXL.ERROR + "Respawn Point '" + respawnId + "' nicht gefunden.");
                 return;
             }
 
-            // Handle standalone respawn point
-            boolean success = qPlayer.getExplorer().unlockStandaloneRespawnPoint(respawnId);
-            if (success) {
-                MessageUtil.sendMessage(player, "&7Spieler &6" + targetPlayer.getName() + " &7hat jetzt Respawn Point &6" + respawnPoint.getDisplayName().get() + " &7freigeschaltet.");
-                MessageUtil.sendMessage(targetPlayer, "&7Ein Admin hat dir Respawn Point &6" + respawnPoint.getDisplayName().get() + " &7freigeschaltet.");
+            // Handle unlocking based on whether it's part of an exploration set or standalone
+            ExplorationSet set = plugin.getExploration().getSetContaining(respawnPoint);
+            boolean success;
+
+            if (set != null) {
+                // Part of an exploration set - unlock through the exploration system
+                success = qPlayer.getExplorer().completeExplorable(set, respawnPoint, System.currentTimeMillis());
             } else {
-                MessageUtil.sendMessage(player, QuestsXL.ERROR + "Spieler hat bereits Respawn Point &6" + respawnPoint.getDisplayName().get() + " &7freigeschaltet.");
+                // Standalone explorable - unlock directly
+                success = qPlayer.getExplorer().completeStandaloneExplorable(respawnPoint, System.currentTimeMillis());
+            }
+
+            if (success) {
+                // Save to database immediately to ensure persistence
+                qPlayer.saveToDatabase();
+                MessageUtil.sendMessage(player, "&7Spieler &6" + targetPlayer.getName() + " &7hat jetzt Respawn Point &6" + respawnPoint.displayName().getAsString() + " &7freigeschaltet.");
+                MessageUtil.sendMessage(targetPlayer, "&7Ein Admin hat dir Respawn Point &6" + respawnPoint.displayName().getAsString() + " &7freigeschaltet.");
+            } else {
+                MessageUtil.sendMessage(player, QuestsXL.ERROR + "Spieler hat bereits Respawn Point &6" + respawnPoint.displayName().getAsString() + " &7freigeschaltet.");
             }
             return;
         }
@@ -289,37 +285,31 @@ public class AdminCommand extends ECommand {
             }
 
             String respawnId = args[3];
-
-            // First try to find it as an explorable respawn point
-            ExplorableRespawnPoint explorableRespawnPoint = plugin.getExploration().getExplorableRespawnPoint(respawnId);
-            if (explorableRespawnPoint != null) {
-                ExplorationSet set = explorableRespawnPoint.getSet();
-                if (set != null) {
-                    boolean success = removeExplorableFromPlayer(qPlayer, set, explorableRespawnPoint);
-                    if (success) {
-                        MessageUtil.sendMessage(player, "&7Spieler &6" + targetPlayer.getName() + " &7hat Respawn Point &6" + explorableRespawnPoint.displayName().get() + " &7gesperrt.");
-                        MessageUtil.sendMessage(targetPlayer, "&7Ein Admin hat Respawn Point &6" + explorableRespawnPoint.displayName().get() + " &7gesperrt.");
-                    } else {
-                        MessageUtil.sendMessage(player, QuestsXL.ERROR + "Spieler hatte Respawn Point &6" + explorableRespawnPoint.displayName().get() + " &7noch nicht freigeschaltet.");
-                    }
-                    return;
-                }
-            }
-
-            // If not found as explorable, try as standalone respawn point
             RespawnPoint respawnPoint = plugin.getRespawnPointManager().getRespawnPoint(respawnId);
             if (respawnPoint == null) {
                 MessageUtil.sendMessage(player, QuestsXL.ERROR + "Respawn Point '" + respawnId + "' nicht gefunden.");
                 return;
             }
 
-            // Handle standalone respawn point
-            boolean success = qPlayer.getExplorer().lockStandaloneRespawnPoint(respawnId);
-            if (success) {
-                MessageUtil.sendMessage(player, "&7Spieler &6" + targetPlayer.getName() + " &7hat Respawn Point &6" + respawnPoint.getDisplayName().get() + " &7gesperrt.");
-                MessageUtil.sendMessage(targetPlayer, "&7Ein Admin hat Respawn Point &6" + respawnPoint.getDisplayName().get() + " &7gesperrt.");
+            // Handle locking based on whether it's part of an exploration set or standalone
+            ExplorationSet set = plugin.getExploration().getSetContaining(respawnPoint);
+            boolean success;
+
+            if (set != null) {
+                // Part of an exploration set - remove through the exploration system
+                success = removeExplorableFromPlayer(qPlayer, set, respawnPoint);
             } else {
-                MessageUtil.sendMessage(player, QuestsXL.ERROR + "Spieler hatte Respawn Point &6" + respawnPoint.getDisplayName().get() + " &7noch nicht freigeschaltet.");
+                // Standalone explorable - remove directly
+                success = removeStandaloneExplorableFromPlayer(qPlayer, respawnPoint);
+            }
+
+            if (success) {
+                // Save to database immediately to ensure persistence
+                qPlayer.saveToDatabase();
+                MessageUtil.sendMessage(player, "&7Spieler &6" + targetPlayer.getName() + " &7hat Respawn Point &6" + respawnPoint.displayName().getAsString() + " &7gesperrt.");
+                MessageUtil.sendMessage(targetPlayer, "&7Ein Admin hat Respawn Point &6" + respawnPoint.displayName().getAsString() + " &7gesperrt.");
+            } else {
+                MessageUtil.sendMessage(player, QuestsXL.ERROR + "Spieler hatte Respawn Point &6" + respawnPoint.displayName().getAsString() + " &7noch nicht freigeschaltet.");
             }
             return;
         }
@@ -358,6 +348,26 @@ public class AdminCommand extends ECommand {
         int removed = completed.size();
         completed.clear();
         return removed;
+    }
+
+    /**
+     * Removes a standalone explorable from a player's completed standalone explorables
+     */
+    private boolean removeStandaloneExplorableFromPlayer(QPlayer qPlayer, Explorable explorable) {
+        Set<CompletedExplorable> completed = qPlayer.getExplorer().getCompletedStandaloneExplorables();
+        if (completed == null) {
+            return false;
+        }
+
+        Iterator<CompletedExplorable> iterator = completed.iterator();
+        while (iterator.hasNext()) {
+            CompletedExplorable completedExplorable = iterator.next();
+            if (completedExplorable.explorable().id().equals(explorable.id())) {
+                iterator.remove();
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -422,9 +432,6 @@ public class AdminCommand extends ECommand {
         if (args.length == 4 && (args[1].equalsIgnoreCase("unlock") || args[1].equalsIgnoreCase("ul") ||
                 args[1].equalsIgnoreCase("lock") || args[1].equalsIgnoreCase("lk"))) {
             List<String> allRespawnIds = new java.util.ArrayList<>();
-
-            // Add explorable respawn point IDs
-            allRespawnIds.addAll(plugin.getExploration().getExplorableRespawnPointIDs());
 
             // Add all respawn point IDs from RespawnPointManager
             allRespawnIds.addAll(plugin.getRespawnPointManager().getRespawnPoints().stream()

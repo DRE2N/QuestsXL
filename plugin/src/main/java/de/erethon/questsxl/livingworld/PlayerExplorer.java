@@ -1,9 +1,9 @@
 package de.erethon.questsxl.livingworld;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.player.QPlayer;
-import de.erethon.questsxl.livingworld.explorables.ExplorableRespawnPoint;
 import de.erethon.questsxl.livingworld.explorables.PointOfInterest;
 import de.erethon.questsxl.respawn.RespawnPoint;
 import net.kyori.adventure.text.Component;
@@ -26,11 +26,13 @@ public class PlayerExplorer {
 
     private QPlayer qPlayer;
     private Map<ExplorationSet, Set<CompletedExplorable>> completedExplorables = new HashMap<>();
-    private Set<String> unlockedStandaloneRespawnPoints = new HashSet<>(); // For standalone respawn points
     private String lastRespawnPointId; // Store the ID of the last respawn point used
     private String nearestRespawnPointId; // Store the ID of the nearest respawn point
     private ExplorationSet currentClosestSet;
     private ContentGuide contentGuide;
+
+    // Track standalone explorables completion
+    private final Set<CompletedExplorable> completedStandaloneExplorables = new HashSet<>();
 
     public PlayerExplorer(QPlayer qPlayer) {
         this.qPlayer = qPlayer;
@@ -45,14 +47,16 @@ public class PlayerExplorer {
      */
     public boolean completeExplorable(ExplorationSet set, Explorable explorable, long timestamp) {
         Set<CompletedExplorable> explorableSet = completedExplorables.computeIfAbsent(set, k -> new HashSet<>());
-        if (explorableSet.stream().anyMatch(e -> e.explorable().equals(explorable))) {
+        if (explorableSet.stream().anyMatch(e -> e.explorable().id().equals(explorable.id()))) {
             return false;
         }
         CompletedExplorable completed = new CompletedExplorable(set, explorable, timestamp);
         explorableSet.add(completed);
 
+        qPlayer.sendMessage(MiniMessage.miniMessage().deserialize("<dark_purple><strikethrough>          </strikethrough> <dark_gray>[<#edcc4b>❄<dark_gray>]<#edcc4b> <dark_purple><strikethrough>          </strikethrough>"));
+        qPlayer.sendMessage(Component.text(" "));
         // Send unlock message based on explorable type
-        if (explorable instanceof ExplorableRespawnPoint respawnPoint) {
+        if (explorable instanceof RespawnPoint respawnPoint) {
             qPlayer.sendMessage(Component.translatable("qxl.explorable.respawn.unlocked",
                 respawnPoint.displayName().get()));
         } else if (explorable instanceof PointOfInterest poi) {
@@ -62,8 +66,10 @@ public class PlayerExplorer {
             qPlayer.sendMessage(Component.translatable("qxl.explorable.discovered",
                 explorable.displayName().get()));
         }
+        qPlayer.sendMessage(explorable.description().get());
 
-        set.checkCompletion(qPlayer); // Check if the set is now fully completed
+        set.checkCompletion(qPlayer);
+        qPlayer.saveToDatabase(); // Always save to database to ensure persistence
         return true;
     }
 
@@ -96,7 +102,8 @@ public class PlayerExplorer {
         Component header = mm.deserialize("<gradient:blue:purple> " + completed + "/" + total + " </gradient>");
         qPlayer.sendMessage(header);
         for (Explorable explorable : set.entries()) {
-            boolean done = list.stream().anyMatch(e -> e.explorable().equals(explorable));
+            // Use ID-based comparison for consistency
+            boolean done = list.stream().anyMatch(e -> e.explorable().id().equals(explorable.id()));
             if (done) {
                 qPlayer.sendMessage(mm.deserialize("<dark_gray> - <explorable>", Placeholder.component("explorable", explorable.displayName().get())));
             }
@@ -116,11 +123,18 @@ public class PlayerExplorer {
     }
 
     public boolean hasExplored(Explorable explorable) {
+        // Check in exploration sets
         for (Set<CompletedExplorable> explorableSet : completedExplorables.values()) {
-            if (explorableSet.stream().anyMatch(e -> e.explorable().equals(explorable))) {
+            if (explorableSet.stream().anyMatch(e -> e.explorable().id().equals(explorable.id()))) {
                 return true;
             }
         }
+
+        // Check in standalone explorables
+        if (hasStandaloneExplorable(explorable)) {
+            return true;
+        }
+
         return false;
     }
 
@@ -157,40 +171,37 @@ public class PlayerExplorer {
      * This method should be called when the player moves to check for proximity-based discoveries.
      */
     public void checkProximityDiscoveries() {
-        // Check respawn points with NEAR unlock mode
-        for (ExplorableRespawnPoint respawnPoint : plugin.getExploration().getExplorableRespawnPoints()) {
-            if (respawnPoint.getRespawnPoint().getUnlockMode() != de.erethon.questsxl.respawn.RespawnPointUnlockMode.NEAR) {
-                continue;
-            }
+        // Check all explorables (including respawn points that implement Explorable directly)
+        for (Explorable explorable : plugin.getExploration().getAllExplorables()) {
+            // Check if this is a respawn point with NEAR unlock mode
+            if (explorable instanceof de.erethon.questsxl.respawn.RespawnPoint respawnPoint) {
+                if (respawnPoint.getUnlockMode() != de.erethon.questsxl.respawn.RespawnPointUnlockMode.NEAR) {
+                    continue;
+                }
 
-            if (!respawnPoint.isVisibleTo(qPlayer)) {
-                continue;
-            }
+                if (!respawnPoint.isVisibleTo(qPlayer)) {
+                    continue;
+                }
 
-            // Check if respawn point is already unlocked
-            boolean alreadyUnlocked;
-            ExplorationSet set = findSetForExplorable(respawnPoint);
-            if (set != null) {
-                alreadyUnlocked = hasExplored(respawnPoint);
-            } else {
-                alreadyUnlocked = isStandaloneRespawnPointUnlocked(respawnPoint.getRespawnPoint().getId());
-            }
+                boolean alreadyUnlocked = respawnPoint.isUnlockedFor(qPlayer);
 
-            if (alreadyUnlocked) {
-                continue;
-            }
+                if (alreadyUnlocked) {
+                    continue;
+                }
 
-            double distance = qPlayer.getPlayer().getLocation().distance(respawnPoint.location());
-            if (distance <= 3.0) {
-                if (set != null) {
-                    // Respawn point is part of an exploration set
-                    if (completeExplorable(set, respawnPoint, System.currentTimeMillis())) {
-                        qPlayer.getPlayer().playSound(respawnPoint.location(), org.bukkit.Sound.ENTITY_PLAYER_LEVELUP, 0.66f, 1.5f);
-                    }
-                } else {
-                    // Standalone respawn point - unlock it directly
-                    if (unlockStandaloneRespawnPoint(respawnPoint.getRespawnPoint().getId())) {
-                        qPlayer.getPlayer().playSound(respawnPoint.location(), org.bukkit.Sound.ENTITY_PLAYER_LEVELUP, 0.66f, 1.5f);
+                double distance = qPlayer.getPlayer().getLocation().distance(respawnPoint.location());
+                if (distance <= 3.0) {
+                    ExplorationSet set = plugin.getExploration().getSetContaining(respawnPoint);
+                    if (set != null) {
+                        // Respawn point is part of an exploration set - mark as explored within the set
+                        if (completeExplorable(set, respawnPoint, System.currentTimeMillis())) {
+                            qPlayer.getPlayer().playSound(respawnPoint.location(), org.bukkit.Sound.ENTITY_PLAYER_LEVELUP, 0.66f, 1.5f);
+                        }
+                    } else {
+                        // Standalone respawn point - mark as explored directly
+                        if (completeStandaloneExplorable(respawnPoint, System.currentTimeMillis())) {
+                            qPlayer.getPlayer().playSound(respawnPoint.location(), org.bukkit.Sound.ENTITY_PLAYER_LEVELUP, 0.66f, 1.5f);
+                        }
                     }
                 }
             }
@@ -226,17 +237,21 @@ public class PlayerExplorer {
      * @return true if the respawn point was unlocked, false if it was already unlocked
      */
     public boolean unlockStandaloneRespawnPoint(String respawnPointId) {
-        if (unlockedStandaloneRespawnPoints.contains(respawnPointId)) {
+        RespawnPoint respawnPoint = plugin.getRespawnPointManager().getRespawnPoint(respawnPointId);
+        if (respawnPoint == null) {
             return false;
         }
-        unlockedStandaloneRespawnPoints.add(respawnPointId);
 
-        // Send unlock message
-        RespawnPoint respawnPoint = plugin.getRespawnPointManager().getRespawnPoint(respawnPointId);
-        if (respawnPoint != null) {
-            qPlayer.sendMessage(Component.translatable("qxl.explorable.respawn.unlocked",
-                respawnPoint.getDisplayName().get()));
+        // Check if it's already unlocked
+        if (hasStandaloneExplorable(respawnPoint)) {
+            return false;
         }
+
+        // Add to the completedStandaloneExplorables collection
+        completedStandaloneExplorables.add(new CompletedExplorable(null, respawnPoint, System.currentTimeMillis()));
+
+        qPlayer.sendMessage(Component.translatable("qxl.explorable.respawn.unlocked",
+            respawnPoint.getDisplayName().get()));
 
         // Save to database to ensure persistence across server restarts
         qPlayer.saveToDatabase();
@@ -250,7 +265,15 @@ public class PlayerExplorer {
      * @return true if the respawn point was locked, false if it wasn't unlocked
      */
     public boolean lockStandaloneRespawnPoint(String respawnPointId) {
-        return unlockedStandaloneRespawnPoints.remove(respawnPointId);
+        boolean wasUnlocked = completedStandaloneExplorables.removeIf(completed ->
+            completed.explorable().id().equals(respawnPointId));
+
+        // Save to database if something was actually removed
+        if (wasUnlocked) {
+            qPlayer.saveToDatabase();
+        }
+
+        return wasUnlocked;
     }
 
     /**
@@ -259,7 +282,8 @@ public class PlayerExplorer {
      * @return true if the respawn point is unlocked, false otherwise
      */
     public boolean isStandaloneRespawnPointUnlocked(String respawnPointId) {
-        return unlockedStandaloneRespawnPoints.contains(respawnPointId);
+        return completedStandaloneExplorables.stream()
+            .anyMatch(completed -> completed.explorable().id().equals(respawnPointId));
     }
 
     /**
@@ -268,20 +292,7 @@ public class PlayerExplorer {
      * @return true if the respawn point is unlocked, false otherwise
      */
     public boolean isRespawnPointUnlocked(RespawnPoint respawnPoint) {
-        // First check if it's an explorable respawn point (part of exploration system)
-        ExplorableRespawnPoint explorable = plugin.getRespawnPointManager().getExplorableRespawnPoint(respawnPoint.getId());
-        if (explorable != null) {
-            // Check if it's been explored as part of an exploration set
-            if (hasExplored(explorable)) {
-                return true;
-            }
-            // If it's explorable but not explored via sets, check if it's unlocked as standalone
-            // This handles NEAR mode respawn points that aren't part of exploration sets
-            return isStandaloneRespawnPointUnlocked(respawnPoint.getId());
-        }
-
-        // Otherwise check if it's a standalone respawn point
-        return isStandaloneRespawnPointUnlocked(respawnPoint.getId());
+        return hasExplored(respawnPoint);
     }
 
     /**
@@ -362,13 +373,13 @@ public class PlayerExplorer {
             json.add(set.id(), setJson);
         });
 
-        // Save standalone respawn points
-        if (!unlockedStandaloneRespawnPoints.isEmpty()) {
-            JsonObject standaloneJson = new JsonObject();
-            for (String respawnPointId : unlockedStandaloneRespawnPoints) {
-                standaloneJson.addProperty(respawnPointId, System.currentTimeMillis());
+        // Save standalone explorables
+        if (!completedStandaloneExplorables.isEmpty()) {
+            JsonObject standaloneExplorableJson = new JsonObject();
+            for (CompletedExplorable completed : completedStandaloneExplorables) {
+                standaloneExplorableJson.add(completed.explorable().id(), completed.toJson());
             }
-            json.add("standaloneRespawnPoints", standaloneJson);
+            json.add("standaloneExplorables", standaloneExplorableJson);
         }
 
         // Save last and nearest respawn point IDs
@@ -390,7 +401,8 @@ public class PlayerExplorer {
             String key = e.getKey();
 
             // Skip special keys
-            if (key.equals("standaloneRespawnPoints") || key.equals("lastRespawnPoint") || key.equals("nearestRespawnPoint")) {
+            if (key.equals("standaloneExplorables") || key.equals("standaloneRespawnPoints") ||
+                key.equals("lastRespawnPoint") || key.equals("nearestRespawnPoint")) {
                 return;
             }
 
@@ -404,16 +416,43 @@ public class PlayerExplorer {
                 if (explorable == null) {
                     return;
                 }
-                long timestamp = entry.getValue().getAsLong();
+
+                JsonObject completedJson = entry.getValue().getAsJsonObject();
+                long timestamp = completedJson.get("timestamp").getAsLong();
+
                 explorer.loadExplorable(set, explorable, timestamp);
             });
         });
 
-        // Load standalone respawn points
-        if (json.has("standaloneRespawnPoints")) {
-            JsonObject standaloneJson = json.getAsJsonObject("standaloneRespawnPoints");
-            standaloneJson.entrySet().forEach(entry -> {
-                explorer.unlockedStandaloneRespawnPoints.add(entry.getKey());
+        // Load standalone explorables - handle both old and new key names
+        JsonObject standaloneExplorableJson = null;
+        if (json.has("standaloneExplorables")) {
+            standaloneExplorableJson = json.getAsJsonObject("standaloneExplorables");
+        } else if (json.has("standaloneRespawnPoints")) {
+            // Handle legacy key name
+            standaloneExplorableJson = json.getAsJsonObject("standaloneRespawnPoints");
+        }
+
+        if (standaloneExplorableJson != null) {
+            standaloneExplorableJson.entrySet().forEach(entry -> {
+                String explorableId = entry.getKey();
+                JsonObject completedJson = entry.getValue().getAsJsonObject();
+                long timestamp = completedJson.get("timestamp").getAsLong();
+
+                // First try to find it as a standalone explorable
+                Explorable explorable = explorer.plugin.getExploration().getStandaloneExplorable(explorableId);
+
+                // If not found as standalone explorable, try to find it as a respawn point
+                if (explorable == null) {
+                    RespawnPoint respawnPoint = explorer.plugin.getRespawnPointManager().getRespawnPoint(explorableId);
+                    if (respawnPoint != null) {
+                        explorable = respawnPoint;
+                    }
+                }
+
+                if (explorable != null) {
+                    explorer.completedStandaloneExplorables.add(new CompletedExplorable(null, explorable, timestamp));
+                }
             });
         }
 
@@ -432,5 +471,57 @@ public class PlayerExplorer {
         Set<CompletedExplorable> explorableSet = completedExplorables.computeIfAbsent(set, k -> new HashSet<>());
         CompletedExplorable completed = new CompletedExplorable(set, explorable, timestamp);
         explorableSet.add(completed);
+    }
+
+    /**
+     * Marks a standalone explorable as completed by the player.
+     * @param explorable The explorable that was completed
+     * @param timestamp The time when it was completed
+     * @return true if the explorable was marked as completed, false if it was already completed
+     */
+    public boolean completeStandaloneExplorable(Explorable explorable, long timestamp) {
+        // Check if already explored
+        if (hasStandaloneExplorable(explorable)) {
+            return false;
+        }
+
+        // Add to standalone collection
+        completedStandaloneExplorables.add(new CompletedExplorable(null, explorable, timestamp));
+
+        // Send unlock message
+        qPlayer.sendMessage(MiniMessage.miniMessage().deserialize("<dark_purple><strikethrough>          </strikethrough> <dark_gray>[<#edcc4b>❄<dark_gray>]<#edcc4b> <dark_purple><strikethrough>          </strikethrough>"));
+        qPlayer.sendMessage(Component.text(" "));
+
+        if (explorable instanceof de.erethon.questsxl.respawn.RespawnPoint) {
+            qPlayer.sendMessage(Component.translatable("qxl.explorable.respawn.unlocked",
+                explorable.displayName().get()));
+        } else {
+            qPlayer.sendMessage(Component.translatable("qxl.explorable.discovered",
+                explorable.displayName().get()));
+        }
+
+        if (explorable.description() != null) {
+            qPlayer.sendMessage(explorable.description().get());
+        }
+
+        // Save to database to ensure persistence
+        qPlayer.saveToDatabase();
+
+        return true;
+    }
+
+    /**
+     * Checks if a standalone explorable has been completed
+     */
+    public boolean hasStandaloneExplorable(Explorable explorable) {
+        return completedStandaloneExplorables.stream()
+            .anyMatch(e -> e.explorable().id().equals(explorable.id()));
+    }
+
+    /**
+     * Gets the completed standalone explorables set
+     */
+    public Set<CompletedExplorable> getCompletedStandaloneExplorables() {
+        return completedStandaloneExplorables;
     }
 }

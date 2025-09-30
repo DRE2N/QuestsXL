@@ -49,12 +49,15 @@ public class GitSync {
         "**/lobbies/*.yml",
         // QXL
         "**/regions.yml",
-        "**/respawnPoints.yml"
+        "**/respawnPoints.yml",
+        "**/explorables.yml",
+        "**/explorationSets.yml",
+        "Aergia/**"
     );
 
     // Files to exclude from sync
     private static final List<String> EXCLUSIONS = List.of(
-        "players", "playerdata", "inventories", "backups", "output", "docs", "users", "ips", "debug.txt"
+        "players", "playerdata", "inventories", "skinCache.yml", "backups", "output", "docs", "users", "ips", "debug.txt"
     );
 
     private File tempBackupDir;
@@ -110,9 +113,9 @@ public class GitSync {
                 .call();
         repository = git.getRepository();
 
-        // Initial sync from plugins to repo
-        copyFromPluginsToRepo();
-        commitChanges("Initial sync from server");
+        // Don't immediately sync from plugins to repo - let the remote be the source of truth
+        // The sync() method will handle copying files properly
+        QuestsXL.log("Repository cloned successfully");
     }
 
     /**
@@ -404,6 +407,7 @@ public class GitSync {
             pathStream
                     .filter(Files::isRegularFile)
                     .filter(this::isServerModifiable)
+                    .filter(path -> !shouldExcludePath(path, source)) // Add exclusion check
                     .forEach(sourcePath -> {
                         try {
                             Path relativePath = source.relativize(sourcePath);
@@ -415,6 +419,33 @@ public class GitSync {
                         }
                     });
         }
+    }
+
+    /**
+     * Check if a path should be excluded based on the exclusions list
+     */
+    private boolean shouldExcludePath(Path filePath, Path basePath) {
+        Path relativePath = basePath.relativize(filePath);
+        String pathString = relativePath.toString().replace('\\', '/');
+
+        // Check each path component against exclusions
+        for (String pathComponent : pathString.split("/")) {
+            if (EXCLUSIONS.contains(pathComponent)) {
+                return true;
+            }
+        }
+
+        // Also check if any parent directory matches exclusions
+        Path currentPath = relativePath;
+        while (currentPath != null) {
+            String currentName = currentPath.getFileName() != null ? currentPath.getFileName().toString() : "";
+            if (EXCLUSIONS.contains(currentName)) {
+                return true;
+            }
+            currentPath = currentPath.getParent();
+        }
+
+        return false;
     }
 
     private boolean isServerModifiable(Path filePath) {

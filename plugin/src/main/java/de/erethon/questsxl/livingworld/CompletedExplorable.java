@@ -7,7 +7,9 @@ public record CompletedExplorable(ExplorationSet set, Explorable explorable, lon
 
     public JsonObject toJson() {
         JsonObject json = new JsonObject();
-        json.addProperty("set", set.id());
+        if (set != null) {
+            json.addProperty("set", set.id());
+        }
         json.addProperty("explorable", explorable.id());
         json.addProperty("timestamp", timestamp);
         return json;
@@ -15,8 +17,19 @@ public record CompletedExplorable(ExplorationSet set, Explorable explorable, lon
 
     public static CompletedExplorable fromJson(JsonObject json) {
         Exploration exploration = QuestsXL.get().getExploration();
-        ExplorationSet set = exploration.getSet(json.get("set").getAsString());
-        Explorable explorable = set.getExplorable(json.get("explorable").getAsString());
+        ExplorationSet set = null;
+        if (json.has("set")) {
+            set = exploration.getSet(json.get("set").getAsString());
+        }
+
+        Explorable explorable = null;
+        if (set != null) {
+            explorable = set.getExplorable(json.get("explorable").getAsString());
+        } else {
+            // Try to find as standalone explorable
+            explorable = exploration.getStandaloneExplorable(json.get("explorable").getAsString());
+        }
+
         long timestamp = json.get("timestamp").getAsLong();
         return new CompletedExplorable(set, explorable, timestamp);
     }

@@ -67,103 +67,152 @@ public class QDatabaseManager extends EDatabaseManager {
     protected CompletableFuture<Void> initializeSchema() {
         return CompletableFuture.runAsync(() -> {
             try (var handle = jdbi.open()) {
+                // First, create a schema version table if it doesn't exist
                 handle.execute("""
-                    CREATE TABLE IF NOT EXISTS q_character_active_quests (
-                        character_id UUID NOT NULL,
-                        quest_id VARCHAR(255) NOT NULL,
-                        current_stage INTEGER NOT NULL DEFAULT 0,
-                        started_at BIGINT NOT NULL,
-                        PRIMARY KEY (character_id, quest_id),
-                        FOREIGN KEY (character_id) REFERENCES Characters(character_id) ON DELETE CASCADE
+                    CREATE TABLE IF NOT EXISTS q_schema_version (
+                        version INTEGER NOT NULL,
+                        applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        PRIMARY KEY (version)
                     )
                 """);
+                int currentVersion = handle.createQuery("SELECT COALESCE(MAX(version), 0) FROM q_schema_version")
+                    .mapTo(Integer.class)
+                    .findOne()
+                    .orElse(0);
 
-                // Create completed quests table
-                handle.execute("""
-                    CREATE TABLE IF NOT EXISTS q_character_completed_quests (
-                        character_id UUID NOT NULL,
-                        quest_id VARCHAR(255) NOT NULL,
-                        completed_at BIGINT NOT NULL,
-                        PRIMARY KEY (character_id, quest_id),
-                        FOREIGN KEY (character_id) REFERENCES Characters(character_id) ON DELETE CASCADE
-                    )
-                """);
+                QuestsXL.log("Current database schema version: " + currentVersion);
+                applyMigrations(handle, currentVersion);
 
-                // Create scores table
-                handle.execute("""
-                    CREATE TABLE IF NOT EXISTS q_character_scores (
-                        character_id UUID NOT NULL,
-                        score_name VARCHAR(255) NOT NULL,
-                        score_value INTEGER NOT NULL DEFAULT 0,
-                        PRIMARY KEY (character_id, score_name),
-                        FOREIGN KEY (character_id) REFERENCES Characters(character_id) ON DELETE CASCADE
-                    )
-                """);
-
-                // Create exploration data table
-                handle.execute("""
-                    CREATE TABLE IF NOT EXISTS q_character_exploration (
-                        character_id UUID NOT NULL,
-                        exploration_data TEXT NOT NULL,
-                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        PRIMARY KEY (character_id),
-                        FOREIGN KEY (character_id) REFERENCES Characters(character_id) ON DELETE CASCADE
-                    )
-                """);
-
-                // Create objective progress table for characters
-                handle.execute("""
-                    CREATE TABLE IF NOT EXISTS q_character_objectives (
-                        character_id UUID NOT NULL,
-                        completable_type VARCHAR(50) NOT NULL,
-                        completable_id VARCHAR(255) NOT NULL,
-                        stage_id INTEGER NOT NULL,
-                        objective_id VARCHAR(255) NOT NULL,
-                        objective_type VARCHAR(255) NOT NULL,
-                        progress INTEGER NOT NULL DEFAULT 0,
-                        completed BOOLEAN NOT NULL DEFAULT FALSE,
-                        objective_data TEXT,
-                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        PRIMARY KEY (character_id, completable_type, completable_id, stage_id, objective_id),
-                        FOREIGN KEY (character_id) REFERENCES Characters(character_id) ON DELETE CASCADE
-                    )
-                """);
-
-                // Create objective progress table for events
-                handle.execute("""
-                    CREATE TABLE IF NOT EXISTS q_event_objectives (
-                        event_id VARCHAR(255) NOT NULL,
-                        stage_id INTEGER NOT NULL,
-                        objective_id VARCHAR(255) NOT NULL,
-                        objective_type VARCHAR(255) NOT NULL,
-                        progress INTEGER NOT NULL DEFAULT 0,
-                        completed BOOLEAN NOT NULL DEFAULT FALSE,
-                        objective_data TEXT,
-                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        PRIMARY KEY (event_id, stage_id, objective_id)
-                    )
-                """);
-
-                // Create event state table
-                handle.execute("""
-                    CREATE TABLE IF NOT EXISTS q_event_states (
-                        event_id VARCHAR(255) NOT NULL,
-                        state VARCHAR(50) NOT NULL DEFAULT 'NOT_STARTED',
-                        current_stage_id INTEGER NOT NULL DEFAULT 0,
-                        time_last_completed BIGINT NOT NULL DEFAULT 0,
-                        scores TEXT,
-                        event_participation TEXT,
-                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        PRIMARY KEY (event_id)
-                    )
-                """);
             } catch (Exception e) {
                 QuestsXL.log("Failed to initialize schema: " + e.getMessage());
                 e.printStackTrace();
             }
         }, asyncExecutor);
+    }
+
+    private void applyMigrations(org.jdbi.v3.core.Handle handle, int currentVersion) {
+        if (currentVersion == 0) {
+            boolean hasExistingTables = false;
+            try {
+                var result = handle.createQuery("""
+                    SELECT COUNT(*) FROM information_schema.tables 
+                    WHERE table_name IN ('q_character_active_quests', 'q_character_completed_quests', 'q_character_scores', 'q_character_objectives')
+                    AND table_schema = current_schema()
+                """).mapTo(Integer.class).findOne().orElse(0);
+
+                hasExistingTables = result > 0;
+
+                if (hasExistingTables) {
+                    QuestsXL.log("Detected existing QuestsXL tables. Marking as migrated to avoid conflicts.");
+                    // Mark migration 1 as complete since tables already exist
+                    handle.execute("INSERT INTO q_schema_version (version) VALUES (1)");
+                    currentVersion = 1;
+                }
+            } catch (Exception e) {
+                QuestsXL.log("Could not check for existing tables, proceeding with normal migration: " + e.getMessage());
+            }
+        }
+
+        if (currentVersion < 1) {
+            QuestsXL.log("Applying migration 1: Initial schema");
+            handle.execute("""
+                CREATE TABLE IF NOT EXISTS q_character_active_quests (
+                    character_id UUID NOT NULL,
+                    quest_id VARCHAR(255) NOT NULL,
+                    current_stage INTEGER NOT NULL DEFAULT 0,
+                    started_at BIGINT NOT NULL,
+                    PRIMARY KEY (character_id, quest_id),
+                    FOREIGN KEY (character_id) REFERENCES Characters(character_id) ON DELETE CASCADE
+                )
+            """);
+
+            handle.execute("""
+                CREATE TABLE IF NOT EXISTS q_character_completed_quests (
+                    character_id UUID NOT NULL,
+                    quest_id VARCHAR(255) NOT NULL,
+                    completed_at BIGINT NOT NULL,
+                    PRIMARY KEY (character_id, quest_id),
+                    FOREIGN KEY (character_id) REFERENCES Characters(character_id) ON DELETE CASCADE
+                )
+            """);
+
+            handle.execute("""
+                CREATE TABLE IF NOT EXISTS q_character_scores (
+                    character_id UUID NOT NULL,
+                    score_name VARCHAR(255) NOT NULL,
+                    score_value INTEGER NOT NULL DEFAULT 0,
+                    PRIMARY KEY (character_id, score_name),
+                    FOREIGN KEY (character_id) REFERENCES Characters(character_id) ON DELETE CASCADE
+                )
+            """);
+
+            handle.execute("""
+                CREATE TABLE IF NOT EXISTS q_character_exploration (
+                    character_id UUID NOT NULL,
+                    exploration_data TEXT NOT NULL,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (character_id),
+                    FOREIGN KEY (character_id) REFERENCES Characters(character_id) ON DELETE CASCADE
+                )
+            """);
+
+            handle.execute("""
+                CREATE TABLE IF NOT EXISTS q_character_objectives (
+                    character_id UUID NOT NULL,
+                    completable_type VARCHAR(50) NOT NULL,
+                    completable_id VARCHAR(255) NOT NULL,
+                    stage_id INTEGER NOT NULL,
+                    objective_id VARCHAR(255) NOT NULL,
+                    objective_type VARCHAR(255) NOT NULL,
+                    progress INTEGER NOT NULL DEFAULT 0,
+                    completed BOOLEAN NOT NULL DEFAULT FALSE,
+                    objective_data TEXT,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (character_id, completable_type, completable_id, stage_id, objective_id),
+                    FOREIGN KEY (character_id) REFERENCES Characters(character_id) ON DELETE CASCADE
+                )
+            """);
+
+            handle.execute("INSERT INTO q_schema_version (version) VALUES (1)");
+            QuestsXL.log("Applied migration 1: Initial schema");
+        }
+
+        if (currentVersion < 2) {
+            QuestsXL.log("Applying migration 2: Event tables");
+            handle.execute("""
+                CREATE TABLE IF NOT EXISTS q_event_objectives (
+                    event_id VARCHAR(255) NOT NULL,
+                    stage_id INTEGER NOT NULL,
+                    objective_id VARCHAR(255) NOT NULL,
+                    objective_type VARCHAR(255) NOT NULL,
+                    progress INTEGER NOT NULL DEFAULT 0,
+                    completed BOOLEAN NOT NULL DEFAULT FALSE,
+                    objective_data TEXT,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (event_id, stage_id, objective_id)
+                )
+            """);
+
+            handle.execute("""
+                CREATE TABLE IF NOT EXISTS q_event_states (
+                    event_id VARCHAR(255) NOT NULL,
+                    state VARCHAR(50) NOT NULL DEFAULT 'NOT_STARTED',
+                    current_stage_id INTEGER NOT NULL DEFAULT 0,
+                    time_last_completed BIGINT NOT NULL DEFAULT 0,
+                    scores TEXT,
+                    event_participation TEXT,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (event_id)
+                )
+            """);
+
+            handle.execute("INSERT INTO q_schema_version (version) VALUES (2)");
+            QuestsXL.log("Applied migration 2: Event tables");
+        }
+
+        QuestsXL.log("Database schema is up to date");
     }
 
     @Override
@@ -333,6 +382,7 @@ public class QDatabaseManager extends EDatabaseManager {
         return CompletableFuture.runAsync(() -> {
             UUID characterId = getCurrentCharacterId(qPlayer.getPlayer());
             if (characterId == null) {
+                QuestsXL.log("Could not save data for player " + qPlayer.getPlayer().getName() + " - no character selected.");
                 return;
             }
 
@@ -357,6 +407,7 @@ public class QDatabaseManager extends EDatabaseManager {
                 String explorationJson = qPlayer.getExplorer().toJson().toString();
                 playerDao.saveExplorationData(characterId, explorationJson);
             }
+            QuestsXL.log("Saved data for player " + qPlayer.getPlayer().getName() + " (Character ID: " + characterId + ")");
         }, asyncExecutor);
     }
 
@@ -391,13 +442,25 @@ public class QDatabaseManager extends EDatabaseManager {
             }
 
             var explorationData = playerDao.getExplorationData(characterId);
-            if (explorationData.isPresent()) {
+            if (explorationData.isPresent() && !explorationData.get().isEmpty()) {
                 try {
-                    var json = com.google.gson.JsonParser.parseString(explorationData.get()).getAsJsonObject();
-                    qPlayer.setExplorer(PlayerExplorer.fromJson(qPlayer, json));
+                    String jsonString = explorationData.get();
+                    // Additional validation - make sure it's not just "JsonObject" or other invalid content
+                    if (!jsonString.equals("JsonObject") && jsonString.startsWith("{") && jsonString.endsWith("}")) {
+                        var json = com.google.gson.JsonParser.parseString(jsonString).getAsJsonObject();
+                        qPlayer.setExplorer(PlayerExplorer.fromJson(qPlayer, json));
+                    } else {
+                        QuestsXL.log("Invalid exploration data format for character " + characterId + ": " + jsonString);
+                        qPlayer.setExplorer(new PlayerExplorer(qPlayer));
+                    }
                 } catch (Exception e) {
                     QuestsXL.log("Failed to load exploration data for character " + characterId + ": " + e.getMessage());
+                    e.printStackTrace();
+                    qPlayer.setExplorer(new PlayerExplorer(qPlayer)); // Handle gracefully
                 }
+            } else {
+                // No exploration data found or empty - create new PlayerExplorer
+                qPlayer.setExplorer(new PlayerExplorer(qPlayer));
             }
         }, asyncExecutor);
     }
@@ -824,5 +887,9 @@ public class QDatabaseManager extends EDatabaseManager {
         } catch (Exception e) {
             QuestsXL.log("Failed to deserialize event participation: " + e.getMessage());
         }
+    }
+
+    public QPlayerDao getPlayerDao() {
+        return playerDao;
     }
 }

@@ -86,12 +86,29 @@ public class PointOfInterest implements QComponent, Explorable {
     }
 
     @Override
+    public QTranslatable description() {
+        return flavourText;
+    }
+
+    @Override
     public Location location() {
         return location;
     }
 
     public void setSet(ExplorationSet set) {
         this.set = set;
+    }
+
+    public void setDisplayName(QTranslatable displayName) {
+        this.displayName = displayName;
+    }
+
+    public void setFlavourText(QTranslatable flavourText) {
+        this.flavourText = flavourText;
+    }
+
+    public QTranslatable getFlavourText() {
+        return flavourText;
     }
 
     public static PointOfInterest fromQLineConfig(QLineConfig section) {
@@ -121,6 +138,7 @@ public class PointOfInterest implements QComponent, Explorable {
 
     public QLineConfig toQLineConfig() {
         QLineConfig cfg = new QLineConfig();
+        cfg.setName(id); // Set the ID as the name
         try {
             cfg.set("parentSet", set.id());
             cfg.set("displayName", displayName.toString());

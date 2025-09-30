@@ -7,10 +7,10 @@ import de.erethon.questsxl.livingworld.Explorable;
 import de.erethon.questsxl.livingworld.Exploration;
 import de.erethon.questsxl.livingworld.ExplorationSet;
 import de.erethon.questsxl.livingworld.PlayerExplorer;
-import de.erethon.questsxl.livingworld.explorables.ExplorableRespawnPoint;
 import de.erethon.questsxl.livingworld.explorables.LootChest;
 import de.erethon.questsxl.livingworld.explorables.PointOfInterest;
 import de.erethon.questsxl.player.QPlayer;
+import de.erethon.questsxl.respawn.RespawnPoint;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -169,14 +169,13 @@ public class ExplorationGUI implements InventoryHolder, Listener {
         // Create lore
         List<Component> lore = new ArrayList<>();
         lore.add(Component.empty());
-
+        // Add description if available
+        QTranslatable description = explorable.description();
+        if (description != null) {
+            lore.add(description.get().color(NamedTextColor.GRAY));
+            lore.add(Component.empty());
+        }
         if (isDiscovered) {
-            // Add description if available
-            QTranslatable description = explorable.description();
-            if (description != null) {
-                lore.add(description.get().color(NamedTextColor.GRAY));
-                lore.add(Component.empty());
-            }
             lore.add(Component.translatable("qxl.gui.exploration.explorable.discovered"));
         } else {
             lore.add(Component.translatable("qxl.gui.exploration.explorable.undiscovered"));
@@ -192,7 +191,7 @@ public class ExplorationGUI implements InventoryHolder, Listener {
             return Material.SPYGLASS;
         } else if (explorable instanceof LootChest) {
             return Material.CHEST;
-        } else if (explorable instanceof ExplorableRespawnPoint) {
+        } else if (explorable instanceof RespawnPoint) {
             return Material.BEACON;
         }
         return Material.COMPASS;

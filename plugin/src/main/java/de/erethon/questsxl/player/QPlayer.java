@@ -443,6 +443,10 @@ public class QPlayer implements ObjectiveHolder, Scorable, Quester {
         return currentTrackedEventPriority;
     }
 
+    public UUID getUUID() {
+        return uuid;
+    }
+
     public static QPlayer get(Player player) {
         return QuestsXL.get().getDatabaseManager().getCurrentPlayer(player);
     }

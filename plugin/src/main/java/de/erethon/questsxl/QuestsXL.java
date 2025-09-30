@@ -29,8 +29,11 @@ import de.erethon.questsxl.listener.PlayerListener;
 import de.erethon.questsxl.listener.PluginListener;
 import de.erethon.questsxl.livingworld.AutoTrackingManager;
 import de.erethon.questsxl.livingworld.Exploration;
+import de.erethon.questsxl.livingworld.ExplorationManager;
+import de.erethon.questsxl.livingworld.LootChestManager;
 import de.erethon.questsxl.livingworld.QEventManager;
 import de.erethon.questsxl.objective.event.ObjectiveEventManager;
+import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.QuestManager;
 import de.erethon.questsxl.region.QRegionManager;
 import de.erethon.questsxl.respawn.RespawnPointManager;
@@ -39,7 +42,6 @@ import de.erethon.questsxl.tool.GitSync;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.HandlerList;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.jetbrains.annotations.Contract;
@@ -68,6 +70,8 @@ public final class QuestsXL extends EPlugin {
     public static File PLAYERS;
     public static File REGIONS;
     public static File RESPAWNS;
+    public static File EXPLORABLES;
+    public static File EXPLORATION_SETS;
     public static File GLOBAL_OBJ;
     public static File IBCS;
     public static File SCHEMATICS;
@@ -88,8 +92,10 @@ public final class QuestsXL extends EPlugin {
     private GlobalObjectives globalObjectives;
     private PlayerListener playerListener;
     private Exploration exploration;
+    private ExplorationManager explorationManager;
     private ObjectiveEventManager objectiveEventManager;
     private AutoTrackingManager autoTrackingManager;
+    private LootChestManager lootChestManager;
 
     private final Map<String, Integer> scores = new HashMap<>();
     private final List<FriendlyError> errors = new ArrayList<>();
@@ -150,6 +156,8 @@ public final class QuestsXL extends EPlugin {
 
         initFile(REGIONS = new File(getDataFolder(), "regions.yml"));
         initFile(RESPAWNS = new File(getDataFolder(), "respawnPoints.yml"));
+        initFile(EXPLORABLES = new File(getDataFolder(), "explorables.yml"));
+        initFile(EXPLORATION_SETS = new File(getDataFolder(), "explorationSets.yml"));
         initFile(GLOBAL_OBJ = new File(getDataFolder(), "globalObjectives.yml"));
         YamlConfiguration config = YamlConfiguration.loadConfiguration(new File(Bukkit.getWorldContainer(), "environment.yml"));
         try {
@@ -245,6 +253,21 @@ public final class QuestsXL extends EPlugin {
         autoTrackingManager = new AutoTrackingManager(this);
         QuestsXL.log("Automatic tracking manager initialized");
 
+        // Initialize exploration manager
+        QuestsXL.log("Loading exploration data...");
+        explorationManager = new ExplorationManager(EXPLORABLES, EXPLORATION_SETS);
+        QuestsXL.log("Exploration manager initialized");
+
+        // Initialize loot chest manager
+        QuestsXL.log("Loading loot chest system...");
+        lootChestManager = new LootChestManager(this);
+        QuestsXL.log("Loot chest manager initialized");
+
+        // Register loot chest listener
+        getServer().getPluginManager().registerEvents(new de.erethon.questsxl.listener.LootChestListener(this), this);
+
+        exploration.initializeVFX(); // Initialize exploration VFX after exploration manager is loaded
+
         // Generate docs
         QuestsXL.log("Generating documentation...");
         Path docPath = getDataFolder().toPath().resolve("docs");
@@ -265,6 +288,25 @@ public final class QuestsXL extends EPlugin {
         regionManager.save();
         blockCollectionManager.save();
         animationManager.save();
+        for (QPlayer qPlayer : databaseManager.getPlayers()) {
+            qPlayer.saveToDatabase();
+        }
+        if (explorationManager != null) {
+            explorationManager.save();
+        }
+        try {
+            if (!gitSync) {
+                return;
+            }
+            QuestsXL.log("Pushing server changes before shutdown...");
+            QuestsXL.log("Included folders: " + Arrays.toString(folders.toArray()));
+            GitSync sync = new GitSync(folders);
+            sync.pushServerChanges(false);
+            sync.close();
+        } catch (Exception e) {
+            MessageUtil.broadcastMessageIf("&cGithub-Push-Error: " + e.getMessage(), p -> p.hasPermission("qxl.admin.sync"));
+            e.printStackTrace();
+        }
         HandlerList.unregisterAll(this);
     }
 
@@ -350,6 +392,14 @@ public final class QuestsXL extends EPlugin {
 
     public AutoTrackingManager getAutoTrackingManager() {
         return autoTrackingManager;
+    }
+
+    public ExplorationManager getExplorationManager() {
+        return explorationManager;
+    }
+
+    public LootChestManager getLootChestManager() {
+        return lootChestManager;
     }
 
     public void reload() {
@@ -515,5 +565,4 @@ public final class QuestsXL extends EPlugin {
     public boolean isPassiveSync() {
         return gitIsPassive;
     }
-
 }

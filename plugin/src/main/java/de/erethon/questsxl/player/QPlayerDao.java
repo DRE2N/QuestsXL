@@ -61,6 +61,19 @@ public interface QPlayerDao {
     @SqlUpdate("DELETE FROM q_character_objectives WHERE character_id = ? AND completable_type = ? AND completable_id = ?")
     void removeAllCharacterObjectivesForCompletable(UUID characterId, String completableType, String completableId);
 
+    // Loot Chest Operations
+    @SqlUpdate("CREATE TABLE IF NOT EXISTS q_character_looted_chests (character_id UUID, chest_id VARCHAR(255), looted_at BIGINT, PRIMARY KEY (character_id, chest_id))")
+    void createLootChestTable();
+
+    @SqlQuery("SELECT chest_id FROM q_character_looted_chests WHERE character_id = ?")
+    List<String> getLootedChests(UUID characterId);
+
+    @SqlUpdate("INSERT INTO q_character_looted_chests (character_id, chest_id, looted_at) VALUES (?, ?, ?) ON CONFLICT (character_id, chest_id) DO NOTHING")
+    void markChestLooted(UUID characterId, String chestId, long lootedAt);
+
+    @SqlQuery("SELECT COUNT(*) > 0 FROM q_character_looted_chests WHERE character_id = ? AND chest_id = ?")
+    boolean hasLootedChest(UUID characterId, String chestId);
+
     // Data Transfer Objects
     class ActiveQuestData {
         public String questId;

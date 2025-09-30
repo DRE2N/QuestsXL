@@ -22,30 +22,54 @@ public class QLineConfig implements QConfig {
 
     private final Map<String, String> result = new HashMap<>();
     private final String input;
+    private String name; // Add field to store the name/ID
 
     public QLineConfig() {
         input = "";
+        name = "";
     }
 
     public QLineConfig(String string) {
         input = string;
+        name = "";
         parse();
     }
 
     public QLineConfig(ConfigurationSection section) {
         input = section.getName();
+        name = section.getName();
         for (String key : section.getKeys(false)) {
             result.put(key, section.getString(key));
         }
     }
 
     private void parse() {
-        String cleanedInput = input.trim().replaceAll("\\s*=\\s*", "=").replaceAll(";\\s*", ";");// Remove spaces around = and after ;
-        String[] pairs = cleanedInput.split(";");
-        for (String pair : pairs) {
-            String[] keyValue = pair.split("=");
-            if (keyValue.length == 2) {
-                result.put(keyValue[0], keyValue[1]);
+        String cleanedInput = input.trim();
+
+        // Check if the input starts with an ID (first word before any key=value pairs)
+        int firstEquals = cleanedInput.indexOf('=');
+        int firstSpace = cleanedInput.indexOf(' ');
+
+        if (firstSpace != -1 && (firstEquals == -1 || firstSpace < firstEquals)) {
+            // Extract the ID/name from the beginning
+            name = cleanedInput.substring(0, firstSpace);
+            cleanedInput = cleanedInput.substring(firstSpace + 1).trim();
+        } else {
+            // Use the whole input as name if no key=value pairs found
+            name = cleanedInput;
+        }
+
+        // Clean up formatting
+        cleanedInput = cleanedInput.replaceAll("\\s*=\\s*", "=").replaceAll(";\\s*", ";");
+
+        // Parse key=value pairs
+        if (!cleanedInput.isEmpty()) {
+            String[] pairs = cleanedInput.split(";");
+            for (String pair : pairs) {
+                String[] keyValue = pair.split("=", 2); // Limit to 2 to handle values with = signs
+                if (keyValue.length == 2) {
+                    result.put(keyValue[0], keyValue[1]);
+                }
             }
         }
     }
@@ -90,7 +114,12 @@ public class QLineConfig implements QConfig {
 
     @Override
     public String getName() {
-        return input;
+        return name.isEmpty() ? input : name;
+    }
+
+    // Add method to set the name
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getInt(String key) {
@@ -188,6 +217,25 @@ public class QLineConfig implements QConfig {
 
     @Override
     public String toString() {
+        // If input is empty (created programmatically), generate string from result map
+        if (input.isEmpty() && !result.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+
+            // Add the name/ID first if it exists
+            if (!name.isEmpty()) {
+                sb.append(name).append(" ");
+            }
+
+            boolean first = true;
+            for (Map.Entry<String, String> entry : result.entrySet()) {
+                if (!first) {
+                    sb.append(";");
+                }
+                sb.append(entry.getKey()).append("=").append(entry.getValue());
+                first = false;
+            }
+            return sb.toString();
+        }
         return input;
     }
 

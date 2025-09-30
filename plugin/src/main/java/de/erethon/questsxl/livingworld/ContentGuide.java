@@ -1,8 +1,10 @@
 package de.erethon.questsxl.livingworld;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.livingworld.explorables.PointOfInterest;
+import de.erethon.questsxl.livingworld.explorables.LootChest;
 import de.erethon.questsxl.player.QPlayer;
-import de.erethon.questsxl.livingworld.explorables.ExplorableRespawnPoint;
+import de.erethon.questsxl.respawn.RespawnPoint;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
@@ -61,15 +63,77 @@ public class ContentGuide {
             }
         }
 
-        // Also check for standalone explorable respawn points that might be nearby
         QuestsXL plugin = QuestsXL.get();
         Location playerLoc = player.getPlayer().getLocation();
-        for (ExplorableRespawnPoint respawnPoint : plugin.getExploration().getExplorableRespawnPoints()) {
-            // Check if this respawn point is visible and not yet unlocked
-            if (respawnPoint.isVisibleTo(player) && !respawnPoint.isUnlockedFor(player)) {
+
+        // Check explorables in exploration sets
+        for (ExplorationSet set : plugin.getExploration().getSets()) {
+            if (set.averageLocation().distanceSquared(playerLoc) > 64 * 64) { // Skip sets that are too far away
+                continue;
+            }
+            for (Explorable explorable : set.entries()) {
+                if (explorable instanceof PointOfInterest poi) {
+                    if (explorer.hasExplored(poi)) {
+                        continue;
+                    }
+
+                    double dist = Math.sqrt(poi.location().distanceSquared(playerLoc));
+                    if (dist < closestDistance && dist <= MAX_DISTANCE_FOR_HINT) {
+                        closest = poi;
+                        closestDistance = dist;
+                    }
+                } else if (explorable instanceof LootChest chest) {
+                    // Check if the chest has already been looted by this player
+                    if (plugin.getLootChestManager().hasPlayerLootedChest(player, chest.id())) {
+                        continue;
+                    }
+
+                    double dist = Math.sqrt(chest.location().distanceSquared(playerLoc));
+                    if (dist < closestDistance && dist <= MAX_DISTANCE_FOR_HINT) {
+                        closest = chest;
+                        closestDistance = dist;
+                    }
+                } else if (explorable instanceof RespawnPoint respawnPoint) {
+                    // Check if the respawn point is visible and not yet unlocked
+                    if (!respawnPoint.isVisibleTo(player) || respawnPoint.isUnlockedFor(player)) {
+                        continue;
+                    }
+
+                    double dist = Math.sqrt(respawnPoint.location().distanceSquared(playerLoc));
+                    if (dist < closestDistance && dist <= MAX_DISTANCE_FOR_HINT) {
+                        closest = respawnPoint;
+                        closestDistance = dist;
+                    }
+                }
+            }
+        }
+
+        // Check standalone explorables (including standalone respawn points)
+        for (Explorable explorable : plugin.getExploration().getStandaloneExplorables()) {
+            if (explorable.location().distanceSquared(playerLoc) > 64 * 64) { // Skip if too far away
+                continue;
+            }
+
+            if (explorable instanceof RespawnPoint respawnPoint) {
+                // Check if the respawn point is visible and not yet unlocked
+                if (!respawnPoint.isVisibleTo(player) || respawnPoint.isUnlockedFor(player)) {
+                    continue;
+                }
+
                 double dist = Math.sqrt(respawnPoint.location().distanceSquared(playerLoc));
                 if (dist < closestDistance && dist <= MAX_DISTANCE_FOR_HINT) {
                     closest = respawnPoint;
+                    closestDistance = dist;
+                }
+            } else {
+                // Handle other standalone explorables
+                if (explorer.hasExplored(explorable)) {
+                    continue;
+                }
+
+                double dist = Math.sqrt(explorable.location().distanceSquared(playerLoc));
+                if (dist < closestDistance && dist <= MAX_DISTANCE_FOR_HINT) {
+                    closest = explorable;
                     closestDistance = dist;
                 }
             }
@@ -86,8 +150,10 @@ public class ContentGuide {
         Component hint = Component.text(getDirectionalMarker(player.getPlayer(), closest.location()) + " ", NamedTextColor.DARK_PURPLE);
 
         // Customize message based on explorable type
-        if (closest instanceof ExplorableRespawnPoint) {
-            hint = hint.append(Component.translatable("qxl.explorable.respawn.nearby"));
+        if (closest instanceof RespawnPoint) {
+            hint = hint.append(Component.translatable("qxl.explorable.respawn.nearby", closest.displayName().get()));
+        } else if (closest instanceof LootChest) {
+            hint = hint.append(Component.translatable("qxl.explorable.lootchest.nearby", closest.displayName().get()));
         } else {
             hint = hint.append(Component.translatable("qxl.explorable.undiscovered"));
         }

@@ -3,6 +3,7 @@ package de.erethon.questsxl.common;
 import de.erethon.questsxl.QuestsXL;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -41,6 +42,11 @@ public class QTranslatable {
             cachedLiteralComponent = MiniMessage.miniMessage().deserialize(literal == null ? "" : literal);
         }
         return cachedLiteralComponent;
+    }
+
+    public String getAsString() {
+        PlainTextComponentSerializer serializer = PlainTextComponentSerializer.plainText();
+        return serializer.serialize(get());
     }
 
     public String getKey() {

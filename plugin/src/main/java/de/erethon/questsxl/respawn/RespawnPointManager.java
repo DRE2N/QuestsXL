@@ -1,7 +1,7 @@
 package de.erethon.questsxl.respawn;
 
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.livingworld.explorables.ExplorableRespawnPoint;
+import de.erethon.questsxl.livingworld.ExplorationSet;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
@@ -9,16 +9,13 @@ import org.bukkit.event.Listener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class RespawnPointManager implements Listener {
 
     QuestsXL plugin = QuestsXL.get();
 
     List<RespawnPoint> points = new ArrayList<>();
-    Map<String, ExplorableRespawnPoint> explorableRespawnPoints = new HashMap<>();
 
     public RespawnPointManager(File file) {
         Bukkit.getPluginManager().registerEvents(this, plugin);
@@ -31,10 +28,56 @@ public class RespawnPointManager implements Listener {
             RespawnPoint point = new RespawnPoint(key);
             point.load(config.getConfigurationSection(key));
             points.add(point);
+
+            // If this is an explorable respawn point (NEAR or ACTION mode), add it to exploration system
+            if (point.getUnlockMode() == RespawnPointUnlockMode.NEAR ||
+                    point.getUnlockMode() == RespawnPointUnlockMode.ACTION) {
+                addToExplorationSystem(point);
+            }
+        }
+    }
+
+    /**
+     * Adds a respawn point to the appropriate exploration system based on its configuration.
+     * NEAR and ACTION mode respawn points become part of the exploration system.
+     */
+    private void addToExplorationSystem(RespawnPoint point) {
+        // For now, add as standalone explorables. In the future, we can assign them to specific exploration sets
+        // based on their location or configuration
+        ExplorationSet closestSet = plugin.getExploration().getClosestSet(point.location());
+        if (closestSet != null && shouldAddToSet(point, closestSet)) {
+            closestSet.entries().add(point);
+        } else {
+            // Add as a standalone explorable that players can discover
+            // This ensures they appear in the Content Guide and can be unlocked by proximity
+            plugin.getExploration().addStandaloneExplorable(point);
+        }
+    }
+
+    /**
+     * Determines if a respawn point should be added to a specific exploration set.
+     * This can be extended with more sophisticated logic later.
+     */
+    private boolean shouldAddToSet(RespawnPoint point, ExplorationSet set) {
+        // Simple distance-based check - if respawn point is within reasonable distance of the set
+        if (set.averageLocation() != null && point.location() != null) {
+            double distance = set.averageLocation().distance(point.location());
+            return distance <= 100; // Within 100 blocks
+        }
+        return false;
+    }
+
+    /**
+     * Removes a respawn point from the exploration system
+     */
+    private void removeFromExplorationSystem(RespawnPoint point) {
+        // Remove from any exploration sets
+        for (ExplorationSet set : plugin.getExploration().getSets()) {
+            set.entries().remove(point);
         }
 
-        // Create explorable respawn points for NEAR mode points after loading
-        updateExplorationIntegration();
+        // Remove from standalone explorables
+        plugin.getExploration().removeStandaloneExplorable(point);
     }
 
     public void save() {
@@ -53,11 +96,10 @@ public class RespawnPointManager implements Listener {
         if (point != null) {
             points.add(point);
 
-            // If this is a NEAR unlock mode respawn point, add it to the exploration system
-            if (point.getUnlockMode() == RespawnPointUnlockMode.NEAR) {
-                ExplorableRespawnPoint explorable = new ExplorableRespawnPoint(point);
-                explorableRespawnPoints.put(point.getId(), explorable);
-                plugin.getExploration().addExplorableRespawnPoint(explorable);
+            // If this is an explorable respawn point, add it to the exploration system
+            if (point.getUnlockMode() == RespawnPointUnlockMode.NEAR ||
+                    point.getUnlockMode() == RespawnPointUnlockMode.ACTION) {
+                addToExplorationSystem(point);
             }
         }
     }
@@ -66,11 +108,10 @@ public class RespawnPointManager implements Listener {
         if (point != null) {
             points.remove(point);
 
-            // Remove from exploration system if it exists
-            ExplorableRespawnPoint explorable = explorableRespawnPoints.get(point.getId());
-            if (explorable != null) {
-                plugin.getExploration().removeExplorableRespawnPoint(explorable);
-                explorableRespawnPoints.remove(point.getId());
+            // Remove from exploration system if it was explorable
+            if (point.getUnlockMode() == RespawnPointUnlockMode.NEAR ||
+                point.getUnlockMode() == RespawnPointUnlockMode.ACTION) {
+                removeFromExplorationSystem(point);
             }
         }
     }
@@ -86,10 +127,6 @@ public class RespawnPointManager implements Listener {
 
     public List<RespawnPoint> getRespawnPoints() {
         return new ArrayList<>(points);
-    }
-
-    public ExplorableRespawnPoint getExplorableRespawnPoint(String id) {
-        return explorableRespawnPoints.get(id);
     }
 
     /**
@@ -126,21 +163,5 @@ public class RespawnPointManager implements Listener {
         }
 
         return nearestRespawnPoint;
-    }
-
-    // We need to register NEAR points as explorable respawn points
-    private void updateExplorationIntegration() {
-        for (ExplorableRespawnPoint explorable : explorableRespawnPoints.values()) {
-            plugin.getExploration().removeExplorableRespawnPoint(explorable);
-        }
-        explorableRespawnPoints.clear();
-
-        for (RespawnPoint point : points) {
-            if (point.getUnlockMode() == RespawnPointUnlockMode.NEAR) {
-                ExplorableRespawnPoint explorable = new ExplorableRespawnPoint(point);
-                explorableRespawnPoints.put(point.getId(), explorable);
-                plugin.getExploration().addExplorableRespawnPoint(explorable);
-            }
-        }
     }
 }
