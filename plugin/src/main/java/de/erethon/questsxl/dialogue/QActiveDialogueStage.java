@@ -36,7 +36,7 @@ public class QActiveDialogueStage extends QDialogueStage {
             }
 
             if (lastEntry != null) {
-                qPlayer.sendConversationMsg(lastEntry.getKey(), sender, maxMessageCount, maxMessageCount);
+                qPlayer.sendConversationMsg(lastEntry.getKey(), sender, maxMessageCount, maxMessageCount, false);
             }
 
             // Immediately show actions
@@ -45,7 +45,8 @@ public class QActiveDialogueStage extends QDialogueStage {
         } else {
             // Normal behavior for new stages
             Map.Entry<QTranslatable, Integer> entry = messages.pop();
-            qPlayer.sendConversationMsg(entry.getKey(), sender, maxMessageCount - messages.size(), maxMessageCount);
+            boolean hasMoreMessages = !messages.isEmpty();
+            qPlayer.sendConversationMsg(entry.getKey(), sender, maxMessageCount - messages.size(), maxMessageCount, hasMoreMessages);
             return entry.getValue();
         }
     }
@@ -65,5 +66,18 @@ public class QActiveDialogueStage extends QDialogueStage {
         for (QAction postAction : actions) {
             postAction.play(qPlayer);
         }
+    }
+
+    public DialogueOption getDefaultOption() {
+        for (DialogueOption option : dialogueOptions) {
+            if (option.isDefault()) {
+                return option;
+            }
+        }
+        return null;
+    }
+
+    public boolean hasDialogueOptions() {
+        return !dialogueOptions.isEmpty();
     }
 }

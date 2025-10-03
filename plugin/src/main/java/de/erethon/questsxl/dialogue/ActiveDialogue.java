@@ -25,6 +25,8 @@ public class ActiveDialogue extends BukkitRunnable {
     private QActiveDialogueStage activeStage;
     private int passedTicks;
     private int messageDelay;
+    private boolean isFirstRun = true;
+    private boolean waitingForPlayerChoice = false;
 
     public ActiveDialogue(QPlayer qPlayer, QDialogue dialogue) {
         this.qPlayer = qPlayer;
@@ -43,12 +45,29 @@ public class ActiveDialogue extends BukkitRunnable {
 
     @Override
     public void run() {
+        // Don't auto-continue if we're waiting for player to make a choice
+        if (waitingForPlayerChoice) {
+            return;
+        }
+
+        // On first run, just send the first message and set up timing
+        if (isFirstRun) {
+            isFirstRun = false;
+            continueDialogue();
+            return;
+        }
+
         if ((passedTicks += TIMER_PERIOD) >= messageDelay) {
             continueDialogue();
         }
     }
 
     public void continueDialogue() {
+        // If we were waiting for player choice and they explicitly continued,
+        // execute the default option if one exists
+        boolean wasWaitingForChoice = waitingForPlayerChoice;
+        waitingForPlayerChoice = false;
+
         passedTicks = 0;
         if (activeStage == null) {
             activeStage = activeStage();
@@ -70,10 +89,23 @@ public class ActiveDialogue extends BukkitRunnable {
                     finish();
                 }
             } else {
-                if (!activeStage.dialogueOptions.isEmpty()) {
+                if (!activeStage.hasDialogueOptions()) {
+                    finish();
                     return;
                 }
-                finish();
+
+                // Only auto-select default option if player explicitly called continueDialogue
+                // (not from the automatic timer)
+                if (wasWaitingForChoice) {
+                    DialogueOption defaultOption = activeStage.getDefaultOption();
+                    if (defaultOption != null) {
+                        defaultOption.execute(qPlayer.getPlayer());
+                        return;
+                    }
+                }
+
+                // Set flag to stop automatic continuation and wait for player input
+                waitingForPlayerChoice = true;
             }
         }
     }

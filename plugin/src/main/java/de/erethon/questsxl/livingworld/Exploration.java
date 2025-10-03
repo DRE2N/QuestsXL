@@ -5,14 +5,16 @@ import de.erethon.questsxl.livingworld.explorables.LootChest;
 import de.erethon.questsxl.livingworld.explorables.PointOfInterest;
 import de.erethon.questsxl.respawn.RespawnPoint;
 import de.erethon.questsxl.respawn.RespawnPointUnlockMode;
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Exploration {
 
@@ -25,10 +27,37 @@ public class Exploration {
     private BukkitTask centralVfxTask;
     private boolean vfxEnabled = true;
 
+    private final Map<String, Set<RespawnPoint>> respawnPointsByWorld = new ConcurrentHashMap<>();
+    private final Map<String, PlayerVFXData> playerVFXCache = new ConcurrentHashMap<>();
+    private final Set<RespawnPoint> activeRespawnPoints = ConcurrentHashMap.newKeySet();
+    private final int VFX_RANGE_SQUARED = 32 * 32;
+    private final int VFX_CHUNK_RANGE = 3;
+    private long lastVFXUpdate = 0;
+    private final long VFX_UPDATE_INTERVAL = 100;
+
+    // Cache player data to avoid repeated calculations
+    private static class PlayerVFXData {
+        final Location location;
+        final String worldName;
+        final int chunkX;
+        final int chunkZ;
+        final long timestamp;
+
+        PlayerVFXData(Player player) {
+            this.location = player.getLocation().clone();
+            this.worldName = location.getWorld().getName();
+            this.chunkX = location.getBlockX() >> 4;
+            this.chunkZ = location.getBlockZ() >> 4;
+            this.timestamp = System.currentTimeMillis();
+        }
+    }
+
     /**
      * Clears all exploration data. Used for proper reload handling.
      */
     public void clearAll() {
+        stopVFX();
+
         sets.clear();
         pointsOfInterest.clear();
         lootChests.clear();
@@ -229,42 +258,104 @@ public class Exploration {
                 }
                 updateRespawnPointVFX();
             }
-        }.runTaskTimer(plugin, 20L, 2L); // Start after 1 second, update every 2 ticks
+        }.runTaskTimer(plugin, 20L, 5L); // Start after 1 second, update every 5 ticks (4 times per second)
     }
 
     /**
-     * Updates VFX for all RespawnPoints that need visual effects
+     * Highly optimized VFX update system using spatial partitioning and caching
      */
     private void updateRespawnPointVFX() {
-        Set<RespawnPoint> respawnPoints = getAllRespawnPoints();
+        long currentTime = System.currentTimeMillis();
 
-        for (RespawnPoint respawnPoint : respawnPoints) {
-            // Only process respawn points that should have VFX (NEAR and ACTION modes)
+        if (currentTime - lastVFXUpdate < VFX_UPDATE_INTERVAL) {
+            return;
+        }
+        lastVFXUpdate = currentTime;
+
+        updatePlayerVFXCache();
+
+        Set<RespawnPoint> previouslyActive = new HashSet<>(activeRespawnPoints);
+        activeRespawnPoints.clear();
+
+        processRespawnPoints(Bukkit.getWorlds().getFirst()); // Ignore not Erethon worlds
+
+        for (RespawnPoint respawnPoint : previouslyActive) {
+            if (!activeRespawnPoints.contains(respawnPoint)) {
+                respawnPoint.hideAllDisplays();
+            }
+        }
+    }
+
+    /**
+     * Updates the player VFX cache with current player locations
+     */
+    private void updatePlayerVFXCache() {
+        playerVFXCache.clear();
+        for (Player player : plugin.getServer().getOnlinePlayers()) {
+            playerVFXCache.put(player.getName(), new PlayerVFXData(player));
+        }
+    }
+
+    private void processRespawnPoints(World world) {
+        String worldName = world.getName();
+        Set<RespawnPoint> worldRespawnPoints = respawnPointsByWorld.get(worldName);
+
+        if (worldRespawnPoints == null || worldRespawnPoints.isEmpty()) {
+            rebuildWorldCache(world);
+            worldRespawnPoints = respawnPointsByWorld.get(worldName);
+            if (worldRespawnPoints == null) return;
+        }
+
+        List<PlayerVFXData> worldPlayers = new ArrayList<>();
+        for (PlayerVFXData playerData : playerVFXCache.values()) {
+            if (worldName.equals(playerData.worldName)) {
+                worldPlayers.add(playerData);
+            }
+        }
+
+        if (worldPlayers.isEmpty()) {
+            for (RespawnPoint respawnPoint : worldRespawnPoints) {
+                respawnPoint.hideAllDisplays();
+            }
+            return;
+        }
+
+        for (RespawnPoint respawnPoint : worldRespawnPoints) {
             if (!shouldHaveVFX(respawnPoint)) {
                 continue;
             }
 
             Location loc = respawnPoint.location();
-            if (loc == null || loc.getWorld() == null) {
-                continue;
-            }
+            if (loc == null) continue;
 
-            Chunk chunk = loc.getChunk();
-            if (!chunk.isLoaded()) {
+            int chunkX = loc.getBlockX() >> 4;
+            int chunkZ = loc.getBlockZ() >> 4;
+            if (!world.isChunkLoaded(chunkX, chunkZ)) {
                 respawnPoint.hideAllDisplays();
                 continue;
             }
 
-            // Check for players within visual range (32 blocks)
             boolean hasNearbyPlayers = false;
-            for (Player player : loc.getWorld().getPlayers()) {
-                if (player.getLocation().distanceSquared(loc) <= 32 * 32) {
+            for (PlayerVFXData playerData : worldPlayers) {
+                // Quick distance check using chunk coordinates first
+                int playerChunkX = playerData.chunkX;
+                int playerChunkZ = playerData.chunkZ;
+
+                // If player is more than VFX_CHUNK_RANGE chunks away, skip expensive distance calculation
+                if (Math.abs(playerChunkX - chunkX) > VFX_CHUNK_RANGE ||
+                    Math.abs(playerChunkZ - chunkZ) > VFX_CHUNK_RANGE) {
+                    continue;
+                }
+
+                // Only do expensive distance calculation if chunks are close
+                if (playerData.location.distanceSquared(loc) <= VFX_RANGE_SQUARED) {
                     hasNearbyPlayers = true;
                     break;
                 }
             }
 
             if (hasNearbyPlayers) {
+                activeRespawnPoints.add(respawnPoint);
                 respawnPoint.updateVFX();
             } else {
                 respawnPoint.hideAllDisplays();
@@ -272,19 +363,33 @@ public class Exploration {
         }
     }
 
-    private Set<RespawnPoint> getAllRespawnPoints() {
-        Set<RespawnPoint> respawnPoints = new HashSet<>();
+    /**
+     * Rebuilds the world-based respawn point cache
+     */
+    private void rebuildWorldCache(World world) {
+        String worldName = world.getName();
+        Set<RespawnPoint> worldPoints = new HashSet<>();
 
-        // Get all respawn points directly from the RespawnPointManager
         if (plugin.getRespawnPointManager() != null) {
             for (RespawnPoint point : plugin.getRespawnPointManager().getRespawnPoints()) {
-                if (shouldHaveVFX(point)) {
-                    respawnPoints.add(point);
+                if (shouldHaveVFX(point) && point.location() != null &&
+                    worldName.equals(point.location().getWorld().getName())) {
+                    worldPoints.add(point);
                 }
             }
         }
 
-        return respawnPoints;
+        respawnPointsByWorld.put(worldName, worldPoints);
+    }
+
+    /**
+     * Rebuilds all world caches - call this when respawn points are added/removed
+     */
+    public void rebuildVFXCache() {
+        respawnPointsByWorld.clear();
+        for (World world : plugin.getServer().getWorlds()) {
+            rebuildWorldCache(world);
+        }
     }
 
     /**
@@ -300,7 +405,70 @@ public class Exploration {
      */
     public void initializeVFX() {
         if (vfxEnabled) {
+            rebuildVFXCache();
             startCentralVFX();
         }
+    }
+
+    /**
+     * Stops the VFX system and cleans up all displays
+     */
+    public void stopVFX() {
+        if (centralVfxTask != null) {
+            centralVfxTask.cancel();
+            centralVfxTask = null;
+        }
+
+        // Clean up all active displays
+        for (RespawnPoint respawnPoint : activeRespawnPoints) {
+            respawnPoint.cleanupAllDisplays();
+        }
+
+        activeRespawnPoints.clear();
+        playerVFXCache.clear();
+        respawnPointsByWorld.clear();
+    }
+
+    /**
+     * Enables or disables VFX system
+     */
+    public void setVFXEnabled(boolean enabled) {
+        if (this.vfxEnabled == enabled) return;
+
+        this.vfxEnabled = enabled;
+        if (enabled) {
+            initializeVFX();
+        } else {
+            stopVFX();
+        }
+    }
+
+    /**
+     * Returns whether VFX is currently enabled
+     */
+    public boolean isVFXEnabled() {
+        return vfxEnabled;
+    }
+
+    /**
+     * Gets performance statistics for monitoring
+     */
+    public Map<String, Object> getVFXStats() {
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("vfxEnabled", vfxEnabled);
+        stats.put("activeRespawnPoints", activeRespawnPoints.size());
+        stats.put("cachedPlayers", playerVFXCache.size());
+        stats.put("worldCaches", respawnPointsByWorld.size());
+        stats.put("updateInterval", VFX_UPDATE_INTERVAL);
+        stats.put("vfxRange", Math.sqrt(VFX_RANGE_SQUARED));
+        stats.put("chunkRange", VFX_CHUNK_RANGE);
+
+        int totalCachedPoints = 0;
+        for (Set<RespawnPoint> worldPoints : respawnPointsByWorld.values()) {
+            totalCachedPoints += worldPoints.size();
+        }
+        stats.put("totalCachedRespawnPoints", totalCachedPoints);
+
+        return stats;
     }
 }

@@ -26,6 +26,7 @@ public class QDialogue implements QComponent {
     private QTranslatable senderName;
     private String npcId;
     private HashMap<Integer, QDialogueStage> stages;
+    private boolean canStartFromNPC = true;
 
     public QDialogue(File file) {
         this.name = file.getName().replace(".yml", "");
@@ -63,6 +64,7 @@ public class QDialogue implements QComponent {
         }
 
         npcId = cfg.getString("npcId");
+        canStartFromNPC = cfg.getBoolean("canStartFromNPC", true);
         ConfigurationSection stagesSection = cfg.getConfigurationSection("stages");
         String id = "Dialog: " + getName();
         if (stagesSection == null) {
@@ -118,6 +120,10 @@ public class QDialogue implements QComponent {
 
     public String getNPCId() {
         return npcId;
+    }
+
+    public boolean canStartFromNPC() {
+        return canStartFromNPC;
     }
 
     public HashMap<Integer, QDialogueStage> getStages() {

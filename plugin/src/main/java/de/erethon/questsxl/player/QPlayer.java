@@ -22,6 +22,7 @@ import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -344,19 +345,28 @@ public class QPlayer implements ObjectiveHolder, Scorable, Quester {
         player.sendMessage(recollection);
     }
 
-    public void sendConversationMsg(@NotNull QTranslatable translatable, QTranslatable senderName, int id, int max) {
+    public void sendConversationMsg(@NotNull QTranslatable translatable, QTranslatable senderName, int id, int max, boolean hasMoreMessages) {
         Component message = translatable.get();
+        Component renderedMessage = GlobalTranslator.render(message, getPlayer().locale());
+        renderedMessage = renderedMessage.colorIfAbsent(TextColor.color(220, 220, 220)); // A nice light gray
+
         sendMessagesInQueue(true);
         String plainSenderName = PlainTextComponentSerializer.plainText().serialize(GlobalTranslator.render(senderName.get(), getPlayer().locale()));
         sendMarkedMessage(Component.empty());
         sendMarkedMessage(Component.empty());
         sendMarkedMessage(Component.empty());
+        Component skipButton = Component.empty();
+        if (hasMoreMessages) {
+            skipButton = miniMessage.deserialize(" <gray>[<yellow><click:run_command:'/q dialogue next'>>></click></yellow>]")
+                    .append(Component.text("").clickEvent(ClickEvent.runCommand("qxl_marker")));
+        }
         Component header = miniMessage.deserialize("<green>                      <b>" + plainSenderName + "<!b> <dark_gray> -  <gray>[" + id + "/" + max + "]");
-        sendMarkedMessage(header);
+        sendMarkedMessage(header.append(skipButton));
         sendMarkedMessage(Component.empty());
-        sendMarkedMessage(message);
-        dialogueRecollection.add(plainSenderName + ": " + PlainTextComponentSerializer.plainText().serialize(GlobalTranslator.render(message, getPlayer().locale())));
+        sendMarkedMessage(renderedMessage);
+        dialogueRecollection.add(plainSenderName + ": " + PlainTextComponentSerializer.plainText().serialize(renderedMessage));
         sendMarkedMessage(Component.empty());
+
     }
 
     public void sendMarkedMessage(Component component) {

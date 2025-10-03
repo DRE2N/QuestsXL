@@ -82,24 +82,20 @@ public class QDialogueStage implements QComponent {
         List<String> messageList = cfg.getStringList("messages");
         maxMessageCount = messageList.size();
         for (String message : messageList) {
-            // Look for delay at the end - format: "message|delay" or "message;delay"
+            // Look for delay at the end - format: "message|delay"
+            // Note: Pipe separator is used because semicolons are reserved for translation strings (en=...;de=...)
             String messageText = message;
             int delay = 0;
 
-            String[] splitSemicolon = message.split(";");
             String[] splitPipe = message.split("\\|");
 
             // Check if the last part is a number (delay)
-            String lastPartSemicolon = splitSemicolon.length > 1 ? splitSemicolon[splitSemicolon.length - 1].trim() : null;
-            String lastPartPipe = splitPipe.length > 1 ? splitPipe[splitPipe.length - 1].trim() : null;
-
-            if (lastPartSemicolon != null && lastPartSemicolon.matches("\\d+")) {
-                delay = NumberUtil.parseInt(lastPartSemicolon);
-                messageText = String.join(";", java.util.Arrays.copyOf(splitSemicolon, splitSemicolon.length - 1));
-            }
-            else if (lastPartPipe != null && lastPartPipe.matches("\\d+")) {
-                delay = NumberUtil.parseInt(lastPartPipe);
-                messageText = String.join("|", java.util.Arrays.copyOf(splitPipe, splitPipe.length - 1));
+            if (splitPipe.length > 1) {
+                String lastPart = splitPipe[splitPipe.length - 1].trim();
+                if (lastPart.matches("\\d+")) {
+                    delay = NumberUtil.parseInt(lastPart);
+                    messageText = String.join("|", java.util.Arrays.copyOf(splitPipe, splitPipe.length - 1));
+                }
             }
 
             messages.add(new AbstractMap.SimpleEntry<>(QTranslatable.fromString(messageText), delay));

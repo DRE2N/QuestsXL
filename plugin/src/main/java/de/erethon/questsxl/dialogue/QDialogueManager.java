@@ -3,6 +3,10 @@ package de.erethon.questsxl.dialogue;
 import de.erethon.bedrock.misc.FileUtil;
 import de.erethon.bedrock.misc.Registry;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.player.QPlayer;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 
 import java.io.File;
 
@@ -30,6 +34,30 @@ public class QDialogueManager extends Registry<String, QDialogue> {
             }
         }
         QuestsXL.log("Loaded " + size() + " dialogues.");
+    }
+
+    public void onNPCRightClick(String npcId, Player player) {
+        if (!npcRegistry.containsKey(npcId)) {
+            return;
+        }
+        QuestsXL.log("NPC " + npcId + " right-clicked by " + player.getName());
+        String dialogueId = npcRegistry.get(npcId);
+        QDialogue dialogue = get(dialogueId);
+        QPlayer qPlayer = QuestsXL.get().getDatabaseManager().getCurrentPlayer(player);
+
+        // Check if player already has an active dialogue with this NPC
+        boolean hadActiveDialogue = qPlayer.getActiveDialogue() != null
+                && qPlayer.getActiveDialogue().getDialogue().getNPCId().equals(npcId);
+
+        // Start new dialogue if player doesn't have one active
+        if (dialogue != null && dialogue.canStartFromNPC() && !qPlayer.isInConversation() && qPlayer.getActiveDialogue() == null) {
+            dialogue.start(qPlayer);
+        }
+        // Only continue dialogue if it was already active before this click
+        else if (hadActiveDialogue) {
+            qPlayer.getActiveDialogue().continueDialogue();
+        }
+
     }
 
     public Registry<String, String> getNPCRegistry() {

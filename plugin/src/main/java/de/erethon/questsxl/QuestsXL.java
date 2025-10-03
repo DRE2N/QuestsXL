@@ -310,14 +310,6 @@ public final class QuestsXL extends EPlugin {
         HandlerList.unregisterAll(this);
     }
 
-    public void addAergiaScoreboardIntegration() {
-        if (!isAergiaEnabled()) {
-            return;
-        }
-        EScoreboard eScoreboard = aergia.getEScoreboard();
-        eScoreboard.addScores(new QuestScoreboardLines());
-    }
-
     public void addScore(String score, int amount) {
         setScore(score, scores.getOrDefault(score, 0));
     }

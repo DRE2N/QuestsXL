@@ -4,7 +4,7 @@ plugins {
     `java-library`
     `maven-publish`
     id("io.papermc.paperweight.userdev") version "2.0.0-beta.17"
-    id("xyz.jpenilla.run-paper") version "1.0.6"
+    id("xyz.jpenilla.run-paper") version "2.3.1"
     id("io.github.goooler.shadow") version "8.1.5"
     id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
 }
@@ -50,7 +50,7 @@ tasks {
             project.buildDir.mkdir()
         }
         val f = File(project.buildDir, "server.jar")
-        //uri("https://github.com/DRE2N/Papyrus/releases/download/latest/papyrus-paperclip-$papyrusVersion-mojmap.jar").toURL().openStream().use { it.copyTo(f.outputStream()) }
+        uri("https://github.com/DRE2N/Papyrus/releases/download/latest/papyrus-paperclip-$papyrusVersion-mojmap.jar").toURL().openStream().use { it.copyTo(f.outputStream()) }
         serverJar(f)
         runDirectory.set(file("C:\\Dev\\Erethon"))
     }
@@ -72,8 +72,7 @@ tasks {
         apiVersion = "1.21"
         name = "QuestsXL"
         authors = listOf("Malfrador", "Fyreum")
-        softDepend = listOf("Aergia")
-        depend = listOf("Hecate")
+        depend = listOf("Hecate", "Aergia")
     }
 }
 
