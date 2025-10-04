@@ -478,7 +478,17 @@ public class QDatabaseManager extends EDatabaseManager {
         if (characterId == null) {
             return null;
         }
-        return uuidqPlayerMap.computeIfAbsent(characterId, id -> new QPlayer(player));
+        QPlayer existing = uuidqPlayerMap.get(characterId);
+        if (existing != null) {
+            return existing;
+        }
+
+        // Create outside of computeIfAbsent to avoid deadlock
+        // The QPlayer constructor calls loadFromDatabase which may trigger other code
+        // that tries to access this same map, causing a deadlock in computeIfAbsent
+        QPlayer newPlayer = new QPlayer(player);
+        QPlayer result = uuidqPlayerMap.putIfAbsent(characterId, newPlayer);
+        return result != null ? result : newPlayer;
     }
 
     public QPlayer getCurrentPlayerByUUID(UUID playerUUID) {

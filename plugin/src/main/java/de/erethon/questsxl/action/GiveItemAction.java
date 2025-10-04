@@ -47,6 +47,7 @@ public class GiveItemAction extends QBaseAction {
             return;
         }
         HItemStack stack = item.rollRandomStack();
+        stack.getBukkitStack().setAmount(amount);
         execute(quester, (QPlayer player) -> player.getPlayer().getInventory().addItem(stack.getBukkitStack()));
         onFinish(quester);
     }
