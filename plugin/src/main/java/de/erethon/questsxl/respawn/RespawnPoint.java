@@ -70,7 +70,7 @@ public class RespawnPoint implements Explorable {
         for (Player player : loc.getWorld().getPlayers()) {
             if (player.getLocation().distanceSquared(loc) <= 32 * 32) {
                 QPlayer qPlayer = plugin.getDatabaseManager().getCurrentPlayer(player);
-                if (qPlayer != null && isVisibleTo(qPlayer)) {
+                if (qPlayer != null && qPlayer.isDataLoaded() && isVisibleTo(qPlayer)) {
                     showDisplayToPlayer(player, qPlayer);
                 } else {
                     hideDisplayFromPlayer(player);

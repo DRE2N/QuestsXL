@@ -233,4 +233,9 @@ public class QStage implements QComponent {
             }
         }
     }
+
+    @Override
+    public String id() {
+        return String.valueOf(id);
+    }
 }

@@ -73,6 +73,10 @@ public class ActiveObjective {
     }
 
     public void saveToDatabase() {
+        // Skip database operations for objectives without a stage (e.g., WorldInteraction objectives)
+        if (stage == null) {
+            return;
+        }
         var databaseManager = QuestsXL.get().getDatabaseManager();
         if (databaseManager != null) {
             databaseManager.saveObjectiveProgress(this);
@@ -80,6 +84,10 @@ public class ActiveObjective {
     }
 
     public void removeFromDatabase() {
+        // Skip database operations for objectives without a stage (e.g., WorldInteraction objectives)
+        if (stage == null) {
+            return;
+        }
         var databaseManager = QuestsXL.get().getDatabaseManager();
         if (databaseManager != null) {
             databaseManager.removeObjectiveProgress(this);

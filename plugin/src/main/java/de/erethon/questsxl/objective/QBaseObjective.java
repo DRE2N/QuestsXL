@@ -317,6 +317,11 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
     }
 
     @Override
+    public String id() {
+        return this.getClass().getSimpleName();
+    }
+
+    @Override
     public void setParent(QComponent parent) {
         this.parent = parent;
     }
@@ -340,9 +345,6 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
             } else {
                 completeScope = ActionScope.PLAYER;
             }
-        }
-        if (cfg.contains("onSuccess")) {
-            completeActions.addAll(cfg.getActions(this, "onSuccess"));
         }
         if (cfg.contains("scopeProgress")) {
             progressScope = ActionScope.valueOf(cfg.getString("scopeProgress").toUpperCase());

@@ -88,6 +88,11 @@ public abstract class QBaseAction implements QAction {
     }
 
     @Override
+    public String id() {
+        return this.getClass().getSimpleName();
+    }
+
+    @Override
     public void load(QConfig cfg) {
         id = cfg.getName();
         if (cfg.contains("runAfter")) {

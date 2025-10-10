@@ -29,7 +29,7 @@ public class BlockInteractObjective extends QBaseObjective<PlayerInteractEvent> 
     public void check(ActiveObjective active, PlayerInteractEvent e) {
         if (!conditions(e.getPlayer())) return;
         if (e.getClickedBlock() == null) return;
-        if (location.equals(e.getClickedBlock().getLocation())) {
+        if (location.get(e.getClickedBlock().getLocation()).equals(e.getClickedBlock().getLocation())) {
             if (shouldCancelEvent) e.setCancelled(true);
             checkCompletion(active, this, plugin.getDatabaseManager().getCurrentPlayer(e.getPlayer()));
         }

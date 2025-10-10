@@ -19,6 +19,8 @@ public interface QComponent extends ContextAware {
         return QuestsXL.get().getDatabaseManager().getCurrentPlayer(player);
     }
 
+    String id();
+
     default void load(QConfig cfg) {
         //
     }

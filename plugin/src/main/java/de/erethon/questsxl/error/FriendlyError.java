@@ -22,6 +22,12 @@ public class FriendlyError {
     String stacktrace;
     QPlayer relatedPlayer;
 
+    public FriendlyError(String location, String title) {
+        this(location, title, "", "");
+        QuestsXL.log("[QXL] " + getMessage());
+    }
+
+
     public FriendlyError(String location, String title, String exception, String hint) {
         this.title = title;
         this.location = location;

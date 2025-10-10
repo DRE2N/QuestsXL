@@ -25,6 +25,7 @@ import de.erethon.questsxl.dialogue.QDialogueManager;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.global.GlobalObjectives;
 import de.erethon.questsxl.instancing.BlockCollectionManager;
+import de.erethon.questsxl.interaction.InteractionManager;
 import de.erethon.questsxl.listener.PlayerListener;
 import de.erethon.questsxl.listener.PluginListener;
 import de.erethon.questsxl.livingworld.AutoTrackingManager;
@@ -76,6 +77,7 @@ public final class QuestsXL extends EPlugin {
     public static File IBCS;
     public static File SCHEMATICS;
     public static File DIALOGUES;
+    public static File INTERACTIONS;
     public long lastSync = 0;
 
     private final QMessageHandler messageHandler = new QMessageHandler();
@@ -96,6 +98,7 @@ public final class QuestsXL extends EPlugin {
     private ObjectiveEventManager objectiveEventManager;
     private AutoTrackingManager autoTrackingManager;
     private LootChestManager lootChestManager;
+    private InteractionManager interactionManager;
 
     private final Map<String, Integer> scores = new HashMap<>();
     private final List<FriendlyError> errors = new ArrayList<>();
@@ -153,6 +156,7 @@ public final class QuestsXL extends EPlugin {
         initFolder(IBCS = new File(getDataFolder(), "blocks"));
         initFolder(SCHEMATICS = new File(getDataFolder(), "schematics"));
         initFolder(DIALOGUES = new File(getDataFolder(), "dialogues"));
+        initFolder(INTERACTIONS = new File(getDataFolder(), "interactions"));
 
         initFile(REGIONS = new File(getDataFolder(), "regions.yml"));
         initFile(RESPAWNS = new File(getDataFolder(), "respawnPoints.yml"));
@@ -168,7 +172,7 @@ public final class QuestsXL extends EPlugin {
             databaseManager = new QDatabaseManager(connection);
         }
         catch (Exception e) {
-            Hecate.log("Failed to connect to database. Hecate will not work.");
+            QuestsXL.log("Failed to connect to database. QXL will not work.");
             e.printStackTrace();
             return;
         }
@@ -266,6 +270,12 @@ public final class QuestsXL extends EPlugin {
         // Register loot chest listener
         getServer().getPluginManager().registerEvents(new de.erethon.questsxl.listener.LootChestListener(this), this);
 
+        // Initialize interaction manager
+        QuestsXL.log("Loading world interactions...");
+        interactionManager = new InteractionManager(this);
+        interactionManager.loadInteractions(INTERACTIONS);
+        QuestsXL.log("Interaction manager initialized");
+
         exploration.initializeVFX(); // Initialize exploration VFX after exploration manager is loaded
 
         // Generate docs
@@ -285,6 +295,10 @@ public final class QuestsXL extends EPlugin {
 
     @Override
     public void onDisable() {
+        // Shutdown interaction manager
+        if (interactionManager != null) {
+            interactionManager.shutdown();
+        }
         regionManager.save();
         blockCollectionManager.save();
         animationManager.save();
@@ -392,6 +406,10 @@ public final class QuestsXL extends EPlugin {
 
     public LootChestManager getLootChestManager() {
         return lootChestManager;
+    }
+
+    public InteractionManager getInteractionManager() {
+        return interactionManager;
     }
 
     public void reload() {

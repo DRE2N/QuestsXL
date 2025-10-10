@@ -69,6 +69,7 @@ public class QPlayer implements ObjectiveHolder, Scorable, Quester {
     private Location compassTarget = null;
     private boolean isInConversation = false;
     private boolean frozen = false;
+    private volatile boolean dataLoaded = false;
 
     Pattern pattern = Pattern.compile("\"color\"\\s*:\\s*\"([^\"]*)\"");
     MiniMessage miniMessage = MiniMessage.miniMessage();
@@ -150,7 +151,16 @@ public class QPlayer implements ObjectiveHolder, Scorable, Quester {
     private void loadFromDatabase() {
         var databaseManager = QuestsXL.get().getDatabaseManager();
         if (databaseManager != null) {
-            databaseManager.loadPlayerData(this).join();
+            // Load asynchronously to avoid blocking the main thread
+            databaseManager.loadPlayerData(this).thenAccept(result -> {
+                dataLoaded = true;
+            }).exceptionally(ex -> {
+                QuestsXL.log("Failed to load player data for " + player.getName() + ": " + ex.getMessage());
+                dataLoaded = true; // Mark as loaded even on error to avoid blocking
+                return null;
+            });
+        } else {
+            dataLoaded = true;
         }
     }
 
@@ -455,6 +465,10 @@ public class QPlayer implements ObjectiveHolder, Scorable, Quester {
 
     public UUID getUUID() {
         return uuid;
+    }
+
+    public boolean isDataLoaded() {
+        return dataLoaded;
     }
 
     public static QPlayer get(Player player) {

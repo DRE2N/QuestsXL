@@ -412,23 +412,31 @@ public class QDatabaseManager extends EDatabaseManager {
     }
 
     public CompletableFuture<Void> loadPlayerData(QPlayer qPlayer) {
-        return CompletableFuture.runAsync(() -> {
+        return CompletableFuture.supplyAsync(() -> {
             UUID characterId = getCurrentCharacterId(qPlayer.getPlayer());
             if (characterId == null) {
-                return;
+                return null;
             }
 
+            // Load basic data synchronously
             var activeQuests = playerDao.getActiveQuests(characterId);
-            for (var questData : activeQuests) {
-                var quest = QuestsXL.get().getQuestManager().getByName(questData.questId);
-                if (quest != null) {
-                    var activeQuest = new ActiveQuest(qPlayer, quest, questData.currentStage);
-                    qPlayer.getActiveQuests().put(activeQuest, questData.startedAt);
-                    loadObjectivesForCompletable(qPlayer, quest).join();
-                }
+            var completedQuests = playerDao.getCompletedQuests(characterId);
+            var scores = playerDao.getScores(characterId);
+            var explorationData = playerDao.getExplorationData(characterId);
+
+            return new Object[] { characterId, activeQuests, completedQuests, scores, explorationData };
+        }, asyncExecutor).thenCompose(data -> {
+            if (data == null) {
+                return CompletableFuture.completedFuture(null);
             }
 
-            var completedQuests = playerDao.getCompletedQuests(characterId);
+            UUID characterId = (UUID) data[0];
+            var activeQuests = (java.util.List<ActiveQuestData>) data[1];
+            var completedQuests = (java.util.List<CompletedQuestData>) data[2];
+            var scores = (java.util.List<ScoreData>) data[3];
+            var explorationData = (java.util.Optional<String>) data[4];
+
+            // Process completed quests and scores first (no async dependencies)
             for (var questData : completedQuests) {
                 var quest = QuestsXL.get().getQuestManager().getByName(questData.questId);
                 if (quest != null) {
@@ -436,16 +444,14 @@ public class QDatabaseManager extends EDatabaseManager {
                 }
             }
 
-            var scores = playerDao.getScores(characterId);
             for (var scoreData : scores) {
                 qPlayer.getScores().put(scoreData.scoreName, scoreData.scoreValue);
             }
 
-            var explorationData = playerDao.getExplorationData(characterId);
+            // Load exploration data
             if (explorationData.isPresent() && !explorationData.get().isEmpty()) {
                 try {
                     String jsonString = explorationData.get();
-                    // Additional validation - make sure it's not just "JsonObject" or other invalid content
                     if (!jsonString.equals("JsonObject") && jsonString.startsWith("{") && jsonString.endsWith("}")) {
                         var json = com.google.gson.JsonParser.parseString(jsonString).getAsJsonObject();
                         qPlayer.setExplorer(PlayerExplorer.fromJson(qPlayer, json));
@@ -456,13 +462,27 @@ public class QDatabaseManager extends EDatabaseManager {
                 } catch (Exception e) {
                     QuestsXL.log("Failed to load exploration data for character " + characterId + ": " + e.getMessage());
                     e.printStackTrace();
-                    qPlayer.setExplorer(new PlayerExplorer(qPlayer)); // Handle gracefully
+                    qPlayer.setExplorer(new PlayerExplorer(qPlayer));
                 }
             } else {
-                // No exploration data found or empty - create new PlayerExplorer
                 qPlayer.setExplorer(new PlayerExplorer(qPlayer));
             }
-        }, asyncExecutor);
+
+            // Load active quests and their objectives asynchronously without blocking
+            List<CompletableFuture<Void>> questLoadFutures = new ArrayList<>();
+            for (var questData : activeQuests) {
+                var quest = QuestsXL.get().getQuestManager().getByName(questData.questId);
+                if (quest != null) {
+                    var activeQuest = new ActiveQuest(qPlayer, quest, questData.currentStage);
+                    qPlayer.getActiveQuests().put(activeQuest, questData.startedAt);
+                    // Don't block! Add to list of futures instead
+                    questLoadFutures.add(loadObjectivesForCompletable(qPlayer, quest));
+                }
+            }
+
+            // Wait for all quest objectives to load without blocking the thread pool
+            return CompletableFuture.allOf(questLoadFutures.toArray(new CompletableFuture[0]));
+        });
     }
 
     public UUID getCurrentCharacterId(Player player) {
@@ -789,7 +809,7 @@ public class QDatabaseManager extends EDatabaseManager {
     }
 
     public CompletableFuture<Void> loadEventState(QEvent event) {
-        return CompletableFuture.runAsync(() -> {
+        return CompletableFuture.supplyAsync(() -> {
             try {
                 String eventId = event.getId();
                 var stateData = eventDao.getEventState(eventId);
@@ -821,14 +841,20 @@ public class QDatabaseManager extends EDatabaseManager {
                     QuestsXL.log("No saved state found for event " + eventId + ", using default state");
                 }
 
-                // Load objectives after state is restored
-                loadObjectivesForCompletable(event, event).join();
+                return event;
 
             } catch (Exception e) {
                 QuestsXL.log("Failed to load event state for " + event.getId() + ": " + e.getMessage());
                 e.printStackTrace();
+                return null;
             }
-        }, asyncExecutor);
+        }, asyncExecutor).thenCompose(evt -> {
+            if (evt == null) {
+                return CompletableFuture.completedFuture(null);
+            }
+            // Load objectives after state is restored, without blocking
+            return loadObjectivesForCompletable(evt, evt);
+        });
     }
 
     private String serializeScores(Map<String, Integer> scores) {

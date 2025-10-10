@@ -48,6 +48,11 @@ public abstract class QBaseCondition implements QCondition {
     }
 
     @Override
+    public String id() {
+        return this.getClass().getSimpleName();
+    }
+
+    @Override
     public void load(QConfig cfg) {
         if (cfg.getString("displayText") == null || cfg.getString("displayText").equals("none")) {
             display = null;

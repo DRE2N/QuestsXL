@@ -127,6 +127,11 @@ public class QQuest implements Completable, QComponent {
         // We are the top-level component, so we don't need to set a parent.
     }
 
+    @Override
+    public String id() {
+        return name;
+    }
+
 
     @Override
     public void load() {

@@ -82,4 +82,9 @@ public class GlobalObjectives implements Completable, QComponent {
     public void setParent(QComponent parent) {
         // We are the top-level component, so we don't need to set a parent.
     }
+
+    @Override
+    public String id() {
+        return "GlobalObjectives";
+    }
 }

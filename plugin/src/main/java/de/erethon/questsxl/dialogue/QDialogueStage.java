@@ -125,4 +125,9 @@ public class QDialogueStage implements QComponent {
             option.validateAndLinkStages();
         }
     }
+
+    @Override
+    public String id() {
+        return "Dialog: " + dialogue.id() + " Stage " + index;
+    }
 }

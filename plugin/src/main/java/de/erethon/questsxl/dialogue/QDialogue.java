@@ -140,6 +140,11 @@ public class QDialogue implements QComponent {
     }
 
     @Override
+    public String id() {
+        return name;
+    }
+
+    @Override
     public void setParent(QComponent parent) {
         // We are the top-level component, so we don't need to set a parent.
     }

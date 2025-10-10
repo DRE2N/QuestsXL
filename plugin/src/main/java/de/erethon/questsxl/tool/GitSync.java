@@ -174,7 +174,10 @@ public class GitSync {
         if (!plugin.isGitSync()) {
             return;
         }
-
+        if (plugin.isPassiveSync()) {
+            QuestsXL.log("Passive sync is enabled, skipping push of server changes");
+            return;
+        }
         QuestsXL.log("Pushing server changes to remote" + (force ? " (FORCE)" : "") + "...");
 
         // Copy server-modifiable files from plugins to repo

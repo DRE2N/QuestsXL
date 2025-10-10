@@ -84,6 +84,11 @@ public class DialogueOption implements QComponent {
 
     }
 
+    @Override
+    public String id() {
+        return displayText.toString();
+    }
+
     public void load(QConfig cfg) {
         displayText = QTranslatable.fromString(cfg.getString("text", "<missing>"));
         String hint = cfg.getString("hint", null);

@@ -84,4 +84,9 @@ public class RunCommand extends ECommand implements QComponent {
     public void setParent(QComponent parent) {
         // We are the top-level component, so we don't need to set a parent.
     }
+
+    @Override
+    public String id() {
+        return "RunCommand";
+    }
 }
