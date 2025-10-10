@@ -89,7 +89,7 @@ public abstract class QBaseAction implements QAction {
 
     @Override
     public String id() {
-        return this.getClass().getSimpleName();
+        return "in: " + findTopParent().id() + " - " + this.getClass().getSimpleName();
     }
 
     @Override

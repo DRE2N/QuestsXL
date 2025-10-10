@@ -232,6 +232,14 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
     }
 
     /**
+     * Sets whether the objective is persistent. Persistent objectives are not removed after completion.
+     * @param persistent true if the objective should be persistent
+     */
+    public void setPersistent(boolean persistent) {
+        this.persistent = persistent;
+    }
+
+    /**
      * @return a set of actions that are run when the objective is completed.
      */
     @Override
@@ -336,6 +344,10 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
         }
         if (cfg.contains("cancel")) {
             shouldCancelEvent = cfg.getBoolean("cancel");
+        }
+        if (cfg.contains("conditions")) {
+            conditions.addAll(cfg.getConditions(this, "conditions"));
+            QuestsXL.log("Loaded conditions for " + this.getClass().getSimpleName() + ": " + conditions.size());
         }
         if (cfg.contains("scopeSuccess")) {
             completeScope = ActionScope.valueOf(cfg.getString("scopeSuccess").toUpperCase());

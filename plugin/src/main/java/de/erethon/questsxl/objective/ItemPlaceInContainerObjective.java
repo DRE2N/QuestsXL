@@ -54,7 +54,7 @@ public class ItemPlaceInContainerObjective extends QBaseObjective<InventoryClose
         super.load(cfg);
         itemID = ResourceLocation.parse(cfg.getString("itemID"));
         amount = cfg.getInt("amount", 1);
-        location = cfg.getQLocation("location");
+        location = cfg.getQLocation("location", null);
         if (itemID == null || itemLibrary.get(itemID) == null) {
             QuestsXL.get().addRuntimeError(new FriendlyError(findTopParent().id(), "Invalid item", "Item " + cfg.getString("item") + " does not exist in the item library.", null));
         }

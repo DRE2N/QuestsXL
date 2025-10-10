@@ -431,7 +431,7 @@ public final class QuestsXL extends EPlugin {
     }
 
     public boolean isHephaestusEnabled() {
-        return hephaestus != null && hephaestus.isEnabled();
+        return hephaestus != null;
     }
 
     public boolean isRunningPapyrus() {

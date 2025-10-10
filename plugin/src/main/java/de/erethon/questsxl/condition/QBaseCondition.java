@@ -29,7 +29,7 @@ public abstract class QBaseCondition implements QCondition {
         for (QAction action : successActions) {
             action.play(quester);
         }
-        return false;
+        return true;
     }
 
     @Override

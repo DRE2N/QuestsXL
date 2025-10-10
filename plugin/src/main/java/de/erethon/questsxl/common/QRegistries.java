@@ -40,6 +40,7 @@ public class QRegistries {
         ACTIONS.register("play_animation", PlayAnimationAction::new);
         ACTIONS.register("play_dialogue", DialogueAction::new);
         ACTIONS.register("play_cutscene", PlayCutsceneAction::new);
+        ACTIONS.register("play_sound", PlaySoundAction::new);
         ACTIONS.register("repeat", RepeatAction::new);
         ACTIONS.register("reset_ibc", ResetIBCAction::new);
         ACTIONS.register("run_as", RunAsAction::new);
@@ -47,6 +48,7 @@ public class QRegistries {
         ACTIONS.register("score", ScoreAction::new);
         ACTIONS.register("message", SendMessageAction::new);
         ACTIONS.register("title", SendTitleAction::new);
+        ACTIONS.register("set_block", SetBlockAction::new);
         ACTIONS.register("set_tracked_event", SetTrackedEventAction::new);
         ACTIONS.register("set_tracked_quest", SetTrackedQuestAction::new);
         ACTIONS.register("show_ibc", ShowIBCAction::new);

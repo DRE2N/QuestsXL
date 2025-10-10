@@ -7,6 +7,7 @@ import de.erethon.questsxl.common.QComponent;
 import de.erethon.questsxl.common.QConfigLoader;
 import de.erethon.questsxl.common.QRegistries;
 import de.erethon.questsxl.objective.ActiveObjective;
+import de.erethon.questsxl.objective.QBaseObjective;
 import de.erethon.questsxl.objective.QObjective;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.Bukkit;
@@ -83,6 +84,14 @@ public class WorldInteraction implements ObjectiveHolder, QComponent {
         // Load objectives
         objectives.addAll((Collection<? extends QObjective>) QConfigLoader.load(
                 this, "objectives", section, QRegistries.OBJECTIVES));
+
+        // Make all objectives persistent and repeatable for WorldInteractions
+        // Persistent objectives are not removed after completion, allowing them to be triggered repeatedly
+        for (QObjective objective : objectives) {
+            if (objective instanceof QBaseObjective<?> baseObjective) {
+                baseObjective.setPersistent(true);
+            }
+        }
 
         QuestsXL.log("Loaded interaction '" + id + "' at " + location + " with " + objectives.size() + " objectives");
     }

@@ -7,6 +7,7 @@ import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.QTranslatable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
 @QLoadableDoc(
         value = "block_interact",
@@ -29,6 +30,7 @@ public class BlockInteractObjective extends QBaseObjective<PlayerInteractEvent> 
     public void check(ActiveObjective active, PlayerInteractEvent e) {
         if (!conditions(e.getPlayer())) return;
         if (e.getClickedBlock() == null) return;
+        if (e.getHand() != EquipmentSlot.HAND) return;
         if (location.get(e.getClickedBlock().getLocation()).equals(e.getClickedBlock().getLocation())) {
             if (shouldCancelEvent) e.setCancelled(true);
             checkCompletion(active, this, plugin.getDatabaseManager().getCurrentPlayer(e.getPlayer()));

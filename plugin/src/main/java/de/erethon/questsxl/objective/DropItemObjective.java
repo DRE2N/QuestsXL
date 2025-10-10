@@ -13,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDropItemEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 
 @QLoadableDoc(
         value = "drop_item",
@@ -23,30 +24,20 @@ import org.bukkit.event.entity.EntityDropItemEvent;
                 "  item: 'erethon:fancy_sword' # Needs to be quoted due to the colon.",
         }
 )
-public class DropItemObjective extends QBaseObjective<EntityDropItemEvent> {
+public class DropItemObjective extends QBaseObjective<PlayerDropItemEvent> {
     private final HItemLibrary itemLibrary = QuestsXL.get().getItemLibrary();
 
     @QParamDoc(name = "item", description = "The key of the item that needs to be dropped. Same as in /give", required = true)
     private ResourceLocation itemID;
-    @QParamDoc(name = "location", description = "The location where the item must be dropped. QLocation", required = false)
-    private QLocation location;
-    @QParamDoc(name = "radius", description = "The radius around the location where the item can be dropped.", def = "1", required = false)
-    private int radius = 1;
 
     @Override
-    public void check(ActiveObjective active, EntityDropItemEvent e) {
-        if (!(e.getEntity() instanceof Player player)) return;
-        if (!conditions(player)) return;
+    public void check(ActiveObjective active, PlayerDropItemEvent e) {
         HItem item = itemLibrary.get(e.getItemDrop().getItemStack()).getItem();
         if (item == null) return;
         if (item.getKey().equals(itemID)) {
-            if (location != null) {
-                if (location.get(e.getItemDrop().getLocation()).distance(e.getItemDrop().getLocation()) > radius) {
-                    return;
-                }
-            }
+            if (!conditions(e.getPlayer())) return;
             if (shouldCancelEvent) e.setCancelled(true);
-            complete(active.getHolder(), this, plugin.getDatabaseManager().getCurrentPlayer(player));
+            complete(active.getHolder(), this, plugin.getDatabaseManager().getCurrentPlayer(e.getPlayer()));
         }
     }
 
@@ -54,9 +45,7 @@ public class DropItemObjective extends QBaseObjective<EntityDropItemEvent> {
     public void load(QConfig cfg) {
         super.load(cfg);
         itemID = ResourceLocation.parse(cfg.getString("item"));
-        location = cfg.getQLocation("location");
-        radius = Math.max(0, cfg.getInt("radius", 1));
-        if (itemID == null) {
+        if (itemID == null || itemLibrary.get(itemID) == null) {
             QuestsXL.get().addRuntimeError(new FriendlyError(id(), "Invalid item ID in drop_item objective"));
         }
     }
@@ -67,7 +56,7 @@ public class DropItemObjective extends QBaseObjective<EntityDropItemEvent> {
     }
 
     @Override
-    public Class<EntityDropItemEvent> getEventType() {
-        return EntityDropItemEvent.class;
+    public Class<PlayerDropItemEvent> getEventType() {
+        return PlayerDropItemEvent.class;
     }
 }

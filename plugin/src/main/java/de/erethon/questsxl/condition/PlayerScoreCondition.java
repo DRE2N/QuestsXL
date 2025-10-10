@@ -1,6 +1,7 @@
 package de.erethon.questsxl.condition;
 
 import de.erethon.bedrock.misc.NumberUtil;
+import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLineConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
@@ -23,17 +24,38 @@ import org.bukkit.configuration.ConfigurationSection;
 public class PlayerScoreCondition extends QBaseCondition {
 
     @QParamDoc(name = "score", description = "The name of the score.", required = true)
-    String score;
+    private String score;
     @QParamDoc(name = "value", description = "The value the score should be larger or equal to.", def = "1")
-    int value;
+    private int value;
+    @QParamDoc(name = "mode", description = "The mode of the condition. Can be 'at_least' or 'at_most', 'exactly' or 'unset'.", def = "at_least")
+    private ScoreConditionMode mode;
 
     @Override
     public boolean check(Quester quester) {
         if (!(quester instanceof QPlayer player)) {
             return check(quester);
         }
-        if (player.getScore(score) >= value) {
-            return success(player);
+        switch (mode) {
+            case AT_LEAST:
+                if (QuestsXL.get().getScore((score)) >= value) {
+                    return success(quester);
+                }
+                break;
+            case AT_MOST:
+                if (QuestsXL.get().getScore((score)) <= value) {
+                    return success(quester);
+                }
+                break;
+            case EXACTLY:
+                if (QuestsXL.get().getScore((score)) == value) {
+                    return success(quester);
+                }
+                break;
+            case UNSET:
+                if (QuestsXL.get().getScore((score)) == 0) {
+                    return success(quester);
+                }
+                break;
         }
         return fail(player);
     }
@@ -43,5 +65,6 @@ public class PlayerScoreCondition extends QBaseCondition {
         super.load(cfg);
         score = cfg.getString("score");
         value = cfg.getInt("value");
+        mode = ScoreConditionMode.valueOf(cfg.getString("mode", "at_least").toUpperCase());
     }
 }

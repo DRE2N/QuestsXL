@@ -20,7 +20,7 @@ import org.bukkit.Material;
                 "    z: 0",
         }
 )
-public class TeleportPlayerAction extends QBaseAction{
+public class TeleportPlayerAction extends QBaseAction {
 
     @QParamDoc(name = "target", description = "The location to teleport the player to", required = true)
     QLocation target;
