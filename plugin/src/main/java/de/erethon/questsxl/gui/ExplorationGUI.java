@@ -71,8 +71,12 @@ public class ExplorationGUI implements InventoryHolder, Listener {
         Location playerLocation = player.getLocation();
 
         // Sort by distance from player
-        sets.sort(Comparator.comparingDouble(set ->
-            set.averageLocation().distanceSquared(playerLocation)));
+        sets.sort(Comparator.comparingDouble(set -> {
+            if (set.averageLocation().getWorld() != playerLocation.getWorld()) {
+                return Double.MAX_VALUE;
+            }
+            return set.averageLocation().distanceSquared(playerLocation);
+        }));
 
         for (int i = 0; i < Math.min(sets.size(), 45); i++) {
             ExplorationSet set = sets.get(i);
@@ -96,6 +100,7 @@ public class ExplorationGUI implements InventoryHolder, Listener {
         int total = set.entries().size();
         int completed = getCompletedCount(set);
         boolean isCompleted = completed >= total;
+        if (set.averageLocation().getWorld() != player.getLocation().getWorld()) return ItemStack.empty();
 
         // Calculate distance
         double distance = Math.sqrt(set.averageLocation().distanceSquared(player.getLocation()));
@@ -256,8 +261,12 @@ public class ExplorationGUI implements InventoryHolder, Listener {
     private void handleSetClick(int slot) {
         List<ExplorationSet> sets = new ArrayList<>(exploration.getSets());
         Location playerLocation = player.getLocation();
-        sets.sort(Comparator.comparingDouble(set ->
-            set.averageLocation().distanceSquared(playerLocation)));
+        sets.sort(Comparator.comparingDouble(set -> {
+            if (set.averageLocation().getWorld() != playerLocation.getWorld()) {
+                return Double.MAX_VALUE;
+            }
+            return set.averageLocation().distanceSquared(playerLocation);
+        }));
 
         if (slot >= 0 && slot < sets.size()) {
             ExplorationSet clickedSet = sets.get(slot);

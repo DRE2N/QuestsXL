@@ -68,6 +68,9 @@ public class ContentGuide {
 
         // Check explorables in exploration sets
         for (ExplorationSet set : plugin.getExploration().getSets()) {
+            if (set.averageLocation().getWorld() != playerLoc.getWorld()) {
+                continue;
+            }
             if (set.averageLocation().distanceSquared(playerLoc) > 64 * 64) { // Skip sets that are too far away
                 continue;
             }
@@ -110,6 +113,9 @@ public class ContentGuide {
 
         // Check standalone explorables (including standalone respawn points)
         for (Explorable explorable : plugin.getExploration().getStandaloneExplorables()) {
+            if (explorable.location().getWorld() != playerLoc.getWorld()) {
+                continue;
+            }
             if (explorable.location().distanceSquared(playerLoc) > 64 * 64) { // Skip if too far away
                 continue;
             }
@@ -167,13 +173,17 @@ public class ContentGuide {
             distance = 0;
             return null;
         }
+        if (closest.location().getWorld() != player.getPlayer().getLocation().getWorld()) {
+            distance = 0;
+            return null;
+        }
         distance = Math.sqrt(closest.location().distanceSquared(player.getPlayer().getLocation()));
         return closest;
     }
 
     private Explorable getClosestUnexploredInSet(ExplorationSet set) {
         Explorable closest = set.getClosestUnexplored(player.getPlayer().getLocation(), explorer.getExploredInSet(set));
-        if (closest == null) {
+        if (closest.location().getWorld() != player.getPlayer().getLocation().getWorld()) {
             distance = 0;
             return null;
         }

@@ -98,6 +98,9 @@ public class Exploration {
 
     public PointOfInterest getPointOfInterest(Location loc) {
         for (PointOfInterest poi : pointsOfInterest) {
+            if (poi.location().getWorld() != loc.getWorld()) {
+                continue;
+            }
             if (poi.location().distanceSquared(loc) < 1) {
                 return poi;
             }
@@ -154,6 +157,7 @@ public class Exploration {
         for (ExplorationSet set : sets) {
             Location avgLoc = set.averageLocation();
             if (avgLoc == null) continue; // Skip sets with no entries
+            if (avgLoc.getWorld() != location.getWorld()) continue;
             double d = avgLoc.distanceSquared(location);
             if (d < distance) {
                 distance = d;
@@ -346,7 +350,13 @@ public class Exploration {
                     Math.abs(playerChunkZ - chunkZ) > VFX_CHUNK_RANGE) {
                     continue;
                 }
-
+                if (playerChunkX == chunkX && playerChunkZ == chunkZ) {
+                    hasNearbyPlayers = true;
+                    break;
+                }
+                if (playerData.location.getWorld() != loc.getWorld()) {
+                    continue;
+                }
                 // Only do expensive distance calculation if chunks are close
                 if (playerData.location.distanceSquared(loc) <= VFX_RANGE_SQUARED) {
                     hasNearbyPlayers = true;

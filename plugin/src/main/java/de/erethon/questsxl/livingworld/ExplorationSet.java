@@ -107,6 +107,7 @@ public final class ExplorationSet {
         Explorable closest = null;
         double distance = Double.MAX_VALUE;
         for (Explorable entry : entries) {
+            if (entry.location().getWorld() != location.getWorld()) continue;
             double d = entry.location().distanceSquared(location);
             if (d < distance) {
                 distance = d;
@@ -121,6 +122,7 @@ public final class ExplorationSet {
         double distance = Double.MAX_VALUE;
         for (Explorable entry : entries) {
             if (alreadyExplored.contains(entry)) continue;
+            if (entry.location().getWorld() != location.getWorld()) continue;
             double d = entry.location().distanceSquared(location);
             if (d < distance) {
                 distance = d;
@@ -133,6 +135,7 @@ public final class ExplorationSet {
     public double getClosestDistance(Location location) {
         double distance = Double.MAX_VALUE;
         for (Explorable entry : entries) {
+            if (entry.location().getWorld() != location.getWorld()) continue;
             double d = entry.location().distanceSquared(location);
             if (d < distance) {
                 distance = d;
