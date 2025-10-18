@@ -211,8 +211,8 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
         if (state == EventState.ACTIVE) {
             return;
         }
-        stages.get(0).start(this);
-        currentStage = stages.get(0);
+        stages.getFirst().start(this);
+        currentStage = stages.getFirst();
         state = EventState.ACTIVE;
         for (QAction action : startActions) {
             action.play(this);
@@ -221,6 +221,10 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
 
     public void progress() {
         QStage next = null;
+        if (currentStage == null) {
+            currentStage = stages.getFirst();
+            return;
+        }
         int currentID = currentStage.getId();
         for (QStage stage : getStages()) {
             if (stage.getId() == currentID + 1) {

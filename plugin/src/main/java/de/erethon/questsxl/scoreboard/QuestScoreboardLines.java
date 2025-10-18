@@ -132,6 +132,9 @@ public class QuestScoreboardLines implements ScoreboardLines {
             if (activeObjective.getObjective().isPersistent()) {
                 continue; // Skip persistent objectives
             }
+            if (activeObjective.getObjective().isHidden()) {
+                continue; // Skip hidden objectives
+            }
 
             var displayText = activeObjective.getObjective().getDisplayText(player.getPlayer());
             Component translatedComponent = GlobalTranslator.render(displayText.get(), player.getPlayer().locale());

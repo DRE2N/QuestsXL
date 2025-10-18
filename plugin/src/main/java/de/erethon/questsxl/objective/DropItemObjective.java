@@ -22,6 +22,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
         longExample = {
                 "drop_item:",
                 "  item: 'erethon:fancy_sword' # Needs to be quoted due to the colon.",
+                "  remove: true"
         }
 )
 public class DropItemObjective extends QBaseObjective<PlayerDropItemEvent> {
@@ -29,6 +30,8 @@ public class DropItemObjective extends QBaseObjective<PlayerDropItemEvent> {
 
     @QParamDoc(name = "item", description = "The key of the item that needs to be dropped. Same as in /give", required = true)
     private ResourceLocation itemID;
+    @QParamDoc(name = "remove", description = "If true, the item will be removed when dropped", def = "false")
+    private boolean removeItem = false;
 
     @Override
     public void check(ActiveObjective active, PlayerDropItemEvent e) {
@@ -37,6 +40,7 @@ public class DropItemObjective extends QBaseObjective<PlayerDropItemEvent> {
         if (item.getKey().equals(itemID)) {
             if (!conditions(e.getPlayer())) return;
             if (shouldCancelEvent) e.setCancelled(true);
+            if (removeItem) e.getItemDrop().remove();
             complete(active.getHolder(), this, plugin.getDatabaseManager().getCurrentPlayer(e.getPlayer()));
         }
     }
@@ -45,6 +49,7 @@ public class DropItemObjective extends QBaseObjective<PlayerDropItemEvent> {
     public void load(QConfig cfg) {
         super.load(cfg);
         itemID = ResourceLocation.parse(cfg.getString("item"));
+        removeItem = cfg.getBoolean("remove", false);
         if (itemID == null || itemLibrary.get(itemID) == null) {
             QuestsXL.get().addRuntimeError(new FriendlyError(id(), "Invalid item ID in drop_item objective"));
         }

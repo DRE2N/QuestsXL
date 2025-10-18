@@ -64,7 +64,7 @@ public class WorldInteraction implements ObjectiveHolder, QComponent {
 
     private void load(ConfigurationSection section) {
         // Load location
-        String worldName = section.getString("world");
+        String worldName = section.getString("world", "Erethon");
         if (worldName == null) {
             throw new IllegalArgumentException("World must be specified for interaction " + id);
         }
