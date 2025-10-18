@@ -52,7 +52,7 @@ public class AdminCommand extends ECommand {
                 return;
             }
             MessageUtil.sendMessage(player, "&7ID: &6" + quest.getName());
-            MessageUtil.sendMessage(player, "&7Name: &6" + quest.getDisplayName());
+            MessageUtil.sendMessage(player, "&7Name: &6" + quest.displayName().getAsString());
             MessageUtil.sendMessage(player, "&7Description: &6" + quest.getDescription());
             MessageUtil.sendMessage(player, "&7Stages (" + quest.getStages().size() + "):");
             for (QStage stage : quest.getStages()) {

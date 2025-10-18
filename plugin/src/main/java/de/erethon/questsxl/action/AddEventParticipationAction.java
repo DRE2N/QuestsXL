@@ -9,7 +9,7 @@ import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
 
 @QLoadableDoc(
-        value = "event_participation",
+            value = "event_participation",
         description = "Add participation to an event.",
         shortExample = "event_participation: amount=1",
         longExample = {

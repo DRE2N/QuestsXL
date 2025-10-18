@@ -76,6 +76,12 @@ public class EventCommand extends ECommand {
                 MessageUtil.sendMessage(commandSender, "&7Location&8: &a" + event.getLocation().getX() + " &8/&a " + event.getLocation().getY() + " &8/&a " + event.getLocation().getZ());
                 MessageUtil.sendMessage(commandSender, "&7Range&8: &a" + event.getRange());
                 MessageUtil.sendMessage(commandSender, "&7State&8: &a" + event.getState());
+                int cooldown = event.getRemainingCooldownSeconds();
+                if (cooldown > 0) {
+                    MessageUtil.sendMessage(commandSender, "&7Cooldown&8: &a" + cooldown + " seconds");
+                } else {
+                    MessageUtil.sendMessage(commandSender, "&7Cooldown&8: &aNone");
+                }
                 if (event.getCurrentStage() == null) {
                     MessageUtil.sendMessage(commandSender, "&7Stage&8: &aNone");
                 } else {

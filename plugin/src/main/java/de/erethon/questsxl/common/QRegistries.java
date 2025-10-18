@@ -55,6 +55,7 @@ public class QRegistries {
         ACTIONS.register("stage", StageAction::new);
         ACTIONS.register("start_event", StartEventAction::new);
         ACTIONS.register("start_quest", QuestAction::new);
+        ACTIONS.register("stop_event", StopEventAction::new);
         ACTIONS.register("talk", TalkAction::new);
         ACTIONS.register("teleport", TeleportPlayerAction::new);
         ACTIONS.register("velocity", VelocityAction::new);

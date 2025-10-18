@@ -44,6 +44,12 @@ public class RepeatAction extends QBaseAction {
         task = new BukkitRunnable() {
             @Override
             public void run() {
+                if (current >= repetitions) {
+                    onFinish(quester);
+                    cancel();
+                    return;
+                }
+                current++;
                 for (QAction action : actions) {
                     try {
                         action.play(quester);
@@ -52,11 +58,6 @@ public class RepeatAction extends QBaseAction {
                         plugin.addRuntimeError(error);
                     }
                 }
-                if (current >= repetitions) {
-                    onFinish(quester);
-                    cancel();
-                }
-                current++;
             }
         };
         task.runTaskTimer(plugin, delay, delay);

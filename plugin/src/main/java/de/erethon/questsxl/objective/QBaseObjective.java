@@ -105,6 +105,17 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
     }
 
     /**
+     * Checks if the objective is completed, using the holder (QEvent) as the instigator.
+     * This is useful when non-player entities trigger objective progression (e.g., wolves killing villagers).
+     *
+     * @param active the ActiveObjective to check
+     * @param objective the QObjective to check
+     */
+    protected void checkCompletion(ActiveObjective active, QObjective<T> objective) {
+        checkCompletion(active, objective, active.getHolder());
+    }
+
+    /**
      * Completes an objective. Completing removes it from the current stage (if not persistent) and progresses
      * to the next stage (if available).
      * Objective completion will also execute success actions, if any.
@@ -115,7 +126,8 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
         QuestsXL.log("Checking for completion for " + holder.getName());
         Set<ActiveObjective> activeObjectives = holder.getCurrentObjectives();
         Set<ActiveObjective> toRemove = new HashSet<>();
-        for (ActiveObjective activeObjective : activeObjectives) {
+        // Create a copy to avoid ConcurrentModificationException when checkCompleted modifies the set
+        for (ActiveObjective activeObjective : new HashSet<>(activeObjectives)) {
             QuestsXL.log("Active: Objective: " + activeObjective.getObjective().getClass().getName() + " Holder: " + activeObjective.getHolder().getName() + " | Objective: " + obj.getClass().getName() + " Holder: " + holder.getName());
             if (activeObjective.getObjective() == obj && activeObjective.getHolder() == holder) {
                 activeObjective.setCompleted(true);
@@ -168,12 +180,17 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
      * @param obj the QObjective that failed
      */
     public void fail(ObjectiveHolder holder, QObjective<T> obj, ObjectiveHolder instigator) {
-        for (ActiveObjective objective : holder.getCurrentObjectives()) {
+        Set<ActiveObjective> activeObjectives = holder.getCurrentObjectives();
+        Set<ActiveObjective> toRemove = new HashSet<>();
+        for (ActiveObjective objective : activeObjectives) {
             if (objective.getObjective().equals(obj) && objective.getHolder().equals(holder)) {
                 if (!persistent) {
-                    holder.getCurrentObjectives().remove(objective);
+                    toRemove.add(objective);
                 }
             }
+        }
+        for (ActiveObjective objective : toRemove) {
+            activeObjectives.remove(objective);
         }
         if (failScope == ActionScope.PLAYER) {
             runActions(failActions, instigator);

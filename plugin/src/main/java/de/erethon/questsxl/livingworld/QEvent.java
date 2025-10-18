@@ -39,6 +39,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
     private QComponent parent;
 
     private final String id;
+    private QTranslatable displayName;
     private final List<QStage> stages = new ArrayList<>();
     private final List<QAction> updateActions = new ArrayList<>();
     private final List<QAction> startActions = new ArrayList<>();
@@ -219,6 +220,16 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
         }
     }
 
+    public void stop() {
+        QuestsXL.log("Event " + getName() + " stopped.");
+        state = EventState.COMPLETED;
+        clearObjectives();
+        playersInRange.clear();
+        eventParticipation.clear();
+        // Save state to database
+        databaseManager.saveEventState(this);
+    }
+
     public void progress() {
         QStage next = null;
         if (currentStage == null) {
@@ -345,6 +356,12 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
     @Override
     public void load() {
         ConfigurationSection locationSection = cfg.getConfigurationSection("startLocation");
+
+        // Load displayName
+        if (cfg.contains("displayName")) {
+            displayName = QTranslatable.fromString(cfg.getString("displayName"));
+        }
+
         cooldown = cfg.getInt("cooldown", 0);
         range = cfg.getInt("range", 32);
         canActivateRange = cfg.getInt("canActivateRange", range);
@@ -515,11 +532,21 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
 
     @Override
     public QTranslatable displayName() {
-        return QTranslatable.fromString("TODO displayName"); // TODO: Implement translatable for events
+        return displayName;
+    }
+
+    public int getRemainingCooldownSeconds() {
+        long currentTime = System.currentTimeMillis();
+        long timeSinceCompletion = currentTime - timeLastCompleted;
+        long cooldownMillis = cooldown * 1000L;
+        if (timeSinceCompletion >= cooldownMillis) {
+            return 0;
+        }
+        return (int) ((cooldownMillis - timeSinceCompletion) / 1000);
     }
 
     @Override
     public Location location() {
-        return getLocation();
+        return centerLocation;
     }
 }

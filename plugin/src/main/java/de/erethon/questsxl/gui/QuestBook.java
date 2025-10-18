@@ -24,7 +24,7 @@ public class QuestBook {
             Component questEntry = Component.text(" - ").color(TextColor.color(20, 20, 20));
             questEntry = questEntry.append(Component.text(quest.getName()));
             Component hover = Component.empty();
-            hover = hover.append(Component.text(quest.getDisplayName()).color(TextColor.color(0, 0, 255)));
+            hover = hover.append(Component.text(quest.displayName().getAsString()).color(TextColor.color(0, 0, 255)));
             hover = hover.append(Component.newline());
             hover = hover.append(Component.text(quest.getDescription())).color(TextColor.color(255, 255, 255)).decorate(TextDecoration.ITALIC).append(Component.newline());
             hover = hover.append(Component.text(stageDesc(player, quest)));

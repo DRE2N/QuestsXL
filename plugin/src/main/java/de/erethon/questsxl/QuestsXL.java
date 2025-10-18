@@ -325,7 +325,7 @@ public final class QuestsXL extends EPlugin {
     }
 
     public void addScore(String score, int amount) {
-        setScore(score, scores.getOrDefault(score, 0));
+        setScore(score, scores.getOrDefault(score, 0) + amount);
     }
 
     public void removeScore(String score, int amount) {

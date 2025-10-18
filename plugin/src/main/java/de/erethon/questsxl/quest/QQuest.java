@@ -8,6 +8,7 @@ import de.erethon.questsxl.common.QComponent;
 import de.erethon.questsxl.common.QConfigLoader;
 import de.erethon.questsxl.common.QRegistries;
 import de.erethon.questsxl.common.QStage;
+import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.player.QPlayer;
@@ -25,7 +26,7 @@ public class QQuest implements Completable, QComponent {
 
     public YamlConfiguration cfg;
     String name;
-    String displayName;
+    private QTranslatable displayName;
     String description;
     private final List<QStage> stages = new ArrayList<>();
     private final Set<QCondition> conditions = new HashSet<>();
@@ -104,10 +105,7 @@ public class QQuest implements Completable, QComponent {
         name = nn;
     }
 
-    public String getDisplayName() {
-        if (displayName == null) {
-            return name;
-        }
+    public QTranslatable displayName() {
         return displayName;
     }
 
@@ -136,7 +134,9 @@ public class QQuest implements Completable, QComponent {
     @Override
     public void load() {
         // General
-        displayName = cfg.getString("displayName", "<no display name>");
+        if (cfg.contains("displayName")) {
+            displayName = QTranslatable.fromString(cfg.getString("displayName"));
+        }
         description = cfg.getString("description", "<no description>");
         // Conditions
         if (cfg.contains("conditions")) {

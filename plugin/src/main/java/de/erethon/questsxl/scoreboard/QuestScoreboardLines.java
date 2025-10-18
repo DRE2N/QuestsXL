@@ -12,6 +12,7 @@ import de.erethon.questsxl.objective.ActiveObjective;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.ActiveQuest;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import org.jetbrains.annotations.NotNull;
@@ -56,6 +57,7 @@ public class QuestScoreboardLines implements ScoreboardLines {
                 @Override
                 public @NotNull Component get(EPlayer ePlayer) {
                     Component translatedContentGuide = GlobalTranslator.render(player.getContentGuideText(), ePlayer.getPlayer().locale());
+                    translatedContentGuide = translatedContentGuide.color(TextColor.fromCSSHexString("#edcc4b"));
                     return MessageUtil.parse(CONTENT_GUIDE_COLOR).append(translatedContentGuide);
                 }
             }));
@@ -63,8 +65,8 @@ public class QuestScoreboardLines implements ScoreboardLines {
         }
 
         if (player.getTrackedEvent() != null) {
-            Component eventNameComponent = Component.translatable(player.getTrackedEvent().getName());
-            Component translatedEventName = GlobalTranslator.render(eventNameComponent, ePlayer.getPlayer().locale());
+            Component translatedEventName = GlobalTranslator.render(player.getTrackedEvent().displayName().get(), ePlayer.getPlayer().locale());
+            translatedEventName = translatedEventName.color(TextColor.fromCSSHexString("#ec762c"));
             Component header = MessageUtil.parse(EVENT_COLOR).append(translatedEventName);
 
             lines.add(ScoreboardComponent.of((p) -> header));
@@ -79,8 +81,8 @@ public class QuestScoreboardLines implements ScoreboardLines {
         }
 
         if (trackedQuest != null) {
-            Component questNameComponent = Component.translatable(trackedQuest.getQuest().getDisplayName());
-            Component translatedQuestName = GlobalTranslator.render(questNameComponent, ePlayer.getPlayer().locale());
+            Component translatedQuestName = GlobalTranslator.render(trackedQuest.getQuest().displayName().get(), ePlayer.getPlayer().locale());
+            translatedQuestName = translatedQuestName.color(TextColor.fromCSSHexString("#3fda52"));
             Component header = MessageUtil.parse(QUEST_COLOR).append(translatedQuestName);
 
             lines.add(ScoreboardComponent.of((p) -> header));

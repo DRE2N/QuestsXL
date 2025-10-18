@@ -40,7 +40,7 @@ public class QuestCommand extends ECommand {
                 return;
             }
             qPlayer.setDisplayed(quest);
-            MessageUtil.sendMessage(player, "&7Die Quest &a" + quest.getQuest().getDisplayName() + " &7wird nun getrackt.");
+            MessageUtil.sendMessage(player, "&7Die Quest &a" + quest.getQuest().displayName().getAsString() + " &7wird nun getrackt.");
             return;
         }
         ActiveQuest active = qPlayer.getDisplayed();
@@ -54,7 +54,7 @@ public class QuestCommand extends ECommand {
                 MessageUtil.sendMessage(player, QuestsXL.ERROR + "Diese Quest existiert nicht oder sie ist nicht aktiv.");
                 return;
             }
-            MessageUtil.sendMessage(player, "&8&m               &r &2" + quest.getQuest().getDisplayName() + " &8&m               &r");
+            MessageUtil.sendMessage(player, "&8&m               &r &2" +  quest.getQuest().displayName().getAsString() + " &8&m               &r");
             MessageUtil.sendMessage(player, "&7&a" + quest.getCurrentStage().getDescription());
             for (QObjective objective : quest.getCurrentStage().getGoals()) {
                 if (objective.isPersistent() && objective.isOptional()) {
@@ -64,7 +64,7 @@ public class QuestCommand extends ECommand {
             }
             return;
         }
-        MessageUtil.sendMessage(player, "&8&m               &r &2" + active.getQuest().getDisplayName() + " &8&m               &r");
+        MessageUtil.sendMessage(player, "&8&m               &r &2" + active.getQuest().displayName().getAsString() + " &8&m               &r");
         MessageUtil.sendMessage(player, "&7&a" + active.getCurrentStage().getDescription());
         for (QObjective objective : active.getCurrentStage().getGoals()) {
             if (objective.isPersistent() && objective.isOptional()) {

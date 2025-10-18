@@ -7,6 +7,7 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.QTranslatable;
+import net.minecraft.resources.ResourceLocation;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityPickupItemEvent;
@@ -26,7 +27,7 @@ public class ItemPickupObjective extends QBaseObjective<EntityPickupItemEvent> {
     private final HItemLibrary itemLibrary = QuestsXL.get().getItemLibrary();
 
     @QParamDoc(name = "item", description = "The key of the item that needs to be picked up. Same as in /give", required = true)
-    private NamespacedKey itemID;
+    private ResourceLocation itemID;
 
     @Override
     public void check(ActiveObjective active, EntityPickupItemEvent e) {
@@ -42,7 +43,7 @@ public class ItemPickupObjective extends QBaseObjective<EntityPickupItemEvent> {
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        itemID = NamespacedKey.fromString(cfg.getString("item"));
+        itemID = ResourceLocation.parse(cfg.getString("item"));
     }
 
     @Override
