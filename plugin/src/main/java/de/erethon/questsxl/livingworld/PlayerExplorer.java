@@ -174,6 +174,9 @@ public class PlayerExplorer {
         // Check all explorables (including respawn points that implement Explorable directly)
         for (Explorable explorable : plugin.getExploration().getAllExplorables()) {
             // Check if this is a respawn point with NEAR unlock mode
+            if (explorable.location().getWorld() != qPlayer.getPlayer().getLocation().getWorld()) {
+                continue;
+            }
             if (explorable instanceof de.erethon.questsxl.respawn.RespawnPoint respawnPoint) {
                 if (respawnPoint.getUnlockMode() != de.erethon.questsxl.respawn.RespawnPointUnlockMode.NEAR) {
                     continue;

@@ -23,6 +23,9 @@ public class StopEventAction extends QBaseAction {
     @QParamDoc(name = "event", description = "The ID of the event to stop", required = true)
     String eventId;
 
+    @QParamDoc(name = "failed", description = "If true, the event will be marked as failed instead of completed", def = "false")
+    boolean failed = false;
+
     @Override
     public void play(Quester quester) {
         if (!conditions(quester)) return;
@@ -31,13 +34,14 @@ public class StopEventAction extends QBaseAction {
             throw new RuntimeException("Event " + eventId + " does not exist.");
         }
         onFinish(quester);
-        event.stop();
+        event.stop(failed);
     }
 
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
         eventId = cfg.getString("event");
+        failed = cfg.getBoolean("failed");
         if (eventId == null) {
             throw new RuntimeException("Event ID is missing.");
         }

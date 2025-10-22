@@ -40,7 +40,7 @@ public class ObjectiveEventManager {
             Bukkit.getPluginManager().registerEvent(
                     key,
                     newCentralListener,
-                    org.bukkit.event.EventPriority.NORMAL, // Or your desired priority
+                    org.bukkit.event.EventPriority.NORMAL,
                     newCentralListener,
                     plugin,
                     false

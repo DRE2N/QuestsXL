@@ -228,6 +228,10 @@ public class QLocation {
         isRelative = relative;
     }
 
+    public static QLocation fromBukkitLocation(Location location) {
+        return new QLocation(location.getWorld(), location.getX(), location.getY(), location.getZ());
+    }
+
     @Override
     public String toString() {
         return x + " / " + y + " / " + z;

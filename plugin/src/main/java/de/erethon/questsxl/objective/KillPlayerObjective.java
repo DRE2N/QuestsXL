@@ -1,9 +1,18 @@
 package de.erethon.questsxl.objective;
 
+import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QTranslatable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
+@QLoadableDoc(
+        value = "kill_player",
+        description = "This objective is completed by killing another player.",
+        shortExample = "kill_player:",
+        longExample = {
+                "kill_player:",
+        }
+)
 public class KillPlayerObjective extends QBaseObjective<PlayerDeathEvent> {
 
 

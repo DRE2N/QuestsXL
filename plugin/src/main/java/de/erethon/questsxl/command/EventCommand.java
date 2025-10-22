@@ -52,6 +52,12 @@ public class EventCommand extends ECommand {
             MessageUtil.sendMessage(commandSender, "&7Das Event &a" + event.getName() + " &7wurde abgeschlossen.");
             return;
         }
+        if (args.length > 2 && args[2].equalsIgnoreCase("fail")) {
+            event.setState(EventState.FAILED);
+            event.update();
+            MessageUtil.sendMessage(commandSender, "&7Das Event &a" + event.getName() + " &7ist gescheitert.");
+            return;
+        }
         if (args.length > 2 && args[2].equalsIgnoreCase("disable")) {
             event.setState(EventState.DISABLED);
             event.update();

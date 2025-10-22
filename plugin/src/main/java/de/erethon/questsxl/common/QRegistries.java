@@ -69,6 +69,7 @@ public class QRegistries {
         CONDITIONS.register("active_quest", ActiveQuestCondition::new);
         CONDITIONS.register("attribute", AttributeCondition::new);
         CONDITIONS.register("completed_quest", CompletedQuestCondition::new);
+        CONDITIONS.register("event_range", EventRangeCondition::new);
         CONDITIONS.register("event_state", EventStateCondition::new);
         CONDITIONS.register("fire", FireCondition::new);
         CONDITIONS.register("freezing", FreezingCondition::new);

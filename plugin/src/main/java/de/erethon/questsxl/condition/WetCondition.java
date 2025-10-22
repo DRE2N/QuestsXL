@@ -17,7 +17,7 @@ public class WetCondition extends QBaseCondition {
     @Override
     public boolean check(Quester quester) {
         if (quester instanceof QPlayer player) {
-            if (player.getPlayer().isInWaterOrRainOrBubbleColumn()) {
+            if (player.getPlayer().isInWater() || player.getPlayer().isInRain()) {
                 return success(quester);
             }
         }

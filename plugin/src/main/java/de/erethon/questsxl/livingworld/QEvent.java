@@ -184,7 +184,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
                 startEvent();
                 QuestsXL.log("Event " + getName() + " started with stage " + currentStage.getId() + " with " + getCurrentObjectives().size() + " objectives.");
             }
-            case COMPLETED -> {
+            case COMPLETED, FAILED -> {
                 if (currentTime - timeLastCompleted > cooldown * 1000L) {
                     state = EventState.NOT_STARTED;
                 }
@@ -220,9 +220,9 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
         }
     }
 
-    public void stop() {
-        QuestsXL.log("Event " + getName() + " stopped.");
-        state = EventState.COMPLETED;
+    public void stop(boolean failed) {
+        QuestsXL.log("Event " + getName() + " stopped. Failed: " + failed);
+        state = failed ? EventState.FAILED : EventState.COMPLETED;
         clearObjectives();
         playersInRange.clear();
         eventParticipation.clear();
