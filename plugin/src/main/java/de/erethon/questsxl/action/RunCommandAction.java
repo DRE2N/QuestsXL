@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 
 @QLoadableDoc(
         value = "run_command",
-        description = "Runs a command, optionally with full permissions (op) or as console. By default, the command is run as the player.",
+        description = "Runs a command, optionally with full permissions (op) or as console. By default, the command is run as the player. Use %player% in the command to refer to the player's name.",
         shortExample = "run_command: command=stop; console=true # Shut down the server",
         longExample = {
                 "run_command:",
@@ -41,16 +41,17 @@ public class RunCommandAction extends QBaseAction {
 
     private void runCommand(QPlayer player) {
         Player p = player.getPlayer();
+        String commandToRun = command.replace("%player%", p.getName());
         if (console) {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), commandToRun);
         } else {
             if (op) {
                 boolean isOp = p.isOp();
                 p.setOp(true);
-                p.performCommand(command);
+                p.performCommand(commandToRun);
                 p.setOp(isOp);
             } else {
-                p.performCommand(command);
+                p.performCommand(commandToRun);
             }
         }
     }
