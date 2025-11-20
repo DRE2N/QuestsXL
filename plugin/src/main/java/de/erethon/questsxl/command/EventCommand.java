@@ -72,7 +72,7 @@ public class EventCommand extends ECommand {
         }
         if (args.length > 2 && (args[2].equalsIgnoreCase("teleport") || args[2].equalsIgnoreCase("tp"))) {
             Player player = (Player) commandSender;
-            player.teleportAsync(event.getLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN, TeleportFlag.EntityState.RETAIN_PASSENGERS);
+            player.teleportAsync(event.getLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
             MessageUtil.sendMessage(commandSender, "&7Du wurdest zum Event &a" + event.getName() + " &7teleportiert.");
             return;
         }

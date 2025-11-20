@@ -223,6 +223,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
     public void stop(boolean failed) {
         QuestsXL.log("Event " + getName() + " stopped. Failed: " + failed);
         state = failed ? EventState.FAILED : EventState.COMPLETED;
+        timeLastCompleted = System.currentTimeMillis();
         clearObjectives();
         playersInRange.clear();
         eventParticipation.clear();
