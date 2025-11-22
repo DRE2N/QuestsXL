@@ -13,12 +13,17 @@ import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.ActiveQuest;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * @author Fyreum
@@ -26,6 +31,9 @@ import java.util.List;
 public class QuestScoreboardLines implements ScoreboardLines {
 
     final QuestsXL plugin = QuestsXL.get();
+
+    // Cache for max line length per player
+    private final Map<UUID, CachedScoreboardData> playerCache = new HashMap<>();
 
     private static final String QUEST_COLOR = "<dark_gray>[<#3fda52>♥<dark_gray>]<#3fda52> ";
     private static final String EVENT_COLOR = "<dark_gray>[<#ec762c>\uD83D\uDDE1<dark_gray>]<#ec762c> ";
@@ -48,8 +56,12 @@ public class QuestScoreboardLines implements ScoreboardLines {
 
         // Check conditions after potentially untracking the event
         if (trackedQuest == null && player.getTrackedEvent() == null && player.getContentGuideText() == null) {
+            playerCache.remove(ePlayer.getUniqueId());
             return List.of();
         }
+
+        int maxLineLength = getCachedMaxLineLength(player, ePlayer, trackedQuest);
+
         List<ScoreboardComponent> lines = new ArrayList<>();
 
         if (player.getContentGuideText() != null) {
@@ -71,11 +83,9 @@ public class QuestScoreboardLines implements ScoreboardLines {
 
             lines.add(ScoreboardComponent.of((p) -> header));
 
-            String objectiveText = getEventObjectiveDisplayText(player, player.getTrackedEvent());
-            if (objectiveText != null) {
-                for (String line : objectiveText.split("<br>", 3)) {
-                    lines.add(ScoreboardComponent.of((p) -> MessageUtil.parse("<gray>" + line + "<gray>")));
-                }
+            List<Component> objectiveComponents = getEventObjectiveDisplayComponents(player, player.getTrackedEvent(), maxLineLength);
+            for (Component component : objectiveComponents) {
+                lines.add(ScoreboardComponent.of((p) -> component));
             }
             lines.add(ScoreboardComponent.EMPTY);
         }
@@ -87,11 +97,9 @@ public class QuestScoreboardLines implements ScoreboardLines {
 
             lines.add(ScoreboardComponent.of((p) -> header));
 
-            String objectiveText = getObjectiveDisplayText(player, trackedQuest);
-            if (objectiveText != null) {
-                for (String line : objectiveText.split("<br>", 3)) {
-                    lines.add(ScoreboardComponent.of((p) -> MessageUtil.parse("<gray>" + line + "<gray>")));
-                }
+            List<Component> objectiveComponents = getObjectiveDisplayComponents(player, trackedQuest, maxLineLength);
+            for (Component component : objectiveComponents) {
+                lines.add(ScoreboardComponent.of((p) -> component));
             }
         }
 
@@ -99,12 +107,108 @@ public class QuestScoreboardLines implements ScoreboardLines {
     }
 
     /**
+     * Gets the cached max line length or calculates it if the state has changed.
+     */
+    private int getCachedMaxLineLength(QPlayer player, EPlayer ePlayer, ActiveQuest trackedQuest) {
+        UUID playerId = ePlayer.getUniqueId();
+        ScoreboardStateKey currentState = new ScoreboardStateKey(player, trackedQuest);
+
+        CachedScoreboardData cached = playerCache.get(playerId);
+
+        if (cached != null && cached.stateKey.equals(currentState)) {
+            return cached.maxLineLength;
+        }
+
+        int maxLineLength = calculateMaxLineLength(player, ePlayer, trackedQuest);
+
+        // Update cache
+        playerCache.put(playerId, new CachedScoreboardData(currentState, maxLineLength));
+
+        return maxLineLength;
+    }
+
+    /**
+     * Calculates the maximum line length among all scoreboard entries to determine
+     * the optimal progress bar width.
+     */
+    private int calculateMaxLineLength(QPlayer player, EPlayer ePlayer, ActiveQuest trackedQuest) {
+        int maxLength = 0;
+
+        // Check content guide text
+        if (player.getContentGuideText() != null) {
+            Component translatedContentGuide = GlobalTranslator.render(player.getContentGuideText(), ePlayer.getPlayer().locale());
+            Component fullLine = MessageUtil.parse(CONTENT_GUIDE_COLOR).append(translatedContentGuide);
+            int length = PlainTextComponentSerializer.plainText().serialize(fullLine).length();
+            maxLength = Math.max(maxLength, length);
+        }
+
+        // Check event name and objectives
+        if (player.getTrackedEvent() != null) {
+            Component translatedEventName = GlobalTranslator.render(player.getTrackedEvent().displayName().get(), ePlayer.getPlayer().locale());
+            Component header = MessageUtil.parse(EVENT_COLOR).append(translatedEventName);
+            int length = PlainTextComponentSerializer.plainText().serialize(header).length();
+            maxLength = Math.max(maxLength, length);
+
+            // Check event objectives
+            int eventObjLength = calculateObjectivesMaxLength(player, player.getTrackedEvent().getCurrentObjectives(), ePlayer);
+            maxLength = Math.max(maxLength, eventObjLength);
+        }
+
+        // Check quest name and objectives
+        if (trackedQuest != null) {
+            Component translatedQuestName = GlobalTranslator.render(trackedQuest.getQuest().displayName().get(), ePlayer.getPlayer().locale());
+            Component header = MessageUtil.parse(QUEST_COLOR).append(translatedQuestName);
+            int length = PlainTextComponentSerializer.plainText().serialize(header).length();
+            maxLength = Math.max(maxLength, length);
+
+            // Check quest objectives
+            List<ActiveObjective> questObjectives = new ArrayList<>();
+            for (ActiveObjective objective : player.getCurrentObjectives()) {
+                if (objective.getCompletable() == trackedQuest.getQuest()) {
+                    questObjectives.add(objective);
+                }
+            }
+            int questObjLength = calculateObjectivesMaxLength(player, questObjectives, ePlayer);
+            maxLength = Math.max(maxLength, questObjLength);
+        }
+
+        // Ensure a minimum length for the progress bar
+        return Math.max(maxLength, 20);
+    }
+
+    /**
+     * Calculates the maximum length among objective text entries.
+     */
+    private int calculateObjectivesMaxLength(QPlayer player, Iterable<ActiveObjective> objectives, EPlayer ePlayer) {
+        int maxLength = 0;
+
+        for (ActiveObjective activeObjective : objectives) {
+            if (activeObjective.isCompleted() || activeObjective.getObjective().isPersistent() || activeObjective.getObjective().isHidden()) {
+                continue;
+            }
+
+            var displayText = activeObjective.getObjective().getDisplayText(player.getPlayer());
+            Component translatedComponent = GlobalTranslator.render(displayText.get(), player.getPlayer().locale());
+            String translatedText = PlainTextComponentSerializer.plainText().serialize(translatedComponent);
+            String progressText = "";
+            if (activeObjective.getObjective().getProgressGoal() > 1) {
+                progressText = " (" + activeObjective.getProgress() + "/" + activeObjective.getObjective().getProgressGoal() + ")";
+            }
+
+            String fullText = translatedText + progressText;
+            maxLength = Math.max(maxLength, fullText.length());
+        }
+
+        return maxLength;
+    }
+
+    /**
      * Gets the objective display text for a quest. Returns either the manually set text
      * or generates translated text from all active objectives.
      */
-    private String getObjectiveDisplayText(QPlayer player, ActiveQuest activeQuest) {
+    private List<Component> getObjectiveDisplayComponents(QPlayer player, ActiveQuest activeQuest, int maxLineLength) {
         if (activeQuest.getObjectiveDisplayText() != null) {
-            return activeQuest.getObjectiveDisplayText();
+            return List.of(MessageUtil.parse("<gray>" + activeQuest.getObjectiveDisplayText() + "<gray>"));
         }
 
         List<ActiveObjective> questObjectives = new ArrayList<>();
@@ -113,18 +217,18 @@ public class QuestScoreboardLines implements ScoreboardLines {
                 questObjectives.add(objective);
             }
         }
-        return generateObjectiveDisplayText(player, questObjectives);
+        return generateObjectiveDisplayComponents(player, questObjectives, true, maxLineLength);
     }
 
-    private String getEventObjectiveDisplayText(QPlayer player, QEvent event) {
+    private List<Component> getEventObjectiveDisplayComponents(QPlayer player, QEvent event, int maxLineLength) {
         if (event.getObjectiveDisplayText() != null) {
-            return event.getObjectiveDisplayText();
+            return List.of(MessageUtil.parse("<gray>" + event.getObjectiveDisplayText() + "<gray>"));
         }
-        return generateObjectiveDisplayText(player, event.getCurrentObjectives());
+        return generateObjectiveDisplayComponents(player, event.getCurrentObjectives(), false, maxLineLength);
     }
 
-    private String generateObjectiveDisplayText(QPlayer player, Iterable<ActiveObjective> objectives) {
-        List<String> objectiveLines = new ArrayList<>();
+    private List<Component> generateObjectiveDisplayComponents(QPlayer player, Iterable<ActiveObjective> objectives, boolean isQuest, int maxLineLength) {
+        List<Component> objectiveComponents = new ArrayList<>();
 
         for (ActiveObjective activeObjective : objectives) {
             if (activeObjective.isCompleted()) {
@@ -147,10 +251,17 @@ public class QuestScoreboardLines implements ScoreboardLines {
             }
 
             translatedText = truncateSmartlyWithProgress(translatedText, progressText, 35);
-            objectiveLines.add(translatedText);
+
+            String displayLine = translatedText.trim();
+            objectiveComponents.add(MessageUtil.parse("<gray>" + displayLine));
+
+            if (activeObjective.getObjective().getProgressGoal() > 1) {
+                Component progressBar = getObjectiveProgressBar(activeObjective, isQuest, maxLineLength);
+                objectiveComponents.add(progressBar);
+            }
         }
 
-        return objectiveLines.isEmpty() ? null : String.join("<br>", objectiveLines);
+        return objectiveComponents;
     }
 
     /**
@@ -202,8 +313,131 @@ public class QuestScoreboardLines implements ScoreboardLines {
         return truncated + "...";
     }
 
+    private Component getObjectiveProgressBar(ActiveObjective activeObjective, boolean isQuest, int maxLineLength) {
+        int goal = activeObjective.getObjective().getProgressGoal();
+
+        int progressBarWidth = Math.max(maxLineLength, 20);
+
+        TextColor filledColor = isQuest ?
+            TextColor.fromCSSHexString("#3fda52") :  // Quest green
+            TextColor.fromCSSHexString("#ec762c");   // Event orange
+        TextColor emptyColor = TextColor.fromCSSHexString("#404040"); // Dark gray for empty
+
+        Component filledSegment = Component.text(" ").color(filledColor).decorate(TextDecoration.STRIKETHROUGH);
+        Component emptySegment = Component.text(" ").color(emptyColor).decorate(TextDecoration.STRIKETHROUGH);
+
+        int filledSegments = (int) Math.round(((double) activeObjective.getProgress() / goal) * progressBarWidth);
+
+        Component progressBar = Component.empty();
+        for (int i = 0; i < progressBarWidth; i++) {
+            if (i < filledSegments) {
+                progressBar = progressBar.append(filledSegment);
+            } else {
+                progressBar = progressBar.append(emptySegment);
+            }
+        }
+        return progressBar;
+    }
+
     @Override
     public int getPriority() {
         return Integer.MAX_VALUE;
+    }
+
+    /**
+     * Cache key to track the state of a player's scoreboard to detect changes.
+     */
+    private static class ScoreboardStateKey {
+        private final String contentGuideText;
+        private final String trackedQuestId;
+        private final String trackedEventId;
+        private final List<ObjectiveState> objectives;
+
+        ScoreboardStateKey(QPlayer player, ActiveQuest trackedQuest) {
+            this.contentGuideText = player.getContentGuideText() != null ?
+                PlainTextComponentSerializer.plainText().serialize(player.getContentGuideText()) : null;
+            this.trackedQuestId = trackedQuest != null ? trackedQuest.getQuest().id() : null;
+            this.trackedEventId = player.getTrackedEvent() != null ? player.getTrackedEvent().id() : null;
+
+            this.objectives = new ArrayList<>();
+
+            // Collect quest objectives
+            if (trackedQuest != null) {
+                for (ActiveObjective obj : player.getCurrentObjectives()) {
+                    if (obj.getCompletable() == trackedQuest.getQuest() &&
+                        !obj.isCompleted() && !obj.getObjective().isPersistent() && !obj.getObjective().isHidden()) {
+                        objectives.add(new ObjectiveState(obj));
+                    }
+                }
+            }
+
+            // Collect event objectives
+            if (player.getTrackedEvent() != null) {
+                for (ActiveObjective obj : player.getTrackedEvent().getCurrentObjectives()) {
+                    if (!obj.isCompleted() && !obj.getObjective().isPersistent() && !obj.getObjective().isHidden()) {
+                        objectives.add(new ObjectiveState(obj));
+                    }
+                }
+            }
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ScoreboardStateKey that = (ScoreboardStateKey) o;
+            return Objects.equals(contentGuideText, that.contentGuideText) &&
+                   Objects.equals(trackedQuestId, that.trackedQuestId) &&
+                   Objects.equals(trackedEventId, that.trackedEventId) &&
+                   Objects.equals(objectives, that.objectives);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(contentGuideText, trackedQuestId, trackedEventId, objectives);
+        }
+    }
+
+    /**
+     * Represents the state of an objective for cache comparison.
+     */
+    private static class ObjectiveState {
+        private final String objectiveId;
+        private final int progress;
+        private final int goal;
+
+        ObjectiveState(ActiveObjective objective) {
+            this.objectiveId = objective.getObjective().id();
+            this.progress = objective.getProgress();
+            this.goal = objective.getObjective().getProgressGoal();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ObjectiveState that = (ObjectiveState) o;
+            return progress == that.progress &&
+                   goal == that.goal &&
+                   Objects.equals(objectiveId, that.objectiveId);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(objectiveId, progress, goal);
+        }
+    }
+
+    /**
+     * Cached scoreboard data for a player.
+     */
+    private static class CachedScoreboardData {
+        private final ScoreboardStateKey stateKey;
+        private final int maxLineLength;
+
+        CachedScoreboardData(ScoreboardStateKey stateKey, int maxLineLength) {
+            this.stateKey = stateKey;
+            this.maxLineLength = maxLineLength;
+        }
     }
 }
