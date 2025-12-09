@@ -1,6 +1,5 @@
 package de.erethon.questsxl.quest;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QStage;
 import de.erethon.questsxl.player.QPlayer;
@@ -56,6 +55,11 @@ public class ActiveQuest {
         player.clearObjectives();
         player.removeActive(this);
         player.completeQuest(this.getQuest(), System.currentTimeMillis());
+
+        // Notify periodic quest manager
+        if (plugin.getPeriodicQuestManager() != null) {
+            plugin.getPeriodicQuestManager().onQuestComplete(player, quest);
+        }
     }
 
     public void finishWithoutRewards(QPlayer player) {

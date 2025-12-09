@@ -57,6 +57,9 @@ public class PointOfInterest implements QComponent, Explorable {
      * @return true if the player discovered the POI
      */
     public boolean attemptDiscovery(QPlayer player) {
+        if (player.getLocation().getWorld() != location.getWorld()) {
+            return false;
+        }
         if (player.getLocation().distance(location) > radius) { // Just in case its forgotten elsewhere
             return false;
         }

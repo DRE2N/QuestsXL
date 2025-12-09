@@ -35,6 +35,7 @@ import de.erethon.questsxl.livingworld.LootChestManager;
 import de.erethon.questsxl.livingworld.QEventManager;
 import de.erethon.questsxl.objective.event.ObjectiveEventManager;
 import de.erethon.questsxl.player.QPlayer;
+import de.erethon.questsxl.quest.PeriodicQuestManager;
 import de.erethon.questsxl.quest.QuestManager;
 import de.erethon.questsxl.region.QRegionManager;
 import de.erethon.questsxl.respawn.RespawnPointManager;
@@ -78,6 +79,7 @@ public final class QuestsXL extends EPlugin {
     public static File SCHEMATICS;
     public static File DIALOGUES;
     public static File INTERACTIONS;
+    public static File PERIODIC_QUESTS;
     public long lastSync = 0;
 
     private final QMessageHandler messageHandler = new QMessageHandler();
@@ -99,6 +101,7 @@ public final class QuestsXL extends EPlugin {
     private AutoTrackingManager autoTrackingManager;
     private LootChestManager lootChestManager;
     private InteractionManager interactionManager;
+    private PeriodicQuestManager periodicQuestManager;
 
     private final Map<String, Integer> scores = new HashMap<>();
     private final List<FriendlyError> errors = new ArrayList<>();
@@ -163,6 +166,7 @@ public final class QuestsXL extends EPlugin {
         initFile(EXPLORABLES = new File(getDataFolder(), "explorables.yml"));
         initFile(EXPLORATION_SETS = new File(getDataFolder(), "explorationSets.yml"));
         initFile(GLOBAL_OBJ = new File(getDataFolder(), "globalObjectives.yml"));
+        initFile(PERIODIC_QUESTS = new File(getDataFolder(), "periodicQuests.yml"));
         YamlConfiguration config = YamlConfiguration.loadConfiguration(new File(Bukkit.getWorldContainer(), "environment.yml"));
         try {
             BedrockDBConnection connection = new BedrockDBConnection(config.getString("dbUrl"),
@@ -276,6 +280,11 @@ public final class QuestsXL extends EPlugin {
         interactionManager.loadInteractions(INTERACTIONS);
         QuestsXL.log("Interaction manager initialized");
 
+        // Initialize periodic quest manager
+        QuestsXL.log("Loading periodic quests...");
+        periodicQuestManager = new PeriodicQuestManager(this, PERIODIC_QUESTS);
+        QuestsXL.log("Periodic quest manager initialized");
+
         exploration.initializeVFX(); // Initialize exploration VFX after exploration manager is loaded
 
         // Generate docs
@@ -298,6 +307,10 @@ public final class QuestsXL extends EPlugin {
         // Shutdown interaction manager
         if (interactionManager != null) {
             interactionManager.shutdown();
+        }
+        // Shutdown periodic quest manager
+        if (periodicQuestManager != null) {
+            periodicQuestManager.shutdown();
         }
         regionManager.save();
         blockCollectionManager.save();
@@ -410,6 +423,10 @@ public final class QuestsXL extends EPlugin {
 
     public InteractionManager getInteractionManager() {
         return interactionManager;
+    }
+
+    public PeriodicQuestManager getPeriodicQuestManager() {
+        return periodicQuestManager;
     }
 
     public void reload() {
