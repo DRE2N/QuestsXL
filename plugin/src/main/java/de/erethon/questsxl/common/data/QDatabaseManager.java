@@ -212,6 +212,43 @@ public class QDatabaseManager extends EDatabaseManager {
             QuestsXL.log("Applied migration 2: Event tables");
         }
 
+        if (currentVersion < 3) {
+            QuestsXL.log("Applying migration 3: Periodic quest tables");
+            handle.execute("""
+                CREATE TABLE IF NOT EXISTS q_periodic_quest_state (
+                    id INTEGER PRIMARY KEY DEFAULT 1,
+                    last_daily_reset BIGINT NOT NULL DEFAULT 0,
+                    last_weekly_reset BIGINT NOT NULL DEFAULT 0,
+                    active_daily_quests TEXT,
+                    active_weekly_quests TEXT,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    CHECK (id = 1)
+                )
+            """);
+
+            handle.execute("""
+                INSERT INTO q_periodic_quest_state (id, last_daily_reset, last_weekly_reset) 
+                VALUES (1, 0, 0) 
+                ON CONFLICT (id) DO NOTHING
+            """);
+
+            handle.execute("""
+                CREATE TABLE IF NOT EXISTS q_character_periodic_progress (
+                    character_id UUID NOT NULL,
+                    quest_type VARCHAR(10) NOT NULL,
+                    quest_id VARCHAR(255) NOT NULL,
+                    completed_at BIGINT NOT NULL,
+                    bonus_claimed BOOLEAN NOT NULL DEFAULT FALSE,
+                    PRIMARY KEY (character_id, quest_type, quest_id),
+                    FOREIGN KEY (character_id) REFERENCES Characters(character_id) ON DELETE CASCADE,
+                    CHECK (quest_type IN ('DAILY', 'WEEKLY'))
+                )
+            """);
+
+            handle.execute("INSERT INTO q_schema_version (version) VALUES (3)");
+            QuestsXL.log("Applied migration 3: Periodic quest tables");
+        }
+
         QuestsXL.log("Database schema is up to date");
     }
 
@@ -249,6 +286,14 @@ public class QDatabaseManager extends EDatabaseManager {
                 rs.getInt("progress"),
                 rs.getBoolean("completed"),
                 rs.getString("objective_data")
+            );
+        });
+
+        jdbi.registerRowMapper(QPlayerDao.PeriodicQuestProgressData.class, (rs, ctx) -> {
+            return new QPlayerDao.PeriodicQuestProgressData(
+                rs.getString("quest_id"),
+                rs.getLong("completed_at"),
+                rs.getBoolean("bonus_claimed")
             );
         });
 

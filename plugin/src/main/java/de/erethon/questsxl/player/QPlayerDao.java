@@ -74,6 +74,44 @@ public interface QPlayerDao {
     @SqlQuery("SELECT COUNT(*) > 0 FROM q_character_looted_chests WHERE character_id = ? AND chest_id = ?")
     boolean hasLootedChest(UUID characterId, String chestId);
 
+    // Periodic Quest Operations
+    @SqlQuery("SELECT quest_id, completed_at, bonus_claimed FROM q_character_periodic_progress WHERE character_id = ? AND quest_type = ?")
+    List<PeriodicQuestProgressData> getPeriodicQuestProgress(UUID characterId, String questType);
+
+    @SqlUpdate("INSERT INTO q_character_periodic_progress (character_id, quest_type, quest_id, completed_at, bonus_claimed) VALUES (?, ?, ?, ?, ?) ON CONFLICT (character_id, quest_type, quest_id) DO UPDATE SET completed_at = EXCLUDED.completed_at, bonus_claimed = EXCLUDED.bonus_claimed")
+    void savePeriodicQuestProgress(UUID characterId, String questType, String questId, long completedAt, boolean bonusClaimed);
+
+    @SqlUpdate("DELETE FROM q_character_periodic_progress WHERE character_id = ? AND quest_type = ?")
+    void clearPeriodicQuestProgress(UUID characterId, String questType);
+
+    @SqlUpdate("UPDATE q_character_periodic_progress SET bonus_claimed = ? WHERE character_id = ? AND quest_type = ?")
+    void setPeriodicBonusClaimed(UUID characterId, String questType, boolean claimed);
+
+    @SqlQuery("SELECT bonus_claimed FROM q_character_periodic_progress WHERE character_id = ? AND quest_type = ? LIMIT 1")
+    Optional<Boolean> getPeriodicBonusClaimed(UUID characterId, String questType);
+
+    // Periodic Quest State (global)
+    @SqlQuery("SELECT last_daily_reset FROM q_periodic_quest_state WHERE id = 1")
+    Optional<Long> getLastDailyReset();
+
+    @SqlQuery("SELECT last_weekly_reset FROM q_periodic_quest_state WHERE id = 1")
+    Optional<Long> getLastWeeklyReset();
+
+    @SqlQuery("SELECT active_daily_quests FROM q_periodic_quest_state WHERE id = 1")
+    Optional<String> getActiveDailyQuests();
+
+    @SqlQuery("SELECT active_weekly_quests FROM q_periodic_quest_state WHERE id = 1")
+    Optional<String> getActiveWeeklyQuests();
+
+    @SqlUpdate("UPDATE q_periodic_quest_state SET last_daily_reset = ?, active_daily_quests = ?, updated_at = CURRENT_TIMESTAMP WHERE id = 1")
+    void updateDailyQuestState(long lastReset, String activeQuests);
+
+    @SqlUpdate("UPDATE q_periodic_quest_state SET last_weekly_reset = ?, active_weekly_quests = ?, updated_at = CURRENT_TIMESTAMP WHERE id = 1")
+    void updateWeeklyQuestState(long lastReset, String activeQuests);
+
+    @SqlUpdate("DELETE FROM q_character_periodic_progress WHERE quest_type = ?")
+    void clearAllPlayersPeriodicProgress(String questType);
+
     // Data Transfer Objects
     class ActiveQuestData {
         public String questId;
@@ -134,6 +172,20 @@ public interface QPlayerDao {
             this.progress = progress;
             this.completed = completed;
             this.objectiveData = objectiveData;
+        }
+    }
+
+    class PeriodicQuestProgressData {
+        public String questId;
+        public long completedAt;
+        public boolean bonusClaimed;
+
+        public PeriodicQuestProgressData() {}
+
+        public PeriodicQuestProgressData(String questId, long completedAt, boolean bonusClaimed) {
+            this.questId = questId;
+            this.completedAt = completedAt;
+            this.bonusClaimed = bonusClaimed;
         }
     }
 }
