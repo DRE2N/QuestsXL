@@ -55,7 +55,7 @@ public class QQuest implements Completable, QComponent {
 
     @Override
     public void reward(QPlayer player) {
-        new QQuestCompleteEvent(player.getPlayer(), this).callEvent();
+        new QQuestCompleteEvent(player.getPlayer(), player,this).callEvent();
         for (QAction action : rewards) {
             try {
                 action.play(player);

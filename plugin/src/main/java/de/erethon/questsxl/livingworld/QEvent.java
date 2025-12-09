@@ -107,7 +107,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
 
     public void reward() {
         for (Map.Entry<QPlayer, Integer> playerEntry : eventParticipation.entrySet()) {
-            new QEventCompleteEvent(playerEntry.getKey().getPlayer(), this, playerEntry.getValue()).callEvent();
+            new QEventCompleteEvent(playerEntry.getKey().getPlayer(), playerEntry.getKey(), this, playerEntry.getValue()).callEvent();
             if (giveAllRewards) {
                 for (Map.Entry<Integer, Set<QAction>> reward : rewards.entrySet()) {
                     if (reward.getKey() <= playerEntry.getValue()) {
