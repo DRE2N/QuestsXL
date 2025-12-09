@@ -11,6 +11,7 @@ import de.erethon.questsxl.common.QStage;
 import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.error.FriendlyError;
+import de.erethon.questsxl.event.QQuestCompleteEvent;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -54,6 +55,7 @@ public class QQuest implements Completable, QComponent {
 
     @Override
     public void reward(QPlayer player) {
+        new QQuestCompleteEvent(player.getPlayer(), this).callEvent();
         for (QAction action : rewards) {
             try {
                 action.play(player);

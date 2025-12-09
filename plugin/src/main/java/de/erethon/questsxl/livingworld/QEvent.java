@@ -11,6 +11,7 @@ import de.erethon.questsxl.common.Scorable;
 import de.erethon.questsxl.common.data.QDatabaseManager;
 import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.error.FriendlyError;
+import de.erethon.questsxl.event.QEventCompleteEvent;
 import de.erethon.questsxl.objective.ActiveObjective;
 import de.erethon.questsxl.common.ObjectiveHolder;
 import de.erethon.questsxl.objective.QObjective;
@@ -106,6 +107,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
 
     public void reward() {
         for (Map.Entry<QPlayer, Integer> playerEntry : eventParticipation.entrySet()) {
+            new QEventCompleteEvent(playerEntry.getKey().getPlayer(), this, playerEntry.getValue()).callEvent();
             if (giveAllRewards) {
                 for (Map.Entry<Integer, Set<QAction>> reward : rewards.entrySet()) {
                     if (reward.getKey() <= playerEntry.getValue()) {

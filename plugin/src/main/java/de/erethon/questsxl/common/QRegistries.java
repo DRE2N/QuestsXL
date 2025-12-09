@@ -107,6 +107,8 @@ public class QRegistries {
         OBJECTIVES.register("death", DeathObjective::new);
         OBJECTIVES.register("enter_region", EnterRegionObjective::new);
         OBJECTIVES.register("entity_interact", EntityInteractObjective::new);
+        OBJECTIVES.register("complete_event", CompleteEventObjective::new);
+        OBJECTIVES.register("complete_quest", CompleteQuestObjective::new);
         OBJECTIVES.register("experience", ExperienceObjective::new);
         OBJECTIVES.register("feed_mob", FeedMobObjective::new);
         OBJECTIVES.register("impossible", ImpossibleObjective::new);
@@ -125,6 +127,8 @@ public class QRegistries {
         if (qxl.isHephaestusEnabled()) {
             QuestsXL.log("Found Hephaestus, enabling Hephaestus objectives.");
             OBJECTIVES.register("consume_item", ConsumeItemObjective::new);
+            OBJECTIVES.register("break_block", BreakBlockObjective::new);
+            OBJECTIVES.register("job_craft_item", JobCraftItemObjective::new);
             OBJECTIVES.register("drop_item", DropItemObjective::new);
             OBJECTIVES.register("pickup_item", ItemPickupObjective::new);
             OBJECTIVES.register("place_item", ItemPlaceInContainerObjective::new);

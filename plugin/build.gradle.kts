@@ -15,7 +15,7 @@ paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArt
 dependencies {
     paperweight.devBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true }
     compileOnly("de.erethon.aergia:Aergia:1.0.1") { isTransitive = false }
-    compileOnly("de.erethon.hephaestus:Hephaestus:1.0-SNAPSHOT")
+    compileOnly("de.erethon.hephaestus:Hephaestus:1.0.4-SNAPSHOT")
     implementation("org.eclipse.jgit:org.eclipse.jgit:6.4.0.202211300538-r")
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.3.0") { isTransitive = false }
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.3.0") { isTransitive = false }
