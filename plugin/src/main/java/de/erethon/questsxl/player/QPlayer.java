@@ -43,6 +43,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,14 +56,14 @@ public class QPlayer implements ObjectiveHolder, Scorable, Quester {
     Player player;
     ServerPlayer serverPlayer;
 
-    private final Map<ActiveQuest, Long> activeQuests = new HashMap<>();
-    private final Map<QQuest, Long> completedQuests = new HashMap<>();
+    private final ConcurrentHashMap<ActiveQuest, Long> activeQuests = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<QQuest, Long> completedQuests = new ConcurrentHashMap<>();
     private final Set<ActiveObjective> currentObjectives = new HashSet<>();
     private final List<Component> chatQueue = new CopyOnWriteArrayList<>();
     private final List<String> dialogueRecollection = new ArrayList<>();
 
     private final Set<QRegion> currentRegions = new HashSet<>();
-    private final Map<String, Integer> scores = new HashMap<>();
+    private final ConcurrentHashMap<String, Integer> scores = new ConcurrentHashMap<>();
 
     private ActiveDialogue activeDialogue = null;
     private ActiveQuest displayed = null;
