@@ -9,26 +9,28 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityBreedEvent;
 
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 @QLoadableDoc(
         value = "breed",
         description = "This objective is completed when the player breeds two entities.",
-        shortExample = "breed: entity_type=pig",
+        shortExample = "breed: entity_type=pig,cow,sheep",
         longExample = {
                 "breed:",
-                "  entity_type: cow"
+                "  entity_type: cow,pig,sheep"
         }
 )
 public class BreedObjective extends QBaseObjective<EntityBreedEvent> {
 
-    @QParamDoc(description = "The entity type that has to be bred", required = true)
-    private EntityType entityType;
+    @QParamDoc(description = "The entity type(s) that have to be bred (comma-separated for multiple types)", required = true)
+    private final Set<EntityType> entityTypes = new HashSet<>();
 
     @Override
     public void check(ActiveObjective active, EntityBreedEvent e) {
         if (!(e.getBreeder() instanceof Player player)) return;
-        if (entityType != null && e.getMother().getType() != entityType) return;
+        if (!entityTypes.isEmpty() && !entityTypes.contains(e.getMother().getType())) return;
         if (!conditions(player)) return;
         checkCompletion(active, this, plugin.getDatabaseManager().getCurrentPlayer(player));
     }
@@ -36,10 +38,22 @@ public class BreedObjective extends QBaseObjective<EntityBreedEvent> {
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        //noinspection UnstableApiUsage
-        entityType = EntityType.fromName(cfg.getString("entity_type").toUpperCase(Locale.ROOT));
-        if (entityType == null) {
-            plugin.addRuntimeError(new FriendlyError(cfg.getName(), "Invalid entity type: " + cfg.getString("entity"), "Null entity type", "Make sure the entity type is spelled correctly."));
+        String entityTypeStr = cfg.getString("entity_type");
+        if (entityTypeStr == null || entityTypeStr.trim().isEmpty()) {
+            plugin.addRuntimeError(new FriendlyError(cfg.getName(), "Missing entity_type parameter", "No entity types specified", "Make sure to specify at least one entity type."));
+            return;
+        }
+
+        String[] types = entityTypeStr.split(",");
+        for (String type : types) {
+            String trimmedType = type.trim().toUpperCase(Locale.ROOT);
+            //noinspection UnstableApiUsage
+            EntityType entityType = EntityType.fromName(trimmedType);
+            if (entityType == null) {
+                plugin.addRuntimeError(new FriendlyError(cfg.getName(), "Invalid entity type: " + trimmedType, "Unknown entity type", "Make sure the entity type is spelled correctly."));
+            } else {
+                entityTypes.add(entityType);
+            }
         }
     }
 

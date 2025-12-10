@@ -239,6 +239,16 @@ public class QPlayer implements ObjectiveHolder, Scorable, Quester {
     public void removeActive(@NotNull ActiveQuest quest) {
         activeQuests.remove(quest);
         setTrackedQuest(null, 99);
+        // Remove all objectives related to this quest
+        List<ActiveObjective> toRemove = new ArrayList<>();
+        for (ActiveObjective objective : currentObjectives) {
+            if (objective.getCompletable() == quest.getQuest()) {
+                toRemove.add(objective);
+            }
+        }
+        for (ActiveObjective objective : toRemove) {
+            removeObjective(objective);
+        }
         saveToDatabase(); // Save to database when quest is removed
     }
 
@@ -262,6 +272,14 @@ public class QPlayer implements ObjectiveHolder, Scorable, Quester {
     public void completeQuest(@NotNull QQuest quest, long completedAt) {
         completedQuests.put(quest, completedAt);
         saveToDatabase();
+    }
+
+    // Removes a quest without completing it
+    public void removeQuest(QQuest quest) {
+        ActiveQuest toRemove = getActiveQuest(quest);
+        if (toRemove != null) {
+            removeActive(toRemove);
+        }
     }
 
     @Override

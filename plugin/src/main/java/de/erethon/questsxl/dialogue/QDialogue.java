@@ -2,17 +2,23 @@ package de.erethon.questsxl.dialogue;
 
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QComponent;
+import de.erethon.questsxl.common.QConfigLoader;
+import de.erethon.questsxl.common.QRegistries;
 import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.common.Quester;
+import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Fyreum
@@ -26,6 +32,7 @@ public class QDialogue implements QComponent {
     private QTranslatable senderName;
     private String npcId;
     private HashMap<Integer, QDialogueStage> stages;
+    private Set<QCondition> startConditions;
     private boolean canStartFromNPC = true;
 
     public QDialogue(File file) {
@@ -65,6 +72,13 @@ public class QDialogue implements QComponent {
 
         npcId = cfg.getString("npcId");
         canStartFromNPC = cfg.getBoolean("canStartFromNPC", true);
+        startConditions = new HashSet<>();
+        if (cfg.contains("conditions")) {
+            startConditions.addAll((Collection<? extends QCondition>) QConfigLoader.load(this, "conditions", cfg, QRegistries.CONDITIONS));
+            for (QCondition condition : startConditions) {
+                condition.setParent(this);
+            }
+        }
         ConfigurationSection stagesSection = cfg.getConfigurationSection("stages");
         String id = "Dialog: " + getName();
         if (stagesSection == null) {
@@ -98,7 +112,16 @@ public class QDialogue implements QComponent {
     }
 
     public boolean canStart(QPlayer player) {
-        return stages.get(0) != null && stages.get(0).canStart(player);
+        return stages.get(0) != null && stages.get(0).canStart(player) && conditions(player);
+    }
+
+    public boolean conditions(QPlayer player) {
+        for (QCondition condition : startConditions) {
+            if (!condition.check(player)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public ActiveDialogue start(Quester quester) {
@@ -132,6 +155,10 @@ public class QDialogue implements QComponent {
 
     public QDialogueStage getStageAtIndex(int index) {
         return stages.get(index);
+    }
+
+    public Set<QCondition> getStartConditions() {
+        return startConditions;
     }
 
     @Override

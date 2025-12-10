@@ -9,31 +9,33 @@ import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.error.FriendlyError;
 import net.minecraft.resources.ResourceLocation;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @QLoadableDoc(
         value = "consume_item",
         description = "An item needs to be consumed to complete this objective. Hephaestus item keys are used. Can be cancelled.",
-        shortExample = "consume_item: item=minecraft:apple",
+        shortExample = "consume_item: item=minecraft:apple,minecraft:bread",
         longExample = {
                 "consume_item:",
-                "  item: 'minecraft:apple' # Needs to be quoted due to the colon."
+                "  item: 'minecraft:apple,minecraft:bread' # Needs to be quoted due to the colon."
         }
 )
 public class ConsumeItemObjective extends QBaseObjective<PlayerItemConsumeEvent> {
 
     private final HItemLibrary itemLibrary = QuestsXL.get().getItemLibrary();
 
-    @QParamDoc(name = "item", description = "The key of the item that needs to be consumed. Same as in /give", required = true)
-    private ResourceLocation itemID;
+    @QParamDoc(name = "item", description = "The key(s) of the item(s) that need to be consumed (comma-separated for multiple items). Same as in /give", required = true)
+    private final Set<ResourceLocation> itemIDs = new HashSet<>();
 
     @Override
     public void check(ActiveObjective active, PlayerItemConsumeEvent e) {
         HItem item = itemLibrary.get(e.getItem()).getItem();
         if (item == null) return;
-        if (item.getKey().equals(itemID)) {
+        if (itemIDs.contains(item.getKey())) {
             if (shouldCancelEvent) e.setCancelled(true);
             checkCompletion(active, this, getPlayerHolder(e.getPlayer()));
         }
@@ -42,9 +44,24 @@ public class ConsumeItemObjective extends QBaseObjective<PlayerItemConsumeEvent>
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        itemID = ResourceLocation.parse(cfg.getString("item"));
-        if (itemID == null || itemLibrary.get(itemID) == null) {
-            QuestsXL.get().addRuntimeError(new FriendlyError(id(), "Invalid item ID in consume_item objective"));
+        String itemStr = cfg.getString("item");
+        if (itemStr == null || itemStr.trim().isEmpty()) {
+            return;
+        }
+
+        String[] items = itemStr.split(",");
+        for (String item : items) {
+            String trimmedItem = item.trim();
+            try {
+                ResourceLocation itemID = ResourceLocation.parse(trimmedItem);
+                if (itemLibrary.get(itemID) != null) {
+                    itemIDs.add(itemID);
+                } else {
+                    QuestsXL.get().addRuntimeError(new FriendlyError(id(), "Invalid item ID in consume_item objective: " + trimmedItem));
+                }
+            } catch (Exception e) {
+                QuestsXL.get().addRuntimeError(new FriendlyError(id(), "Invalid item ID format in consume_item objective: " + trimmedItem));
+            }
         }
     }
 

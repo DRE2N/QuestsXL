@@ -12,6 +12,8 @@ import de.erethon.hecate.Hecate;
 import de.erethon.hephaestus.Hephaestus;
 import de.erethon.hephaestus.blocks.HBlockLibrary;
 import de.erethon.hephaestus.items.HItemLibrary;
+import de.erethon.hephaestus.jobs.JobDatabaseManager;
+import de.erethon.hephaestus.jobs.JobManager;
 import de.erethon.questsxl.animation.AnimationManager;
 import de.erethon.questsxl.command.QCommandCache;
 import de.erethon.questsxl.common.CommonMessages;
@@ -371,6 +373,10 @@ public final class QuestsXL extends EPlugin {
 
     public HBlockLibrary getBlockLibrary() {
         return hephaestus.getBlockLibrary();
+    }
+
+    public JobDatabaseManager getJobDatabaseManager() {
+        return hephaestus.getJobDatabaseManager();
     }
 
     public QRegionManager getRegionManager() {

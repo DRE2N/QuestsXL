@@ -14,13 +14,16 @@ import net.minecraft.resources.ResourceLocation;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @QLoadableDoc(
         value = "use_item",
         description = "Completed when a item is used (right-clicked).",
-        shortExample = "use_item: item=erethon:fancy_sword",
+        shortExample = "use_item: item=erethon:fancy_sword,minecraft:diamond_sword",
         longExample = {
-                "place_item:",
-                "  item: 'erethon:bread'",
+                "use_item:",
+                "  item: 'erethon:bread,minecraft:apple'",
                 "  amount: 8",
                 "  consume: true"
         }
@@ -29,8 +32,8 @@ public class ItemUseObjective extends QBaseObjective<PlayerInteractEvent> {
 
     private final HItemLibrary itemLibrary = QuestsXL.get().getItemLibrary();
 
-    @QParamDoc(name = "item", description = "The key of the item that needs to be used. Same as in /give", required = true)
-    private ResourceLocation itemID;
+    @QParamDoc(name = "item", description = "The key(s) of the item(s) that need to be used (comma-separated for multiple items). Same as in /give", required = true)
+    private final Set<ResourceLocation> itemIDs = new HashSet<>();
     @QParamDoc(name = "amount", description = "The amount of items that need to be in the used stack. Objective progress will be increased by amount", def = "1")
     private int amount = 1;
     @QParamDoc(name = "location", description = "If set, the item must be used on the block at this location")
@@ -44,7 +47,7 @@ public class ItemUseObjective extends QBaseObjective<PlayerInteractEvent> {
         if (!event.getAction().isRightClick()) return;
         if (!conditions(event.getPlayer())) return;
         HItemStack foundStack = itemLibrary.get(event.getItem());
-        if (foundStack.getItem().getKey().equals(itemID)) {
+        if (itemIDs.contains(foundStack.getItem().getKey())) {
             if (foundStack.getBukkitStack().getAmount() < amount) {
                 return;
             }
@@ -68,13 +71,29 @@ public class ItemUseObjective extends QBaseObjective<PlayerInteractEvent> {
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        itemID = ResourceLocation.parse(cfg.getString("itemID"));
+        String itemStr = cfg.getString("item");
+        if (itemStr == null || itemStr.trim().isEmpty()) {
+            return;
+        }
+
+        String[] items = itemStr.split(",");
+        for (String item : items) {
+            String trimmedItem = item.trim();
+            try {
+                ResourceLocation itemID = ResourceLocation.parse(trimmedItem);
+                if (itemLibrary.get(itemID) != null) {
+                    itemIDs.add(itemID);
+                } else {
+                    QuestsXL.get().addRuntimeError(new FriendlyError(findTopParent().id(), "Invalid item", "Item " + trimmedItem + " does not exist in the item library.", null));
+                }
+            } catch (Exception e) {
+                QuestsXL.get().addRuntimeError(new FriendlyError(findTopParent().id(), "Invalid item format", "Item " + trimmedItem + " has invalid format.", null));
+            }
+        }
+
         amount = cfg.getInt("amount", 1);
         location = cfg.getQLocation("location", null);
         consume = cfg.getBoolean("consume", false);
-        if (itemID == null || itemLibrary.get(itemID) == null) {
-            QuestsXL.get().addRuntimeError(new FriendlyError(findTopParent().id(), "Invalid item", "Item " + cfg.getString("item") + " does not exist in the item library.", null));
-        }
     }
 
     @Override

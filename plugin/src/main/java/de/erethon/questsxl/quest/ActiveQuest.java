@@ -44,7 +44,6 @@ public class ActiveQuest {
             return;
         }
         currentStage = next;
-        player.clearObjectives();
         currentStage.start(player);
         plugin.debug(player.getPlayer().getName() + " progressed to stage " + currentStage.toString() + " of " + quest.getName() + ".");
     }
@@ -52,7 +51,6 @@ public class ActiveQuest {
     public void finish(QPlayer player) {
         quest.reward(player);
         QuestsXL.log(player.getPlayer().getName() + " finished quest " + quest.getName());
-        player.clearObjectives();
         player.removeActive(this);
         player.completeQuest(this.getQuest(), System.currentTimeMillis());
 
@@ -64,7 +62,6 @@ public class ActiveQuest {
 
     public void finishWithoutRewards(QPlayer player) {
         QuestsXL.log(player.getPlayer().getName() + " finished quest " + quest.getName() + " without rewards.");
-        player.clearObjectives();
         player.removeActive(this);
         player.completeQuest(this.getQuest(), System.currentTimeMillis());
     }
@@ -74,7 +71,8 @@ public class ActiveQuest {
     }
 
     public void setCurrentStage(QStage currentStage) {
-        player.clearObjectives();
+        // Remove current objectives
+        player.getCurrentObjectives().removeIf(obj -> obj.getCompletable().equals(quest) && obj.getStage().equals(this.currentStage));
         this.currentStage = currentStage;
         currentStage.start(player);
     }
@@ -93,5 +91,9 @@ public class ActiveQuest {
 
     public void setObjectiveDisplayText(String objectiveDisplayText) {
         this.objectiveDisplayText = objectiveDisplayText;
+    }
+
+    public int getCurrentStageIndex() {
+        return currentStage.getId();
     }
 }

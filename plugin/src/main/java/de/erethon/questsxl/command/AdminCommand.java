@@ -102,6 +102,10 @@ public class AdminCommand extends ECommand {
                 MessageUtil.sendMessage(player, QuestsXL.ERROR + "Diese Quest existiert nicht.");
                 return;
             }
+            if (qPlayer.hasQuest(quest)) {
+                MessageUtil.sendMessage(player, QuestsXL.ERROR + "Dieser Spieler hat diese Quest bereits.");
+                return;
+            }
             qPlayer.addActive(quest);
             qPlayer.setTrackedQuest(quest, 9999);
             MessageUtil.sendMessage(otherPlayer, "&a" + player.getName() + " &7hat dir die Quest &a" + quest.getName() + " &7gegeben.");

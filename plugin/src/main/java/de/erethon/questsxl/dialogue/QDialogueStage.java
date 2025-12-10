@@ -15,9 +15,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Fyreum
@@ -28,8 +31,8 @@ public class QDialogueStage implements QComponent {
     protected QDialogue dialogue;
     protected LinkedList<Map.Entry<QTranslatable, Integer>> messages;
     protected int maxMessageCount;
-    protected List<QCondition> conditions;
-    protected List<QAction> actions;
+    protected Set<QCondition> conditions = new HashSet<>();
+    protected Set<QAction> actions;
     protected List<DialogueOption> dialogueOptions;
     protected boolean autoNext;
     protected int index;
@@ -43,8 +46,8 @@ public class QDialogueStage implements QComponent {
         this.dialogue = stage.dialogue;
         this.messages = new LinkedList<>(stage.messages);
         this.maxMessageCount = stage.maxMessageCount;
-        this.conditions = stage.conditions != null ? new ArrayList<>(stage.conditions) : new ArrayList<>();
-        this.actions = stage.actions != null ? new ArrayList<>(stage.actions) : new ArrayList<>();
+        this.conditions = stage.conditions != null ? new HashSet<>(stage.conditions) : new HashSet<>();
+        this.actions = stage.actions != null ? new HashSet<>(stage.actions) : new HashSet<>();
         this.dialogueOptions = stage.dialogueOptions != null ? new ArrayList<>(stage.dialogueOptions) : new ArrayList<>();
         this.autoNext = stage.autoNext;
         this.index = stage.index;
@@ -103,8 +106,20 @@ public class QDialogueStage implements QComponent {
         if (messages.isEmpty()) {
             throw new RuntimeException("The dialogue stage in " + cfg.getName() + " does not have any messages.");
         }
-        conditions = (List<QCondition>) QConfigLoader.load(this, "conditions", cfg, QRegistries.CONDITIONS);
-        actions = (List<QAction>) QConfigLoader.load(this, "actions", cfg, QRegistries.ACTIONS);
+        conditions = new HashSet<>();
+        if (cfg.contains("conditions")) {
+            conditions.addAll((Collection<? extends QCondition>) QConfigLoader.load(this, "conditions", cfg, QRegistries.CONDITIONS));
+            for (QCondition condition : conditions) {
+                condition.setParent(this);
+            }
+        }
+        actions = new HashSet<>();
+        if  (cfg.contains("actions")) {
+            actions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "actions", cfg, QRegistries.ACTIONS));
+            for (QAction action : actions) {
+                action.setParent(this);
+            }
+        }
         autoNext = cfg.getBoolean("autoNext", true);
         List<String> options = cfg.getStringList("options");
         dialogueOptions = new ArrayList<>();

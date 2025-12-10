@@ -50,7 +50,7 @@ public class QDialogueManager extends Registry<String, QDialogue> {
                 && qPlayer.getActiveDialogue().getDialogue().getNPCId().equals(npcId);
 
         // Start new dialogue if player doesn't have one active
-        if (dialogue != null && dialogue.canStartFromNPC() && !qPlayer.isInConversation() && qPlayer.getActiveDialogue() == null) {
+        if (dialogue != null && dialogue.canStartFromNPC() && !qPlayer.isInConversation() && qPlayer.getActiveDialogue() == null && dialogue.canStart(qPlayer)) {
             dialogue.start(qPlayer);
         }
         // Only continue dialogue if it was already active before this click
