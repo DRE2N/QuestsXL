@@ -59,6 +59,10 @@ public class ObjectiveEventManager {
     public void unregister(ActiveObjective objective) {
         QObjective<?> qObjective = objective.getObjective();
         Class<? extends Event> eventType = qObjective.getEventType();
+        if (eventType == null) {
+            // Impossible objective or similar case
+            return;
+        }
         CentralizedListener<?> central = centralListeners.get(eventType);
 
         if (central != null) {
