@@ -9,7 +9,7 @@ import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.error.FriendlyError;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.BlockInventoryHolder;
@@ -35,7 +35,7 @@ public class ItemPlaceInContainerObjective extends QBaseObjective<InventoryClose
     private final HItemLibrary itemLibrary = QuestsXL.get().getItemLibrary();
 
     @QParamDoc(name = "item", description = "The key of the item that needs to be placed. Same as in /give", required = true)
-    private ResourceLocation itemID;
+    private Identifier itemID;
     @QParamDoc(name = "amount", description = "The amount of items that need to be placed", def = "1")
     private int amount = 1;
     @QParamDoc(name = "location", description = "If set, the item must be placed in a container at this location")
@@ -76,7 +76,7 @@ public class ItemPlaceInContainerObjective extends QBaseObjective<InventoryClose
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        itemID = ResourceLocation.parse(cfg.getString("itemID"));
+        itemID = Identifier.parse(cfg.getString("itemID"));
         amount = cfg.getInt("amount", 1);
         location = cfg.getQLocation("location", null);
         consume = cfg.getBoolean("consume", false);

@@ -5,14 +5,11 @@ import de.erethon.hephaestus.items.HItemLibrary;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
-import de.erethon.questsxl.common.QLocation;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.error.FriendlyError;
-import net.minecraft.resources.ResourceLocation;
-import org.bukkit.NamespacedKey;
+import net.minecraft.resources.Identifier;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDropItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 
 @QLoadableDoc(
@@ -29,7 +26,7 @@ public class DropItemObjective extends QBaseObjective<PlayerDropItemEvent> {
     private final HItemLibrary itemLibrary = QuestsXL.get().getItemLibrary();
 
     @QParamDoc(name = "item", description = "The key of the item that needs to be dropped. Same as in /give", required = true)
-    private ResourceLocation itemID;
+    private Identifier itemID;
     @QParamDoc(name = "remove", description = "If true, the item will be removed when dropped", def = "false")
     private boolean removeItem = false;
 
@@ -48,7 +45,7 @@ public class DropItemObjective extends QBaseObjective<PlayerDropItemEvent> {
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        itemID = ResourceLocation.parse(cfg.getString("item"));
+        itemID = Identifier.parse(cfg.getString("item"));
         removeItem = cfg.getBoolean("remove", false);
         if (itemID == null || itemLibrary.get(itemID) == null) {
             QuestsXL.get().addRuntimeError(new FriendlyError(id(), "Invalid item ID in drop_item objective"));

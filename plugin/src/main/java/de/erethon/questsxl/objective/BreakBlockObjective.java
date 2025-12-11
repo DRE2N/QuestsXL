@@ -6,7 +6,7 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.QTranslatable;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 
@@ -27,11 +27,11 @@ public class BreakBlockObjective extends QBaseObjective<BlockBreakEvent> {
     private final HBlockLibrary blockLibrary = plugin.getBlockLibrary();
 
     @QParamDoc(name = "block", description = "The Hephaestus ID(s) of the block(s) that need to be broken (comma-separated for multiple types).", required = true)
-    private final Set<ResourceLocation> blockIds = new HashSet<>();
+    private final Set<Identifier> blockIds = new HashSet<>();
 
     @Override
     protected QTranslatable getDefaultDisplayText(Player player) {
-        String blockText = blockIds.isEmpty() ? "blocks" : String.join(",", blockIds.stream().map(ResourceLocation::toString).toArray(String[]::new));
+        String blockText = blockIds.isEmpty() ? "blocks" : String.join(",", blockIds.stream().map(Identifier::toString).toArray(String[]::new));
         return QTranslatable.fromString("de=Baue " + blockText + " ab; en=Break " + blockText);
     }
 
@@ -67,7 +67,7 @@ public class BreakBlockObjective extends QBaseObjective<BlockBreakEvent> {
         for (String block : blocks) {
             String trimmedBlock = block.trim();
             try {
-                ResourceLocation blockId = ResourceLocation.parse(trimmedBlock);
+                Identifier blockId = Identifier.parse(trimmedBlock);
                 blockIds.add(blockId);
             } catch (Exception e) {
                 // Handle invalid resource location format

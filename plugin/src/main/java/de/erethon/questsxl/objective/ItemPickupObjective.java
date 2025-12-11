@@ -7,7 +7,7 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.QTranslatable;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 
@@ -29,7 +29,7 @@ public class ItemPickupObjective extends QBaseObjective<EntityPickupItemEvent> {
     private final HItemLibrary itemLibrary = QuestsXL.get().getItemLibrary();
 
     @QParamDoc(name = "item", description = "The key(s) of the item(s) that need to be picked up (comma-separated for multiple items). Same as in /give", required = true)
-    private final Set<ResourceLocation> itemIDs = new HashSet<>();
+    private final Set<Identifier> itemIDs = new HashSet<>();
 
     @Override
     public void check(ActiveObjective active, EntityPickupItemEvent e) {
@@ -54,7 +54,7 @@ public class ItemPickupObjective extends QBaseObjective<EntityPickupItemEvent> {
         for (String item : items) {
             String trimmedItem = item.trim();
             try {
-                ResourceLocation itemID = ResourceLocation.parse(trimmedItem);
+                Identifier itemID = Identifier.parse(trimmedItem);
                 itemIDs.add(itemID);
             } catch (Exception e) {
                 // Handle invalid resource location format

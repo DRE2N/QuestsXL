@@ -10,7 +10,7 @@ import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.player.QPlayer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -33,7 +33,7 @@ public class ItemUseObjective extends QBaseObjective<PlayerInteractEvent> {
     private final HItemLibrary itemLibrary = QuestsXL.get().getItemLibrary();
 
     @QParamDoc(name = "item", description = "The key(s) of the item(s) that need to be used (comma-separated for multiple items). Same as in /give", required = true)
-    private final Set<ResourceLocation> itemIDs = new HashSet<>();
+    private final Set<Identifier> itemIDs = new HashSet<>();
     @QParamDoc(name = "amount", description = "The amount of items that need to be in the used stack. Objective progress will be increased by amount", def = "1")
     private int amount = 1;
     @QParamDoc(name = "location", description = "If set, the item must be used on the block at this location")
@@ -80,7 +80,7 @@ public class ItemUseObjective extends QBaseObjective<PlayerInteractEvent> {
         for (String item : items) {
             String trimmedItem = item.trim();
             try {
-                ResourceLocation itemID = ResourceLocation.parse(trimmedItem);
+                Identifier itemID = Identifier.parse(trimmedItem);
                 if (itemLibrary.get(itemID) != null) {
                     itemIDs.add(itemID);
                 } else {

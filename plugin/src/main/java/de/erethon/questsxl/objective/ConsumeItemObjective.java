@@ -8,7 +8,7 @@ import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.QTranslatable;
 import de.erethon.questsxl.error.FriendlyError;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 
@@ -29,7 +29,7 @@ public class ConsumeItemObjective extends QBaseObjective<PlayerItemConsumeEvent>
     private final HItemLibrary itemLibrary = QuestsXL.get().getItemLibrary();
 
     @QParamDoc(name = "item", description = "The key(s) of the item(s) that need to be consumed (comma-separated for multiple items). Same as in /give", required = true)
-    private final Set<ResourceLocation> itemIDs = new HashSet<>();
+    private final Set<Identifier> itemIDs = new HashSet<>();
 
     @Override
     public void check(ActiveObjective active, PlayerItemConsumeEvent e) {
@@ -53,7 +53,7 @@ public class ConsumeItemObjective extends QBaseObjective<PlayerItemConsumeEvent>
         for (String item : items) {
             String trimmedItem = item.trim();
             try {
-                ResourceLocation itemID = ResourceLocation.parse(trimmedItem);
+                Identifier itemID = Identifier.parse(trimmedItem);
                 if (itemLibrary.get(itemID) != null) {
                     itemIDs.add(itemID);
                 } else {

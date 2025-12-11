@@ -1,5 +1,6 @@
 package de.erethon.questsxl.command;
 
+import com.destroystokyo.paper.ParticleBuilder;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import de.erethon.questsxl.QuestsXL;
@@ -63,6 +64,21 @@ public class TestCommand extends ECommand {
         }
         if (args[1].equals("book") || args[1].equals("b")) {
             QuestBook.write(player);
+            return;
+        }
+        if (args[1].equals("particles") || args[1].equals("p")) {
+            BukkitRunnable runnable = new BukkitRunnable() {
+
+                @Override
+                public void run() {
+                    ParticleBuilder builder = new ParticleBuilder(org.bukkit.Particle.FLAME);
+                    builder.location(player.getLocation());
+                    builder.count(32);
+                    builder.allPlayers();
+                    builder.spawn();
+                }
+            };
+            runnable.runTaskAsynchronously(QuestsXL.get());
             return;
         }
         if (args[1].equals("text")) {

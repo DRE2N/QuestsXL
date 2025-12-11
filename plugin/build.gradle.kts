@@ -9,13 +9,13 @@ plugins {
     id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
 }
 
-val papyrusVersion = "1.21.10-R0.1-SNAPSHOT"
+val papyrusVersion = "1.21.11-R0.1-SNAPSHOT"
 paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
 
 dependencies {
     paperweight.devBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true }
     compileOnly("de.erethon.aergia:Aergia:1.0.1") { isTransitive = false }
-    compileOnly("de.erethon.hephaestus:Hephaestus:1.0.4-SNAPSHOT")
+    compileOnly("de.erethon.hephaestus:Hephaestus:1.0.5-SNAPSHOT")
     implementation("org.eclipse.jgit:org.eclipse.jgit:6.4.0.202211300538-r")
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.3.0") { isTransitive = false }
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.3.0") { isTransitive = false }
