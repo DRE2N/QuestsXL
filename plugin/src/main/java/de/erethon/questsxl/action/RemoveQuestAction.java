@@ -22,7 +22,7 @@ public class RemoveQuestAction extends QBaseAction {
     QuestsXL plugin = QuestsXL.get();
 
     @QParamDoc(name = "quest", description = "The ID of the quest to remove", required = true)
-    QQuest quest;
+    String questId;
 
     @Override
     public void play(Quester quester) {
@@ -32,6 +32,10 @@ public class RemoveQuestAction extends QBaseAction {
     }
 
     private void removeQuest(QPlayer player) {
+        QQuest quest = plugin.getQuestManager().getByName(questId);
+        if (quest == null) {
+            throw new RuntimeException("Quest " + questId + " does not exist. (RemoveQuestAction in " + id() + ")");
+        }
         if (player.hasQuest(quest)) {
             return;
         }
@@ -41,9 +45,6 @@ public class RemoveQuestAction extends QBaseAction {
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        quest = plugin.getQuestManager().getByName(cfg.getString("quest"));
-        if (quest == null) {
-            throw new RuntimeException("Quest " + cfg.getString("quest") + " does not exist.");
-        }
+        questId = cfg.getString("quest");
     }
 }

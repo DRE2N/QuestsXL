@@ -23,7 +23,7 @@ public class QuestAction extends QBaseAction {
     QuestsXL plugin = QuestsXL.get();
 
     @QParamDoc(name = "quest", description = "The ID of the quest to start", required = true)
-    QQuest quest;
+    String questId;
 
     @Override
     public void play(Quester quester) {
@@ -33,6 +33,10 @@ public class QuestAction extends QBaseAction {
     }
 
     private void startQuest(QPlayer player) {
+        QQuest quest = plugin.getQuestManager().getByName(questId);
+        if (quest == null) {
+            throw new RuntimeException("Quest " + questId + " does not exist. (QuestAction in " + id() + ")");
+        }
         if (player.hasQuest(quest)) {
             return;
         }
@@ -42,10 +46,7 @@ public class QuestAction extends QBaseAction {
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        quest = plugin.getQuestManager().getByName(cfg.getString("quest"));
-        if (quest == null) {
-            throw new RuntimeException("Quest " + cfg.getString("quest") + " does not exist.");
-        }
+        questId = cfg.getString("quest");
     }
 
 }

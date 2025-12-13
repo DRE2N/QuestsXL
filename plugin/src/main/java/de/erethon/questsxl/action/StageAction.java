@@ -34,6 +34,9 @@ public class StageAction extends QBaseAction {
         if (!conditions(quester)) return;
         if (quester instanceof QPlayer player) {
             QQuest quest = plugin.getQuestManager().getByName(questID);
+            if (quest == null) {
+                throw new RuntimeException("Quest " + questID + " does not exist. (StageAction in " + id() + ")");
+            }
             if (!player.hasQuest(quest)) {
                 return;
             }
