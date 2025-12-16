@@ -24,13 +24,17 @@ public class StageCondition extends QBaseCondition {
     QuestManager questManager = QuestsXL.get().getQuestManager();
 
     @QParamDoc(name = "quest", description = "The ID of the quest.", required = true)
-    QQuest quest;
+    String questId;
 
     @QParamDoc(name = "stage", description = "The stage the quest must be on.", required = true)
     private int stage = -1;
 
     @Override
     public boolean check(Quester quester) {
+        QQuest quest = questManager.getByName(questId);
+        if (quest == null) {
+            throw new RuntimeException("Quest " + questId + " does not exist. (StageCondition in " + id() + ")");
+        }
         if (quester instanceof QPlayer player) {
             if (player.hasQuest(quest) && player.getActiveQuest(quest).getCurrentStageIndex() == stage) {
                 return success(quester);
@@ -42,10 +46,7 @@ public class StageCondition extends QBaseCondition {
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
-        quest = questManager.getByName(cfg.getString("quest"));
+        questId = cfg.getString("quest");
         stage = cfg.getInt("stage");
-        if  (quest == null) {
-            throw new RuntimeException("Quest " + cfg.getString("quest") + " does not exist.");
-        }
     }
 }

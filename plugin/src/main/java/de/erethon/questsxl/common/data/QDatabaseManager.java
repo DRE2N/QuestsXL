@@ -567,6 +567,25 @@ public class QDatabaseManager extends EDatabaseManager {
         return uuidqPlayerMap.get(hPlayer.getSelectedCharacter().getCharacterID());
     }
 
+    /**
+     * Removes the QPlayer from the cache when the player disconnects.
+     * This ensures stale player references are not kept around.
+     */
+    public void removePlayer(Player player) {
+        UUID characterId = getCurrentCharacterId(player);
+        if (characterId != null) {
+            uuidqPlayerMap.remove(characterId);
+        }
+    }
+
+    /**
+     * Clears all QPlayers from the cache.
+     * This should be called during plugin reload to ensure fresh player instances are created.
+     */
+    public void clearPlayers() {
+        uuidqPlayerMap.clear();
+    }
+
     private String generateObjectiveId(QObjective<?> objective, QStage stage) {
         String objectiveKey = findObjectiveKeyInStage(objective, stage);
         if (objectiveKey != null) {

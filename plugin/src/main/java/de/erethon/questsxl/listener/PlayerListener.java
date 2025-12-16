@@ -48,7 +48,6 @@ public class PlayerListener extends AbstractListener {
         ChannelPipeline pipeline = serverPlayer.connection.connection.channel.pipeline();
         if (pipeline.get("qxl_handler") != null) {
             pipeline.remove("qxl_handler");
-            return;
         }
         pipeline.addAfter("packet_handler", "qxl_handler", packetHandler); // Server -> QXL -> Client
     }
@@ -66,6 +65,9 @@ public class PlayerListener extends AbstractListener {
         // Clean up stored death location to prevent memory leaks
         deathLocations.remove(event.getPlayer().getUniqueId());
         player.saveToDatabase();
+
+        // Remove QPlayer from cache to prevent stale references on reconnect
+        databaseManager.removePlayer(event.getPlayer());
     }
 
     @EventHandler

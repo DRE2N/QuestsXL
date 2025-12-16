@@ -105,6 +105,8 @@ public final class QuestsXL extends EPlugin {
     private InteractionManager interactionManager;
     private PeriodicQuestManager periodicQuestManager;
 
+    private QuestScoreboardLines scoreboardLines;
+
     private final Map<String, Integer> scores = new HashMap<>();
     private final List<FriendlyError> errors = new ArrayList<>();
     private boolean showStacktraces = true;
@@ -252,7 +254,11 @@ public final class QuestsXL extends EPlugin {
         getServer().getPluginManager().registerEvents(playerListener, this);
 
         if (isAergiaEnabled()) {
-            aergia.getEScoreboard().addScores(new QuestScoreboardLines());
+            if (scoreboardLines != null) {
+                aergia.getEScoreboard().removeScores(scoreboardLines);
+            }
+            scoreboardLines = new QuestScoreboardLines();
+            aergia.getEScoreboard().addScores(scoreboardLines);
         }
         QuestsXL.log("Loading QComponents...");
         dialogueManager.load();
@@ -437,6 +443,13 @@ public final class QuestsXL extends EPlugin {
 
     public void reload() {
         errors.clear();
+        if (objectiveEventManager != null) {
+            objectiveEventManager.unregisterAll();
+        }
+        for (QPlayer qPlayer : databaseManager.getPlayers()) {
+            qPlayer.saveToDatabase();
+        }
+        databaseManager.clearPlayers();
         onDisable();
         loadCore();
         QuestsXL.log("Loading QComponents...");
