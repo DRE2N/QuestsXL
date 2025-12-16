@@ -47,7 +47,7 @@ public class JobCondition extends QBaseCondition {
             if  (currentJobID.isPresent()) {
                 String currentJob = currentJobID.get();
                 if (currentJob.equalsIgnoreCase(jobID)) {
-                    success(quester);
+                    return success(quester);
                 }
                 return fail(quester);
             }

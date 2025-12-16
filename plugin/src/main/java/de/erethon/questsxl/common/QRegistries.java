@@ -137,6 +137,7 @@ public class QRegistries {
         ACTIONS.register("remove_quest", RemoveQuestAction::new);
         ACTIONS.register("run_as", RunAsAction::new);
         ACTIONS.register("command", RunCommandAction::new);
+        ACTIONS.register("run_command", RunCommandAction::new); // Alias
         ACTIONS.register("score", ScoreAction::new);
         ACTIONS.register("message", SendMessageAction::new);
         ACTIONS.register("title", SendTitleAction::new);

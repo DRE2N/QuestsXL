@@ -41,7 +41,16 @@ public class RunCommandAction extends QBaseAction {
 
     private void runCommand(QPlayer player) {
         Player p = player.getPlayer();
+        if (command == null) {
+            QuestsXL.get().getLogger().warning("RunCommandAction: command is null! ID: " + id);
+            return;
+        }
+        if (p == null) {
+            QuestsXL.get().getLogger().warning("RunCommandAction: player is null!");
+            return;
+        }
         String commandToRun = command.replace("%player%", p.getName());
+        QuestsXL.get().getLogger().info("RunCommandAction: Running command '" + commandToRun + "' for " + p.getName() + " (console=" + console + ", op=" + op + ")");
         if (console) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), commandToRun);
         } else {
