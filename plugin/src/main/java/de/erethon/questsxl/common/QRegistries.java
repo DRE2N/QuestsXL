@@ -16,7 +16,8 @@ import de.erethon.questsxl.action.PlayAnimationAction;
 import de.erethon.questsxl.action.PlayCutsceneAction;
 import de.erethon.questsxl.action.PlaySoundAction;
 import de.erethon.questsxl.action.QAction;
-import de.erethon.questsxl.action.QuestAction;
+import de.erethon.questsxl.action.RemoveItemAction;
+import de.erethon.questsxl.action.StartQuestAction;
 import de.erethon.questsxl.action.RemoveQuestAction;
 import de.erethon.questsxl.action.RepeatAction;
 import de.erethon.questsxl.action.ResetIBCAction;
@@ -53,6 +54,7 @@ import de.erethon.questsxl.condition.JobCondition;
 import de.erethon.questsxl.condition.LevelCondition;
 import de.erethon.questsxl.condition.LocationCondition;
 import de.erethon.questsxl.condition.LookingAtCondition;
+import de.erethon.questsxl.condition.MinecraftTimeCondition;
 import de.erethon.questsxl.condition.MountedCondition;
 import de.erethon.questsxl.condition.PassengersCondition;
 import de.erethon.questsxl.condition.PermissionCondition;
@@ -97,6 +99,7 @@ import de.erethon.questsxl.objective.SignEditObjective;
 import de.erethon.questsxl.objective.SleepObjective;
 import de.erethon.questsxl.objective.SneakObjective;
 import de.erethon.questsxl.objective.TakeDamageObjective;
+import de.erethon.questsxl.objective.TimerObjective;
 import de.erethon.questsxl.objective.WaitObjective;
 
 public class QRegistries {
@@ -132,9 +135,10 @@ public class QRegistries {
         ACTIONS.register("play_dialogue", DialogueAction::new);
         ACTIONS.register("play_cutscene", PlayCutsceneAction::new);
         ACTIONS.register("play_sound", PlaySoundAction::new);
+        ACTIONS.register("remove_item", RemoveItemAction::new);
+        ACTIONS.register("remove_quest", RemoveQuestAction::new);
         ACTIONS.register("repeat", RepeatAction::new);
         ACTIONS.register("reset_ibc", ResetIBCAction::new);
-        ACTIONS.register("remove_quest", RemoveQuestAction::new);
         ACTIONS.register("run_as", RunAsAction::new);
         ACTIONS.register("command", RunCommandAction::new);
         ACTIONS.register("run_command", RunCommandAction::new); // Alias
@@ -147,7 +151,7 @@ public class QRegistries {
         ACTIONS.register("show_ibc", ShowIBCAction::new);
         ACTIONS.register("stage", StageAction::new);
         ACTIONS.register("start_event", StartEventAction::new);
-        ACTIONS.register("start_quest", QuestAction::new);
+        ACTIONS.register("start_quest", StartQuestAction::new);
         ACTIONS.register("stop_event", StopEventAction::new);
         ACTIONS.register("talk", TalkAction::new);
         ACTIONS.register("teleport", TeleportPlayerAction::new);
@@ -176,6 +180,7 @@ public class QRegistries {
         CONDITIONS.register("level", LevelCondition::new);
         CONDITIONS.register("location", LocationCondition::new);
         CONDITIONS.register("looking_at", LookingAtCondition::new);
+        CONDITIONS.register("minecraft_time", MinecraftTimeCondition::new);
         CONDITIONS.register("mounted", MountedCondition::new);
         CONDITIONS.register("passengers", PassengersCondition::new);
         CONDITIONS.register("permission", PermissionCondition::new);
@@ -218,6 +223,7 @@ public class QRegistries {
         OBJECTIVES.register("sleep", SleepObjective::new);
         OBJECTIVES.register("sneak", SneakObjective::new);
         OBJECTIVES.register("take_damage", TakeDamageObjective::new);
+        OBJECTIVES.register("timer", TimerObjective::new);
         OBJECTIVES.register("wait", WaitObjective::new);
         if (qxl.isHephaestusEnabled()) {
             QuestsXL.log("Found Hephaestus, enabling Hephaestus objectives.");

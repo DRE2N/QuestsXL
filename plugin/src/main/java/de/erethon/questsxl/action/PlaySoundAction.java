@@ -12,18 +12,14 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 
 @QLoadableDoc(
-        value = "set_block",
-        description = "Sets a block at a specific location to a specific material.",
-        shortExample = "set_block: location: x=0; y=64; z=0; material=STONE",
+        value = "play_sound",
+        description = "Plays a sound to the player.",
+        shortExample = "play_sound: sound=entity.player.levelup",
         longExample = {
-                "set_block:",
-                "  location:",
-                "    x: 0",
-                "    y: 64",
-                "    z: 0",
-                "    world: Erethon",
-                "  material: DIAMOND_BLOCK",
-                "  instanced: true # "
+                "play_sound:",
+                "  sound: entity.player.levelup",
+                "  volume: 1.0",
+                "  pitch: 1.0",
         }
 )
 public class PlaySoundAction extends QBaseAction {

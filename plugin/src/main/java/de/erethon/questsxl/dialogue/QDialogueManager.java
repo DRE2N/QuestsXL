@@ -40,7 +40,6 @@ public class QDialogueManager extends Registry<String, QDialogue> {
         if (!npcRegistry.containsKey(npcId)) {
             return;
         }
-        QuestsXL.log("NPC " + npcId + " right-clicked by " + player.getName());
         String dialogueId = npcRegistry.get(npcId);
         QDialogue dialogue = get(dialogueId);
         QPlayer qPlayer = QuestsXL.get().getDatabaseManager().getCurrentPlayer(player);

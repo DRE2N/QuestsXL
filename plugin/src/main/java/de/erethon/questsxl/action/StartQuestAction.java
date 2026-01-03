@@ -5,7 +5,6 @@ import de.erethon.questsxl.common.QConfig;
 import de.erethon.questsxl.common.QLoadableDoc;
 import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.common.Quester;
-import de.erethon.questsxl.common.data.QDatabaseManager;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.QQuest;
 
@@ -18,7 +17,7 @@ import de.erethon.questsxl.quest.QQuest;
                 "  quest: example_quest",
         }
 )
-public class QuestAction extends QBaseAction {
+public class StartQuestAction extends QBaseAction {
 
     QuestsXL plugin = QuestsXL.get();
 

@@ -44,16 +44,25 @@ public class QConfigurationSection extends YamlConfiguration implements QConfig 
 
     @Override
     public Set<QAction> getActions(QComponent component, String path) {
+        if (!contains(path)) {
+            return Set.of();
+        }
         return (Set<QAction>) QConfigLoader.load(component, path, this, QRegistries.ACTIONS);
     }
 
     @Override
     public Set<QCondition> getConditions(QComponent component, String path) {
+        if (!contains(path)) {
+            return Set.of();
+        }
         return (Set<QCondition>) QConfigLoader.load(component, path, this, QRegistries.CONDITIONS);
     }
 
     @Override
     public Set<QObjective> getObjectives(QComponent component, String path) {
+        if (!contains(path)) {
+            return Set.of();
+        }
         return (Set<QObjective>) QConfigLoader.load(component, path, this, QRegistries.OBJECTIVES);
     }
 
