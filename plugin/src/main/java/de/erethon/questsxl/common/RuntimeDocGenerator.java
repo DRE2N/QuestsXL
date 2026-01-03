@@ -2,8 +2,6 @@ package de.erethon.questsxl.common;
 
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.action.QAction;
-import de.erethon.questsxl.common.QLoadableDoc;
-import de.erethon.questsxl.common.QParamDoc;
 import de.erethon.questsxl.condition.QCondition;
 import de.erethon.questsxl.objective.QObjective;
 import java.io.IOException;
@@ -41,15 +39,15 @@ public class RuntimeDocGenerator {
 
         plugin.getLogger().info("Processing " + QRegistries.ACTIONS.getEntries().size() + " registered Actions...");
         for (Supplier<? extends QAction> supplier : QRegistries.ACTIONS.getEntries().values()) {
-            processSupplier(supplier);
+            processSupplier(supplier, "Actions");
         }
         plugin.getLogger().info("Processing " + QRegistries.OBJECTIVES.getEntries().size() + " registered Objectives...");
         for (Supplier<? extends QObjective> supplier : QRegistries.OBJECTIVES.getEntries().values()) {
-            processSupplier(supplier);
+            processSupplier(supplier, "Objectives");
         }
         plugin.getLogger().info("Processing " + QRegistries.CONDITIONS.getEntries().size() + " registered Conditions...");
         for (Supplier<? extends QCondition> supplier : QRegistries.CONDITIONS.getEntries().values()) {
-            processSupplier(supplier);
+            processSupplier(supplier, "Conditions");
         }
 
         entriesMap.forEach((category, entries) -> {
@@ -66,7 +64,7 @@ public class RuntimeDocGenerator {
         plugin.getLogger().info("Finished documentation generation. Files written to: " + outputDir.toAbsolutePath());
     }
 
-    private void processSupplier(Supplier<?> supplier) {
+    private void processSupplier(Supplier<?> supplier, String category) {
         if (supplier == null) return;
         try {
             Object instance = supplier.get();
@@ -74,14 +72,14 @@ public class RuntimeDocGenerator {
                 plugin.getLogger().warning("A registered supplier returned null. Skipping.");
                 return;
             }
-            processClass(instance.getClass());
+            processClass(instance.getClass(), category);
         } catch (Exception e) {
             plugin.getLogger().severe("Could not instantiate a class for documentation. It might be abstract or lack a default constructor. Skipping.");
             e.printStackTrace();
         }
     }
 
-    private void processClass(Class<?> clazz) {
+    private void processClass(Class<?> clazz, String category) {
         QLoadableDoc loadableDoc = clazz.getAnnotation(QLoadableDoc.class);
         if (loadableDoc == null) {
             // This can happen if a registered class is not meant to be documented
@@ -89,7 +87,6 @@ public class RuntimeDocGenerator {
         }
 
         plugin.getLogger().info("Processing class: " + clazz.getPackageName() + "." + clazz.getSimpleName() + " (" + loadableDoc.value() + ")");
-        String category = determineCategory(clazz);
         List<String> entries = entriesMap.get(category);
 
         if (entries != null) {
@@ -123,18 +120,6 @@ public class RuntimeDocGenerator {
         }
     }
 
-
-    private String determineCategory(Class<?> clazz) {
-        String className = clazz.getSimpleName().toLowerCase();
-        if (className.contains("action")) {
-            return "Actions";
-        } else if (className.contains("objective")) {
-            return "Objectives";
-        } else if (className.contains("condition")) {
-            return "Conditions";
-        }
-        return "Unknown";
-    }
 
     private void writeDocs() {
         docBuilders.forEach((category, content) -> {
