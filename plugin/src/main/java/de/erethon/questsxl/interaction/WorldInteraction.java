@@ -40,6 +40,7 @@ public class WorldInteraction implements ObjectiveHolder, QComponent {
     private String id;
     private Location location;
     private double activationRadius = 32.0; // Default radius
+    private boolean repeatable = true; // Default is repeatable
 
     private final Set<QObjective> objectives = new HashSet<>();
     private final Set<ActiveObjective> activeObjectives = ConcurrentHashMap.newKeySet();
@@ -80,6 +81,9 @@ public class WorldInteraction implements ObjectiveHolder, QComponent {
 
         // Load activation radius
         this.activationRadius = section.getDouble("radius", 32.0);
+
+        // Load repeatable flag
+        this.repeatable = section.getBoolean("repeatable", true);
 
         // Load objectives
         objectives.addAll((Collection<? extends QObjective>) QConfigLoader.load(
@@ -141,6 +145,15 @@ public class WorldInteraction implements ObjectiveHolder, QComponent {
      * Called when a player enters the activation radius
      */
     public void onPlayerEnter(QPlayer player) {
+        // Check if the interaction is non-repeatable and already completed by this player
+        if (!repeatable) {
+            UUID characterId = plugin.getDatabaseManager().getCurrentCharacterId(player.getPlayer());
+            if (characterId != null && plugin.getDatabaseManager().hasCompletedInteraction(characterId, id)) {
+                QuestsXL.log("Player " + player.getName() + " has already completed non-repeatable interaction: " + id);
+                return;
+            }
+        }
+
         boolean wasEmpty = playersInRange.isEmpty();
         playersInRange.add(player);
 
@@ -199,6 +212,10 @@ public class WorldInteraction implements ObjectiveHolder, QComponent {
         return objectives;
     }
 
+    public boolean isRepeatable() {
+        return repeatable;
+    }
+
     // ObjectiveHolder implementation
 
     @Override
@@ -233,6 +250,38 @@ public class WorldInteraction implements ObjectiveHolder, QComponent {
     public void progress(@NotNull Completable completable) {
         // WorldInteractions don't have stages or progression
         // Objectives complete and can be repeated
+
+        // However, if this interaction is non-repeatable, we need to check if all objectives
+        // are completed and mark it as completed for all players in range
+        if (!repeatable) {
+            checkAndMarkCompletion();
+        }
+    }
+
+    /**
+     * Checks if all objectives are completed and marks the interaction as completed
+     * for all players in range (for non-repeatable interactions only)
+     */
+    private void checkAndMarkCompletion() {
+        // Check if all objectives in this interaction are completed
+        boolean allCompleted = true;
+        for (ActiveObjective active : activeObjectives) {
+            if (!active.isCompleted()) {
+                allCompleted = false;
+                break;
+            }
+        }
+
+        if (allCompleted) {
+            // Mark this interaction as completed for all players in range
+            for (QPlayer player : playersInRange) {
+                UUID characterId = plugin.getDatabaseManager().getCurrentCharacterId(player.getPlayer());
+                if (characterId != null) {
+                    plugin.getDatabaseManager().markInteractionCompleted(characterId, id);
+                    QuestsXL.log("Marked non-repeatable interaction " + id + " as completed for player " + player.getName());
+                }
+            }
+        }
     }
 
     @Override

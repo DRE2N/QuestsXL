@@ -249,6 +249,22 @@ public class QDatabaseManager extends EDatabaseManager {
             QuestsXL.log("Applied migration 3: Periodic quest tables");
         }
 
+        if (currentVersion < 4) {
+            QuestsXL.log("Applying migration 4: World interaction completion tracking");
+            handle.execute("""
+                CREATE TABLE IF NOT EXISTS q_character_completed_interactions (
+                    character_id UUID NOT NULL,
+                    interaction_id VARCHAR(255) NOT NULL,
+                    completed_at BIGINT NOT NULL,
+                    PRIMARY KEY (character_id, interaction_id),
+                    FOREIGN KEY (character_id) REFERENCES Characters(character_id) ON DELETE CASCADE
+                )
+            """);
+
+            handle.execute("INSERT INTO q_schema_version (version) VALUES (4)");
+            QuestsXL.log("Applied migration 4: World interaction completion tracking");
+        }
+
         QuestsXL.log("Database schema is up to date");
     }
 
@@ -991,5 +1007,40 @@ public class QDatabaseManager extends EDatabaseManager {
 
     public QPlayerDao getPlayerDao() {
         return playerDao;
+    }
+
+    // World Interaction Completion Methods
+
+    /**
+     * Checks if a character has completed a non-repeatable world interaction
+     * @param characterId The character UUID
+     * @param interactionId The interaction ID
+     * @return true if the character has completed this interaction
+     */
+    public boolean hasCompletedInteraction(UUID characterId, String interactionId) {
+        try {
+            return playerDao.hasCompletedInteraction(characterId, interactionId);
+        } catch (Exception e) {
+            QuestsXL.log("Failed to check interaction completion: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Marks a world interaction as completed for a character
+     * @param characterId The character UUID
+     * @param interactionId The interaction ID
+     */
+    public void markInteractionCompleted(UUID characterId, String interactionId) {
+        CompletableFuture.runAsync(() -> {
+            try {
+                playerDao.markInteractionCompleted(characterId, interactionId, System.currentTimeMillis());
+                QuestsXL.log("Marked interaction " + interactionId + " as completed for character " + characterId);
+            } catch (Exception e) {
+                QuestsXL.log("Failed to mark interaction as completed: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }, asyncExecutor);
     }
 }

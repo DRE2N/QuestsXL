@@ -112,6 +112,16 @@ public interface QPlayerDao {
     @SqlUpdate("DELETE FROM q_character_periodic_progress WHERE quest_type = ?")
     void clearAllPlayersPeriodicProgress(String questType);
 
+    // World Interaction Completion Operations
+    @SqlQuery("SELECT COUNT(*) > 0 FROM q_character_completed_interactions WHERE character_id = ? AND interaction_id = ?")
+    boolean hasCompletedInteraction(UUID characterId, String interactionId);
+
+    @SqlUpdate("INSERT INTO q_character_completed_interactions (character_id, interaction_id, completed_at) VALUES (?, ?, ?) ON CONFLICT (character_id, interaction_id) DO NOTHING")
+    void markInteractionCompleted(UUID characterId, String interactionId, long completedAt);
+
+    @SqlQuery("SELECT interaction_id FROM q_character_completed_interactions WHERE character_id = ?")
+    List<String> getCompletedInteractions(UUID characterId);
+
     // Data Transfer Objects
     class ActiveQuestData {
         public String questId;
