@@ -183,6 +183,10 @@ public class ContentGuide {
 
     private Explorable getClosestUnexploredInSet(ExplorationSet set) {
         Explorable closest = set.getClosestUnexplored(player.getPlayer().getLocation(), explorer.getExploredInSet(set));
+        if (closest == null) {
+            distance = 0;
+            return null;
+        }
         if (closest.location().getWorld() != player.getPlayer().getLocation().getWorld()) {
             distance = 0;
             return null;
