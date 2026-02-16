@@ -27,6 +27,10 @@ import de.erethon.questsxl.dialogue.QDialogueManager;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.global.GlobalObjectives;
 import de.erethon.questsxl.instancing.BlockCollectionManager;
+import de.erethon.questsxl.instancing.InstanceManager;
+import de.erethon.questsxl.instancing.apartment.ApartmentService;
+import de.erethon.questsxl.instancing.apartment.ApartmentSignListener;
+import de.erethon.questsxl.instancing.apartment.TychePaymentHandler;
 import de.erethon.questsxl.interaction.InteractionManager;
 import de.erethon.questsxl.listener.PlayerListener;
 import de.erethon.questsxl.listener.PluginListener;
@@ -40,6 +44,7 @@ import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.PeriodicQuestManager;
 import de.erethon.questsxl.quest.QuestManager;
 import de.erethon.questsxl.region.QRegionManager;
+import de.erethon.questsxl.region.RegionInstanceService;
 import de.erethon.questsxl.respawn.RespawnPointManager;
 import de.erethon.questsxl.scoreboard.QuestScoreboardLines;
 import de.erethon.questsxl.tool.GitSync;
@@ -93,6 +98,8 @@ public final class QuestsXL extends EPlugin {
     private QRegionManager regionManager;
     private AnimationManager animationManager;
     private BlockCollectionManager blockCollectionManager;
+    private InstanceManager instanceManager;
+    private de.erethon.questsxl.instancing.apartment.ApartmentService apartmentService;
     private QDialogueManager dialogueManager;
     private QCommandCache commandCache;
     private GlobalObjectives globalObjectives;
@@ -234,6 +241,22 @@ public final class QuestsXL extends EPlugin {
         regionManager = new QRegionManager(REGIONS);
         blockCollectionManager = new BlockCollectionManager(IBCS);
         animationManager = new AnimationManager(ANIMATIONS);
+
+        // Initialize instance manager
+        instanceManager = new InstanceManager(this);
+        instanceManager.initialize();
+        QuestsXL.log("Instance manager initialized");
+
+        apartmentService = new ApartmentService(this, instanceManager);
+        apartmentService.setPaymentHandler(new TychePaymentHandler()); // let's hope this works for dependency reasons
+        getServer().getPluginManager().registerEvents(new ApartmentSignListener(this, apartmentService, instanceManager), this);
+        QuestsXL.log("Apartment service initialized");
+
+        // Initialize region instance service
+        RegionInstanceService regionInstanceService = new RegionInstanceService(this, instanceManager, regionManager);
+        regionManager.setInstanceService(regionInstanceService);
+        QuestsXL.log("Region instance service initialized");
+
         questManager = new QuestManager(); // Load after sync
         eventManager = new QEventManager();
         dialogueManager = new QDialogueManager(DIALOGUES);
@@ -312,6 +335,10 @@ public final class QuestsXL extends EPlugin {
 
     @Override
     public void onDisable() {
+        // Shutdown instance manager
+        if (instanceManager != null) {
+            instanceManager.shutdown();
+        }
         // Shutdown interaction manager
         if (interactionManager != null) {
             interactionManager.shutdown();
@@ -395,6 +422,14 @@ public final class QuestsXL extends EPlugin {
 
     public BlockCollectionManager getBlockCollectionManager() {
         return blockCollectionManager;
+    }
+
+    public de.erethon.questsxl.instancing.apartment.ApartmentService getApartmentService() {
+        return apartmentService;
+    }
+
+    public de.erethon.questsxl.instancing.InstanceManager getInstanceManager() {
+        return instanceManager;
     }
 
     public AnimationManager getAnimationManager() {

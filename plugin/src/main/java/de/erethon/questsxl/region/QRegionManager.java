@@ -1,25 +1,32 @@
 package de.erethon.questsxl.region;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public class QRegionManager {
 
     File regionData;
     private final List<QRegion> regions = new ArrayList<>();
     private final Set<QRegion> cache = new HashSet<>();
+    private RegionInstanceService instanceService;
+
+    private final Map<UUID, Location> pos1Map = new HashMap<>();
+    private final Map<UUID, Location> pos2Map = new HashMap<>();
 
     public QRegionManager(File regionDataFile) {
         regionData = regionDataFile;
@@ -66,6 +73,14 @@ public class QRegionManager {
         return cache;
     }
 
+    public void setInstanceService(RegionInstanceService instanceService) {
+        this.instanceService = instanceService;
+    }
+
+    public RegionInstanceService getInstanceService() {
+        return instanceService;
+    }
+
     public void load() {
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(regionData);
         for (String string : configuration.getKeys(false)) {
@@ -74,6 +89,30 @@ public class QRegionManager {
             regions.add(region);
         }
         QuestsXL.log("Loaded " + regions.size() + " regions.");
+    }
+
+    // Selection management methods
+    public void setPos1(Player player, Location location) {
+        pos1Map.put(player.getUniqueId(), location);
+    }
+
+    public void setPos2(Player player, Location location) {
+        pos2Map.put(player.getUniqueId(), location);
+    }
+
+    @Nullable
+    public Location getPos1(Player player) {
+        return pos1Map.get(player.getUniqueId());
+    }
+
+    @Nullable
+    public Location getPos2(Player player) {
+        return pos2Map.get(player.getUniqueId());
+    }
+
+    public void clearSelection(Player player) {
+        pos1Map.remove(player.getUniqueId());
+        pos2Map.remove(player.getUniqueId());
     }
 
     public void save() {

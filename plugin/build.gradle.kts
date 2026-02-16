@@ -21,6 +21,7 @@ dependencies {
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.3.0") { isTransitive = false }
     compileOnly("com.github.MilkBowl:VaultAPI:1.7") { isTransitive = false }
     compileOnly("de.erethon.hecate:Hecate:1.2-SNAPSHOT")
+    compileOnly("de.erethon.tyche:Tyche:1.0-SNAPSHOT")
 }
 
 tasks {

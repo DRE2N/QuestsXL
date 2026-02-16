@@ -32,5 +32,6 @@ public class QCommandCache extends ECommandCache {
             addCommand(new ExplorationCommand());
             addCommand(new DailyCommand());
             addCommand(new WeeklyCommand());
+            addCommand(new InstanceCommand());
     }
 }

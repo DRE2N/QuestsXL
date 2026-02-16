@@ -156,6 +156,13 @@ public class QRegistries {
         ACTIONS.register("talk", TalkAction::new);
         ACTIONS.register("teleport", TeleportPlayerAction::new);
         ACTIONS.register("velocity", VelocityAction::new);
+
+        // Instance system actions
+        ACTIONS.register("enter_instance", de.erethon.questsxl.action.EnterInstanceAction::new);
+        ACTIONS.register("exit_instance", de.erethon.questsxl.action.ExitInstanceAction::new);
+        ACTIONS.register("reset_instance", de.erethon.questsxl.action.ResetInstanceAction::new);
+        ACTIONS.register("set_instance_block", de.erethon.questsxl.action.SetInstanceBlockAction::new);
+
         if (qxl.isWEEnabled()) {
             QuestsXL.log("Found WorldEdit, enabling WorldEdit actions.");
             ACTIONS.register("paste_schematic", PasteSchematicAction::new);
@@ -194,6 +201,11 @@ public class QRegistries {
         CONDITIONS.register("time", TimeCondition::new);
         CONDITIONS.register("velocity", VelocityCondition::new);
         CONDITIONS.register("wet", WetCondition::new);
+
+        // Instance system conditions
+        CONDITIONS.register("in_instance", de.erethon.questsxl.condition.InInstanceCondition::new);
+        CONDITIONS.register("instance_block", de.erethon.questsxl.condition.InstanceBlockCondition::new);
+
         if (qxl.isAergiaEnabled()) {
             QuestsXL.log("Found Aergia, enabling Aergia conditions.");
             CONDITIONS.register("group_size", GroupSizeCondition::new);

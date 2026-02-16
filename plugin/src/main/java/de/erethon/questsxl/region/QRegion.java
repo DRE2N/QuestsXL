@@ -8,6 +8,7 @@ import de.erethon.questsxl.tool.IntRange;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.util.BoundingBox;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -26,6 +27,11 @@ public class QRegion {
     private QQuest linkedQuest;
     private final Set<RegionFlag> questFlags = new HashSet<>();
     private final Set<RegionFlag> publicFlags = new HashSet<>();
+
+    // Instancing fields
+    private boolean instanced = false;
+    private String instanceTemplateId; // Computed as "region_" + id
+    private int proximityDistance = 1; // In chunks, for auto-load on approach
 
     public QRegion(String id) {
         this.id = id;
@@ -93,6 +99,36 @@ public class QRegion {
         return "&7Pos 1: &6" + pos1.getBlockX() + "&8/&6" + pos1.getBlockY() + "&8/&6" + pos1.getBlockZ() + " &8- &7Pos2: &6" + pos2.getBlockX() + "&8/&6" + pos2.getBlockY() + "&8/&6" + pos2.getBlockZ();
     }
 
+    public boolean isInstanced() {
+        return instanced;
+    }
+
+    public void setInstanced(boolean instanced) {
+        this.instanced = instanced;
+        if (instanced && instanceTemplateId == null) {
+            instanceTemplateId = "region_" + id;
+        }
+    }
+
+    public String getInstanceTemplateId() {
+        return instanceTemplateId;
+    }
+
+    public int getProximityDistance() {
+        return proximityDistance;
+    }
+
+    public void setProximityDistance(int proximityDistance) {
+        this.proximityDistance = proximityDistance;
+    }
+
+    public BoundingBox getBoundingBox() {
+        if (pos1 == null || pos2 == null) {
+            return null;
+        }
+        return BoundingBox.of(pos1, pos2);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if(obj == null) { return false; }
@@ -119,6 +155,15 @@ public class QRegion {
                 questFlags.add(flag);
             }
         }
+        if (section.contains("instanced")) {
+            instanced = section.getBoolean("instanced");
+            if (instanced) {
+                instanceTemplateId = "region_" + id;
+            }
+        }
+        if (section.contains("proximityDistance")) {
+            proximityDistance = section.getInt("proximityDistance", 1);
+        }
     }
 
     public ConfigurationSection save() {
@@ -138,6 +183,10 @@ public class QRegion {
             list2.add(s.name());
         }
         config.set("questFlags", list2);
+        if (instanced) {
+            config.set("instanced", true);
+            config.set("proximityDistance", proximityDistance);
+        }
         return config;
     }
 }

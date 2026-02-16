@@ -11,6 +11,7 @@ import de.erethon.questsxl.common.ObjectiveHolder;
 import de.erethon.questsxl.common.QRegistries;
 import de.erethon.questsxl.common.QStage;
 import de.erethon.questsxl.global.GlobalObjectives;
+import de.erethon.questsxl.instancing.InstanceDao;
 import de.erethon.questsxl.livingworld.PlayerExplorer;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.livingworld.QEventDao;
@@ -51,6 +52,7 @@ public class QDatabaseManager extends EDatabaseManager {
 
     private final QPlayerDao playerDao;
     private final QEventDao eventDao;
+    private final de.erethon.questsxl.instancing.InstanceDao instanceDao;
 
     public QDatabaseManager(BedrockDBConnection connection) {
         super(connection, new ThreadPoolExecutor(2, 4, 60L, java.util.concurrent.TimeUnit.SECONDS, new java.util.concurrent.LinkedBlockingQueue<>()));
@@ -61,6 +63,7 @@ public class QDatabaseManager extends EDatabaseManager {
         }
         playerDao = getDao(QPlayerDao.class);
         eventDao = getDao(QEventDao.class);
+        instanceDao = getDao(de.erethon.questsxl.instancing.InstanceDao.class);
     }
 
     @Override
@@ -265,6 +268,78 @@ public class QDatabaseManager extends EDatabaseManager {
             QuestsXL.log("Applied migration 4: World interaction completion tracking");
         }
 
+        if (currentVersion < 5) {
+            QuestsXL.log("Applying migration 5: Instance system tables");
+
+            handle.execute("""
+                CREATE TABLE IF NOT EXISTS q_instance_templates (
+                    template_id VARCHAR(255) PRIMARY KEY,
+                    world_name VARCHAR(255) NOT NULL,
+                    min_x INT NOT NULL,
+                    min_y INT NOT NULL,
+                    min_z INT NOT NULL,
+                    max_x INT NOT NULL,
+                    max_y INT NOT NULL,
+                    max_z INT NOT NULL,
+                    block_data BYTEA NOT NULL,
+                    block_entities BYTEA,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """);
+
+            handle.execute("""
+                CREATE TABLE IF NOT EXISTS q_character_instances (
+                    character_id UUID NOT NULL,
+                    template_id VARCHAR(255) NOT NULL,
+                    modified_blocks BYTEA,
+                    block_entities BYTEA,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (character_id, template_id),
+                    FOREIGN KEY (character_id) REFERENCES Characters(character_id) ON DELETE CASCADE
+                )
+            """);
+
+            handle.execute("INSERT INTO q_schema_version (version) VALUES (5)");
+            QuestsXL.log("Applied migration 5: Instance system tables");
+        }
+
+        if (currentVersion < 6) {
+            QuestsXL.log("Applying migration 6: Apartment rentals");
+
+            handle.execute("""
+                CREATE TABLE IF NOT EXISTS q_apartment_rentals (
+                    character_id UUID NOT NULL,
+                    template_id VARCHAR(255) NOT NULL,
+                    expires_at TIMESTAMP NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (character_id, template_id),
+                    FOREIGN KEY (character_id) REFERENCES Characters(character_id) ON DELETE CASCADE
+                )
+            """);
+
+            handle.execute("INSERT INTO q_schema_version (version) VALUES (6)");
+            QuestsXL.log("Applied migration 6: Apartment rentals");
+        }
+
+        if (currentVersion < 7) {
+            QuestsXL.log("Applying migration 7: Apartment template chunks");
+
+            handle.execute("""
+                CREATE TABLE IF NOT EXISTS q_apartment_template_chunks (
+                    template_id VARCHAR(255) NOT NULL,
+                    world_name VARCHAR(255) NOT NULL,
+                    chunk_x INT NOT NULL,
+                    chunk_z INT NOT NULL,
+                    PRIMARY KEY (template_id, world_name, chunk_x, chunk_z),
+                    FOREIGN KEY (template_id) REFERENCES q_instance_templates(template_id) ON DELETE CASCADE
+                )
+            """);
+
+            handle.execute("INSERT INTO q_schema_version (version) VALUES (7)");
+            QuestsXL.log("Applied migration 7: Apartment template chunks");
+        }
+
         QuestsXL.log("Database schema is up to date");
     }
 
@@ -332,6 +407,43 @@ public class QDatabaseManager extends EDatabaseManager {
                 rs.getString("scores"),
                 rs.getString("event_participation")
             );
+        });
+
+        // Instance system row mappers
+        jdbi.registerRowMapper(InstanceDao.TemplateData.class, (rs, ctx) -> {
+            var data = new InstanceDao.TemplateData();
+            data.worldName = rs.getString("world_name");
+            data.minX = rs.getInt("min_x");
+            data.minY = rs.getInt("min_y");
+            data.minZ = rs.getInt("min_z");
+            data.maxX = rs.getInt("max_x");
+            data.maxY = rs.getInt("max_y");
+            data.maxZ = rs.getInt("max_z");
+            data.blockData = rs.getBytes("block_data");
+            data.blockEntities = rs.getBytes("block_entities");
+            return data;
+        });
+
+        jdbi.registerRowMapper(InstanceDao.InstanceStateData.class, (rs, ctx) -> {
+            var data = new InstanceDao.InstanceStateData();
+            data.modifiedBlocks = rs.getBytes("modified_blocks");
+            data.blockEntities = rs.getBytes("block_entities");
+            return data;
+        });
+
+        jdbi.registerRowMapper(InstanceDao.TemplateChunk.class, (rs, ctx) -> {
+            var data = new InstanceDao.TemplateChunk();
+            data.templateId = rs.getString("template_id");
+            data.worldName = rs.getString("world_name");
+            data.chunkX = rs.getInt("chunk_x");
+            data.chunkZ = rs.getInt("chunk_z");
+            return data;
+        });
+
+        jdbi.registerRowMapper(de.erethon.questsxl.instancing.InstanceDao.RentalRow.class, (rs, ctx) -> {
+            var data = new de.erethon.questsxl.instancing.InstanceDao.RentalRow();
+            data.templateId = rs.getString("template_id");
+            return data;
         });
     }
 
@@ -1007,6 +1119,10 @@ public class QDatabaseManager extends EDatabaseManager {
 
     public QPlayerDao getPlayerDao() {
         return playerDao;
+    }
+
+    public de.erethon.questsxl.instancing.InstanceDao getInstanceDao() {
+        return instanceDao;
     }
 
     // World Interaction Completion Methods

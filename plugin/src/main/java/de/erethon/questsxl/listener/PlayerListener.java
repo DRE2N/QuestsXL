@@ -50,6 +50,15 @@ public class PlayerListener extends AbstractListener {
             pipeline.remove("qxl_handler");
         }
         pipeline.addAfter("packet_handler", "qxl_handler", packetHandler); // Server -> QXL -> Client
+
+        // Add instance packet listener
+        de.erethon.questsxl.instancing.InstancePacketListener instancePacketHandler =
+                new de.erethon.questsxl.instancing.InstancePacketListener(plugin, serverPlayer);
+        if (pipeline.get("qxl_instance_handler") != null) {
+            pipeline.remove("qxl_instance_handler");
+        }
+        pipeline.addBefore("packet_handler", "qxl_instance_handler", instancePacketHandler);
+
     }
 
     @EventHandler
@@ -64,6 +73,12 @@ public class PlayerListener extends AbstractListener {
 
         // Clean up stored death location to prevent memory leaks
         deathLocations.remove(event.getPlayer().getUniqueId());
+
+        // Clean up region instances
+        if (regionManager.getInstanceService() != null) {
+            regionManager.getInstanceService().forceLeaveInstance(player);
+        }
+
         player.saveToDatabase();
 
         // Remove QPlayer from cache to prevent stale references on reconnect
