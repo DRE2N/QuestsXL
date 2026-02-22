@@ -28,7 +28,7 @@ public class QEventManager {
     public void load(File file)  {
         events.clear();
         for (File file1 : file.listFiles()) {
-            if (!file.getName().endsWith(".yml")) {
+            if (!file1.getName().endsWith(".yml")) {
                 continue;
             }
             QEvent event = null;
