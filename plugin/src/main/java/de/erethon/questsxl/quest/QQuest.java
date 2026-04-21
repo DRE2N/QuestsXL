@@ -1,15 +1,16 @@
 package de.erethon.questsxl.quest;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.action.QAction;
+import de.erethon.questsxl.component.action.QAction;
 import de.erethon.questsxl.common.Completable;
+import de.erethon.questsxl.common.script.MacroProcessor;
 import de.erethon.questsxl.common.QComponent;
-import de.erethon.questsxl.common.QConfigLoader;
+import de.erethon.questsxl.common.script.QConfigLoader;
 import de.erethon.questsxl.common.QRegistries;
 import de.erethon.questsxl.common.QStage;
-import de.erethon.questsxl.common.QTranslatable;
-import de.erethon.questsxl.condition.QCondition;
+import de.erethon.questsxl.common.script.QTranslatable;
+import de.erethon.questsxl.common.script.ExecutionContext;
+import de.erethon.questsxl.component.condition.QCondition;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.event.QQuestCompleteEvent;
 import de.erethon.questsxl.player.QPlayer;
@@ -27,6 +28,7 @@ public class QQuest implements Completable, QComponent {
 
     public YamlConfiguration cfg;
     String name;
+    private final String source;
     private QTranslatable displayName;
     String description;
     private final List<QStage> stages = new ArrayList<>();
@@ -39,6 +41,7 @@ public class QQuest implements Completable, QComponent {
      */
     public QQuest(File file) {
         String fileName = file.getName();
+        source = fileName;
         name = fileName.replace(".yml", "");
         cfg = YamlConfiguration.loadConfiguration(file);
         if (cfg.getKeys(false).size() == 0) {
@@ -48,8 +51,7 @@ public class QQuest implements Completable, QComponent {
         try {
             load();
         } catch (Exception e) {
-            QuestsXL.get().getErrors().add(new FriendlyError(fileName, "Failed to load quest", e.getMessage(), "Format invalid?"));
-            e.printStackTrace();
+            QuestsXL.get().getErrors().add(new FriendlyError(fileName, "Failed to load quest", e.getMessage(), "Format invalid?").addStacktrace(e.getStackTrace()));
         }
     }
 
@@ -76,18 +78,20 @@ public class QQuest implements Completable, QComponent {
     }
 
     public boolean canStartQuest(QPlayer qPlayer) {
-        for (QCondition condition : conditions) {
-            try {
-                if (!condition.check(qPlayer)) {
-                    qPlayer.send(condition.getDisplayText());
+        try (var frame = ExecutionContext.frame(qPlayer, this)) {
+            for (QCondition condition : conditions) {
+                try {
+                    if (!condition.check(qPlayer)) {
+                        qPlayer.send(condition.getDisplayText());
+                        return false;
+                    }
+                } catch (Exception e) {
+                    FriendlyError error = new FriendlyError("Quest: " + this.getName(), "Failed to check condition", e.getMessage(), "Condition: " + condition.getClass().getSimpleName());
+                    error.addPlayer(qPlayer);
+                    error.addStacktrace(e.getStackTrace());
+                    QuestsXL.get().getErrors().add(error);
                     return false;
                 }
-            } catch (Exception e) {
-                FriendlyError error = new FriendlyError("Quest: " + this.getName(), "Failed to check condition", e.getMessage(), "Condition: " + condition.getClass().getSimpleName());
-                error.addPlayer(qPlayer);
-                error.addStacktrace(e.getStackTrace());
-                QuestsXL.get().getErrors().add(error);
-                return false;
             }
         }
         return true;
@@ -135,6 +139,7 @@ public class QQuest implements Completable, QComponent {
 
     @Override
     public void load() {
+        MacroProcessor.process(cfg, QuestsXL.get().getMacroRegistry());
         // General
         if (cfg.contains("displayName")) {
             displayName = QTranslatable.fromString(cfg.getString("displayName"));
@@ -142,21 +147,21 @@ public class QQuest implements Completable, QComponent {
         description = cfg.getString("description", "<no description>");
         // Conditions
         if (cfg.contains("conditions")) {
-            conditions.addAll((Collection<? extends QCondition>) QConfigLoader.load(this, "conditions", cfg, QRegistries.CONDITIONS));
+            conditions.addAll((Collection<? extends QCondition>) QConfigLoader.load(this, "conditions", cfg, QRegistries.CONDITIONS, source));
             for (QCondition condition : conditions) {
                 condition.setParent(this);
             }
         }
         // Start actions
         if (cfg.contains("onStart")) {
-            startActions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onStart", cfg, QRegistries.ACTIONS));
+            startActions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onStart", cfg, QRegistries.ACTIONS, source));
             for (QAction action : startActions) {
                 action.setParent(this);
             }
         }
         // Reward actions
         if (cfg.contains("onFinish")) {
-            rewards.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onFinish", cfg, QRegistries.ACTIONS));
+            rewards.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onFinish", cfg, QRegistries.ACTIONS, source));
             for (QAction action : rewards) {
                 action.setParent(this);
             }
@@ -176,10 +181,9 @@ public class QQuest implements Completable, QComponent {
             int id = Integer.parseInt(key);
             QStage stage = new QStage(this, id);
             try {
-                stage.load(this, stageS);
+                stage.load(this, stageS, source);
             } catch (Exception e) {
-                QuestsXL.get().getErrors().add(new FriendlyError("Quest: " + this.getName(), "Stage " + id + " konnte nicht geladen werden.", e.getMessage(), "..."));
-                e.printStackTrace();
+                QuestsXL.get().getErrors().add(new FriendlyError("Quest: " + this.getName(), "Stage " + id + " konnte nicht geladen werden.", e.getMessage(), "...").addStacktrace(e.getStackTrace()));
             }
             stages.add(stage);
         }

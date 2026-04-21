@@ -15,16 +15,19 @@ import java.util.Date;
  */
 public class FriendlyError {
 
+    private static final int HOVER_STACKTRACE_LINES = 9;
+    private static final int CONSOLE_STACKTRACE_LINES = 3;
+
     String title;
     String location;
     String exception;
     String hint;
     String stacktrace;
+    String consoleStackPreview;
     QPlayer relatedPlayer;
 
     public FriendlyError(String location, String title) {
         this(location, title, "", "");
-        QuestsXL.log("[QXL] " + getMessage());
     }
 
 
@@ -33,7 +36,27 @@ public class FriendlyError {
         this.location = location;
         this.exception = exception;
         this.hint = hint;
-        QuestsXL.log("[QXL] " + getMessage());
+        logToConsole();
+    }
+
+    private void logToConsole() {
+        String path = location == null || location.isBlank() ? "unknown" : location;
+        String error = exception == null || exception.isBlank() ? "-" : exception;
+        String help = hint == null || hint.isBlank() ? "-" : hint;
+
+        QuestsXL.log("[QXL] Error: " + title);
+        QuestsXL.log("[QXL]   Path: " + path);
+        QuestsXL.log("[QXL]   Error: " + error);
+        QuestsXL.log("[QXL]   Hint: " + help);
+
+        if (consoleStackPreview != null && !consoleStackPreview.isBlank() && QuestsXL.get().isShowStacktraces()) {
+            QuestsXL.log("[QXL]   Stacktrace (first " + CONSOLE_STACKTRACE_LINES + " lines):");
+            for (String line : consoleStackPreview.split("\\n")) {
+                if (!line.isBlank()) {
+                    QuestsXL.log("[QXL]     at " + line);
+                }
+            }
+        }
     }
 
     public String getMessage() {
@@ -49,16 +72,25 @@ public class FriendlyError {
      * @param trace The stacktrace to add
      */
     public FriendlyError addStacktrace(StackTraceElement[] trace) {
-        String message = "<gray>";
-        int line = 0;
-        for (StackTraceElement element : trace) {
-            if (line > 8) {
-                break;
+        StringBuilder hoverMessage = new StringBuilder("<gray>");
+        StringBuilder consoleMessage = new StringBuilder();
+        int maxLines = Math.min(trace.length, Math.max(HOVER_STACKTRACE_LINES, CONSOLE_STACKTRACE_LINES));
+
+        for (int i = 0; i < maxLines; i++) {
+            if (i < HOVER_STACKTRACE_LINES) {
+                hoverMessage.append(trace[i]).append("\n<gray>");
             }
-            message = message + element.toString() + "\n<gray>";
-            line++;
+            if (i < CONSOLE_STACKTRACE_LINES) {
+                if (!consoleMessage.isEmpty()) {
+                    consoleMessage.append("\n");
+                }
+                consoleMessage.append(trace[i]);
+            }
         }
-        stacktrace = message;
+
+        stacktrace = hoverMessage.toString();
+        consoleStackPreview = consoleMessage.toString();
+        logToConsole();
         return this;
     }
 

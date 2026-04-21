@@ -1,7 +1,7 @@
 package de.erethon.questsxl.dialogue;
 
-import de.erethon.questsxl.action.QAction;
-import de.erethon.questsxl.common.QTranslatable;
+import de.erethon.questsxl.component.action.QAction;
+import de.erethon.questsxl.common.script.QTranslatable;
 import de.erethon.questsxl.player.QPlayer;
 
 import java.util.Map;

@@ -1,6 +1,6 @@
 package de.erethon.questsxl.common;
 
-import de.erethon.questsxl.objective.QObjective;
+import de.erethon.questsxl.component.objective.QObjective;
 import org.bukkit.Location;
 
 import java.util.Set;

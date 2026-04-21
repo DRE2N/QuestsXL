@@ -1,7 +1,7 @@
 package de.erethon.questsxl.event;
 
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.region.QRegion;
+import de.erethon.questsxl.livingworld.region.QRegion;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

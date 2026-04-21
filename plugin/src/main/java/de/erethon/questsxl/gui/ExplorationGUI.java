@@ -1,7 +1,7 @@
 package de.erethon.questsxl.gui;
 
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.common.QTranslatable;
+import de.erethon.questsxl.common.script.QTranslatable;
 import de.erethon.questsxl.livingworld.CompletedExplorable;
 import de.erethon.questsxl.livingworld.Explorable;
 import de.erethon.questsxl.livingworld.Exploration;
@@ -10,7 +10,7 @@ import de.erethon.questsxl.livingworld.PlayerExplorer;
 import de.erethon.questsxl.livingworld.explorables.LootChest;
 import de.erethon.questsxl.livingworld.explorables.PointOfInterest;
 import de.erethon.questsxl.player.QPlayer;
-import de.erethon.questsxl.respawn.RespawnPoint;
+import de.erethon.questsxl.livingworld.respawn.RespawnPoint;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;

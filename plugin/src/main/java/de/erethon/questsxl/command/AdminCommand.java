@@ -6,7 +6,7 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.livingworld.CompletedExplorable;
 import de.erethon.questsxl.livingworld.Explorable;
 import de.erethon.questsxl.livingworld.ExplorationSet;
-import de.erethon.questsxl.respawn.RespawnPoint;
+import de.erethon.questsxl.livingworld.respawn.RespawnPoint;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.ActiveQuest;
 import de.erethon.questsxl.quest.QQuest;

@@ -3,9 +3,9 @@ package de.erethon.questsxl.command;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.action.QAction;
+import de.erethon.questsxl.component.action.QAction;
 import de.erethon.questsxl.common.QComponent;
-import de.erethon.questsxl.common.QConfigLoader;
+import de.erethon.questsxl.common.script.QConfigLoader;
 import de.erethon.questsxl.common.QRegistries;
 import de.erethon.questsxl.error.FriendlyError;
 import org.bukkit.command.CommandSender;
@@ -39,7 +39,7 @@ public class RunCommand extends ECommand implements QComponent {
         errors.clear();
         Set<QAction> qActions = new HashSet<>();
         try {
-            qActions = (Set<QAction>) QConfigLoader.load(this, "input", configuration, QRegistries.ACTIONS);
+            qActions = (Set<QAction>) QConfigLoader.load(this, "input", configuration, QRegistries.ACTIONS, "command:/qxl run");
             for (QAction action : qActions) {
                 action.setParent(this);
             }

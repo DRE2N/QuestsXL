@@ -1,8 +1,8 @@
 package de.erethon.questsxl.livingworld.explorables;
 
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.common.QLineConfig;
-import de.erethon.questsxl.common.QTranslatable;
+import de.erethon.questsxl.common.script.QLineConfig;
+import de.erethon.questsxl.common.script.QTranslatable;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.livingworld.Explorable;
 import de.erethon.questsxl.livingworld.ExplorationSet;

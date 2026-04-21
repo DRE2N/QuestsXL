@@ -1,12 +1,12 @@
 package de.erethon.questsxl.dialogue;
 
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.action.QAction;
+import de.erethon.questsxl.component.action.QAction;
 import de.erethon.questsxl.common.QComponent;
-import de.erethon.questsxl.common.QConfig;
-import de.erethon.questsxl.common.QLineConfig;
+import de.erethon.questsxl.common.script.QConfig;
+import de.erethon.questsxl.common.script.QLineConfig;
 import de.erethon.questsxl.common.QRegistries;
-import de.erethon.questsxl.common.QTranslatable;
+import de.erethon.questsxl.common.script.QTranslatable;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.player.QPlayer;
 import net.kyori.adventure.text.Component;

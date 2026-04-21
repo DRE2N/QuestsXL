@@ -11,12 +11,12 @@ import de.erethon.questsxl.common.ObjectiveHolder;
 import de.erethon.questsxl.common.QRegistries;
 import de.erethon.questsxl.common.QStage;
 import de.erethon.questsxl.global.GlobalObjectives;
-import de.erethon.questsxl.instancing.InstanceDao;
+import de.erethon.questsxl.livingworld.instancing.InstanceDao;
 import de.erethon.questsxl.livingworld.PlayerExplorer;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.livingworld.QEventDao;
-import de.erethon.questsxl.objective.ActiveObjective;
-import de.erethon.questsxl.objective.QObjective;
+import de.erethon.questsxl.component.objective.ActiveObjective;
+import de.erethon.questsxl.component.objective.QObjective;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.player.QPlayerDao;
 import de.erethon.questsxl.player.QPlayerDao.ActiveQuestData;
@@ -52,10 +52,10 @@ public class QDatabaseManager extends EDatabaseManager {
 
     private final QPlayerDao playerDao;
     private final QEventDao eventDao;
-    private final de.erethon.questsxl.instancing.InstanceDao instanceDao;
+    private final InstanceDao instanceDao;
 
     public QDatabaseManager(BedrockDBConnection connection) {
-        super(connection, new ThreadPoolExecutor(2, 4, 60L, java.util.concurrent.TimeUnit.SECONDS, new java.util.concurrent.LinkedBlockingQueue<>()));
+            super(connection, new ThreadPoolExecutor(2, 4, 60L, java.util.concurrent.TimeUnit.SECONDS, new java.util.concurrent.LinkedBlockingQueue<>()));
         hecate = Bukkit.getPluginManager().getPlugin("Hecate") instanceof Hecate ? (Hecate) Bukkit.getPluginManager().getPlugin("Hecate") : null;
         hecateDatabaseManager = hecate != null ? hecate.getDatabaseManager() : null;
         if (hecateDatabaseManager == null) {
@@ -63,7 +63,7 @@ public class QDatabaseManager extends EDatabaseManager {
         }
         playerDao = getDao(QPlayerDao.class);
         eventDao = getDao(QEventDao.class);
-        instanceDao = getDao(de.erethon.questsxl.instancing.InstanceDao.class);
+        instanceDao = getDao(InstanceDao.class);
     }
 
     @Override
@@ -440,8 +440,8 @@ public class QDatabaseManager extends EDatabaseManager {
             return data;
         });
 
-        jdbi.registerRowMapper(de.erethon.questsxl.instancing.InstanceDao.RentalRow.class, (rs, ctx) -> {
-            var data = new de.erethon.questsxl.instancing.InstanceDao.RentalRow();
+        jdbi.registerRowMapper(InstanceDao.RentalRow.class, (rs, ctx) -> {
+            var data = new InstanceDao.RentalRow();
             data.templateId = rs.getString("template_id");
             return data;
         });
@@ -1121,7 +1121,7 @@ public class QDatabaseManager extends EDatabaseManager {
         return playerDao;
     }
 
-    public de.erethon.questsxl.instancing.InstanceDao getInstanceDao() {
+    public InstanceDao getInstanceDao() {
         return instanceDao;
     }
 

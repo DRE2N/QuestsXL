@@ -1,11 +1,10 @@
 package de.erethon.questsxl.livingworld;
 
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.action.QAction;
-import de.erethon.questsxl.common.QLineConfig;
-import de.erethon.questsxl.common.QTranslatable;
+import de.erethon.questsxl.component.action.QAction;
+import de.erethon.questsxl.common.script.QLineConfig;
+import de.erethon.questsxl.common.script.QTranslatable;
 import de.erethon.questsxl.error.FriendlyError;
-import de.erethon.questsxl.livingworld.explorables.LootChest;
 import de.erethon.questsxl.player.QPlayer;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;

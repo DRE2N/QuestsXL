@@ -3,7 +3,7 @@ package de.erethon.questsxl.command;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.objective.QObjective;
+import de.erethon.questsxl.component.objective.QObjective;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.ActiveQuest;
 import org.bukkit.command.CommandSender;

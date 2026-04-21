@@ -28,6 +28,9 @@ public class QEventManager {
     public void load(File file)  {
         events.clear();
         for (File file1 : file.listFiles()) {
+            if (file1.isDirectory()) {
+                load(file1);
+            }
             if (!file1.getName().endsWith(".yml")) {
                 continue;
             }

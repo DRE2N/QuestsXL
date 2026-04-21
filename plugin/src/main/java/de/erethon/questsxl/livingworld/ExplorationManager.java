@@ -1,12 +1,11 @@
 package de.erethon.questsxl.livingworld;
 
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.common.QLineConfig;
+import de.erethon.questsxl.common.script.QLineConfig;
 import de.erethon.questsxl.livingworld.explorables.LootChest;
 import de.erethon.questsxl.livingworld.explorables.PointOfInterest;
-import de.erethon.questsxl.respawn.RespawnPoint;
-import de.erethon.questsxl.respawn.RespawnPointUnlockMode;
-import org.bukkit.Bukkit;
+import de.erethon.questsxl.livingworld.respawn.RespawnPoint;
+import de.erethon.questsxl.livingworld.respawn.RespawnPointUnlockMode;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;

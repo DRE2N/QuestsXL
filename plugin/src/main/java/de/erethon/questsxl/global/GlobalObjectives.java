@@ -3,10 +3,10 @@ package de.erethon.questsxl.global;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.Completable;
 import de.erethon.questsxl.common.QComponent;
-import de.erethon.questsxl.common.QConfigLoader;
+import de.erethon.questsxl.common.script.QConfigLoader;
 import de.erethon.questsxl.common.QRegistries;
 import de.erethon.questsxl.common.QStage;
-import de.erethon.questsxl.objective.QObjective;
+import de.erethon.questsxl.component.objective.QObjective;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -38,7 +38,7 @@ public class GlobalObjectives implements Completable, QComponent {
             if (section == null) {
                 continue;
             }
-            objectives.addAll((Collection<? extends QObjective>) QConfigLoader.load(this, "objectives", section, QRegistries.OBJECTIVES));
+            objectives.addAll((Collection<? extends QObjective>) QConfigLoader.load(this, "objectives", section, QRegistries.OBJECTIVES, file.getName()));
         }
         for (QObjective objective : objectives) {
             objective.setGlobal(true);

@@ -1,11 +1,12 @@
 package de.erethon.questsxl.livingworld.explorables;
 
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.action.QAction;
+import de.erethon.questsxl.component.action.QAction;
 import de.erethon.questsxl.common.QComponent;
-import de.erethon.questsxl.common.QLineConfig;
-import de.erethon.questsxl.common.QTranslatable;
-import de.erethon.questsxl.condition.QCondition;
+import de.erethon.questsxl.common.script.ExecutionContext;
+import de.erethon.questsxl.common.script.QLineConfig;
+import de.erethon.questsxl.common.script.QTranslatable;
+import de.erethon.questsxl.component.condition.QCondition;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.livingworld.Explorable;
 import de.erethon.questsxl.livingworld.ExplorationSet;
@@ -63,9 +64,11 @@ public class PointOfInterest implements QComponent, Explorable {
         if (player.getLocation().distance(location) > radius) { // Just in case its forgotten elsewhere
             return false;
         }
-        for (QCondition condition : conditions) {
-            if (!condition.check(player)) {
-                return false;
+        try (var frame = ExecutionContext.frame(player, this)) {
+            for (QCondition condition : conditions) {
+                if (!condition.check(player)) {
+                    return false;
+                }
             }
         }
         player.getExplorer().completeExplorable(set, this, System.currentTimeMillis());

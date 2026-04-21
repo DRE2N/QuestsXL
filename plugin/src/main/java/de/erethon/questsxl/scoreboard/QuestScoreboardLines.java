@@ -6,9 +6,10 @@ import de.erethon.aergia.scoreboard.ScoreboardLines;
 import de.erethon.aergia.util.DynamicComponent;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.script.QTranslatable;
 import de.erethon.questsxl.livingworld.EventState;
 import de.erethon.questsxl.livingworld.QEvent;
-import de.erethon.questsxl.objective.ActiveObjective;
+import de.erethon.questsxl.component.objective.ActiveObjective;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.ActiveQuest;
 import net.kyori.adventure.text.Component;
@@ -77,7 +78,9 @@ public class QuestScoreboardLines implements ScoreboardLines {
         }
 
         if (player.getTrackedEvent() != null) {
-            Component translatedEventName = GlobalTranslator.render(player.getTrackedEvent().displayName().get(), ePlayer.getPlayer().locale());
+            QTranslatable translatable = player.getTrackedEvent().displayName();
+            Component displayName = translatable != null ? translatable.get() : Component.text(player.getTrackedEvent().id());
+            Component translatedEventName = GlobalTranslator.render(displayName, ePlayer.getPlayer().locale());
             translatedEventName = translatedEventName.color(TextColor.fromCSSHexString("#ec762c"));
             Component header = MessageUtil.parse(EVENT_COLOR).append(translatedEventName);
 
@@ -91,7 +94,9 @@ public class QuestScoreboardLines implements ScoreboardLines {
         }
 
         if (trackedQuest != null) {
-            Component translatedQuestName = GlobalTranslator.render(trackedQuest.getQuest().displayName().get(), ePlayer.getPlayer().locale());
+            QTranslatable translatable = trackedQuest.getQuest().displayName();
+            Component displayName = translatable != null ? translatable.get() : Component.text(trackedQuest.getQuest().id());
+            Component translatedQuestName = GlobalTranslator.render(displayName, ePlayer.getPlayer().locale());
             translatedQuestName = translatedQuestName.color(TextColor.fromCSSHexString("#3fda52"));
             Component header = MessageUtil.parse(QUEST_COLOR).append(translatedQuestName);
 
@@ -144,7 +149,9 @@ public class QuestScoreboardLines implements ScoreboardLines {
 
         // Check event name and objectives
         if (player.getTrackedEvent() != null) {
-            Component translatedEventName = GlobalTranslator.render(player.getTrackedEvent().displayName().get(), ePlayer.getPlayer().locale());
+            QTranslatable translatable = player.getTrackedEvent().displayName();
+            Component displayName = translatable != null ? translatable.get() : Component.text(player.getTrackedEvent().id());
+            Component translatedEventName = GlobalTranslator.render(displayName, ePlayer.getPlayer().locale());
             Component header = MessageUtil.parse(EVENT_COLOR).append(translatedEventName);
             int length = PlainTextComponentSerializer.plainText().serialize(header).length();
             maxLength = Math.max(maxLength, length);
@@ -156,7 +163,9 @@ public class QuestScoreboardLines implements ScoreboardLines {
 
         // Check quest name and objectives
         if (trackedQuest != null) {
-            Component translatedQuestName = GlobalTranslator.render(trackedQuest.getQuest().displayName().get(), ePlayer.getPlayer().locale());
+            QTranslatable translatable = trackedQuest.getQuest().displayName();
+            Component displayName = translatable != null ? translatable.get() : Component.text(trackedQuest.getQuest().id());
+            Component translatedQuestName = GlobalTranslator.render(displayName, ePlayer.getPlayer().locale());
             Component header = MessageUtil.parse(QUEST_COLOR).append(translatedQuestName);
             int length = PlainTextComponentSerializer.plainText().serialize(header).length();
             maxLength = Math.max(maxLength, length);

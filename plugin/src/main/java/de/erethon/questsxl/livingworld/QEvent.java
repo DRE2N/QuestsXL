@@ -1,20 +1,22 @@
 package de.erethon.questsxl.livingworld;
 
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.action.QAction;
+import de.erethon.questsxl.common.script.ExecutionContext;
+import de.erethon.questsxl.component.action.QAction;
+import de.erethon.questsxl.common.script.MacroProcessor;
 import de.erethon.questsxl.common.QComponent;
-import de.erethon.questsxl.common.QConfigLoader;
+import de.erethon.questsxl.common.script.QConfigLoader;
 import de.erethon.questsxl.common.QRegistries;
-import de.erethon.questsxl.common.QTranslatable;
+import de.erethon.questsxl.common.script.QTranslatable;
 import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.common.Scorable;
 import de.erethon.questsxl.common.data.QDatabaseManager;
-import de.erethon.questsxl.condition.QCondition;
+import de.erethon.questsxl.component.condition.QCondition;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.event.QEventCompleteEvent;
-import de.erethon.questsxl.objective.ActiveObjective;
+import de.erethon.questsxl.component.objective.ActiveObjective;
 import de.erethon.questsxl.common.ObjectiveHolder;
-import de.erethon.questsxl.objective.QObjective;
+import de.erethon.questsxl.component.objective.QObjective;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.common.Completable;
 import de.erethon.questsxl.common.QStage;
@@ -71,6 +73,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
     // State - runtime stuff
     private final Set<QPlayer> playersInRange = new HashSet<>();
     private final Map<QPlayer, Integer> eventParticipation = new HashMap<>();
+    private QPlayer lastInstigator;
 
     public QEvent(File file) {
         String fileName = file.getName();
@@ -106,7 +109,12 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
     }
 
     public void reward() {
-        for (Map.Entry<QPlayer, Integer> playerEntry : eventParticipation.entrySet()) {
+        // Build the full set of players to reward: participants + players in range with 0 participation
+        Map<QPlayer, Integer> toReward = new HashMap<>(eventParticipation);
+        for (QPlayer player : playersInRange) {
+            toReward.putIfAbsent(player, 0);
+        }
+        for (Map.Entry<QPlayer, Integer> playerEntry : toReward.entrySet()) {
             new QEventCompleteEvent(playerEntry.getKey().getPlayer(), playerEntry.getKey(), this, playerEntry.getValue()).callEvent();
             if (giveAllRewards) {
                 for (Map.Entry<Integer, Set<QAction>> reward : rewards.entrySet()) {
@@ -116,7 +124,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
                         }
                     }
                 }
-                return;
+                continue;
             }
             int highestRewardKey = rewards.keySet().stream()
                     .filter(key -> key <= playerEntry.getValue())
@@ -175,9 +183,11 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
                 if (getCenterLocation().getNearbyPlayers(canActivateRange).isEmpty()) {
                     return; // No players in range
                 }
-                for (QCondition condition : startConditions) {
-                    if (!condition.check(this)) {
-                        return; // Conditions aren't met
+                try (var frame = ExecutionContext.frame(this, this)) {
+                    for (QCondition condition : startConditions) {
+                        if (!condition.check(this)) {
+                            return; // Conditions aren't met
+                        }
                     }
                 }
                 if (timeLastCompleted > 0 && currentTime - timeLastCompleted < cooldown * 1000L) {
@@ -198,12 +208,14 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
     }
 
     public void startFromAction(boolean skipConditions) {
-        if (state == EventState.DISABLED || state == EventState.ACTIVE && !skipConditions) {
+        if ((state == EventState.DISABLED || state == EventState.ACTIVE) && !skipConditions) {
             return;
         }
-        for (QCondition condition : startConditions) {
-            if (!condition.check(this) && !skipConditions) {
-                return;
+        try (var frame = ExecutionContext.frame(this, this)) {
+            for (QCondition condition : startConditions) {
+                if (!condition.check(this) && !skipConditions) {
+                    return;
+                }
             }
         }
         startEvent();
@@ -346,6 +358,14 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
         playersInRange.remove(player); // Sometimes this seems necessary
     }
 
+    public QPlayer getLastInstigator() {
+        return lastInstigator;
+    }
+
+    public void setLastInstigator(QPlayer lastInstigator) {
+        this.lastInstigator = lastInstigator;
+    }
+
     @Override
     public QComponent getParent() {
         return null;
@@ -358,6 +378,8 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
 
     @Override
     public void load() {
+        String source = file.getName();
+        MacroProcessor.process(cfg, QuestsXL.get().getMacroRegistry());
         ConfigurationSection locationSection = cfg.getConfigurationSection("startLocation");
 
         // Load displayName
@@ -378,21 +400,21 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
         }
         centerLocation = new Location(world, x, y, z);
         if (cfg.contains("startConditions")) {
-            startConditions.addAll((Collection<? extends QCondition>) QConfigLoader.load(this, "startConditions", cfg, QRegistries.CONDITIONS));
+            startConditions.addAll((Collection<? extends QCondition>) QConfigLoader.load(this, "startConditions", cfg, QRegistries.CONDITIONS, source));
             for (QCondition condition : startConditions) {
                 condition.setParent(this);
             }
         }
 
         if (cfg.contains("onUpdate")) {
-            updateActions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onUpdate", cfg, QRegistries.ACTIONS));
+            updateActions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onUpdate", cfg, QRegistries.ACTIONS, source));
             for (QAction action : updateActions) {
                 action.setParent(this);
             }
         }
 
         if (cfg.contains("onStart")) {
-            startActions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onStart", cfg, QRegistries.ACTIONS));
+            startActions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onStart", cfg, QRegistries.ACTIONS, source));
             for (QAction action : startActions) {
                 action.setParent(this);
             }
@@ -403,7 +425,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
             for (String key : rewardSection.getKeys(false)) {
                 ConfigurationSection rewardEntry = rewardSection.getConfigurationSection(key);
                 int id = Integer.parseInt(key);
-                Set<QComponent> rewardSet = (Set<QComponent>) QConfigLoader.load(this, key, rewardSection, QRegistries.ACTIONS);
+                Set<QComponent> rewardSet = (Set<QComponent>) QConfigLoader.load(this, key, rewardSection, QRegistries.ACTIONS, source);
                 if (rewardSet == null) {
                     continue;
                 }
@@ -433,7 +455,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
             QStage stage = new QStage(this, id);
             stage.setParent(this);
             try {
-                stage.load(this, stageS);
+                stage.load(this, stageS, source);
             } catch (Exception e) {
                 QuestsXL.get().getErrors().add(new FriendlyError("Event: " + this.getName(), "Stage " + id + " konnte nicht geladen werden.", e.getMessage(), "...").addStacktrace(e.getStackTrace()));
             }

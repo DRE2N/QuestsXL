@@ -1,11 +1,8 @@
 package de.erethon.questsxl.common;
 
-import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.objective.ActiveObjective;
-import de.erethon.questsxl.objective.QObjective;
+import de.erethon.questsxl.component.objective.ActiveObjective;
+import de.erethon.questsxl.component.objective.QObjective;
 import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;

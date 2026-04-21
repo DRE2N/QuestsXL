@@ -1,11 +1,11 @@
 package de.erethon.questsxl.livingworld;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.livingworld.respawn.RespawnPointUnlockMode;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.livingworld.explorables.PointOfInterest;
-import de.erethon.questsxl.respawn.RespawnPoint;
+import de.erethon.questsxl.livingworld.respawn.RespawnPoint;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
@@ -177,8 +177,8 @@ public class PlayerExplorer {
             if (explorable.location().getWorld() != qPlayer.getPlayer().getLocation().getWorld()) {
                 continue;
             }
-            if (explorable instanceof de.erethon.questsxl.respawn.RespawnPoint respawnPoint) {
-                if (respawnPoint.getUnlockMode() != de.erethon.questsxl.respawn.RespawnPointUnlockMode.NEAR) {
+            if (explorable instanceof RespawnPoint respawnPoint) {
+                if (respawnPoint.getUnlockMode() != RespawnPointUnlockMode.NEAR) {
                     continue;
                 }
 
@@ -495,7 +495,7 @@ public class PlayerExplorer {
         qPlayer.sendMessage(MiniMessage.miniMessage().deserialize("<dark_purple><strikethrough>          </strikethrough> <dark_gray>[<#edcc4b>❄<dark_gray>]<#edcc4b> <dark_purple><strikethrough>          </strikethrough>"));
         qPlayer.sendMessage(Component.text(" "));
 
-        if (explorable instanceof de.erethon.questsxl.respawn.RespawnPoint) {
+        if (explorable instanceof RespawnPoint) {
             qPlayer.sendMessage(Component.translatable("qxl.explorable.respawn.unlocked",
                 explorable.displayName().get()));
         } else {

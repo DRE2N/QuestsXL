@@ -1,13 +1,14 @@
 package de.erethon.questsxl.common;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.action.QAction;
-import de.erethon.questsxl.condition.QCondition;
+import de.erethon.questsxl.common.script.ExecutionContext;
+import de.erethon.questsxl.common.script.QConfigLoader;
+import de.erethon.questsxl.component.action.QAction;
+import de.erethon.questsxl.component.condition.QCondition;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.livingworld.QEvent;
-import de.erethon.questsxl.objective.ActiveObjective;
-import de.erethon.questsxl.objective.QObjective;
+import de.erethon.questsxl.component.objective.ActiveObjective;
+import de.erethon.questsxl.component.objective.QObjective;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.QQuest;
 import org.bukkit.configuration.ConfigurationSection;
@@ -95,31 +96,35 @@ public class QStage implements QComponent {
         Set<QCondition> failed = new HashSet<>();
         boolean canStart = true;
         if (holder instanceof QPlayer qPlayer) {
-            for (QCondition condition : conditions) {
-                try {
-                    if (!condition.check(qPlayer)) {
-                        canStart = false;
-                        failed.add(condition);
+            try (var frame = ExecutionContext.frame(qPlayer, this)) {
+                for (QCondition condition : conditions) {
+                    try {
+                        if (!condition.check(qPlayer)) {
+                            canStart = false;
+                            failed.add(condition);
+                        }
+                    } catch (Exception e) {
+                        FriendlyError error = new FriendlyError(holder.getName() + ".stages." + id, "Failed to check condition " + condition.getClass().getName(), e.getMessage(), "" + id).addStacktrace(e.getStackTrace());
+                        QuestsXL.get().addRuntimeError(error);
+                        QuestsXL.log("Failed to check condition " + condition.getClass().getName() + " for " + holder.getName());
                     }
-                } catch (Exception e) {
-                    FriendlyError error = new FriendlyError(holder.getName() + ".stages." + id, "Failed to check condition " + condition.getClass().getName(), e.getMessage(), "" + id).addStacktrace(e.getStackTrace());
-                    QuestsXL.get().addRuntimeError(error);
-                    QuestsXL.log("Failed to check condition " + condition.getClass().getName() + " for " + holder.getName());
                 }
             }
             return canStart;
         }
         if (holder instanceof QEvent qEvent) {
-            for (QCondition condition : conditions) {
-                try {
-                    if (!condition.check(qEvent)) {
-                        canStart = false;
-                        failed.add(condition);
+            try (var frame = ExecutionContext.frame(qEvent, this)) {
+                for (QCondition condition : conditions) {
+                    try {
+                        if (!condition.check(qEvent)) {
+                            canStart = false;
+                            failed.add(condition);
+                        }
+                    } catch (Exception e) {
+                        FriendlyError error = new FriendlyError(qEvent.getName() + ".stages." + id, "Failed to check condition " + condition.getClass().getName(), e.getMessage(), "" + id).addStacktrace(e.getStackTrace());
+                        QuestsXL.get().addRuntimeError(error);
+                        QuestsXL.log("Failed to check condition " + condition.getClass().getName() + " for " + qEvent.getName());
                     }
-                } catch (Exception e) {
-                    FriendlyError error = new FriendlyError(qEvent.getName() + ".stages." + id, "Failed to check condition " + condition.getClass().getName(), e.getMessage(), "" + id).addStacktrace(e.getStackTrace());
-                    QuestsXL.get().addRuntimeError(error);
-                    QuestsXL.log("Failed to check condition " + condition.getClass().getName() + " for " + qEvent.getName());
                 }
             }
             return canStart;
@@ -203,33 +208,45 @@ public class QStage implements QComponent {
         this.parent = parent;
     }
 
-    public void load(QComponent component, ConfigurationSection section) {
+    public void load(QComponent component, ConfigurationSection section, String source) {
         setParent(component);
         startMessage = section.getString("startMessage", "");
         completeMessage = section.getString("completeMessage", "");
         description = section.getString("description", "");
         if (section.contains("conditions")) {
-            conditions.addAll((Collection<? extends QCondition>) QConfigLoader.load(this, "conditions", section, QRegistries.CONDITIONS));
-            for (QCondition condition : conditions) {
-                condition.setParent(this);
+            Collection<? extends QCondition> loaded = (Collection<? extends QCondition>) QConfigLoader.load(this, "conditions", section, QRegistries.CONDITIONS, source);
+            if (loaded != null) {
+                conditions.addAll(loaded);
+                for (QCondition condition : conditions) {
+                    condition.setParent(this);
+                }
             }
         }
         if (section.contains("objectives")) {
-            goals.addAll((Collection<? extends QObjective>) QConfigLoader.load(this, "objectives", section, QRegistries.OBJECTIVES));
-            for (QObjective objective : goals) {
-                objective.setParent(this);
+            Collection<? extends QObjective> loaded = (Collection<? extends QObjective>) QConfigLoader.load(this, "objectives", section, QRegistries.OBJECTIVES, source);
+            if (loaded != null) {
+                goals.addAll(loaded);
+                for (QObjective objective : goals) {
+                    objective.setParent(this);
+                }
             }
         }
         if (section.contains("onStart")) {
-            startActions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onStart", section, QRegistries.ACTIONS));
-            for (QAction action : startActions) {
-                action.setParent(this);
+            Collection<? extends QAction> loaded = (Collection<? extends QAction>) QConfigLoader.load(this, "onStart", section, QRegistries.ACTIONS, source);
+            if (loaded != null) {
+                startActions.addAll(loaded);
+                for (QAction action : startActions) {
+                    action.setParent(this);
+                }
             }
         }
         if (section.contains("onFinish")) {
-            completeActions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "onFinish", section, QRegistries.ACTIONS));
-            for (QAction action : completeActions) {
-                action.setParent(this);
+            Collection<? extends QAction> loaded = (Collection<? extends QAction>) QConfigLoader.load(this, "onFinish", section, QRegistries.ACTIONS, source);
+            if (loaded != null) {
+                completeActions.addAll(loaded);
+                for (QAction action : completeActions) {
+                    action.setParent(this);
+                }
             }
         }
     }

@@ -2,12 +2,13 @@ package de.erethon.questsxl.dialogue;
 
 import de.erethon.bedrock.misc.NumberUtil;
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.action.QAction;
+import de.erethon.questsxl.common.script.ExecutionContext;
+import de.erethon.questsxl.component.action.QAction;
 import de.erethon.questsxl.common.QComponent;
-import de.erethon.questsxl.common.QConfigLoader;
+import de.erethon.questsxl.common.script.QConfigLoader;
 import de.erethon.questsxl.common.QRegistries;
-import de.erethon.questsxl.common.QTranslatable;
-import de.erethon.questsxl.condition.QCondition;
+import de.erethon.questsxl.common.script.QTranslatable;
+import de.erethon.questsxl.component.condition.QCondition;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -38,8 +39,13 @@ public class QDialogueStage implements QComponent {
     protected int index;
 
     public QDialogueStage(QDialogue dialogue, ConfigurationSection section, int index) {
+        this(dialogue, section, index, dialogue.getSource());
+    }
+
+    public QDialogueStage(QDialogue dialogue, ConfigurationSection section, int index, String source) {
         this.dialogue = dialogue;
-        this.load(section);
+        this.index = index;
+        this.load(section, source);
     }
 
     public QDialogueStage(QDialogueStage stage) {
@@ -54,10 +60,12 @@ public class QDialogueStage implements QComponent {
     }
 
     public boolean canStart(@NotNull QPlayer player) {
-        for (QCondition condition : conditions) {
-            if (!condition.check(player)) {
-                player.send(condition.getDisplayText());
-                return false;
+        try (var frame = ExecutionContext.frame(player, this)) {
+            for (QCondition condition : conditions) {
+                if (!condition.check(player)) {
+                    player.send(condition.getDisplayText());
+                    return false;
+                }
             }
         }
         return true;
@@ -77,7 +85,7 @@ public class QDialogueStage implements QComponent {
         this.parent = parent;
     }
 
-    public void load(ConfigurationSection cfg) {
+    public void load(ConfigurationSection cfg, String source) {
         if (cfg.getString("id") == null) {
             throw new RuntimeException("The dialogue stage in " + cfg.getName() + " does not have an id.");
         }
@@ -108,14 +116,14 @@ public class QDialogueStage implements QComponent {
         }
         conditions = new HashSet<>();
         if (cfg.contains("conditions")) {
-            conditions.addAll((Collection<? extends QCondition>) QConfigLoader.load(this, "conditions", cfg, QRegistries.CONDITIONS));
+            conditions.addAll((Collection<? extends QCondition>) QConfigLoader.load(this, "conditions", cfg, QRegistries.CONDITIONS, source));
             for (QCondition condition : conditions) {
                 condition.setParent(this);
             }
         }
         actions = new HashSet<>();
         if  (cfg.contains("actions")) {
-            actions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "actions", cfg, QRegistries.ACTIONS));
+            actions.addAll((Collection<? extends QAction>) QConfigLoader.load(this, "actions", cfg, QRegistries.ACTIONS, source));
             for (QAction action : actions) {
                 action.setParent(this);
             }

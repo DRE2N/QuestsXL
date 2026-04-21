@@ -3,8 +3,8 @@ package de.erethon.questsxl.command;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.instancing.BlockCollectionManager;
-import de.erethon.questsxl.instancing.InstancedBlockCollection;
+import de.erethon.questsxl.livingworld.instancing.BlockCollectionManager;
+import de.erethon.questsxl.livingworld.instancing.InstancedBlockCollection;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

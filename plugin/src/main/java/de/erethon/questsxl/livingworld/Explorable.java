@@ -1,6 +1,6 @@
 package de.erethon.questsxl.livingworld;
 
-import de.erethon.questsxl.common.QTranslatable;
+import de.erethon.questsxl.common.script.QTranslatable;
 import org.bukkit.Location;
 
 /**

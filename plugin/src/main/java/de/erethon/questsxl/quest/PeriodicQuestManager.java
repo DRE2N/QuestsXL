@@ -1,8 +1,8 @@
 package de.erethon.questsxl.quest;
 
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.action.QAction;
-import de.erethon.questsxl.common.QConfigLoader;
+import de.erethon.questsxl.component.action.QAction;
+import de.erethon.questsxl.common.script.QConfigLoader;
 import de.erethon.questsxl.common.QRegistries;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.player.QPlayer;
@@ -94,7 +94,7 @@ public class PeriodicQuestManager {
         if (dailySection.contains("completionRewards")) {
             @SuppressWarnings("unchecked")
             Collection<? extends QAction> rewards = (Collection<? extends QAction>) QConfigLoader.load(
-                null, "completionRewards", dailySection, QRegistries.ACTIONS);
+                null, "completionRewards", dailySection, QRegistries.ACTIONS, configFile.getName());
             if (rewards != null) {
                 dailyCompletionRewards.addAll(rewards);
             }
@@ -122,7 +122,7 @@ public class PeriodicQuestManager {
         if (weeklySection.contains("completionRewards")) {
             @SuppressWarnings("unchecked")
             Collection<? extends QAction> rewards = (Collection<? extends QAction>) QConfigLoader.load(
-                null, "completionRewards", weeklySection, QRegistries.ACTIONS);
+                null, "completionRewards", weeklySection, QRegistries.ACTIONS, configFile.getName());
             if (rewards != null) {
                 weeklyCompletionRewards.addAll(rewards);
             }

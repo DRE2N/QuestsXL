@@ -5,11 +5,12 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.event.QRegionEnterEvent;
 import de.erethon.questsxl.event.QRegionLeaveEvent;
 import de.erethon.questsxl.livingworld.QEvent;
+import de.erethon.questsxl.livingworld.instancing.InstancePacketListener;
 import de.erethon.questsxl.player.QPlayer;
-import de.erethon.questsxl.region.QRegion;
-import de.erethon.questsxl.region.QRegionManager;
-import de.erethon.questsxl.region.RegionFlag;
-import de.erethon.questsxl.respawn.RespawnPoint;
+import de.erethon.questsxl.livingworld.region.QRegion;
+import de.erethon.questsxl.livingworld.region.QRegionManager;
+import de.erethon.questsxl.livingworld.region.RegionFlag;
+import de.erethon.questsxl.livingworld.respawn.RespawnPoint;
 import io.netty.channel.ChannelPipeline;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
@@ -52,8 +53,8 @@ public class PlayerListener extends AbstractListener {
         pipeline.addAfter("packet_handler", "qxl_handler", packetHandler); // Server -> QXL -> Client
 
         // Add instance packet listener
-        de.erethon.questsxl.instancing.InstancePacketListener instancePacketHandler =
-                new de.erethon.questsxl.instancing.InstancePacketListener(plugin, serverPlayer);
+        InstancePacketListener instancePacketHandler =
+                new InstancePacketListener(plugin, serverPlayer);
         if (pipeline.get("qxl_instance_handler") != null) {
             pipeline.remove("qxl_instance_handler");
         }

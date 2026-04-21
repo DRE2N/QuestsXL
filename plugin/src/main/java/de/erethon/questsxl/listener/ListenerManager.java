@@ -1,6 +1,6 @@
 package de.erethon.questsxl.listener;
 
-import de.erethon.questsxl.objective.ActiveObjective;
+import de.erethon.questsxl.component.objective.ActiveObjective;
 
 import java.util.HashSet;
 import java.util.Set;

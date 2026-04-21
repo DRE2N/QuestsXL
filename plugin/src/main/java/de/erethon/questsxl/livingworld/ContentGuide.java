@@ -4,7 +4,7 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.livingworld.explorables.PointOfInterest;
 import de.erethon.questsxl.livingworld.explorables.LootChest;
 import de.erethon.questsxl.player.QPlayer;
-import de.erethon.questsxl.respawn.RespawnPoint;
+import de.erethon.questsxl.livingworld.respawn.RespawnPoint;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;

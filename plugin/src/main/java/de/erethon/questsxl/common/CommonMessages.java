@@ -1,6 +1,7 @@
 package de.erethon.questsxl.common;
 
 import de.erethon.questsxl.QuestsXL;
+import de.erethon.questsxl.common.script.QTranslatable;
 
 import java.util.HashMap;
 import java.util.Locale;

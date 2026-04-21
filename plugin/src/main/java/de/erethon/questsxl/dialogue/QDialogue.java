@@ -2,11 +2,12 @@ package de.erethon.questsxl.dialogue;
 
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.QComponent;
-import de.erethon.questsxl.common.QConfigLoader;
+import de.erethon.questsxl.common.script.ExecutionContext;
+import de.erethon.questsxl.common.script.QConfigLoader;
 import de.erethon.questsxl.common.QRegistries;
-import de.erethon.questsxl.common.QTranslatable;
+import de.erethon.questsxl.common.script.QTranslatable;
 import de.erethon.questsxl.common.Quester;
-import de.erethon.questsxl.condition.QCondition;
+import de.erethon.questsxl.component.condition.QCondition;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -48,6 +49,7 @@ public class QDialogue implements QComponent {
     }
 
     public void load() {
+        String source = file.getName();
         if (cfg.isString("sender")) {
             String senderString = cfg.getString("sender", "Unbekannter");
             senderName = QTranslatable.fromString(senderString);
@@ -74,7 +76,7 @@ public class QDialogue implements QComponent {
         canStartFromNPC = cfg.getBoolean("canStartFromNPC", true);
         startConditions = new HashSet<>();
         if (cfg.contains("conditions")) {
-            startConditions.addAll((Collection<? extends QCondition>) QConfigLoader.load(this, "conditions", cfg, QRegistries.CONDITIONS));
+            startConditions.addAll((Collection<? extends QCondition>) QConfigLoader.load(this, "conditions", cfg, QRegistries.CONDITIONS, source));
             for (QCondition condition : startConditions) {
                 condition.setParent(this);
             }
@@ -116,9 +118,11 @@ public class QDialogue implements QComponent {
     }
 
     public boolean conditions(QPlayer player) {
-        for (QCondition condition : startConditions) {
-            if (!condition.check(player)) {
-                return false;
+        try (var frame = ExecutionContext.frame(player, this)) {
+            for (QCondition condition : startConditions) {
+                if (!condition.check(player)) {
+                    return false;
+                }
             }
         }
         return true;
@@ -174,5 +178,9 @@ public class QDialogue implements QComponent {
     @Override
     public void setParent(QComponent parent) {
         // We are the top-level component, so we don't need to set a parent.
+    }
+
+    public String getSource() {
+        return file != null ? file.getName() : "unknown";
     }
 }

@@ -2,36 +2,34 @@ package de.erethon.questsxl;
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import de.erethon.aergia.Aergia;
-import de.erethon.aergia.scoreboard.EScoreboard;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.compatibility.Internals;
 import de.erethon.bedrock.database.BedrockDBConnection;
 import de.erethon.bedrock.plugin.EPlugin;
 import de.erethon.bedrock.plugin.EPluginSettings;
-import de.erethon.hecate.Hecate;
 import de.erethon.hephaestus.Hephaestus;
 import de.erethon.hephaestus.blocks.HBlockLibrary;
 import de.erethon.hephaestus.items.HItemLibrary;
 import de.erethon.hephaestus.jobs.JobDatabaseManager;
-import de.erethon.hephaestus.jobs.JobManager;
 import de.erethon.questsxl.animation.AnimationManager;
 import de.erethon.questsxl.command.QCommandCache;
 import de.erethon.questsxl.common.CommonMessages;
-import de.erethon.questsxl.common.QMessageHandler;
+import de.erethon.questsxl.common.script.MacroRegistry;
+import de.erethon.questsxl.common.script.QMessageHandler;
 import de.erethon.questsxl.common.QRegistries;
 import de.erethon.questsxl.common.QRegistry;
-import de.erethon.questsxl.common.QTranslatable;
-import de.erethon.questsxl.common.RuntimeDocGenerator;
+import de.erethon.questsxl.common.script.QTranslatable;
+import de.erethon.questsxl.common.doc.RuntimeDocGenerator;
 import de.erethon.questsxl.common.data.QDatabaseManager;
 import de.erethon.questsxl.dialogue.QDialogueManager;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.global.GlobalObjectives;
-import de.erethon.questsxl.instancing.BlockCollectionManager;
-import de.erethon.questsxl.instancing.InstanceManager;
-import de.erethon.questsxl.instancing.apartment.ApartmentService;
-import de.erethon.questsxl.instancing.apartment.ApartmentSignListener;
-import de.erethon.questsxl.instancing.apartment.TychePaymentHandler;
-import de.erethon.questsxl.interaction.InteractionManager;
+import de.erethon.questsxl.livingworld.instancing.BlockCollectionManager;
+import de.erethon.questsxl.livingworld.instancing.InstanceManager;
+import de.erethon.questsxl.livingworld.instancing.apartment.ApartmentService;
+import de.erethon.questsxl.livingworld.instancing.apartment.ApartmentSignListener;
+import de.erethon.questsxl.livingworld.instancing.apartment.TychePaymentHandler;
+import de.erethon.questsxl.livingworld.interaction.InteractionManager;
 import de.erethon.questsxl.listener.PlayerListener;
 import de.erethon.questsxl.listener.PluginListener;
 import de.erethon.questsxl.livingworld.AutoTrackingManager;
@@ -39,13 +37,13 @@ import de.erethon.questsxl.livingworld.Exploration;
 import de.erethon.questsxl.livingworld.ExplorationManager;
 import de.erethon.questsxl.livingworld.LootChestManager;
 import de.erethon.questsxl.livingworld.QEventManager;
-import de.erethon.questsxl.objective.event.ObjectiveEventManager;
+import de.erethon.questsxl.component.objective.event.ObjectiveEventManager;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.PeriodicQuestManager;
 import de.erethon.questsxl.quest.QuestManager;
-import de.erethon.questsxl.region.QRegionManager;
-import de.erethon.questsxl.region.RegionInstanceService;
-import de.erethon.questsxl.respawn.RespawnPointManager;
+import de.erethon.questsxl.livingworld.region.QRegionManager;
+import de.erethon.questsxl.livingworld.region.RegionInstanceService;
+import de.erethon.questsxl.livingworld.respawn.RespawnPointManager;
 import de.erethon.questsxl.scoreboard.QuestScoreboardLines;
 import de.erethon.questsxl.tool.GitSync;
 import org.bukkit.Bukkit;
@@ -87,10 +85,12 @@ public final class QuestsXL extends EPlugin {
     public static File DIALOGUES;
     public static File INTERACTIONS;
     public static File PERIODIC_QUESTS;
+    public static File MACROS;
     public long lastSync = 0;
 
     private final QMessageHandler messageHandler = new QMessageHandler();
 
+    private MacroRegistry macroRegistry;
     private QDatabaseManager databaseManager;
     private RespawnPointManager respawnPointManager;
     private QuestManager questManager;
@@ -99,7 +99,7 @@ public final class QuestsXL extends EPlugin {
     private AnimationManager animationManager;
     private BlockCollectionManager blockCollectionManager;
     private InstanceManager instanceManager;
-    private de.erethon.questsxl.instancing.apartment.ApartmentService apartmentService;
+    private ApartmentService apartmentService;
     private QDialogueManager dialogueManager;
     private QCommandCache commandCache;
     private GlobalObjectives globalObjectives;
@@ -171,6 +171,7 @@ public final class QuestsXL extends EPlugin {
         initFolder(SCHEMATICS = new File(getDataFolder(), "schematics"));
         initFolder(DIALOGUES = new File(getDataFolder(), "dialogues"));
         initFolder(INTERACTIONS = new File(getDataFolder(), "interactions"));
+        initFolder(MACROS = new File(getDataFolder(), "macros"));
 
         initFile(REGIONS = new File(getDataFolder(), "regions.yml"));
         initFile(RESPAWNS = new File(getDataFolder(), "respawnPoints.yml"));
@@ -237,6 +238,10 @@ public final class QuestsXL extends EPlugin {
     // Notably, this is only called on reload and in the ServerLoadEvent (the "Done" message on startup). This is to allow other
     // plugins to load their components before QuestsXL loads the content that uses them.
     public void loadCore() {
+        // Load global macros first — quests and events will use them during load
+        macroRegistry = new MacroRegistry();
+        macroRegistry.loadFromDirectory(MACROS);
+
         respawnPointManager = new RespawnPointManager(RESPAWNS);
         regionManager = new QRegionManager(REGIONS);
         blockCollectionManager = new BlockCollectionManager(IBCS);
@@ -424,11 +429,11 @@ public final class QuestsXL extends EPlugin {
         return blockCollectionManager;
     }
 
-    public de.erethon.questsxl.instancing.apartment.ApartmentService getApartmentService() {
+    public ApartmentService getApartmentService() {
         return apartmentService;
     }
 
-    public de.erethon.questsxl.instancing.InstanceManager getInstanceManager() {
+    public InstanceManager getInstanceManager() {
         return instanceManager;
     }
 
@@ -456,6 +461,9 @@ public final class QuestsXL extends EPlugin {
        return databaseManager;
     }
 
+    public MacroRegistry getMacroRegistry() {
+        return macroRegistry;
+    }
     public AutoTrackingManager getAutoTrackingManager() {
         return autoTrackingManager;
     }

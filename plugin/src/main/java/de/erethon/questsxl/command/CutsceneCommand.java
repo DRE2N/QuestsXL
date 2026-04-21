@@ -3,7 +3,7 @@ package de.erethon.questsxl.command;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import de.erethon.questsxl.QuestsXL;
-import de.erethon.questsxl.action.DummyAction;
+import de.erethon.questsxl.component.action.DummyAction;
 import de.erethon.questsxl.animation.AnimationManager;
 import de.erethon.questsxl.animation.QCutscene;
 import org.bukkit.Location;
