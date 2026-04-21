@@ -15,7 +15,7 @@ repositories {
 
 allprojects {
     group = "de.erethon.questsxl"
-    version = "1.0.5-SNAPSHOT"
+    version = "1.0.6-SNAPSHOT"
 
     repositories {
         mavenLocal()
@@ -30,13 +30,13 @@ allprojects {
     apply(plugin = "java-library")
 
     java {
-        toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+        toolchain.languageVersion.set(JavaLanguageVersion.of(25))
         withSourcesJar()
     }
 
     tasks.withType<JavaCompile> {
         options.encoding = Charsets.UTF_8.name()
-        options.release.set(21)
+        options.release.set(25)
     }
 
     tasks.withType<Javadoc> {
@@ -48,7 +48,7 @@ allprojects {
     }
 }
 
-val papyrusVersion = "1.21.8-R0.1-SNAPSHOT"
+val papyrusVersion = "26.1.2-SNAPSHOT"
 
 subprojects {
     apply(plugin = "java-library")
