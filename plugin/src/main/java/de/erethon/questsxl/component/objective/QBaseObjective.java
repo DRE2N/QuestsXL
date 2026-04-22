@@ -179,9 +179,7 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
             }
         }
         for (ActiveObjective activeObjective : toRemove) {
-            activeObjectives.remove(activeObjective);
             plugin.getObjectiveEventManager().unregister(activeObjective);
-            // Remove from database when objective is removed
             activeObjective.removeFromDatabase();
         }
         // Run onComplete actions first, then progress the stage so next stage's onStart fires after.

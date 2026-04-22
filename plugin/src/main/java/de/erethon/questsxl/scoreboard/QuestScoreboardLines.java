@@ -192,19 +192,23 @@ public class QuestScoreboardLines implements ScoreboardLines {
         int maxLength = 0;
 
         for (ActiveObjective activeObjective : objectives) {
-            if (activeObjective.isCompleted() || activeObjective.getObjective().isPersistent() || activeObjective.getObjective().isHidden()) {
+            if (activeObjective.getObjective().isPersistent() || activeObjective.getObjective().isHidden()) {
                 continue;
             }
 
             var displayText = activeObjective.getObjective().getDisplayText(player.getPlayer());
             Component translatedComponent = GlobalTranslator.render(displayText.get(), player.getPlayer().locale());
             String translatedText = PlainTextComponentSerializer.plainText().serialize(translatedComponent);
-            String progressText = "";
-            if (activeObjective.getObjective().getProgressGoal() > 1) {
-                progressText = " (" + activeObjective.getProgress() + "/" + activeObjective.getObjective().getProgressGoal() + ")";
+            String fullText;
+            if (activeObjective.isCompleted()) {
+                fullText = "✔ " + translatedText;
+            } else {
+                String progressText = "";
+                if (activeObjective.getObjective().getProgressGoal() > 1) {
+                    progressText = " (" + activeObjective.getProgress() + "/" + activeObjective.getObjective().getProgressGoal() + ")";
+                }
+                fullText = translatedText + progressText;
             }
-
-            String fullText = translatedText + progressText;
             maxLength = Math.max(maxLength, fullText.length());
         }
 
@@ -217,7 +221,10 @@ public class QuestScoreboardLines implements ScoreboardLines {
      */
     private List<Component> getObjectiveDisplayComponents(QPlayer player, ActiveQuest activeQuest, int maxLineLength) {
         if (activeQuest.getObjectiveDisplayText() != null) {
-            return List.of(MessageUtil.parse("<gray>" + activeQuest.getObjectiveDisplayText() + "<gray>"));
+            QTranslatable translatable = QTranslatable.fromString(activeQuest.getObjectiveDisplayText());
+            Component translated = GlobalTranslator.render(translatable.get(), player.getPlayer().locale());
+            String translatedText = PlainTextComponentSerializer.plainText().serialize(translated);
+            return List.of(MessageUtil.parse("<#b0b0b0>" + translatedText));
         }
 
         List<ActiveObjective> questObjectives = new ArrayList<>();
@@ -231,7 +238,10 @@ public class QuestScoreboardLines implements ScoreboardLines {
 
     private List<Component> getEventObjectiveDisplayComponents(QPlayer player, QEvent event, int maxLineLength) {
         if (event.getObjectiveDisplayText() != null) {
-            return List.of(MessageUtil.parse("<gray>" + event.getObjectiveDisplayText() + "<gray>"));
+            QTranslatable translatable = QTranslatable.fromString(event.getObjectiveDisplayText());
+            Component translated = GlobalTranslator.render(translatable.get(), player.getPlayer().locale());
+            String translatedText = PlainTextComponentSerializer.plainText().serialize(translated);
+            return List.of(MessageUtil.parse("<#b0b0b0>" + translatedText));
         }
         return generateObjectiveDisplayComponents(player, event.getCurrentObjectives(), false, maxLineLength);
     }
@@ -240,29 +250,27 @@ public class QuestScoreboardLines implements ScoreboardLines {
         List<Component> objectiveComponents = new ArrayList<>();
 
         for (ActiveObjective activeObjective : objectives) {
-            if (activeObjective.isCompleted()) {
-                continue; // Skip completed objectives
-            }
-
-            if (activeObjective.getObjective().isPersistent()) {
-                continue; // Skip persistent objectives
-            }
-            if (activeObjective.getObjective().isHidden()) {
-                continue; // Skip hidden objectives
+            if (activeObjective.getObjective().isPersistent() || activeObjective.getObjective().isHidden()) {
+                continue;
             }
 
             var displayText = activeObjective.getObjective().getDisplayText(player.getPlayer());
             Component translatedComponent = GlobalTranslator.render(displayText.get(), player.getPlayer().locale());
             String translatedText = PlainTextComponentSerializer.plainText().serialize(translatedComponent);
+
+            if (activeObjective.isCompleted()) {
+                String truncated = truncateSmartly(translatedText, 35);
+                objectiveComponents.add(MessageUtil.parse("<#4a9e5c>✔ </#4a9e5c><#787878>" + truncated.trim()));
+                continue;
+            }
+
             String progressText = "";
             if (activeObjective.getObjective().getProgressGoal() > 1) {
                 progressText = " (" + activeObjective.getProgress() + "/" + activeObjective.getObjective().getProgressGoal() + ")";
             }
 
             translatedText = truncateSmartlyWithProgress(translatedText, progressText, 35);
-
-            String displayLine = translatedText.trim();
-            objectiveComponents.add(MessageUtil.parse("<gray>" + displayLine));
+            objectiveComponents.add(MessageUtil.parse("<#b0b0b0>" + translatedText.trim()));
 
             if (activeObjective.getObjective().getProgressGoal() > 1) {
                 Component progressBar = getObjectiveProgressBar(activeObjective, isQuest, maxLineLength);
@@ -374,7 +382,7 @@ public class QuestScoreboardLines implements ScoreboardLines {
             if (trackedQuest != null) {
                 for (ActiveObjective obj : player.getCurrentObjectives()) {
                     if (obj.getCompletable() == trackedQuest.getQuest() &&
-                        !obj.isCompleted() && !obj.getObjective().isPersistent() && !obj.getObjective().isHidden()) {
+                        !obj.getObjective().isPersistent() && !obj.getObjective().isHidden()) {
                         objectives.add(new ObjectiveState(obj));
                     }
                 }
@@ -383,7 +391,7 @@ public class QuestScoreboardLines implements ScoreboardLines {
             // Collect event objectives
             if (player.getTrackedEvent() != null) {
                 for (ActiveObjective obj : player.getTrackedEvent().getCurrentObjectives()) {
-                    if (!obj.isCompleted() && !obj.getObjective().isPersistent() && !obj.getObjective().isHidden()) {
+                    if (!obj.getObjective().isPersistent() && !obj.getObjective().isHidden()) {
                         objectives.add(new ObjectiveState(obj));
                     }
                 }
@@ -414,11 +422,13 @@ public class QuestScoreboardLines implements ScoreboardLines {
         private final String objectiveId;
         private final int progress;
         private final int goal;
+        private final boolean completed;
 
         ObjectiveState(ActiveObjective objective) {
             this.objectiveId = objective.getObjective().id();
             this.progress = objective.getProgress();
             this.goal = objective.getObjective().getProgressGoal();
+            this.completed = objective.isCompleted();
         }
 
         @Override
@@ -428,12 +438,13 @@ public class QuestScoreboardLines implements ScoreboardLines {
             ObjectiveState that = (ObjectiveState) o;
             return progress == that.progress &&
                    goal == that.goal &&
+                   completed == that.completed &&
                    Objects.equals(objectiveId, that.objectiveId);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(objectiveId, progress, goal);
+            return Objects.hash(objectiveId, progress, goal, completed);
         }
     }
 

@@ -92,15 +92,11 @@ public class ExecutionContext {
 
     /** AutoCloseable handle for a shared execution frame. */
     public static final class Frame implements AutoCloseable {
-        private final boolean owner;
-
-        private Frame(boolean owner) {
-            this.owner = owner;
-        }
+        private Frame(boolean owner) {}
 
         @Override
         public void close() {
-            if (owner) pop();
+            pop(); // Always matches the push() that frame() always performs
         }
     }
 

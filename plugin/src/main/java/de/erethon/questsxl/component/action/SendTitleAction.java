@@ -1,12 +1,13 @@
 package de.erethon.questsxl.component.action;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.questsxl.common.script.ExecutionContext;
 import de.erethon.questsxl.common.script.QConfig;
 import de.erethon.questsxl.common.doc.QLoadableDoc;
 import de.erethon.questsxl.common.doc.QParamDoc;
+import de.erethon.questsxl.common.script.QTranslatable;
 import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.player.QPlayer;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 
 @QLoadableDoc(
@@ -39,9 +40,13 @@ public class SendTitleAction extends QBaseAction {
     public void playInternal(Quester quester) {
         if (!conditions(quester)) return;
         ExecutionContext ctx = ExecutionContext.current();
-        String title = ctx != null ? ctx.resolveString(rawTitle) : rawTitle;
-        String subtitle = ctx != null ? ctx.resolveString(rawSubtitle) : rawSubtitle;
-        execute(quester, (QPlayer player) -> player.getPlayer().showTitle(Title.title(MessageUtil.parse(title), MessageUtil.parse(subtitle))));
+        String resolvedTitle = ctx != null ? ctx.resolveString(rawTitle) : rawTitle;
+        String resolvedSubtitle = ctx != null ? ctx.resolveString(rawSubtitle) : rawSubtitle;
+        execute(quester, (QPlayer player) -> {
+            Component title = QTranslatable.fromString(resolvedTitle).get();
+            Component subtitle = QTranslatable.fromString(resolvedSubtitle).get();
+            player.getPlayer().showTitle(Title.title(title, subtitle));
+        });
         onFinish(quester);
     }
 

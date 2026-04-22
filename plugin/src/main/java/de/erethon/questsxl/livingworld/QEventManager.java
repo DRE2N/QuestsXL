@@ -13,9 +13,18 @@ import java.util.Set;
 public class QEventManager {
 
     Set<QEvent> events = new HashSet<>();
+    private EventUpdater updater;
 
     public QEventManager() {
-        new EventUpdater().runTaskTimer(QuestsXL.get(), 100, 100); // Update events every 5 seconds
+        updater = new EventUpdater();
+        updater.runTaskTimer(QuestsXL.get(), 100, 100); // Update events every 5 seconds
+    }
+
+    public void shutdown() {
+        if (updater != null) {
+            updater.cancel();
+            updater = null;
+        }
     }
 
     public QEvent getByID(String id) {

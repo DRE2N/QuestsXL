@@ -48,5 +48,6 @@ public interface QObjective<T extends Event> extends QComponent {
 
     void onStart(ObjectiveHolder player);
 
+    default void onStop(ActiveObjective active) {}
 
 }

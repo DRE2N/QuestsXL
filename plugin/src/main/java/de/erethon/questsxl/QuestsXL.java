@@ -263,6 +263,9 @@ public final class QuestsXL extends EPlugin {
         QuestsXL.log("Region instance service initialized");
 
         questManager = new QuestManager(); // Load after sync
+        if (eventManager != null) {
+            eventManager.shutdown();
+        }
         eventManager = new QEventManager();
         dialogueManager = new QDialogueManager(DIALOGUES);
         objectiveEventManager = new ObjectiveEventManager(this);
@@ -495,10 +498,6 @@ public final class QuestsXL extends EPlugin {
         databaseManager.clearPlayers();
         onDisable();
         loadCore();
-        QuestsXL.log("Loading QComponents...");
-        dialogueManager.load();
-        questManager.load();
-        eventManager.load(EVENTS);
     }
 
     public boolean isWEEnabled() {

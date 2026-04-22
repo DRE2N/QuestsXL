@@ -27,7 +27,7 @@ public class RepeatAction extends QBaseAction {
 
     private transient final QuestsXL plugin = QuestsXL.get();
 
-    @QParamDoc(name = "delay", description = "The delay between each repetition in seconds — supports %variables%", def="0")
+    @QParamDoc(name = "delay", description = "The delay between each repetition in ticks — supports %variables%", def="0")
     String rawDelay;
     @QParamDoc(name = "repetitions", description = "The amount of repetitions — supports %variables%", def = "1")
     String rawRepetitions;
@@ -65,7 +65,7 @@ public class RepeatAction extends QBaseAction {
                 }
             }
         };
-        task.runTaskTimer(plugin, delay * 20, delay * 20);
+        task.runTaskTimer(plugin, delay, delay);
     }
 
     private static long parseLong(String s) {

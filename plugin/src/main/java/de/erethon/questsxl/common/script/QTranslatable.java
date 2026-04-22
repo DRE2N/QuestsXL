@@ -84,6 +84,8 @@ public class QTranslatable {
         if (hasLocaleEntries && !parsed.isEmpty()) {
             String syntheticKey = "qxl.dynamic." + Integer.toHexString(str.hashCode());
             translatable = new QTranslatable(syntheticKey, parsed);
+        } else if (str.matches("[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+")) {
+            translatable = new QTranslatable(str, null);
         } else {
             translatable = new QTranslatable(str);
         }

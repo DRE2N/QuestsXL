@@ -67,12 +67,12 @@ public class ObjectiveEventManager {
 
         if (central != null) {
             central.removeHandler(objective);
-            // If that was the last objective for this event type, clean up the listener.
             if (central.isEmpty()) {
                 HandlerList.unregisterAll(central);
                 centralListeners.remove(eventType);
             }
         }
+        objective.getObjective().onStop(objective);
     }
     /**
      * Unregisters all objectives and their associated event listeners.

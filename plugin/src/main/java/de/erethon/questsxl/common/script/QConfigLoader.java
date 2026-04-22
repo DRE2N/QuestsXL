@@ -165,9 +165,7 @@ public class QConfigLoader {
             if (value instanceof Map<?, ?> valueMap) {
                 MemoryConfiguration memoryConfiguration = new MemoryConfiguration();
                 ConfigurationSection tempSection = memoryConfiguration.createSection(type);
-                for (Map.Entry<?, ?> entry : valueMap.entrySet()) {
-                    tempSection.set(String.valueOf(entry.getKey()), entry.getValue());
-                }
+                populateSection(tempSection, valueMap);
                 loadable.load(new QConfigurationSection(tempSection, source));
             } else {
                 String raw = value == null ? "" : String.valueOf(value);
@@ -182,5 +180,15 @@ public class QConfigLoader {
         }
     }
 
+    private static void populateSection(ConfigurationSection section, Map<?, ?> map) {
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            String key = String.valueOf(entry.getKey());
+            if (entry.getValue() instanceof Map<?, ?> subMap) {
+                populateSection(section.createSection(key), subMap);
+            } else {
+                section.set(key, entry.getValue());
+            }
+        }
+    }
 
 }
