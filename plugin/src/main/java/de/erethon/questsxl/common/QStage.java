@@ -54,6 +54,7 @@ public class QStage implements QComponent {
             ActiveObjective activeObjective = new ActiveObjective(holder, getQuest(), this, objective);
             holder.addObjective(activeObjective);
             plugin.getObjectiveEventManager().register(activeObjective);
+            activeObjective.saveToDatabase();
         }
         try {
             if (holder instanceof QPlayer player) {
