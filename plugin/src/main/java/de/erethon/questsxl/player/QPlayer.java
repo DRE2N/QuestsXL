@@ -153,6 +153,9 @@ public class QPlayer implements ObjectiveHolder, Scorable, Quester {
             // Load asynchronously to avoid blocking the main thread
             databaseManager.loadPlayerData(this).thenAccept(result -> {
                 dataLoaded = true;
+                if (trackedQuest == null && activeQuests.size() == 1) {
+                    setTrackedQuest(activeQuests.keySet().iterator().next().getQuest(), 0);
+                }
             }).exceptionally(ex -> {
                 QuestsXL.log("Failed to load player data for " + player.getName() + ": " + ex.getMessage());
                 dataLoaded = true; // Mark as loaded even on error to avoid blocking

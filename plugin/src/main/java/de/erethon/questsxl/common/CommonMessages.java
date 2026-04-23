@@ -54,6 +54,28 @@ public class CommonMessages {
         registerMessage("gui.exploration.explorable.undiscovered", Locale.ENGLISH, "<red>✗ Undiscovered");
         registerMessage("gui.exploration.explorable.undiscovered", Locale.GERMAN, "<red>✗ Unentdeckt");
 
+        // Quest GUI messages
+        registerMessage("gui.quest.title", Locale.ENGLISH, "Quests");
+        registerMessage("gui.quest.title", Locale.GERMAN, "Quests");
+        registerMessage("gui.quest.empty", Locale.ENGLISH, "No active quests");
+        registerMessage("gui.quest.empty", Locale.GERMAN, "Keine aktiven Quests");
+        registerMessage("gui.quest.tracked", Locale.ENGLISH, "✔ Tracked");
+        registerMessage("gui.quest.tracked", Locale.GERMAN, "✔ Getrackt");
+        registerMessage("gui.quest.click.track", Locale.ENGLISH, "Click to track");
+        registerMessage("gui.quest.click.track", Locale.GERMAN, "Klicken zum Tracken");
+        registerMessage("gui.quest.click.untrack", Locale.ENGLISH, "Click to untrack");
+        registerMessage("gui.quest.click.untrack", Locale.GERMAN, "Klicken zum Entracken");
+        registerMessage("gui.quest.objective.more", Locale.ENGLISH, "  …");
+        registerMessage("gui.quest.objective.more", Locale.GERMAN, "  …");
+        registerMessage("gui.quest.nav.prev", Locale.ENGLISH, "◀ Previous page");
+        registerMessage("gui.quest.nav.prev", Locale.GERMAN, "◀ Vorherige Seite");
+        registerMessage("gui.quest.nav.next", Locale.ENGLISH, "Next page ▶");
+        registerMessage("gui.quest.nav.next", Locale.GERMAN, "Nächste Seite ▶");
+        registerMessage("gui.quest.nav.page", Locale.ENGLISH, "Page <arg:0> / <arg:1>");
+        registerMessage("gui.quest.nav.page", Locale.GERMAN, "Seite <arg:0> / <arg:1>");
+        registerMessage("gui.quest.nav.count", Locale.ENGLISH, "<arg:0> active quests");
+        registerMessage("gui.quest.nav.count", Locale.GERMAN, "<arg:0> aktive Quests");
+
         // Daily Quest messages
         registerMessage("daily.disabled", Locale.ENGLISH, "<gray>Daily quests are currently disabled.");
         registerMessage("daily.disabled", Locale.GERMAN, "<gray>Tägliche Quests sind derzeit deaktiviert.");

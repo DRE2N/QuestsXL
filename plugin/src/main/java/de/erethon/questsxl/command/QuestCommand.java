@@ -4,6 +4,7 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.component.objective.QObjective;
+import de.erethon.questsxl.gui.QuestGUI;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.ActiveQuest;
 import org.bukkit.command.CommandSender;
@@ -29,6 +30,10 @@ public class QuestCommand extends ECommand {
     public void onExecute(String[] args, CommandSender commandSender) {
         Player player = (Player) commandSender;
         QPlayer qPlayer = plugin.getDatabaseManager().getCurrentPlayer(player);
+        if (args.length > 1 && args[1].equalsIgnoreCase("gui")) {
+            new QuestGUI(qPlayer).open();
+            return;
+        }
         if (args.length > 1 && args[1].equalsIgnoreCase("track")) {
             if (args.length < 3) {
                 MessageUtil.sendMessage(player, QuestsXL.ERROR + "Bitte gebe eine Quest an.");
@@ -39,6 +44,7 @@ public class QuestCommand extends ECommand {
                 MessageUtil.sendMessage(player, QuestsXL.ERROR + "Diese Quest ist nicht aktiv oder existiert nicht.");
                 return;
             }
+            qPlayer.setTrackedQuest(quest.getQuest(), 99);
             qPlayer.setDisplayed(quest);
             MessageUtil.sendMessage(player, "&7Die Quest &a" + quest.getQuest().displayName().getAsString() + " &7wird nun getrackt.");
             return;

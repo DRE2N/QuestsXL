@@ -9,6 +9,7 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.script.QTranslatable;
 import de.erethon.questsxl.livingworld.EventState;
 import de.erethon.questsxl.livingworld.QEvent;
+import de.erethon.questsxl.component.condition.QCondition;
 import de.erethon.questsxl.component.objective.ActiveObjective;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.ActiveQuest;
@@ -195,6 +196,9 @@ public class QuestScoreboardLines implements ScoreboardLines {
             if (activeObjective.getObjective().isPersistent() || activeObjective.getObjective().isHidden()) {
                 continue;
             }
+            if (!conditionsMet(player, activeObjective)) {
+                continue;
+            }
 
             var displayText = activeObjective.getObjective().getDisplayText(player.getPlayer());
             Component translatedComponent = GlobalTranslator.render(displayText.get(), player.getPlayer().locale());
@@ -246,11 +250,23 @@ public class QuestScoreboardLines implements ScoreboardLines {
         return generateObjectiveDisplayComponents(player, event.getCurrentObjectives(), false, maxLineLength);
     }
 
+    private boolean conditionsMet(QPlayer player, ActiveObjective activeObjective) {
+        for (QCondition condition : activeObjective.getObjective().getConditions()) {
+            try {
+                if (!condition.check(player)) return false;
+            } catch (Exception ignored) {}
+        }
+        return true;
+    }
+
     private List<Component> generateObjectiveDisplayComponents(QPlayer player, Iterable<ActiveObjective> objectives, boolean isQuest, int maxLineLength) {
         List<Component> objectiveComponents = new ArrayList<>();
 
         for (ActiveObjective activeObjective : objectives) {
             if (activeObjective.getObjective().isPersistent() || activeObjective.getObjective().isHidden()) {
+                continue;
+            }
+            if (!conditionsMet(player, activeObjective)) {
                 continue;
             }
 
@@ -270,10 +286,11 @@ public class QuestScoreboardLines implements ScoreboardLines {
             }
 
             translatedText = truncateSmartlyWithProgress(translatedText, progressText, 35);
-            objectiveComponents.add(MessageUtil.parse("<#b0b0b0>" + translatedText.trim()));
+            objectiveComponents.add(MessageUtil.parse("<#707070> • <#b0b0b0>" + translatedText.trim()));
 
             if (activeObjective.getObjective().getProgressGoal() > 1) {
-                Component progressBar = getObjectiveProgressBar(activeObjective, isQuest, maxLineLength);
+                Component progressBar = Component.text("   ")
+                        .append(getObjectiveProgressBar(activeObjective, isQuest, maxLineLength));
                 objectiveComponents.add(progressBar);
             }
         }
