@@ -57,7 +57,7 @@ public class QMessageHandler extends MiniMessageTranslator {
         for (Map.Entry<Locale, String> entry : translatable.getTranslations().entrySet()) {
             translations
                     .computeIfAbsent(translationPath, s -> new HashMap<>())
-                    .putIfAbsent(entry.getKey(), entry.getValue());
+                    .put(entry.getKey(), entry.getValue());
         }
 
         if (isNewTranslation) {

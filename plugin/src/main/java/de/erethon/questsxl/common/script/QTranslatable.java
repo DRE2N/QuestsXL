@@ -2,12 +2,14 @@ package de.erethon.questsxl.common.script;
 
 import de.erethon.questsxl.QuestsXL;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class QTranslatable {
 
@@ -16,6 +18,7 @@ public class QTranslatable {
     private final String key;
     private final Map<Locale, String> translations;
     private final String literal;
+    private final Supplier<ComponentLike[]> argumentsSupplier;
 
     private Component cachedLiteralComponent;
 
@@ -23,6 +26,7 @@ public class QTranslatable {
         this.key = key;
         this.translations = translations == null ? new HashMap<>() : translations;
         this.literal = null;
+        this.argumentsSupplier = null;
         if (!this.translations.isEmpty()) {
             QuestsXL.get().registerTranslation(this);
         }
@@ -32,11 +36,22 @@ public class QTranslatable {
         this.key = null;
         this.translations = new HashMap<>();
         this.literal = literal;
+        this.argumentsSupplier = null;
+    }
+
+    private QTranslatable(String key, Map<Locale, String> translations, String literal, Supplier<ComponentLike[]> argumentsSupplier) {
+        this.key = key;
+        this.translations = translations == null ? new HashMap<>() : translations;
+        this.literal = literal;
+        this.argumentsSupplier = argumentsSupplier;
+        if (key != null && !this.translations.isEmpty()) {
+            QuestsXL.get().registerTranslation(this);
+        }
     }
 
     public Component get() {
         if (key != null) {
-            return Component.translatable(key);
+            return argumentsSupplier == null ? Component.translatable(key) : Component.translatable(key, argumentsSupplier.get());
         }
         if (cachedLiteralComponent == null) {
             cachedLiteralComponent = MiniMessage.miniMessage().deserialize(literal == null ? "" : literal);
@@ -58,10 +73,14 @@ public class QTranslatable {
     }
 
     public static QTranslatable fromString(String str) {
+        return fromString(str, null);
+    }
+
+    public static QTranslatable fromString(String str, Supplier<ComponentLike[]> argumentsSupplier) {
         if (str == null) {
             return new QTranslatable("");
         }
-        if (STRING_CACHE.containsKey(str)) {
+        if (argumentsSupplier == null && STRING_CACHE.containsKey(str)) {
             return STRING_CACHE.get(str);
         }
         Map<Locale, String> parsed = new HashMap<>();
@@ -83,13 +102,15 @@ public class QTranslatable {
         QTranslatable translatable;
         if (hasLocaleEntries && !parsed.isEmpty()) {
             String syntheticKey = "qxl.dynamic." + Integer.toHexString(str.hashCode());
-            translatable = new QTranslatable(syntheticKey, parsed);
+            translatable = new QTranslatable(syntheticKey, parsed, null, argumentsSupplier);
         } else if (str.matches("[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+")) {
-            translatable = new QTranslatable(str, null);
+            translatable = new QTranslatable(str, null, null, argumentsSupplier);
         } else {
-            translatable = new QTranslatable(str);
+            translatable = new QTranslatable(null, null, str, argumentsSupplier);
         }
-        STRING_CACHE.put(str, translatable);
+        if (argumentsSupplier == null) {
+            STRING_CACHE.put(str, translatable);
+        }
         return translatable;
     }
 

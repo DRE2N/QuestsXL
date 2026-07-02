@@ -17,7 +17,7 @@ public final class QTranslatableConfig {
         if ((english != null && !english.isBlank()) || (german != null && !german.isBlank())) {
             return fromTranslations(key, english, german);
         }
-        return QTranslatable.fromString(section.getString(field, fallback));
+        return QTranslatable.fromString(section.contains(field) ? section.getString(field, fallback) : fallback);
     }
 
     public static void toQLine(QLineConfig section, String field, QTranslatable value) {
@@ -41,7 +41,10 @@ public final class QTranslatableConfig {
         if ((english != null && !english.isBlank()) || (german != null && !german.isBlank())) {
             return fromTranslations(key, english, german);
         }
-        return QTranslatable.fromString(section.getString(field, fallback));
+        if (section.isString(field)) {
+            return QTranslatable.fromString(section.getString(field, fallback));
+        }
+        return QTranslatable.fromString(fallback);
     }
 
     public static void toSection(ConfigurationSection section, String field, QTranslatable value) {

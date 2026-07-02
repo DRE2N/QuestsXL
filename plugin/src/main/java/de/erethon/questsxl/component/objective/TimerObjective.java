@@ -11,6 +11,7 @@ import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.common.script.VariableProvider;
 import de.erethon.questsxl.livingworld.QEvent;
 import de.erethon.questsxl.player.QPlayer;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -41,7 +42,9 @@ public class TimerObjective extends QBaseObjective implements VariableProvider {
     private Set<QAction> completeActions;
 
     private BukkitRunnable timerTask;
-    private QTranslatable message;
+    private final QTranslatable message = QTranslatable.fromString(
+            "en=Time left: {0}; de=Verbleibende Zeit: {0}",
+            () -> new Component[]{Component.text(formatTime())});
     private int secondsLeft = 0;
 
     @Override
@@ -111,14 +114,15 @@ public class TimerObjective extends QBaseObjective implements VariableProvider {
                 } else {
                     secondsLeft--;
                 }
-                // Format time message
-                int minutes = secondsLeft / 60;
-                int seconds = secondsLeft % 60;
-                message = QTranslatable.fromString("en=Time left: " + String.format("%02d:%02d", minutes, seconds) +
-                        "; de=Verbleibende Zeit: " + String.format("%02d:%02d", minutes, seconds));
             }
         };
         timerTask.runTaskTimer(plugin, 0L, 20L);
+    }
+
+    private String formatTime() {
+        int minutes = secondsLeft / 60;
+        int seconds = secondsLeft % 60;
+        return String.format("%02d:%02d", minutes, seconds);
     }
 
     @Override
