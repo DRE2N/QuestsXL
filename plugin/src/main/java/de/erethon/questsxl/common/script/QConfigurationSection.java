@@ -24,7 +24,11 @@ public class QConfigurationSection extends YamlConfiguration implements QConfig 
     public QConfigurationSection(ConfigurationSection section, String source) {
         this.source = source;
         for (String key : section.getKeys(true)) {
-            set(key, section.get(key));
+            Object value = section.get(key);
+            if (value instanceof ConfigurationSection) {
+                continue;
+            }
+            set(key, value);
         }
     }
 
@@ -154,12 +158,30 @@ public class QConfigurationSection extends YamlConfiguration implements QConfig 
 
     @Override
     public QLocation getQLocation(String path) {
-        return new QLocation(getConfigurationSection(path));
+        ConfigurationSection section = getConfigurationSection(path);
+        if (section != null) {
+            return new QLocation(section);
+        }
+        if (hasFlatLocationFields()) {
+            return new QLocation(this);
+        }
+        return new QLocation(section);
     }
 
     @Override
     public QLocation getQLocation(String path, QLocation def) {
-        return contains(path) ? new QLocation(getConfigurationSection(path)) : def;
+        ConfigurationSection section = getConfigurationSection(path);
+        if (section != null) {
+            return new QLocation(section);
+        }
+        if (hasFlatLocationFields()) {
+            return new QLocation(this);
+        }
+        return contains(path) ? new QLocation(section) : def;
+    }
+
+    private boolean hasFlatLocationFields() {
+        return contains("x") && contains("y") && contains("z");
     }
 
     @Override

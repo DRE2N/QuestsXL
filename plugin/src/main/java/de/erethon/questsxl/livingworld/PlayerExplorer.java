@@ -53,7 +53,7 @@ public class PlayerExplorer {
         CompletedExplorable completed = new CompletedExplorable(set, explorable, timestamp);
         explorableSet.add(completed);
 
-        qPlayer.sendMessage(MiniMessage.miniMessage().deserialize("<dark_purple><strikethrough>          </strikethrough> <dark_gray>[<#edcc4b>❄<dark_gray>]<#edcc4b> <dark_purple><strikethrough>          </strikethrough>"));
+        qPlayer.sendMessage(MiniMessage.miniMessage().deserialize("<gray><strikethrough>                    </strikethrough> <dark_gray>[<#edcc4b>❄<dark_gray>]<#edcc4b> <gray><strikethrough>                    </strikethrough>"));
         qPlayer.sendMessage(Component.text(" "));
         // Send unlock message based on explorable type
         if (explorable instanceof RespawnPoint respawnPoint) {

@@ -66,6 +66,30 @@ public class FriendlyError {
         return "&8- &c" + location + "&8: &e<hover:show_text:'<red>" + exception + "\n<green>" + hint + "'>" + title + "</hover>";
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public String getException() {
+        return exception;
+    }
+
+    public String getHint() {
+        return hint;
+    }
+
+    public String getStacktrace() {
+        return stacktrace;
+    }
+
+    public String getConsoleStackPreview() {
+        return consoleStackPreview;
+    }
+
     /**
      * Optionally, add a stacktrace to the error message
      * The stacktrace will be displayed when hovering over the error message

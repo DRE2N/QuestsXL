@@ -4,6 +4,7 @@ import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.component.action.QAction;
 import de.erethon.questsxl.common.script.QLineConfig;
 import de.erethon.questsxl.common.script.QTranslatable;
+import de.erethon.questsxl.common.script.QTranslatableConfig;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.player.QPlayer;
 import net.kyori.adventure.text.Component;
@@ -228,8 +229,8 @@ public final class ExplorationSet {
     public static ExplorationSet fromQLineConfig(QLineConfig section) {
         try {
             String id = section.getName();
-            QTranslatable displayName = QTranslatable.fromString(section.getString("displayName", "qxl.explorationset." + id + ".name"));
-            QTranslatable description = QTranslatable.fromString(section.getString("description", "qxl.explorationset." + id + ".description"));
+            QTranslatable displayName = QTranslatableConfig.fromQLine(section, "displayName", "qxl.explorationset." + id + ".name", "qxl.explorationset." + id + ".name");
+            QTranslatable description = QTranslatableConfig.fromQLine(section, "description", "qxl.explorationset." + id + ".description", "qxl.explorationset." + id + ".description");
 
             // Create the set first without parent/children to avoid circular dependencies
             ExplorationSet set = new ExplorationSet(id, null, displayName, description, new ArrayList<>());
@@ -247,8 +248,8 @@ public final class ExplorationSet {
         QLineConfig cfg = new QLineConfig();
         cfg.setName(id); // Set the ID as the name
         try {
-            cfg.set("displayName", displayName.toString());
-            cfg.set("description", description.toString());
+            QTranslatableConfig.toQLine(cfg, "displayName", displayName);
+            QTranslatableConfig.toQLine(cfg, "description", description);
             cfg.set("parentSet", parent != null ? parent.id() : "");
 
             if (children != null && !children.isEmpty()) {

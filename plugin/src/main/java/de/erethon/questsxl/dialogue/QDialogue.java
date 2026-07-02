@@ -129,8 +129,12 @@ public class QDialogue implements QComponent {
     }
 
     public ActiveDialogue start(Quester quester) {
+        return start(quester, null);
+    }
+
+    public ActiveDialogue start(Quester quester, Runnable onFinish) {
         if (quester instanceof QPlayer player) {
-            ActiveDialogue activeDialogue = new ActiveDialogue(player, this);
+            ActiveDialogue activeDialogue = new ActiveDialogue(player, this, onFinish);
             activeDialogue.start();
             return activeDialogue;
         }

@@ -36,21 +36,30 @@ public class QEventManager {
 
     public void load(File file)  {
         events.clear();
-        for (File file1 : file.listFiles()) {
-            if (file1.isDirectory()) {
-                load(file1);
+        loadDirectory(file);
+        QuestsXL.log("Loaded " + events.size() + " events.");
+    }
+
+    private void loadDirectory(File directory) {
+        File[] files = directory.listFiles();
+        if (files == null) {
+            return;
+        }
+        for (File file : files) {
+            if (file.isDirectory()) {
+                loadDirectory(file);
+                continue;
             }
-            if (!file1.getName().endsWith(".yml")) {
+            if (!file.getName().endsWith(".yml") && !file.getName().endsWith(".yaml")) {
                 continue;
             }
             QEvent event = null;
             try {
-                event = new QEvent(file1);
-            }
-            catch (Throwable e) {
-                QuestsXL.log("Failed to load event from " + file1.getName());
+                event = new QEvent(file);
+            } catch (Throwable e) {
+                QuestsXL.log("Failed to load event from " + file.getName());
                 e.printStackTrace();
-                FriendlyError error = new FriendlyError(file1.getName(), "Failed to load event "+ file1.getName(), e.getMessage(),"").addStacktrace(e.getStackTrace());
+                FriendlyError error = new FriendlyError(file.getName(), "Failed to load event " + file.getName(), e.getMessage(), "").addStacktrace(e.getStackTrace());
                 QuestsXL.get().addRuntimeError(error);
                 continue;
             }
@@ -58,7 +67,6 @@ public class QEventManager {
                 events.add(event);
             }
         }
-        QuestsXL.log("Loaded " + events.size() + " events.");
     }
 
     public Set<QEvent> getEvents() {

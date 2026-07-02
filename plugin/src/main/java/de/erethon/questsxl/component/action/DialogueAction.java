@@ -5,6 +5,7 @@ import de.erethon.questsxl.common.script.QConfig;
 import de.erethon.questsxl.common.doc.QLoadableDoc;
 import de.erethon.questsxl.common.doc.QParamDoc;
 import de.erethon.questsxl.common.Quester;
+import de.erethon.questsxl.dialogue.ActiveDialogue;
 import de.erethon.questsxl.dialogue.QDialogue;
 import de.erethon.questsxl.dialogue.QDialogueManager;
 
@@ -26,9 +27,11 @@ public class DialogueAction extends QBaseAction {
 
     @Override
     public void playInternal(Quester quester) {
-        super.play(quester);
         if (!conditions(quester)) return;
-        dialogue.start(quester);
+        ActiveDialogue activeDialogue = dialogue.start(quester, () -> onFinish(quester));
+        if (activeDialogue == null) {
+            onFinish(quester);
+        }
     }
 
     @Override

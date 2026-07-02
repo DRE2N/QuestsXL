@@ -19,12 +19,15 @@ import java.util.Map;
 @QLoadableDoc(
         value = "location",
         description = "This objective is completed when a player reaches a specific location. Can be cancelled, preventing the player from moving closer",
-        shortExample = "location: x=64; y=64; z=64; range=5",
+        shortExample = "location:\n  type: location\n  location:\n    x: 64\n    y: 64\n    z: 64\n  range: 5",
         longExample = {
                 "location: # This is completed when the player moves five blocks up from their current location.",
-                "  x: ~0",
-                "  y: ~5",
-                "  z: ~0"
+                "  type: location",
+                "  location:",
+                "    x: ~0",
+                "    y: ~5",
+                "    z: ~0",
+                "  range: 5"
         }
 )
 public class LocationObjective extends QBaseObjective<PlayerMoveEvent> implements VariableProvider {

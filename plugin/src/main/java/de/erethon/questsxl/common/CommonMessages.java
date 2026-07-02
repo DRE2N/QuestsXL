@@ -19,20 +19,20 @@ public class CommonMessages {
         // Keys are prefixed with "qxl" automatically by the QMessageHandler
         registerMessage("error", Locale.ENGLISH, QuestsXL.ERROR + "<gray>An internal error occurred. Please report this to an administrator. Error: <red><arg:0> <dark_gray> | <arg:1>");
         registerMessage("error", Locale.GERMAN, QuestsXL.ERROR + "<gray>Ein interner Fehler ist aufgetreten. Bitte melde dies einem Administrator. Fehler: <red><arg:0> <dark_gray> | <arg:1>");
-        registerMessage("explorable.discovered", Locale.ENGLISH, QuestsXL.EXPLORATION + "<dark_purple>You discovered <arg:0>!");
-        registerMessage("explorable.discovered", Locale.GERMAN, QuestsXL.EXPLORATION + "<dark_purple>Du hast <arg:0><purple>entdeckt!");
+        registerMessage("explorable.discovered", Locale.ENGLISH, QuestsXL.EXPLORATION + "<gray>You discovered <arg:0>!");
+        registerMessage("explorable.discovered", Locale.GERMAN, QuestsXL.EXPLORATION + "<gray>Du hast <arg:0><gray>entdeckt!");
         registerMessage("explorable.undiscovered", Locale.ENGLISH, QuestsXL.EXPLORATION + "<gray>Undiscovered");
         registerMessage("explorable.undiscovered", Locale.GERMAN, QuestsXL.EXPLORATION + "<gray>Unentdeckt");
         registerMessage("explorable.respawn.nearby", Locale.ENGLISH, "<yellow>⌂ <dark_gray>- <dark_purple><arg:0>");
         registerMessage("explorable.respawn.nearby", Locale.GERMAN, "<yellow>⌂ <dark_gray>- <dark_purple>");
-        registerMessage("qxl.explorable.poi.discovered", Locale.ENGLISH, "<dark_purple>You discovered a point of interest: <yellow><arg:0><dark_purple>!");
-        registerMessage("qxl.explorable.poi.discovered", Locale.GERMAN, "<dark_purple>Du hast eine Sehenswürdigkeit  entdeckt: <yellow><arg:0><dark_purple>!");
-        registerMessage("explorable.respawn.unlocked", Locale.ENGLISH, "<dark_purple>Unlocked waypoint: <yellow>⌂<dark_purple> <arg:0>");
-        registerMessage("explorable.respawn.unlocked", Locale.GERMAN, "<dark_purple>Wegpunkt freigeschaltet: <yellow>⌂<dark_purple> <arg:0>");
-        registerMessage("explorable.lootchest.nearby", Locale.ENGLISH, "<dark_purple>Loot chest: <yellow>\uD83C\uDF81<dark_purple><arg:0>");
-        registerMessage("explorable.lootchest.nearby", Locale.GERMAN, "<dark_purple>Loot-Kiste: <yellow>\uD83C\uDF81<dark_purple><arg:0>");
-        registerMessage("explorationset.completed", Locale.ENGLISH, QuestsXL.EXPLORATION + "<dark_purple>You completed <arg:0>!");
-        registerMessage("explorationset.completed", Locale.GERMAN, QuestsXL.EXPLORATION + "<dark_purple>Du hast <arg:0> <purple>abgeschlossen!");
+        registerMessage("qxl.explorable.poi.discovered", Locale.ENGLISH, "<gray>You discovered a point of interest: <white><arg:0><gray>!");
+        registerMessage("qxl.explorable.poi.discovered", Locale.GERMAN, "<gray>Du hast eine Sehenswürdigkeit  entdeckt: <white><arg:0><gray>!");
+        registerMessage("explorable.respawn.unlocked", Locale.ENGLISH, "<gray>Unlocked waypoint: <yellow>⌂<gray> <arg:0>");
+        registerMessage("explorable.respawn.unlocked", Locale.GERMAN, "<gray>Wegpunkt freigeschaltet: <yellow>⌂<gray> <arg:0>");
+        registerMessage("explorable.lootchest.nearby", Locale.ENGLISH, "<gray>Loot chest: <yellow>\uD83C\uDF81<gray><arg:0>");
+        registerMessage("explorable.lootchest.nearby", Locale.GERMAN, "<gray>Loot-Kiste: <yellow>\uD83C\uDF81<gray><arg:0>");
+        registerMessage("explorationset.completed", Locale.ENGLISH, QuestsXL.EXPLORATION + "<gray>You completed <arg:0>!");
+        registerMessage("explorationset.completed", Locale.GERMAN, QuestsXL.EXPLORATION + "<gray>Du hast <arg:0> <gray>abgeschlossen!");
         registerMessage("qxl.respawn.location", Locale.ENGLISH, QuestsXL.EXPLORATION + "<gray>Respawning at <arg:0>");
         registerMessage("qxl.respawn.location", Locale.GERMAN, QuestsXL.EXPLORATION + "<gray>Respawne bei <arg:0>");
 

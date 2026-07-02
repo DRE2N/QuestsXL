@@ -2,6 +2,7 @@ package de.erethon.questsxl.livingworld.respawn;
 
 import de.erethon.questsxl.QuestsXL;
 import de.erethon.questsxl.common.script.QTranslatable;
+import de.erethon.questsxl.common.script.QTranslatableConfig;
 import de.erethon.questsxl.livingworld.Explorable;
 import de.erethon.questsxl.livingworld.ExplorationSet;
 import de.erethon.questsxl.player.QPlayer;
@@ -416,8 +417,8 @@ public class RespawnPoint implements Explorable {
     public ConfigurationSection save() {
         YamlConfiguration configuration = new YamlConfiguration();
         configuration.set("location", location);
-        configuration.set("displayName", displayName.toString());
-        configuration.set("description", description != null ? description.toString() : null);
+        QTranslatableConfig.toSection(configuration, "displayName", displayName);
+        QTranslatableConfig.toSection(configuration, "description", description);
         configuration.set("cooldown", cooldown);
         configuration.set("unlockMode", respawnPointUnlockMode.name());
         if (useMode == null) {
@@ -433,8 +434,8 @@ public class RespawnPoint implements Explorable {
 
     public void load(ConfigurationSection section) {
         location = section.getLocation("location");
-        displayName = QTranslatable.fromString(section.getString("displayName"));
-        description = QTranslatable.fromString(section.getString("description", null));
+        displayName = QTranslatableConfig.fromSection(section, "displayName", "qxl.respawn." + id + ".displayName", id);
+        description = QTranslatableConfig.fromSection(section, "description", "qxl.respawn." + id + ".description", null);
         cooldown = section.getInt("cooldown", 0);
         respawnPointUnlockMode = RespawnPointUnlockMode.valueOf(section.getString("unlockMode", "NEAR"));
         useMode = UseMode.valueOf(section.getString("useMode", "NEAREST"));

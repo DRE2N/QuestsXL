@@ -120,7 +120,9 @@ public class LootChestManager {
     }
 
     private void dropLootNicely(LootChest lootChest, Player player) {
-        for (ItemStack item : lootChest.getLootItems()) {
+        List<ItemStack> items = new ArrayList<>(lootChest.getLootItems());
+        items.addAll(lootChest.rollHermesLootItems());
+        for (ItemStack item : items) {
             Item droppedItem = lootChest.location().getWorld().dropItemNaturally(lootChest.location().clone().add(0, 1, 0), item, item1 -> {
                 item1.setVelocity(item1.getVelocity().multiply(0.5));
                 item1.setPickupDelay(0);

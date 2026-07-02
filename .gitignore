@@ -113,3 +113,6 @@ buildNumber.properties
 # Common working directory
 plugin/run/
 build/
+node_modules/
+web/qxl-editor/dist/
+web/qxl-editor/package-lock.json

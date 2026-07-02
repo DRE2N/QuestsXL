@@ -6,6 +6,7 @@ import de.erethon.questsxl.common.QComponent;
 import de.erethon.questsxl.common.script.ExecutionContext;
 import de.erethon.questsxl.common.script.QLineConfig;
 import de.erethon.questsxl.common.script.QTranslatable;
+import de.erethon.questsxl.common.script.QTranslatableConfig;
 import de.erethon.questsxl.component.condition.QCondition;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.livingworld.Explorable;
@@ -125,8 +126,8 @@ public class PointOfInterest implements QComponent, Explorable {
             if (poi.set == null) {
                 throw new IllegalArgumentException("Parent set not found");
             }
-            poi.displayName = QTranslatable.fromString(section.getString("displayName", "<missing translation>"));
-            poi.flavourText = QTranslatable.fromString(section.getString("flavourText", "<missing translation>"));
+            poi.displayName = QTranslatableConfig.fromQLine(section, "displayName", "qxl.poi." + poi.id + ".displayName", "<missing translation>");
+            poi.flavourText = QTranslatableConfig.fromQLine(section, "flavourText", "qxl.poi." + poi.id + ".flavourText", "<missing translation>");
             double x = section.getDouble("location.x");
             double y = section.getDouble("location.y");
             double z = section.getDouble("location.z");
@@ -147,8 +148,8 @@ public class PointOfInterest implements QComponent, Explorable {
         cfg.setName(id); // Set the ID as the name
         try {
             cfg.set("parentSet", set.id());
-            cfg.set("displayName", displayName.toString());
-            cfg.set("flavourText", flavourText.toString());
+            QTranslatableConfig.toQLine(cfg, "displayName", displayName);
+            QTranslatableConfig.toQLine(cfg, "flavourText", flavourText);
             cfg.set("location.x", location.getX());
             cfg.set("location.y", location.getY());
             cfg.set("location.z", location.getZ());

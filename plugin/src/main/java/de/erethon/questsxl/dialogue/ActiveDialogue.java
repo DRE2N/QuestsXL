@@ -27,14 +27,21 @@ public class ActiveDialogue extends BukkitRunnable {
     private int messageDelay;
     private boolean isFirstRun = true;
     private boolean waitingForPlayerChoice = false;
+    private final Runnable onFinish;
+    private boolean finishCallbackRan = false;
 
     public ActiveDialogue(QPlayer qPlayer, QDialogue dialogue) {
+        this(qPlayer, dialogue, null);
+    }
+
+    public ActiveDialogue(QPlayer qPlayer, QDialogue dialogue, Runnable onFinish) {
         this.qPlayer = qPlayer;
         this.dialogue = dialogue;
         this.currentStageIndex = 0;
         this.activeStage = null; // Initialize as null, will be set in activeStage() method
         this.passedTicks = 0;
         this.messageDelay = 0;
+        this.onFinish = onFinish;
     }
 
     public BukkitTask start() {
@@ -146,6 +153,10 @@ public class ActiveDialogue extends BukkitRunnable {
 
     public void finish() {
         cancel("\n&7&oGespräch wurde erfolgreich beendet\n");
+        if (!finishCallbackRan && onFinish != null) {
+            finishCallbackRan = true;
+            onFinish.run();
+        }
     }
 
     public void transitionToStage(int stageIndex) {

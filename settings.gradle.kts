@@ -6,4 +6,4 @@ pluginManagement {
 }
 
 rootProject.name = "QuestsXL"
-include("plugin")
+include("plugin", "hermes")

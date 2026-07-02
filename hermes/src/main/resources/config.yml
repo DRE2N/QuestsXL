@@ -1,0 +1,13 @@
+enabled: false
+host: "0.0.0.0"
+port: 8081
+staticPath: ""
+maxModelUploadBytes: 26214400
+git:
+  enabled: false
+  repoUrl: ""
+  branch: "dev"
+  token: ""
+  authorName: "Hermes"
+  authorEmail: "hermes@erethon.de"
+  clonePath: "git-export"

@@ -3,10 +3,10 @@ import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 plugins {
     `java-library`
     `maven-publish`
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.21"
-    id("xyz.jpenilla.run-paper") version "3.0.2"
-    id("com.gradleup.shadow") version "9.3.1"
-    id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
+    id("io.papermc.paperweight.userdev")
+    id("xyz.jpenilla.run-paper")
+    id("com.gradleup.shadow")
+    id("net.minecrell.plugin-yml.bukkit")
 }
 
 val papyrusVersion = "26.1.2-SNAPSHOT"
@@ -15,12 +15,12 @@ dependencies {
     paperweight.devBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true }
     compileOnly("de.erethon.aergia:Aergia:1.0.1") { isTransitive = false }
     compileOnly("de.erethon.hephaestus:Hephaestus:1.0.5-SNAPSHOT")
-    implementation("org.eclipse.jgit:org.eclipse.jgit:6.4.0.202211300538-r")
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.3.0") { isTransitive = false }
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.3.0") { isTransitive = false }
     compileOnly("com.github.MilkBowl:VaultAPI:1.7") { isTransitive = false }
     compileOnly("de.erethon.hecate:Hecate:1.2-SNAPSHOT")
     compileOnly("de.erethon.tyche:Tyche:1.0-SNAPSHOT")
+    implementation("com.google.code.gson:gson:2.11.0")
 }
 
 tasks {
@@ -40,12 +40,13 @@ tasks {
     shadowJar {
         archiveBaseName.set("QuestsXL")
         dependencies {
-            include(dependency("org.eclipse.jgit:org.eclipse.jgit:6.4.0.202211300538-r"))
+            include(dependency("com.google.code.gson:gson:2.11.0"))
         }
-        relocate("org.eclipse.jgit", "de.erethon.questsxl.jgit")
     }
 
     runServer {
+        dependsOn(":hermes:deployToSharedServer")
+        dependsOn(shadowJar)
         if (!project.buildDir.exists()) {
             project.buildDir.mkdir()
         }

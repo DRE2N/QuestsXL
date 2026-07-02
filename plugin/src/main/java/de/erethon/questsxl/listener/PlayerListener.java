@@ -13,6 +13,8 @@ import de.erethon.questsxl.livingworld.region.RegionFlag;
 import de.erethon.questsxl.livingworld.respawn.RespawnPoint;
 import io.netty.channel.ChannelPipeline;
 import io.papermc.paper.event.player.AsyncChatEvent;
+import io.papermc.paper.event.player.AsyncPlayerSpawnLocationEvent;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Bukkit;

@@ -96,6 +96,10 @@ public class QLocation {
     }
 
     public QLocation(ConfigurationSection section) {
+        if (section == null) {
+            plugin.getErrors().add(new FriendlyError("QLocation", "Invalid location configuration", "Missing location configuration section.", "Section: null"));
+            return;
+        }
         if (section.contains("w")) {
             worldID = section.getString("w");
         }
@@ -104,6 +108,10 @@ public class QLocation {
         }
         randomXZ = section.getDouble("randomxz", 0);
         randomY = section.getDouble("randomy", 0);
+        if (section.getString("x") == null || section.getString("y") == null || section.getString("z") == null) {
+            plugin.getErrors().add(new FriendlyError("QLocation", "Invalid location configuration", "Missing x, y, or z in configuration section.", "Section: " + section.getName()));
+            return;
+        }
         if (section.getString("x").contains("~")) {
             isRelative = true;
             x = Double.parseDouble(section.getString("x").replace("~", ""));

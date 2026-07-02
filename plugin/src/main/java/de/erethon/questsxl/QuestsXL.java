@@ -45,12 +45,10 @@ import de.erethon.questsxl.livingworld.region.QRegionManager;
 import de.erethon.questsxl.livingworld.region.RegionInstanceService;
 import de.erethon.questsxl.livingworld.respawn.RespawnPointManager;
 import de.erethon.questsxl.scoreboard.QuestScoreboardLines;
-import de.erethon.questsxl.tool.GitSync;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.HandlerList;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -58,7 +56,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,7 +83,6 @@ public final class QuestsXL extends EPlugin {
     public static File INTERACTIONS;
     public static File PERIODIC_QUESTS;
     public static File MACROS;
-    public long lastSync = 0;
 
     private final QMessageHandler messageHandler = new QMessageHandler();
 
@@ -118,14 +114,7 @@ public final class QuestsXL extends EPlugin {
     private final List<FriendlyError> errors = new ArrayList<>();
     private boolean showStacktraces = true;
 
-    private File gitConfig = new File(Bukkit.getPluginsFolder().getParent(), "gitConfig.yml");
-    private List<String> folders;
-
-    private String gitToken;
-    private String gitBranch;
-    private boolean gitIsPassive = false;
-
-    boolean gitSync = true;
+    private boolean internalReload = false;
 
     private Aergia aergia;
 
@@ -143,12 +132,8 @@ public final class QuestsXL extends EPlugin {
     public void onEnable() {
         super.onEnable();
         plugin = this;
+        ensureConfigDefaults();
         getServer().getPluginManager().registerEvents(new PluginListener(), this);
-        YamlConfiguration gitConfig = YamlConfiguration.loadConfiguration(this.gitConfig);
-        gitToken = gitConfig.getString("token");
-        gitBranch = gitConfig.getString("branch");
-        folders = gitConfig.getStringList("folders");
-        gitIsPassive = gitConfig.getBoolean("passive");
         // Check for dependencies
         if (getServer().getPluginManager().getPlugin("Aergia") != null) {
             aergia = (Aergia) getServer().getPluginManager().getPlugin("Aergia");
@@ -179,11 +164,11 @@ public final class QuestsXL extends EPlugin {
         initFile(EXPLORATION_SETS = new File(getDataFolder(), "explorationSets.yml"));
         initFile(GLOBAL_OBJ = new File(getDataFolder(), "globalObjectives.yml"));
         initFile(PERIODIC_QUESTS = new File(getDataFolder(), "periodicQuests.yml"));
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File(Bukkit.getWorldContainer(), "environment.yml"));
+        YamlConfiguration environmentConfig = YamlConfiguration.loadConfiguration(new File(Bukkit.getWorldContainer(), "environment.yml"));
         try {
-            BedrockDBConnection connection = new BedrockDBConnection(config.getString("dbUrl"),
-                    config.getString("dbUser"),
-                    config.getString("dbPassword"),
+            BedrockDBConnection connection = new BedrockDBConnection(environmentConfig.getString("dbUrl"),
+                    environmentConfig.getString("dbUser"),
+                    environmentConfig.getString("dbPassword"),
                     "org.postgresql.ds.PGSimpleDataSource");
             databaseManager = new QDatabaseManager(connection);
         }
@@ -193,19 +178,16 @@ public final class QuestsXL extends EPlugin {
             return;
         }
         exploration = new Exploration();
-        QuestsXL.log(" ");
-        QuestsXL.log(" ");
-        QuestsXL.log(" --- Sync ---");
-        if (gitToken == null || gitBranch == null) {
-            QuestsXL.log("Environment: OFFLINE");
-            gitSync = false;
-        } else {
-            QuestsXL.log("Environment: " + gitBranch);
-            sync();
-        }
+    }
 
-        QuestsXL.log(" ");
-        QuestsXL.log(" ");
+    private void ensureConfigDefaults() {
+        saveDefaultConfig();
+        FileConfiguration config = getConfig();
+        config.addDefault("apartments.rentCost", 1);
+        config.addDefault("apartments.rentDurationMinutes", 1440L);
+        config.options().copyDefaults(true);
+        saveConfig();
+        reloadConfig();
     }
 
     public void initFolder(File folder) {
@@ -364,19 +346,6 @@ public final class QuestsXL extends EPlugin {
         if (explorationManager != null) {
             explorationManager.save();
         }
-        try {
-            if (!gitSync) {
-                return;
-            }
-            QuestsXL.log("Pushing server changes before shutdown...");
-            QuestsXL.log("Included folders: " + Arrays.toString(folders.toArray()));
-            GitSync sync = new GitSync(folders);
-            sync.pushServerChanges(false);
-            sync.close();
-        } catch (Exception e) {
-            MessageUtil.broadcastMessageIf("&cGithub-Push-Error: " + e.getMessage(), p -> p.hasPermission("qxl.admin.sync"));
-            e.printStackTrace();
-        }
         HandlerList.unregisterAll(this);
     }
 
@@ -496,7 +465,9 @@ public final class QuestsXL extends EPlugin {
             qPlayer.saveToDatabase();
         }
         databaseManager.clearPlayers();
+        internalReload = true;
         onDisable();
+        internalReload = false;
         loadCore();
     }
 
@@ -535,91 +506,6 @@ public final class QuestsXL extends EPlugin {
         return showStacktraces;
     }
 
-    public void sync() {
-        BukkitRunnable updateGit = new BukkitRunnable() {
-            @Override
-            public void run() {
-                try {
-                    QuestsXL.log("Syncing (pull only)...");
-                    QuestsXL.log("Included folders: " + Arrays.toString(folders.toArray()));
-                    GitSync sync = new GitSync(folders);
-                    sync.sync(); // Use the new sync method that only pulls
-                    sync.close();
-                } catch (IOException | GitAPIException e) {
-                    MessageUtil.broadcastMessageIf("&cGithub-Sync-Error: " + e.getMessage(), p -> p.hasPermission("qxl.admin.sync"));
-                    e.printStackTrace();
-                }
-                BukkitRunnable waitForCopy = new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        MessageUtil.broadcastMessageIf("&aGitHub-Sync (pull) abgeschlossen!", p -> p.hasPermission("qxl.admin.sync"));
-                    }
-                };
-                waitForCopy.runTaskLaterAsynchronously(QuestsXL.get(), 60);
-                lastSync = System.currentTimeMillis();
-            }
-        };
-        updateGit.runTaskAsynchronously(this);
-    }
-
-    public void fullSync() {
-        BukkitRunnable updateGit = new BukkitRunnable() {
-            @Override
-            public void run() {
-                try {
-                    QuestsXL.log("Full syncing (push + pull)...");
-                    QuestsXL.log("Included folders: " + Arrays.toString(folders.toArray()));
-                    GitSync sync = new GitSync(folders);
-                    sync.fullSync();
-                    sync.close();
-                } catch (IOException | GitAPIException e) {
-                    MessageUtil.broadcastMessageIf("&cGithub-Sync-Error: " + e.getMessage(), p -> p.hasPermission("qxl.admin.sync"));
-                    e.printStackTrace();
-                }
-                BukkitRunnable waitForCopy = new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        MessageUtil.broadcastMessageIf("&aGitHub-Full-Sync abgeschlossen!", p -> p.hasPermission("qxl.admin.sync"));
-                    }
-                };
-                waitForCopy.runTaskLaterAsynchronously(QuestsXL.get(), 60);
-                lastSync = System.currentTimeMillis();
-            }
-        };
-        updateGit.runTaskAsynchronously(this);
-    }
-
-    public void pushServerChanges() {
-        pushServerChanges(false);
-    }
-
-    public void pushServerChanges(boolean force) {
-        BukkitRunnable updateGit = new BukkitRunnable() {
-            @Override
-            public void run() {
-                try {
-                    QuestsXL.log("Pushing server changes" + (force ? " (FORCE)" : "") + "...");
-                    QuestsXL.log("Included folders: " + Arrays.toString(folders.toArray()));
-                    GitSync sync = new GitSync(folders);
-                    sync.pushServerChanges(force);
-                    sync.close();
-                } catch (IOException | GitAPIException e) {
-                    MessageUtil.broadcastMessageIf("&cGithub-Push-Error: " + e.getMessage(), p -> p.hasPermission("qxl.admin.sync"));
-                    e.printStackTrace();
-                }
-                BukkitRunnable waitForCopy = new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        String message = force ? "&aServer-Änderungen force-gepusht!" : "&aServer-Änderungen gepusht!";
-                        MessageUtil.broadcastMessageIf(message, p -> p.hasPermission("qxl.admin.sync"));
-                    }
-                };
-                waitForCopy.runTaskLaterAsynchronously(QuestsXL.get(), 60);
-            }
-        };
-        updateGit.runTaskAsynchronously(this);
-    }
-
     public void debug(String msg) {
          // check for debug mode here
         log(msg);
@@ -638,19 +524,4 @@ public final class QuestsXL extends EPlugin {
         return new File(PLAYERS, uuid + ".yml");
     }
 
-    public String getGitToken() {
-        return gitToken;
-    }
-
-    public String getGitBranch() {
-        return gitBranch;
-    }
-
-    public boolean isGitSync() {
-        return gitSync;
-    }
-
-    public boolean isPassiveSync() {
-        return gitIsPassive;
-    }
 }

@@ -23,6 +23,19 @@ public class RespawnPointManager implements Listener {
     }
 
     public void load(File file) {
+        points.clear();
+        loadFromFile(file);
+    }
+
+    public void reload(File file) {
+        for (RespawnPoint point : new ArrayList<>(points)) {
+            removeFromExplorationSystem(point);
+        }
+        points.clear();
+        loadFromFile(file);
+    }
+
+    private void loadFromFile(File file) {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         for (String key : config.getKeys(false)) {
             RespawnPoint point = new RespawnPoint(key);

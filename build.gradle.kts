@@ -1,6 +1,10 @@
 plugins {
     `java-library`
     `maven-publish`
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.21" apply false
+    id("xyz.jpenilla.run-paper") version "3.0.2" apply false
+    id("com.gradleup.shadow") version "9.3.1" apply false
+    id("net.minecrell.plugin-yml.bukkit") version "0.5.1" apply false
 }
 
 repositories {
@@ -52,7 +56,9 @@ val papyrusVersion = "26.1.2-SNAPSHOT"
 
 subprojects {
     apply(plugin = "java-library")
+}
 
+project(":plugin") {
     tasks.register<Copy>("deployToSharedServer") {
         doNotTrackState("")
         group = "Erethon"

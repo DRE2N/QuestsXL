@@ -8,9 +8,6 @@ import net.minecraft.server.MinecraftServer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.io.File;
-import java.util.Date;
-
 public class MainCommand extends ECommand {
 
     public MainCommand() {
@@ -32,7 +29,6 @@ public class MainCommand extends ECommand {
             MessageUtil.sendMessage(player, "");
             MessageUtil.sendMessage(player, "&7Internals: &6" + MinecraftServer.getServer().getServerModName()
                     + " " + MinecraftServer.getServer().getServerVersion());
-            MessageUtil.sendMessage(player, "&7Last sync from GitHub: &6" + new Date(plugin.lastSync));
             MessageUtil.sendMessage(player, "&7Quests: &6" + plugin.getQuestManager().getQuests().size()
                     + "&8 - &7Global Objectives: &6" + plugin.getGlobalObjectives().getObjectives().size());
             MessageUtil.sendMessage(player, "&7Regions: &6" + plugin.getRegionManager().getRegions().size()

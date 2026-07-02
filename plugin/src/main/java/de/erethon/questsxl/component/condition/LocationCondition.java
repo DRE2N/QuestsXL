@@ -13,12 +13,14 @@ import java.util.Map;
 @QLoadableDoc(
         value = "location",
         description = "Checks if the player is within a certain range of a location.",
-        shortExample = "location: x=192; y=64; y=20; radius=10",
+        shortExample = "location:\n  type: location\n  location:\n    x: 192\n    y: 64\n    z: 20\n  radius: 10",
         longExample = {
                 "location:",
-                "  x: 192",
-                "  y: 64",
-                "  z: 20",
+                "  type: location",
+                "  location:",
+                "    x: 192",
+                "    y: 64",
+                "    z: 20",
                 "  radius: 10"
         }
 )

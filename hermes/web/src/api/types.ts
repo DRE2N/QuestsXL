@@ -1,0 +1,27 @@
+export type WebUser = { playerId: string; playerName: string; role: 'NONE' | 'VIEWER' | 'EDITOR' | 'ADMIN' };
+export type ContentType = { id: string; label: string; directory: boolean };
+export type ContentItem = { type: string; path: string; id: string; updatedAt?: string; size?: number };
+export type EditorKind = 'string' | 'number' | 'boolean' | 'enum' | 'location' | 'actionList' | 'conditionList' | 'objectiveList' | 'raw' | 'item' | 'itemList' | 'mob' | 'mobList' | 'quest' | 'event' | 'questOrEvent' | 'dialogue' | 'shop' | 'spell' | 'spellList' | 'trait' | 'traitList' | 'effect' | 'effectList' | 'hecateClass' | 'traitline' | 'traitlineList' | 'material' | 'world' | 'duration' | 'ticksDuration' | 'translatable' | 'minimessage' | 'json';
+export type EntryCategory = 'action' | 'condition' | 'objective';
+export type VariableOption = { id: string; token?: string; type?: string; source?: string; label?: string };
+export type ComponentParam = { name: string; required: boolean; defaultValue: string; description: string; javaType: string; editorKind?: EditorKind; slotCategory?: EntryCategory | ''; options?: string[]; optionsSource?: string; baseUnit?: string; supportsVariables?: boolean };
+export type ComponentEntry = { id: string; label: string; description: string; shortExample?: string; longExample?: string[]; params: ComponentParam[]; providedVariables?: VariableOption[] };
+export type Catalog = { actions: ComponentEntry[]; conditions: ComponentEntry[]; objectives: ComponentEntry[]; variables?: { builtins?: VariableOption[] } };
+export type AssetOption = { id: string; label?: string; baseItem?: string; modelKey?: string; tags?: string[]; minecraftTags?: string[]; materials?: string[]; references?: string[]; displayName?: string; displayType?: string; category?: string; version?: number };
+export type DaedalusModelItem = ContentItem & { valid?: boolean; validationMessage?: string; modelName?: string; modelId?: string; loadedId?: string; loadedName?: string; formatVersion?: string; texturesCount?: number; elementsCount?: number; outlinerCount?: number; animationsCount?: number };
+export type AssetCatalog = { quests?: AssetOption[]; events?: AssetOption[]; items: AssetOption[]; hephaestusUpgrades?: AssetOption[]; hephaestusJobs?: AssetOption[]; hephaestusVanillaRecipes?: AssetOption[]; hephaestusJobRecipes?: AssetOption[]; hephaestusShops?: AssetOption[]; hephaestusRarities?: AssetOption[]; hephaestusUpgradeTypes?: AssetOption[]; mobs: AssetOption[]; dialogues: AssetOption[]; hecateClasses?: AssetOption[]; hecateTraitlines?: AssetOption[]; spellbookSpells?: AssetOption[]; spellbookTraits?: AssetOption[]; spellbookEffects?: AssetOption[]; factionsBuildings?: AssetOption[]; factionsBuildingEffects?: AssetOption[]; factionsResources?: AssetOption[]; factionsPopulationLevels?: AssetOption[]; factionsRegionTypes?: AssetOption[]; factionsBuildingTags?: AssetOption[]; factionsMinecraftTags?: AssetOption[]; factionsAttributes?: AssetOption[]; entityTypes?: AssetOption[]; worlds: AssetOption[]; materials: AssetOption[]; attributes?: AssetOption[]; warnings?: Array<{ source: string; message: string }> };
+export type Selection = { kind: 'root' } | { kind: 'stage'; id: string } | { kind: 'interaction'; id: string } | { kind: 'entry'; id: string };
+export type QxlEntry = { id: string; key: string; category: EntryCategory; type: string; params: Record<string, unknown>; slots: Record<string, QxlEntry[]>; extras: Record<string, unknown> };
+export type QxlStage = { id: string; conditions: QxlEntry[]; onStart: QxlEntry[]; objectives: QxlEntry[]; onFinish: QxlEntry[]; extras: Record<string, unknown> };
+export type QxlInteraction = { id: string; params: Record<string, unknown>; objectives: QxlEntry[]; extras: Record<string, unknown> };
+export type RewardSlot = { threshold: string; actions: QxlEntry[] };
+export type QxlDocument = {
+  type: string;
+  metadata: Record<string, unknown>;
+  rootSlots: Record<string, QxlEntry[]>;
+  stages: QxlStage[];
+  interactions: QxlInteraction[];
+  rewards: RewardSlot[];
+  extras: Record<string, unknown>;
+  parseError?: string;
+};
