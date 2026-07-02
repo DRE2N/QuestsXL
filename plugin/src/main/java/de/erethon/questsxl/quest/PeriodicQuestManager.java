@@ -68,6 +68,8 @@ public class PeriodicQuestManager {
         config = YamlConfiguration.loadConfiguration(configFile);
 
         try {
+            dailyCompletionRewards.clear();
+            weeklyCompletionRewards.clear();
             loadDailyConfig();
             loadWeeklyConfig();
             loadStateFromDatabase();
