@@ -46,7 +46,7 @@ public class QuestScoreboardLines implements ScoreboardLines {
     public List<ScoreboardComponent> getLines(@NotNull EPlayer ePlayer) {
         QPlayer player = plugin.getDatabaseManager().getCurrentPlayerByUUID(ePlayer.getUniqueId());
         if (player == null) {
-            QuestsXL.log("Player " + ePlayer.getDisplayName() + " not found in database, cannot show quest scoreboard lines.");
+            // The player is most likely in character selection
             return List.of();
         }
         // Check if tracked event is still active, untrack if not
