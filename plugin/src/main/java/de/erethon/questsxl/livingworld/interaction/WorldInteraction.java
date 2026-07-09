@@ -15,6 +15,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -46,6 +47,7 @@ public class WorldInteraction implements ObjectiveHolder, QComponent {
     private final Set<QObjective> objectives = new HashSet<>();
     private final Set<ActiveObjective> activeObjectives = ConcurrentHashMap.newKeySet();
     private final Set<QPlayer> playersInRange = ConcurrentHashMap.newKeySet();
+    private final Set<UUID> completedCharacters = ConcurrentHashMap.newKeySet();
 
     private boolean isActive = false;
     private QComponent parent;
@@ -150,7 +152,8 @@ public class WorldInteraction implements ObjectiveHolder, QComponent {
         // Check if the interaction is non-repeatable and already completed by this player
         if (!repeatable) {
             UUID characterId = plugin.getDatabaseManager().getCurrentCharacterId(player.getPlayer());
-            if (characterId != null && plugin.getDatabaseManager().hasCompletedInteraction(characterId, id)) {
+            if (characterId != null && (completedCharacters.contains(characterId)
+                    || plugin.getDatabaseManager().hasCompletedInteraction(characterId, id))) {
                 QuestsXL.log("Player " + player.getName() + " has already completed non-repeatable interaction: " + id);
                 return;
             }
@@ -218,6 +221,15 @@ public class WorldInteraction implements ObjectiveHolder, QComponent {
         return repeatable;
     }
 
+    public boolean canComplete(QPlayer player) {
+        if (repeatable) {
+            return true;
+        }
+        UUID characterId = plugin.getDatabaseManager().getCurrentCharacterId(player.getPlayer());
+        return characterId == null || (!completedCharacters.contains(characterId)
+                && !plugin.getDatabaseManager().hasCompletedInteraction(characterId, id));
+    }
+
     // ObjectiveHolder implementation
 
     @Override
@@ -249,7 +261,7 @@ public class WorldInteraction implements ObjectiveHolder, QComponent {
     }
 
     @Override
-    public void progress(@NotNull Completable completable) {
+    public void progress(@Nullable Completable completable) {
         // WorldInteractions don't have stages or progression
         // Objectives complete and can be repeated
 
@@ -276,12 +288,18 @@ public class WorldInteraction implements ObjectiveHolder, QComponent {
 
         if (allCompleted) {
             // Mark this interaction as completed for all players in range
+            Set<QPlayer> completedPlayers = new HashSet<>();
             for (QPlayer player : playersInRange) {
                 UUID characterId = plugin.getDatabaseManager().getCurrentCharacterId(player.getPlayer());
-                if (characterId != null) {
+                if (characterId != null && completedCharacters.add(characterId)) {
                     plugin.getDatabaseManager().markInteractionCompleted(characterId, id);
+                    completedPlayers.add(player);
                     QuestsXL.log("Marked non-repeatable interaction " + id + " as completed for player " + player.getName());
                 }
+            }
+            playersInRange.removeAll(completedPlayers);
+            if (playersInRange.isEmpty()) {
+                deactivate();
             }
         }
     }

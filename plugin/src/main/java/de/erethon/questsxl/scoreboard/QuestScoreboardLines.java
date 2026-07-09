@@ -13,6 +13,7 @@ import de.erethon.questsxl.component.condition.QCondition;
 import de.erethon.questsxl.component.objective.ActiveObjective;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.ActiveQuest;
+import de.erethon.questsxl.quest.PeriodicQuestManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -55,6 +56,15 @@ public class QuestScoreboardLines implements ScoreboardLines {
         }
 
         ActiveQuest trackedQuest = player.getTrackedQuest();
+        if (trackedQuest == null) {
+            PeriodicQuestManager periodicQuestManager = plugin.getPeriodicQuestManager();
+            if (periodicQuestManager != null) {
+                trackedQuest = periodicQuestManager.getFallbackTrackedQuest(player);
+                if (trackedQuest != null) {
+                    player.setTrackedQuest(trackedQuest.getQuest(), 0);
+                }
+            }
+        }
 
         // Check conditions after potentially untracking the event
         if (trackedQuest == null && player.getTrackedEvent() == null && player.getContentGuideText() == null) {

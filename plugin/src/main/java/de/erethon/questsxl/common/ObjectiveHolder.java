@@ -4,6 +4,7 @@ import de.erethon.questsxl.component.objective.ActiveObjective;
 import de.erethon.questsxl.component.objective.QObjective;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
@@ -16,7 +17,7 @@ public interface ObjectiveHolder {
     Set<ActiveObjective> getCurrentObjectives();
     void removeObjective(@NotNull ActiveObjective objective);
     void clearObjectives();
-    void progress(@NotNull Completable completable);
+    void progress(@Nullable Completable completable);
     Location getLocation();
     String getName();
     String getUniqueId();

@@ -27,6 +27,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.*;
@@ -509,7 +510,7 @@ public class QEvent implements Completable, ObjectiveHolder, Scorable, QComponen
     }
 
     @Override
-    public void progress(@NotNull Completable completable) {
+    public void progress(@Nullable Completable completable) {
         progress();
     }
 

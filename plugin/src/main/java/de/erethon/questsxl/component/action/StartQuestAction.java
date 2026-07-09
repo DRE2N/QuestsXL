@@ -7,6 +7,7 @@ import de.erethon.questsxl.common.doc.QParamDoc;
 import de.erethon.questsxl.common.Quester;
 import de.erethon.questsxl.player.QPlayer;
 import de.erethon.questsxl.quest.QQuest;
+import org.eclipse.sisu.Parameters;
 
 @QLoadableDoc(
         value = "start_quest",
@@ -23,6 +24,8 @@ public class StartQuestAction extends QBaseAction {
 
     @QParamDoc(name = "quest", description = "The ID of the quest to start", required = true)
     String questId;
+    @QParamDoc(name = "ignoreConditions", description = "Whether to ignore quest conditions", required = false, def = "false")
+    boolean ignoreConditions = false;
 
     @Override
     public void playInternal(Quester quester) {
@@ -39,13 +42,16 @@ public class StartQuestAction extends QBaseAction {
         if (player.hasQuest(quest)) {
             return;
         }
-        player.startQuest(quest);
+        if (ignoreConditions || quest.canStartQuest(player)) {
+            player.startQuest(quest);
+        }
     }
 
     @Override
     public void load(QConfig cfg) {
         super.load(cfg);
         questId = cfg.getString("quest");
+        ignoreConditions = cfg.getBoolean("ignoreConditions",  false);
     }
 
 }

@@ -44,6 +44,8 @@ public class DailyCommand extends ECommand {
             return;
         }
 
+        manager.syncActiveQuests(qPlayer);
+
         List<QQuest> dailyQuests = manager.getActiveDailyQuests();
         if (dailyQuests.isEmpty()) {
             player.sendMessage(Component.translatable("qxl.daily.none"));
@@ -70,7 +72,7 @@ public class DailyCommand extends ECommand {
         player.sendMessage(Component.empty());
 
         for (QQuest quest : dailyQuests) {
-            boolean completed_quest = qPlayer.getCompletedQuests().containsKey(quest);
+            boolean completed_quest = manager.hasCompletedDailyQuest(qPlayer, quest);
             String status = completed_quest ? "&a✓" : "&7○";
             String questName = quest.displayName() != null ? quest.displayName().getAsString() : quest.getName();
             MessageUtil.sendMessage(player, status + " &7" + questName);

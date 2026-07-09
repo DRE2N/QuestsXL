@@ -330,6 +330,7 @@ public class PeriodicQuestManager {
         }
 
         selectDailyQuests();
+        syncOnlinePlayers();
 
         Bukkit.getServer().broadcast(Component.translatable("qxl.daily.reset.broadcast"));
     }
@@ -344,17 +345,82 @@ public class PeriodicQuestManager {
         }
 
         selectWeeklyQuests();
+        syncOnlinePlayers();
 
         Bukkit.getServer().broadcast(Component.translatable("qxl.weekly.reset.broadcast"));
     }
 
+    private void syncOnlinePlayers() {
+        for (QPlayer player : plugin.getDatabaseManager().getPlayers()) {
+            syncActiveQuests(player);
+        }
+    }
+
+    public void syncActiveQuests(QPlayer player) {
+        var dbManager = plugin.getDatabaseManager();
+        if (dbManager == null) return;
+
+        UUID characterId = dbManager.getCurrentCharacterId(player.getPlayer());
+        if (characterId == null) return;
+
+        removeInactivePeriodicQuests(player);
+        if (dailyEnabled) {
+            for (QQuest quest : activeDailyQuests) {
+                ensureActivePeriodicQuest(player, characterId, "DAILY", quest);
+            }
+        }
+        if (weeklyEnabled) {
+            for (QQuest quest : activeWeeklyQuests) {
+                ensureActivePeriodicQuest(player, characterId, "WEEKLY", quest);
+            }
+        }
+    }
+
+    private void removeInactivePeriodicQuests(QPlayer player) {
+        List<ActiveQuest> toRemove = new ArrayList<>();
+        for (ActiveQuest activeQuest : player.getActiveQuests().keySet()) {
+            QQuest quest = activeQuest.getQuest();
+            if (isPeriodicPoolQuest(quest) && !activeDailyQuests.contains(quest) && !activeWeeklyQuests.contains(quest)) {
+                toRemove.add(activeQuest);
+            }
+        }
+        for (ActiveQuest activeQuest : toRemove) {
+            player.removeActive(activeQuest);
+        }
+    }
+
+    private boolean isPeriodicPoolQuest(QQuest quest) {
+        return dailyQuestPool.contains(quest.getName()) || weeklyQuestPool.contains(quest.getName());
+    }
+
+    private void ensureActivePeriodicQuest(QPlayer player, UUID characterId, String questType, QQuest quest) {
+        if (player.hasQuest(quest) || hasCompletedPeriodicQuest(characterId, questType, quest)) {
+            return;
+        }
+        if (quest.canStartQuest(player)) {
+            player.addActive(quest);
+            player.saveToDatabase();
+        }
+    }
+
+    private boolean hasCompletedPeriodicQuest(UUID characterId, String questType, QQuest quest) {
+        var completed = plugin.getDatabaseManager().getPlayerDao().getPeriodicQuestProgress(characterId, questType);
+        for (var data : completed) {
+            if (data.questId.equals(quest.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void onQuestComplete(QPlayer player, QQuest quest) {
-        UUID uuid = player.getPlayer().getUniqueId();
         boolean isDaily = activeDailyQuests.contains(quest);
         boolean isWeekly = activeWeeklyQuests.contains(quest);
 
         var dbManager = plugin.getDatabaseManager();
         if (dbManager == null) return;
+        UUID uuid = dbManager.getCurrentCharacterId(player.getPlayer());
+        if (uuid == null) return;
 
         var playerDao = dbManager.getPlayerDao();
 
@@ -391,7 +457,10 @@ public class PeriodicQuestManager {
         var dbManager = plugin.getDatabaseManager();
         if (dbManager != null) {
             var playerDao = dbManager.getPlayerDao();
-            playerDao.setPeriodicBonusClaimed(player.getPlayer().getUniqueId(), "DAILY", true);
+            UUID characterId = dbManager.getCurrentCharacterId(player.getPlayer());
+            if (characterId != null) {
+                playerDao.setPeriodicBonusClaimed(characterId, "DAILY", true);
+            }
         }
 
         player.getPlayer().sendMessage(Component.translatable("qxl.daily.bonus.received"));
@@ -410,7 +479,10 @@ public class PeriodicQuestManager {
         var dbManager = plugin.getDatabaseManager();
         if (dbManager != null) {
             var playerDao = dbManager.getPlayerDao();
-            playerDao.setPeriodicBonusClaimed(player.getPlayer().getUniqueId(), "WEEKLY", true);
+            UUID characterId = dbManager.getCurrentCharacterId(player.getPlayer());
+            if (characterId != null) {
+                playerDao.setPeriodicBonusClaimed(characterId, "WEEKLY", true);
+            }
         }
 
         player.getPlayer().sendMessage(Component.translatable("qxl.weekly.bonus.received"));
@@ -421,10 +493,12 @@ public class PeriodicQuestManager {
 
         var dbManager = plugin.getDatabaseManager();
         if (dbManager == null) return false;
+        UUID characterId = dbManager.getCurrentCharacterId(player.getPlayer());
+        if (characterId == null) return false;
 
         var playerDao = dbManager.getPlayerDao();
         List<de.erethon.questsxl.player.QPlayerDao.PeriodicQuestProgressData> completed =
-            playerDao.getPeriodicQuestProgress(player.getPlayer().getUniqueId(), "DAILY");
+            playerDao.getPeriodicQuestProgress(characterId, "DAILY");
 
         Set<String> completedQuestNames = new HashSet<>();
         for (var data : completed) {
@@ -444,10 +518,12 @@ public class PeriodicQuestManager {
 
         var dbManager = plugin.getDatabaseManager();
         if (dbManager == null) return false;
+        UUID characterId = dbManager.getCurrentCharacterId(player.getPlayer());
+        if (characterId == null) return false;
 
         var playerDao = dbManager.getPlayerDao();
         List<de.erethon.questsxl.player.QPlayerDao.PeriodicQuestProgressData> completed =
-            playerDao.getPeriodicQuestProgress(player.getPlayer().getUniqueId(), "WEEKLY");
+            playerDao.getPeriodicQuestProgress(characterId, "WEEKLY");
 
         Set<String> completedQuestNames = new HashSet<>();
         for (var data : completed) {
@@ -470,6 +546,43 @@ public class PeriodicQuestManager {
         return activeWeeklyQuests.contains(quest);
     }
 
+    public ActiveQuest getFallbackTrackedQuest(QPlayer player) {
+        if (dailyEnabled) {
+            ActiveQuest dailyQuest = findActiveQuest(player, activeDailyQuests);
+            if (dailyQuest != null) {
+                return dailyQuest;
+            }
+        }
+        if (weeklyEnabled) {
+            return findActiveQuest(player, activeWeeklyQuests);
+        }
+        return null;
+    }
+
+    private ActiveQuest findActiveQuest(QPlayer player, List<QQuest> quests) {
+        for (QQuest quest : quests) {
+            ActiveQuest activeQuest = player.getActiveQuest(quest);
+            if (activeQuest != null) {
+                return activeQuest;
+            }
+        }
+        return null;
+    }
+
+    public boolean hasCompletedDailyQuest(QPlayer player, QQuest quest) {
+        var dbManager = plugin.getDatabaseManager();
+        if (dbManager == null) return false;
+        UUID characterId = dbManager.getCurrentCharacterId(player.getPlayer());
+        return characterId != null && hasCompletedPeriodicQuest(characterId, "DAILY", quest);
+    }
+
+    public boolean hasCompletedWeeklyQuest(QPlayer player, QQuest quest) {
+        var dbManager = plugin.getDatabaseManager();
+        if (dbManager == null) return false;
+        UUID characterId = dbManager.getCurrentCharacterId(player.getPlayer());
+        return characterId != null && hasCompletedPeriodicQuest(characterId, "WEEKLY", quest);
+    }
+
     public List<QQuest> getActiveDailyQuests() {
         return new ArrayList<>(activeDailyQuests);
     }
@@ -481,20 +594,24 @@ public class PeriodicQuestManager {
     public int getDailyProgress(QPlayer player) {
         var dbManager = plugin.getDatabaseManager();
         if (dbManager == null) return 0;
+        UUID characterId = dbManager.getCurrentCharacterId(player.getPlayer());
+        if (characterId == null) return 0;
 
         var playerDao = dbManager.getPlayerDao();
         List<de.erethon.questsxl.player.QPlayerDao.PeriodicQuestProgressData> completed =
-            playerDao.getPeriodicQuestProgress(player.getPlayer().getUniqueId(), "DAILY");
+            playerDao.getPeriodicQuestProgress(characterId, "DAILY");
         return completed.size();
     }
 
     public int getWeeklyProgress(QPlayer player) {
         var dbManager = plugin.getDatabaseManager();
         if (dbManager == null) return 0;
+        UUID characterId = dbManager.getCurrentCharacterId(player.getPlayer());
+        if (characterId == null) return 0;
 
         var playerDao = dbManager.getPlayerDao();
         List<de.erethon.questsxl.player.QPlayerDao.PeriodicQuestProgressData> completed =
-            playerDao.getPeriodicQuestProgress(player.getPlayer().getUniqueId(), "WEEKLY");
+            playerDao.getPeriodicQuestProgress(characterId, "WEEKLY");
         return completed.size();
     }
 

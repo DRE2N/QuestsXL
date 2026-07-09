@@ -14,6 +14,7 @@ import de.erethon.questsxl.common.script.VariableProvider;
 import de.erethon.questsxl.component.condition.QCondition;
 import de.erethon.questsxl.error.FriendlyError;
 import de.erethon.questsxl.livingworld.QEvent;
+import de.erethon.questsxl.livingworld.interaction.WorldInteraction;
 import de.erethon.questsxl.player.QPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -124,6 +125,11 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
      * @param instigator the ObjectiveHolder that instigated the completion, e.g., the player that completed the objective
      */
     protected void checkCompletion(ActiveObjective active, QObjective<T> objective, ObjectiveHolder instigator) {
+        if (active.getHolder() instanceof WorldInteraction interaction
+                && instigator instanceof QPlayer player
+                && !interaction.canComplete(player)) {
+            return;
+        }
         if (active.getHolder() instanceof QEvent event && instigator instanceof QPlayer qp) {
             event.setLastInstigator(qp);
         }
@@ -190,6 +196,8 @@ public abstract class QBaseObjective<T extends Event> implements QObjective<T> {
         }
         if (stageToCheck != null) {
             stageToCheck.checkCompleted(holder);
+        } else {
+            holder.progress(null);
         }
     }
 

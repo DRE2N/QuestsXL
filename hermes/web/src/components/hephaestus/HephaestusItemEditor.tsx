@@ -1,5 +1,5 @@
-import { Accordion, Alert, Paper, Stack, TagsInput, Text } from '@mantine/core';
-import type { AssetCatalog } from '../../api/types';
+import { Accordion, Alert, Checkbox, Group, NumberInput, Paper, Stack, TagsInput, Text } from '@mantine/core';
+import type { AssetCatalog, AssetOption } from '../../api/types';
 import { ValueField } from '../fields/ValueField';
 
 export function HephaestusItemEditor({ data, disabled, assets, onFieldChange }: { data: Record<string, any>; disabled: boolean; assets: AssetCatalog; onFieldChange: (field: string, value: unknown) => void }) {
@@ -53,7 +53,67 @@ export function HephaestusItemEditor({ data, disabled, assets, onFieldChange }: 
           <ValueField label="random" description="YAML map for level, rarity, socket pattern, and other randomization weights." error={errors.random} value={data.random || {}} kind="raw" disabled={disabled} onChange={(value) => onFieldChange('random', value)} />
         </Stack>
       </Paper>
+      <SmeltingOverrideEditor data={data} disabled={disabled} assets={assets} errors={errors} onFieldChange={onFieldChange} />
     </Stack>
+  );
+}
+
+function SmeltingOverrideEditor({ data, disabled, assets, errors, onFieldChange }: { data: Record<string, any>; disabled: boolean; assets: AssetCatalog; errors: Record<string, string>; onFieldChange: (field: string, value: unknown) => void }) {
+  const interactions = asRecord(data.interactions);
+  const rawSmelting = interactions.smelting;
+  const enabled = isPlainObject(rawSmelting);
+  const smelting = normalizeSmelting(rawSmelting);
+  const setEnabled = (checked: boolean) => {
+    if (checked) {
+      onFieldChange('interactions', { ...interactions, smelting });
+      return;
+    }
+    const next = { ...interactions };
+    delete next.smelting;
+    onFieldChange('interactions', next);
+  };
+  const updateSmelting = (patch: Record<string, unknown>) => {
+    const next = { ...smelting, ...patch };
+    delete next.blastFurnace;
+    onFieldChange('interactions', { ...interactions, smelting: next });
+  };
+  return (
+    <Paper p="md" withBorder className="slotBox">
+      <Stack gap="sm">
+        <Checkbox
+          label="Smelting override"
+          description="Registers furnace recipes for this item input using the selected Hephaestus or vanilla result."
+          checked={enabled}
+          disabled={disabled}
+          onChange={(event) => setEnabled(event.currentTarget.checked)}
+        />
+        {enabled && (
+          <>
+            <ValueField
+              label="result"
+              description="Output item produced by the furnace recipe."
+              error={errors['interactions.smelting.result']}
+              value={smelting.result}
+              kind="item"
+              disabled={disabled}
+              assets={{ ...assets, items: smeltingResultOptions(assets) }}
+              onChange={(value) => updateSmelting({ result: value })}
+            />
+            <Group grow align="start">
+              <NumberInput label="amount" error={errors['interactions.smelting.amount']} value={Number(smelting.amount ?? 1)} min={1} disabled={disabled} onChange={(value) => updateSmelting({ amount: Math.max(1, Number(value || 1)) })} />
+              <NumberInput label="experience" error={errors['interactions.smelting.experience']} value={Number(smelting.experience ?? 0)} min={0} decimalScale={2} disabled={disabled} onChange={(value) => updateSmelting({ experience: Math.max(0, Number(value || 0)) })} />
+              <NumberInput label="cookingTime" error={errors['interactions.smelting.cookingTime']} value={Number(smelting.cookingTime ?? 200)} min={1} disabled={disabled} onChange={(value) => updateSmelting({ cookingTime: Math.max(1, Number(value || 1)) })} />
+            </Group>
+            {errors['interactions.smelting.furnaces'] && <Text size="sm" c="red">{errors['interactions.smelting.furnaces']}</Text>}
+            <Group>
+              <Checkbox label="furnace" checked={smelting.furnace !== false} disabled={disabled} onChange={(event) => updateSmelting({ furnace: event.currentTarget.checked })} />
+              <Checkbox label="blast_furnace" checked={Boolean(smelting.blast_furnace)} disabled={disabled} onChange={(event) => updateSmelting({ blast_furnace: event.currentTarget.checked })} />
+              <Checkbox label="smoker" checked={Boolean(smelting.smoker)} disabled={disabled} onChange={(event) => updateSmelting({ smoker: event.currentTarget.checked })} />
+            </Group>
+          </>
+        )}
+      </Stack>
+    </Paper>
   );
 }
 
@@ -77,6 +137,16 @@ function validateHephaestusItem(data: Record<string, any>, assets: AssetCatalog)
   if (data.vanilla && !isJson(data.vanilla)) errors.vanilla = 'Must be valid JSON.';
   if (data.patch && !isJson(data.patch)) errors.patch = 'Must be valid JSON.';
   if (data.random != null && !isPlainObject(data.random)) errors.random = 'Randomization should be a YAML map.';
+  const smelting = asRecord(data.interactions).smelting;
+  if (smelting != null && !isPlainObject(smelting)) errors['interactions.smelting'] = 'Smelting override must be a YAML map.';
+  if (isPlainObject(smelting)) {
+    const normalized = normalizeSmelting(smelting);
+    if (!String(normalized.result || '').trim()) errors['interactions.smelting.result'] = 'Required when smelting override is enabled.';
+    if (!normalized.furnace && !normalized.blast_furnace && !normalized.smoker) errors['interactions.smelting.furnaces'] = 'Enable at least one furnace type.';
+    if (Number(normalized.amount || 0) < 1) errors['interactions.smelting.amount'] = 'Must be at least 1.';
+    if (Number(normalized.cookingTime || 0) < 1) errors['interactions.smelting.cookingTime'] = 'Must be at least 1 tick.';
+    if (Number(normalized.experience || 0) < 0) errors['interactions.smelting.experience'] = 'Must not be negative.';
+  }
   return errors;
 }
 
@@ -97,6 +167,35 @@ function isJson(value: unknown) {
   } catch {
     return false;
   }
+}
+
+function normalizeSmelting(value: unknown): Record<string, any> {
+  const source = isPlainObject(value) ? value : {};
+  return {
+    furnace: source.furnace ?? true,
+    blast_furnace: source.blast_furnace ?? source.blastFurnace ?? false,
+    smoker: source.smoker ?? false,
+    result: source.result ?? '',
+    amount: source.amount ?? 1,
+    experience: source.experience ?? 0,
+    cookingTime: source.cookingTime ?? 200
+  };
+}
+
+function smeltingResultOptions(assets: AssetCatalog): AssetOption[] {
+  return uniqueOptions([...(assets.items || []), ...(assets.materials || [])]);
+}
+
+function uniqueOptions(options: AssetOption[]) {
+  const byId = new Map<string, AssetOption>();
+  for (const option of options) {
+    if (option.id && !byId.has(option.id)) byId.set(option.id, option);
+  }
+  return Array.from(byId.values());
+}
+
+function asRecord(value: unknown): Record<string, any> {
+  return isPlainObject(value) ? value as Record<string, any> : {};
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {

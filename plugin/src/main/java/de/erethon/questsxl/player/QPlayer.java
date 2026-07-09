@@ -29,6 +29,7 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Location;
+import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -109,7 +110,7 @@ public class QPlayer implements ObjectiveHolder, Scorable, Quester {
         saveToDatabase(); // Save to database when quest starts
     }
 
-    public void progress(@NotNull Completable completable) {
+    public void progress(@Nullable Completable completable) {
         if (completable instanceof QQuest) {
             progressQuest((QQuest) completable);
         }
@@ -152,10 +153,15 @@ public class QPlayer implements ObjectiveHolder, Scorable, Quester {
         if (databaseManager != null) {
             // Load asynchronously to avoid blocking the main thread
             databaseManager.loadPlayerData(this).thenAccept(result -> {
-                dataLoaded = true;
-                if (trackedQuest == null && activeQuests.size() == 1) {
-                    setTrackedQuest(activeQuests.keySet().iterator().next().getQuest(), 0);
-                }
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    if (plugin.getPeriodicQuestManager() != null) {
+                        plugin.getPeriodicQuestManager().syncActiveQuests(this);
+                    }
+                    dataLoaded = true;
+                    if (trackedQuest == null && activeQuests.size() == 1) {
+                        setTrackedQuest(activeQuests.keySet().iterator().next().getQuest(), 0);
+                    }
+                });
             }).exceptionally(ex -> {
                 QuestsXL.log("Failed to load player data for " + player.getName() + ": " + ex.getMessage());
                 dataLoaded = true; // Mark as loaded even on error to avoid blocking
@@ -239,7 +245,9 @@ public class QPlayer implements ObjectiveHolder, Scorable, Quester {
 
     public void removeActive(@NotNull ActiveQuest quest) {
         activeQuests.remove(quest);
-        setTrackedQuest(null, 99);
+        if (trackedQuest == quest) {
+            setTrackedQuest(null, 99);
+        }
         // Remove all objectives related to this quest
         List<ActiveObjective> toRemove = new ArrayList<>();
         for (ActiveObjective objective : currentObjectives) {

@@ -50,6 +50,9 @@ public class QuestGUI implements InventoryHolder, Listener {
 
     public QuestGUI(QPlayer qPlayer) {
         this.qPlayer = qPlayer;
+        if (QuestsXL.get().getPeriodicQuestManager() != null) {
+            QuestsXL.get().getPeriodicQuestManager().syncActiveQuests(qPlayer);
+        }
         this.quests = new ArrayList<>(qPlayer.getActiveQuests().keySet());
         sortQuests();
         QuestsXL.get().getServer().getPluginManager().registerEvents(this, QuestsXL.get());
